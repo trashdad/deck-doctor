@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Node / Next
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Generated query artifacts (rebuild with scoring/build_store.py)
+data/scores.sqlite
+data/*.faiss
+
+# Env / editor
+.env
+.env.local
+.DS_Store
