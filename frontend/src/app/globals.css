@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Cinzel", "Georgia", serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-ink text-zinc-200;
+  background-image:
+    radial-gradient(1200px 600px at 80% -10%, rgba(124, 92, 255, 0.12), transparent),
+    radial-gradient(900px 500px at -10% 110%, rgba(201, 162, 39, 0.08), transparent);
+}
+
+/* Real-card frame: correct MTG aspect ratio + corner rounding. */
+.mtg-card {
+  aspect-ratio: 488 / 680;
+  border-radius: 4.75% / 3.4%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+  background: #0f0d18;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.mtg-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.5), 0 12px 32px rgba(0, 0, 0, 0.6);
+  z-index: 20;
+}
+.mtg-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Fallback frame when art fails to load. */
+.mtg-fallback {
+  @apply flex h-full w-full flex-col justify-between p-2 text-[10px] leading-tight;
+  background: linear-gradient(160deg, #221d33, #14111f);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply rounded bg-edge;
+}

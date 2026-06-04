@@ -1,0 +1,9 @@
+# Core pipeline runs on the stdlib only (json, sqlite3, itertools).
+# These are optional accelerators for the full 32k-card corpus:
+tqdm>=4.66          # nicer progress bars (graceful fallback if absent)
+numpy>=1.26         # vectorized IER batch scoring
+pandas>=2.2         # corpus wrangling / Lift market-basket tables
+scikit-learn>=1.4   # TF-IDF / cosine for CSS at scale
+# sentence-transformers>=2.6   # semantic card embeddings (heavier; opt-in)
+# faiss-cpu>=1.8               # ANN top-K neighbours over embeddings
+pytest>=8.0
