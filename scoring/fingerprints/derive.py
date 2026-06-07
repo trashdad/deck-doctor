@@ -8,6 +8,7 @@ condition namespaces so 'burn-each' and 'burn-one-targeted' are distinguishable.
 from __future__ import annotations
 
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -100,9 +101,6 @@ def ability_tag_lists(records: list[AbilityRecord]) -> list[list[str]]:
 
 def _per_ability_tags(rec: AbilityRecord) -> set[str]:
     return set(flat_tags([rec]))
-
-
-from collections import defaultdict  # noqa: E402
 
 
 def build_inverted_index(per_card_tags: dict[str, list[str]]) -> dict[str, list[str]]:

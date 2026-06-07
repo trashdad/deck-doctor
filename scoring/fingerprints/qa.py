@@ -62,7 +62,7 @@ def unmapped_operators(cards: list[dict]) -> list[tuple[str, int]]:
 # Structural ops the projector handles directly (not "unmapped" leaf verbs).
 _STRUCTURAL = {
     "If", "Unless", "IfElse", "MayAction", "MayActions",
-    "PlayerAction", "EachPlayerAction",
+    "PlayerAction", "EachPlayerAction", "CreateFutureTrigger",
 }
 
 

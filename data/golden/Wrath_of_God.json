@@ -15,7 +15,7 @@
      "verb": "DestroyEachPermanentNoRegen",
      "object": "Creature",
      "prefixes": [],
-     "scope": "IsCardtype",
+     "scope": null,
      "quantifier": null,
      "targeted": false,
      "counter": null,

@@ -85,6 +85,10 @@ def parse_scope(node: Any) -> dict:
     for wrapper in ("_DamageRecipient", "_Players", "_Player", "_Permanents", "_Permanent"):
         if wrapper in node:
             token = node[wrapper]
+            # "IsCardtype" is a type FILTER, not a scope token; the object type is
+            # set below by _find_cardtype, so don't pollute scope with it.
+            if wrapper == "_Permanents" and token == "IsCardtype":
+                break
             out["scope"] = token
             out["quantifier"] = _QUANTIFIER.get(token)
             if wrapper in ("_Players", "_Player"):
@@ -137,6 +141,11 @@ def _scan_scope(args: Any) -> dict:
 
 
 def _leaf_effect(node: dict, *, optional: bool, targeted: bool) -> Effect:
+    # NOTE: grants / duration / prefixes are first-class schema fields but the
+    # projector does not extract them yet (deferred backlog per the fingerprint
+    # spec §4/§6 — modal, durations, granted keywords). They stay at their
+    # defaults until a dedicated pass adds them; the canonical `raw` preserves
+    # the source data so no information is lost.
     args = node.get("args")
     sc = _scan_scope(args)
     return Effect(
@@ -281,7 +290,10 @@ def project_rule(rule: dict, idx: int) -> AbilityRecord:
 
     action_list = _find_action_list(args)
     effects = extract_effects(action_list)
-    optional_ability = any(e.optional for e in effects) and len(effects) == 1
+    # The ability as a whole is optional ("you may …") when it has effects and
+    # all of them are optional — covers multi-effect MayAction wrappers, not just
+    # single-effect ones.
+    optional_ability = bool(effects) and all(e.optional for e in effects)
 
     return AbilityRecord(
         ability_idx=idx, kind=kind, trigger=trigger, cost=cost,

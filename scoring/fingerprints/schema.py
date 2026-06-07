@@ -8,7 +8,7 @@ column and reload identically (golden-regression depends on exact equality).
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from typing import Any, Optional
 
 # Allowed ability kinds (CR-flavoured; extended for replacement/prevention/restriction).
