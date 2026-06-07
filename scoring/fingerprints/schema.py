@@ -39,6 +39,7 @@ class Effect:
     scope: Optional[str] = None            # who/what affected (recipient/player token)
     quantifier: Optional[str] = None       # all | each | single | up_to | n
     targeted: bool = False                 # targets vs affects-without-targeting
+    counter: Optional[str] = None          # counter slug: plus1 | minus1 | poison | ...
     amount: Optional[Amount] = None
     duration: Optional[str] = None
     grants: Optional[str] = None           # keyword granted (innate-vs-granted)
@@ -49,7 +50,7 @@ class Effect:
         return {
             "verb": self.verb, "object": self.object, "prefixes": self.prefixes,
             "scope": self.scope, "quantifier": self.quantifier,
-            "targeted": self.targeted,
+            "targeted": self.targeted, "counter": self.counter,
             "amount": self.amount.to_dict() if self.amount else None,
             "duration": self.duration, "grants": self.grants,
             "optional": self.optional,
@@ -62,7 +63,7 @@ class Effect:
             verb=d["verb"], object=d.get("object"),
             prefixes=list(d.get("prefixes") or []),
             scope=d.get("scope"), quantifier=d.get("quantifier"),
-            targeted=bool(d.get("targeted", False)),
+            targeted=bool(d.get("targeted", False)), counter=d.get("counter"),
             amount=Amount.from_dict(d["amount"]) if d.get("amount") else None,
             duration=d.get("duration"), grants=d.get("grants"),
             optional=bool(d.get("optional", False)),

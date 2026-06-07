@@ -9,9 +9,44 @@ unmapped-operator report).
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
 from typing import Any, Optional
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from tag_taxonomy import COUNTER_MAP  # noqa: E402  (named-counter -> c:<slug> map)
+
 from .schema import Amount, Effect, AbilityRecord
+
+
+def parse_counter(node: Any, depth: int = 0) -> Optional[str]:
+    """Find a `_CounterType` under a node and return its slug (plus1/minus1/poison/...)."""
+    if depth > 8 or not isinstance(node, (dict, list)):
+        return None
+    if isinstance(node, dict):
+        if "_CounterType" in node:
+            ct = node["_CounterType"]
+            if ct == "PTCounter":
+                args = node.get("args")
+                if args == [1, 1]:
+                    return "plus1"
+                if args == [-1, -1]:
+                    return "minus1"
+                return "pt_counter"
+            tags = COUNTER_MAP.get(ct)        # e.g. "PoisonCounter" -> ["c:poison"]
+            if tags:
+                return tags[0].split(":", 1)[1]
+            return None
+        for v in node.values():
+            r = parse_counter(v, depth + 1)
+            if r:
+                return r
+    else:
+        for v in node:
+            r = parse_counter(v, depth + 1)
+            if r:
+                return r
+    return None
 
 
 def parse_amount(node: Any) -> Optional[Amount]:
@@ -107,7 +142,7 @@ def _leaf_effect(node: dict, *, optional: bool, targeted: bool) -> Effect:
     return Effect(
         verb=node["_Action"],
         object=sc["object"], scope=sc["scope"], quantifier=sc["quantifier"],
-        targeted=targeted, amount=_scan_amount(args),
+        targeted=targeted, counter=parse_counter(args), amount=_scan_amount(args),
     )
 
 

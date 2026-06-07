@@ -3,7 +3,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from fingerprints.project import parse_amount  # noqa: E402
+from fingerprints.project import parse_amount, parse_counter  # noqa: E402
+
+
+def test_parse_counter_plus1():
+    node = [{"_CounterType": "PTCounter", "args": [1, 1]}, {"_Permanent": "ThisPermanent"}]
+    assert parse_counter(node) == "plus1"
+
+
+def test_parse_counter_minus1():
+    node = [{"_CounterType": "PTCounter", "args": [-1, -1]}, {"_Permanent": "ThisPermanent"}]
+    assert parse_counter(node) == "minus1"
 
 
 def test_parse_amount_literal():
@@ -152,3 +162,10 @@ def test_project_card_multi_rule():
 
 def test_project_card_empty_for_vanilla():
     assert project_card({"Name": "Grizzly Bears", "Rules": []}) == []
+
+
+def test_extract_effect_carries_counter():
+    actions = [{"_Action": "PutACounterOfTypeOnPermanent",
+                "args": [{"_CounterType": "PTCounter", "args": [1, 1]},
+                         {"_Permanent": "ThisPermanent"}]}]
+    assert extract_effects(actions)[0].counter == "plus1"

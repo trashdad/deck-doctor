@@ -12,10 +12,26 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tag_taxonomy import (  # noqa: E402
-    ACTION_MAP, TRIGGER_MAP, PERMANENT_CARDTYPE_MAP,
+    ACTION_MAP, TRIGGER_MAP, PERMANENT_CARDTYPE_MAP, KEYWORD_MAP, REPLACEMENT_MAP,
+    PLAYER_MAP, PLAYERS_MAP,
 )
 
 from .schema import AbilityRecord, Effect, Amount  # noqa: E402
+
+
+def _rule_static_tags(rec: AbilityRecord) -> set[str]:
+    """Tags from a record's top-level `_Rule` op (keyword/replacement abilities).
+
+    Keyword-only and replacement abilities are static records with no effects;
+    their behavior lives in the canonical `raw` _Rule op. Mirrors the proven
+    mapping from the prior build_semantics pipeline so keyword coverage holds.
+    """
+    op = (rec.raw or {}).get("_Rule", "")
+    tags: set[str] = set(KEYWORD_MAP.get(op, []))
+    tags.update(REPLACEMENT_MAP.get(op, []))
+    if op == "Landfall":
+        tags.update({"t:landfall", "k:landfall"})
+    return tags
 
 
 def _amount_bucket(amt: Amount | None) -> str | None:
@@ -41,6 +57,11 @@ def _effect_tags(e: Effect) -> set[str]:
         tags.add("tgts:targeted")
     if e.optional:
         tags.add("may:optional")
+    if e.counter:
+        tags.add(f"c:{e.counter}")
+    if e.scope:                       # player target: You -> tgt:self, Opponent -> tgt:opponent
+        tags.update(PLAYER_MAP.get(e.scope, []))
+        tags.update(PLAYERS_MAP.get(e.scope, []))
     if e.object:
         tags.update(PERMANENT_CARDTYPE_MAP.get(e.object, []))
     bucket = _amount_bucket(e.amount)
@@ -55,6 +76,7 @@ def flat_tags(records: list[AbilityRecord]) -> list[str]:
     """Per-card union of derived tags (sorted, deterministic)."""
     tags: set[str] = set()
     for rec in records:
+        tags |= _rule_static_tags(rec)
         if rec.trigger:
             tags.update(TRIGGER_MAP.get(rec.trigger.get("op", ""), []))
         if rec.cost:
@@ -103,6 +125,8 @@ def fingerprint_to_vector(records: list[AbilityRecord]) -> dict[str, int]:
     vec["targeted"] = 0
     for rec in records:
         vec[f"kind:{rec.kind}"] += 1
+        for t in _rule_static_tags(rec):
+            vec[t] += 1
         if rec.cost and rec.cost.get("tap"):
             vec["cost:tap"] += 1
         if rec.condition:

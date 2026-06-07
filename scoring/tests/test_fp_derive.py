@@ -50,3 +50,36 @@ def test_fingerprint_to_vector_counts_axes():
     assert vec["verb:SpellDealsDamage"] == 1
     assert vec["q:each"] == 1
     assert vec["targeted"] == 0
+
+
+def test_static_keyword_tag_from_raw_rule():
+    # Keyword-only abilities (e.g. Flying) are static records with no effects;
+    # their tag must still be derived from the canonical raw _Rule op.
+    rec = AbilityRecord(ability_idx=0, kind="static", raw={"_Rule": "Flying"})
+    assert "k:flying" in flat_tags([rec])
+
+
+def test_replacement_tag_from_raw_rule():
+    rec = AbilityRecord(ability_idx=0, kind="replacement", raw={"_Rule": "ReplaceWouldDraw"})
+    assert "r:replace_draw" in flat_tags([rec])
+
+
+def test_vector_includes_static_keyword():
+    rec = AbilityRecord(ability_idx=0, kind="static", raw={"_Rule": "Flying"})
+    assert fingerprint_to_vector([rec]).get("k:flying") == 1
+
+
+def test_counter_tag_from_effect():
+    rec = AbilityRecord(ability_idx=0, kind="activated", effects=[Effect(
+        verb="PutACounterOfTypeOnPermanent", counter="plus1")])
+    assert "c:plus1" in flat_tags([rec])
+
+
+def test_tgt_self_from_scope():
+    rec = AbilityRecord(ability_idx=0, kind="spell", effects=[Effect(verb="DrawACard", scope="You")])
+    assert "tgt:self" in flat_tags([rec])
+
+
+def test_tgt_opponent_from_scope():
+    rec = AbilityRecord(ability_idx=0, kind="spell", effects=[Effect(verb="LoseLife", scope="EachOpponent")])
+    assert "tgt:opponent" in flat_tags([rec])
