@@ -78,3 +78,47 @@ def ability_tag_lists(records: list[AbilityRecord]) -> list[list[str]]:
 
 def _per_ability_tags(rec: AbilityRecord) -> set[str]:
     return set(flat_tags([rec]))
+
+
+from collections import defaultdict  # noqa: E402
+
+
+def build_inverted_index(per_card_tags: dict[str, list[str]]) -> dict[str, list[str]]:
+    """tag -> sorted list of card ids."""
+    inv: dict[str, set[str]] = defaultdict(set)
+    for card_id, tags in per_card_tags.items():
+        for t in tags:
+            inv[t].add(card_id)
+    return {t: sorted(ids) for t, ids in inv.items()}
+
+
+def fingerprint_to_vector(records: list[AbilityRecord]) -> dict[str, int]:
+    """Structured feature vector (sparse dict).
+
+    SP1 owns the final shape/weighting; this is the documented seam and is
+    designed for late fusion with an SP3 co-occurrence embedding. Counts are
+    interpretable and stand alone for cold-start (unseen) cards.
+    """
+    vec: dict[str, int] = defaultdict(int)
+    vec["targeted"] = 0
+    for rec in records:
+        vec[f"kind:{rec.kind}"] += 1
+        if rec.cost and rec.cost.get("tap"):
+            vec["cost:tap"] += 1
+        if rec.condition:
+            vec["cond:gated"] += 1
+        for e in _iter_effects(rec.effects):
+            vec[f"verb:{e.verb}"] += 1
+            if e.quantifier:
+                vec[f"q:{e.quantifier}"] += 1
+            if e.targeted:
+                vec["targeted"] += 1
+            if e.amount:
+                vec[f"amt:{e.amount.kind}"] += 1
+    return dict(vec)
+
+
+def _iter_effects(effects: list[Effect]):
+    for e in effects:
+        yield e
+        yield from _iter_effects(e.sub_effects)
