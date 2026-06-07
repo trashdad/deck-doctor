@@ -253,3 +253,9 @@ def project_rule(rule: dict, idx: int) -> AbilityRecord:
         condition=condition, optional=optional_ability,
         effects=effects, raw=rule,
     )
+
+
+def project_card(card: dict) -> list[AbilityRecord]:
+    """Project a full MTGish card into ability records (one per top-level Rule)."""
+    rules = card.get("Rules") or []
+    return [project_rule(r, i) for i, r in enumerate(rules) if isinstance(r, dict)]

@@ -132,3 +132,23 @@ def test_project_static_keyword():
     rec = project_rule({"_Rule": "Flying"}, 2)
     assert rec.kind == "static"
     assert rec.raw == {"_Rule": "Flying"}
+
+
+from fingerprints.project import project_card  # noqa: E402
+
+
+def test_project_card_multi_rule():
+    card = {"Name": "X", "Rules": [
+        {"_Rule": "Flying"},
+        {"_Rule": "TriggerA", "args": [
+            {"_Trigger": "WhenAPermanentEntersTheBattlefield",
+             "args": {"_Permanents": "SinglePermanent", "args": {"_Permanent": "ThisPermanent"}}},
+            {"_Actions": "ActionList", "args": [{"_Action": "DrawACard"}]}]},
+    ]}
+    recs = project_card(card)
+    assert [r.ability_idx for r in recs] == [0, 1]
+    assert recs[0].kind == "static" and recs[1].kind == "triggered"
+
+
+def test_project_card_empty_for_vanilla():
+    assert project_card({"Name": "Grizzly Bears", "Rules": []}) == []
