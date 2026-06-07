@@ -27,3 +27,56 @@ def parse_amount(node: Any) -> Optional[Amount]:
     if isinstance(args, dict) and "_Permanents" in args:
         counted = args.get("args") if isinstance(args.get("args"), str) else None
     return Amount(kind="dynamic", count={"op": op, "counted_object": counted, "raw": args})
+
+
+# Map MTGish quantifier-bearing tokens -> our quantifier axis.
+_QUANTIFIER = {
+    "EachPermanent": "each", "AllPermanents": "all", "SinglePermanent": "single",
+    "EachPlayer": "each", "AllPlayers": "all", "AllOpponents": "all",
+    "EachOpponent": "each", "SinglePlayer": "single", "SingleOpponent": "single",
+}
+
+
+def parse_scope(node: Any) -> dict:
+    """Extract {scope, object, quantifier} from a recipient/players/permanents node.
+
+    Returns empty-ish dict fields (None) when a part is absent.
+    """
+    out = {"scope": None, "object": None, "quantifier": None}
+    if not isinstance(node, dict):
+        return out
+
+    # Recipient wrappers carry the scope token in their value.
+    for wrapper in ("_DamageRecipient", "_Players", "_Player", "_Permanents", "_Permanent"):
+        if wrapper in node:
+            token = node[wrapper]
+            out["scope"] = token
+            out["quantifier"] = _QUANTIFIER.get(token)
+            if wrapper in ("_Players", "_Player"):
+                out["object"] = "player"
+            break
+
+    # Object type lives in a nested _Permanents: IsCardtype somewhere in args.
+    obj = _find_cardtype(node)
+    if obj:
+        out["object"] = obj
+    return out
+
+
+def _find_cardtype(node: Any, depth: int = 0) -> Optional[str]:
+    """Find the first `_Permanents: IsCardtype` cardtype string under a node."""
+    if depth > 8 or not isinstance(node, (dict, list)):
+        return None
+    if isinstance(node, dict):
+        if node.get("_Permanents") == "IsCardtype" and isinstance(node.get("args"), str):
+            return node["args"]
+        for v in node.values():
+            r = _find_cardtype(v, depth + 1)
+            if r:
+                return r
+    else:
+        for v in node:
+            r = _find_cardtype(v, depth + 1)
+            if r:
+                return r
+    return None

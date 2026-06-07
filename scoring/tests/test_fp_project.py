@@ -24,3 +24,26 @@ def test_parse_amount_dynamic():
 def test_parse_amount_none():
     assert parse_amount(None) is None
     assert parse_amount({"no_game_number": 1}) is None
+
+
+from fingerprints.project import parse_scope  # noqa: E402
+
+
+def test_scope_each_permanent():
+    node = {"_DamageRecipient": "EachPermanent",
+            "args": {"_Permanents": "IsCardtype", "args": "Creature"}}
+    sc = parse_scope(node)
+    assert sc["scope"] == "EachPermanent"
+    assert sc["object"] == "Creature"
+    assert sc["quantifier"] == "each"
+
+
+def test_scope_single_permanent():
+    node = {"_Permanents": "SinglePermanent", "args": {"_Permanent": "ThisPermanent"}}
+    assert parse_scope(node)["quantifier"] == "single"
+
+
+def test_scope_player_opponent():
+    node = {"_Players": "Opponent"}
+    sc = parse_scope(node)
+    assert sc["scope"] == "Opponent" and sc["object"] == "player"
