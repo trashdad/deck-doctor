@@ -98,3 +98,37 @@ def test_extract_targeted_flag():
     verbs = {e.verb for e in effs}
     assert "SacrificeAPermanent" in verbs
     assert any(e.targeted for e in effs)
+
+
+from fingerprints.project import project_rule  # noqa: E402
+
+
+def test_project_triggered_etb_draw():
+    rule = {"_Rule": "TriggerA", "args": [
+        {"_Trigger": "WhenAPermanentEntersTheBattlefield",
+         "args": {"_Permanents": "SinglePermanent", "args": {"_Permanent": "ThisPermanent"}}},
+        {"_Actions": "ActionList", "args": [{"_Action": "DrawACard"}]},
+    ]}
+    rec = project_rule(rule, 0)
+    assert rec.kind == "triggered"
+    assert rec.trigger["op"] == "WhenAPermanentEntersTheBattlefield"
+    assert [e.verb for e in rec.effects] == ["DrawACard"]
+
+
+def test_project_activated_tap_for_mana():
+    rule = {"_Rule": "Activated", "args": [
+        {"_Cost": "TapPermanent", "args": {"_Permanent": "ThisPermanent"}},
+        {"_Actions": "ActionList", "args": [
+            {"_Action": "AddMana", "args": {"_ManaProduce": "And", "args": [
+                {"_ManaProduce": "ManaProduceC"}, {"_ManaProduce": "ManaProduceC"}]}}]},
+    ]}
+    rec = project_rule(rule, 1)
+    assert rec.kind == "activated"
+    assert rec.cost["tap"] is True
+    assert [e.verb for e in rec.effects] == ["AddMana"]
+
+
+def test_project_static_keyword():
+    rec = project_rule({"_Rule": "Flying"}, 2)
+    assert rec.kind == "static"
+    assert rec.raw == {"_Rule": "Flying"}

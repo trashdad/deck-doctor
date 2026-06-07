@@ -160,3 +160,96 @@ def extract_effects(actions: Any, *, optional: bool = False, targeted: bool = Fa
             eff.optional = optional
             out.append(eff)
     return out
+
+
+_REPLACEMENT_RULES = {
+    "AsPermanentEnters", "ReplaceWouldEnter", "ReplaceWouldDraw",
+    "ReplaceWouldDealDamage", "ReplaceWouldLeaveTheBattlefield",
+    "ReplaceWouldDestroy", "ReplaceWouldDiscard", "ReplaceWouldMill",
+}
+_TRIGGER_RULES = {"TriggerA", "TriggerAll", "Trigger"}
+_SPELL_RULES = {"SpellActions", "CastEffect"}
+
+
+def _rule_kind(rule_op: str) -> str:
+    if rule_op in _TRIGGER_RULES:
+        return "triggered"
+    if rule_op == "Activated":
+        return "activated"
+    if rule_op in _SPELL_RULES:
+        return "spell"
+    if rule_op in _REPLACEMENT_RULES:
+        return "replacement"
+    return "static"
+
+
+def _find_first(node: Any, key: str, depth: int = 0) -> Optional[dict]:
+    if depth > 6 or not isinstance(node, (dict, list)):
+        return None
+    if isinstance(node, dict):
+        if key in node:
+            return node
+        for v in node.values():
+            r = _find_first(v, key, depth + 1)
+            if r is not None:
+                return r
+    else:
+        for v in node:
+            r = _find_first(v, key, depth + 1)
+            if r is not None:
+                return r
+    return None
+
+
+def _parse_cost(rule_args: Any) -> Optional[dict]:
+    cost: dict = {}
+    items = rule_args if isinstance(rule_args, list) else [rule_args]
+    for a in items:
+        if isinstance(a, dict) and "_Cost" in a:
+            c = a["_Cost"]
+            if c == "TapPermanent":
+                cost["tap"] = True
+            elif c == "Sacrifice" or "Sacrifice" in str(c):
+                cost["sacrifice"] = True
+            else:
+                cost.setdefault("other", []).append(c)
+    return cost or None
+
+
+def _find_action_list(rule_args: Any) -> Any:
+    """The arg element that is an action list (has _Actions or is a list of _Action)."""
+    items = rule_args if isinstance(rule_args, list) else [rule_args]
+    for a in items:
+        if isinstance(a, dict) and "_Actions" in a:
+            return a
+        if isinstance(a, list) and any(isinstance(x, dict) and "_Action" in x for x in a):
+            return a
+    return None
+
+
+def project_rule(rule: dict, idx: int) -> AbilityRecord:
+    rule_op = rule.get("_Rule", "")
+    kind = _rule_kind(rule_op)
+    args = rule.get("args")
+
+    trigger = None
+    tnode = _find_first(rule, "_Trigger")
+    if tnode is not None:
+        trigger = {"op": tnode["_Trigger"], "raw": tnode.get("args")}
+
+    cost = _parse_cost(args)
+
+    condition = None
+    cnode = _find_first(args, "_Condition")
+    if cnode is not None:
+        condition = {"op": cnode["_Condition"], "raw": cnode.get("args")}
+
+    action_list = _find_action_list(args)
+    effects = extract_effects(action_list)
+    optional_ability = any(e.optional for e in effects) and len(effects) == 1
+
+    return AbilityRecord(
+        ability_idx=idx, kind=kind, trigger=trigger, cost=cost,
+        condition=condition, optional=optional_ability,
+        effects=effects, raw=rule,
+    )
