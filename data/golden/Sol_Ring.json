@@ -1,0 +1,63 @@
+{
+ "name": "Sol Ring",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "activated",
+   "trigger": null,
+   "cost": {
+    "tap": true
+   },
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "AddMana",
+     "object": null,
+     "prefixes": [],
+     "scope": null,
+     "quantifier": null,
+     "targeted": false,
+     "counter": null,
+     "amount": null,
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "Activated",
+    "args": [
+     {
+      "_Cost": "TapPermanent",
+      "args": {
+       "_Permanent": "ThisPermanent"
+      }
+     },
+     {
+      "_Actions": "ActionList",
+      "args": [
+       {
+        "_Action": "AddMana",
+        "args": {
+         "_ManaProduce": "And",
+         "args": [
+          {
+           "_ManaProduce": "ManaProduceC"
+          },
+          {
+           "_ManaProduce": "ManaProduceC"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,86 @@
+{
+ "name": "Phyrexian Arena",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "triggered",
+   "trigger": {
+    "op": "AtTheBeginningOfAPlayersUpkeep",
+    "raw": {
+     "_Players": "SinglePlayer",
+     "args": {
+      "_Player": "You"
+     }
+    }
+   },
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "DrawACard",
+     "object": null,
+     "prefixes": [],
+     "scope": null,
+     "quantifier": null,
+     "targeted": false,
+     "counter": null,
+     "amount": null,
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    },
+    {
+     "verb": "LoseLife",
+     "object": null,
+     "prefixes": [],
+     "scope": null,
+     "quantifier": null,
+     "targeted": false,
+     "counter": null,
+     "amount": {
+      "kind": "literal",
+      "value": 1,
+      "count": null
+     },
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "TriggerA",
+    "args": [
+     {
+      "_Trigger": "AtTheBeginningOfAPlayersUpkeep",
+      "args": {
+       "_Players": "SinglePlayer",
+       "args": {
+        "_Player": "You"
+       }
+      }
+     },
+     {
+      "_Actions": "ActionList",
+      "args": [
+       {
+        "_Action": "DrawACard"
+       },
+       {
+        "_Action": "LoseLife",
+        "args": {
+         "_GameNumber": "Integer",
+         "args": 1
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

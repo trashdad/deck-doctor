@@ -1,0 +1,58 @@
+{
+ "name": "Counterspell",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "spell",
+   "trigger": null,
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "CounterSpell",
+     "object": null,
+     "prefixes": [],
+     "scope": null,
+     "quantifier": null,
+     "targeted": true,
+     "counter": null,
+     "amount": null,
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "SpellActions",
+    "args": {
+     "_Actions": "Targeted",
+     "args": [
+      [
+       {
+        "_Target": "TargetSpell",
+        "args": {
+         "_Spells": "AnySpell"
+        }
+       }
+      ],
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "CounterSpell",
+         "args": {
+          "_Spell": "Ref_TargetSpell"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

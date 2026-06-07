@@ -1,0 +1,68 @@
+{
+ "name": "Lightning Bolt",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "spell",
+   "trigger": null,
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "SpellDealsDamage",
+     "object": null,
+     "prefixes": [],
+     "scope": "Ref_AnyTarget",
+     "quantifier": null,
+     "targeted": true,
+     "counter": null,
+     "amount": {
+      "kind": "literal",
+      "value": 3,
+      "count": null
+     },
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "SpellActions",
+    "args": {
+     "_Actions": "Targeted",
+     "args": [
+      [
+       {
+        "_Target": "AnyTarget"
+       }
+      ],
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "SpellDealsDamage",
+         "args": [
+          {
+           "_Spell": "ThisSpell"
+          },
+          {
+           "_GameNumber": "Integer",
+           "args": 3
+          },
+          {
+           "_DamageRecipient": "Ref_AnyTarget"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

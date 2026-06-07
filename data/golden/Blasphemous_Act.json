@@ -1,0 +1,94 @@
+{
+ "name": "Blasphemous Act",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "spell",
+   "trigger": null,
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [],
+   "raw": {
+    "_Rule": "CastEffect",
+    "args": {
+     "_CastEffect": "ReduceCastingCostForEach",
+     "args": [
+      [
+       {
+        "_CostReductionSymbol": "CostReduceGeneric",
+        "args": 1
+       }
+      ],
+      {
+       "_GameNumber": "TheNumberOfPermanentsOnTheBattlefield",
+       "args": {
+        "_Permanents": "IsCardtype",
+        "args": "Creature"
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "ability_idx": 1,
+   "kind": "spell",
+   "trigger": null,
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "SpellDealsDamage",
+     "object": "Creature",
+     "prefixes": [],
+     "scope": "EachPermanent",
+     "quantifier": "each",
+     "targeted": false,
+     "counter": null,
+     "amount": {
+      "kind": "literal",
+      "value": 13,
+      "count": null
+     },
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "SpellActions",
+    "args": {
+     "_Actions": "ActionList",
+     "args": [
+      {
+       "_Action": "SpellDealsDamage",
+       "args": [
+        {
+         "_Spell": "ThisSpell"
+        },
+        {
+         "_GameNumber": "Integer",
+         "args": 13
+        },
+        {
+         "_DamageRecipient": "EachPermanent",
+         "args": {
+          "_Permanents": "IsCardtype",
+          "args": "Creature"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

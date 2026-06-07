@@ -1,0 +1,161 @@
+{
+ "name": "Blood Artist",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "triggered",
+   "trigger": {
+    "op": "Or",
+    "raw": [
+     {
+      "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+      "args": {
+       "_Permanents": "SinglePermanent",
+       "args": {
+        "_Permanent": "ThisPermanent"
+       }
+      }
+     },
+     {
+      "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+      "args": {
+       "_Permanents": "And",
+       "args": [
+        {
+         "_Permanents": "Other",
+         "args": {
+          "_Permanent": "ThisPermanent"
+         }
+        },
+        {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "LoseLife",
+     "object": null,
+     "prefixes": [],
+     "scope": null,
+     "quantifier": null,
+     "targeted": true,
+     "counter": null,
+     "amount": {
+      "kind": "literal",
+      "value": 1,
+      "count": null
+     },
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    },
+    {
+     "verb": "GainLife",
+     "object": null,
+     "prefixes": [],
+     "scope": null,
+     "quantifier": null,
+     "targeted": true,
+     "counter": null,
+     "amount": {
+      "kind": "literal",
+      "value": 1,
+      "count": null
+     },
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "TriggerA",
+    "args": [
+     {
+      "_Trigger": "Or",
+      "args": [
+       {
+        "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+        "args": {
+         "_Permanents": "SinglePermanent",
+         "args": {
+          "_Permanent": "ThisPermanent"
+         }
+        }
+       },
+       {
+        "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "Other",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          },
+          {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     {
+      "_Actions": "Targeted",
+      "args": [
+       [
+        {
+         "_Target": "TargetPlayer",
+         "args": {
+          "_Players": "AnyPlayer"
+         }
+        }
+       ],
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "PlayerAction",
+          "args": [
+           {
+            "_Player": "Ref_TargetPlayer"
+           },
+           {
+            "_Action": "LoseLife",
+            "args": {
+             "_GameNumber": "Integer",
+             "args": 1
+            }
+           }
+          ]
+         },
+         {
+          "_Action": "GainLife",
+          "args": {
+           "_GameNumber": "Integer",
+           "args": 1
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

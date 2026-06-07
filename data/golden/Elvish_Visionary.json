@@ -1,0 +1,61 @@
+{
+ "name": "Elvish Visionary",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "triggered",
+   "trigger": {
+    "op": "WhenAPermanentEntersTheBattlefield",
+    "raw": {
+     "_Permanents": "SinglePermanent",
+     "args": {
+      "_Permanent": "ThisPermanent"
+     }
+    }
+   },
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "DrawACard",
+     "object": null,
+     "prefixes": [],
+     "scope": null,
+     "quantifier": null,
+     "targeted": false,
+     "counter": null,
+     "amount": null,
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "TriggerA",
+    "args": [
+     {
+      "_Trigger": "WhenAPermanentEntersTheBattlefield",
+      "args": {
+       "_Permanents": "SinglePermanent",
+       "args": {
+        "_Permanent": "ThisPermanent"
+       }
+      }
+     },
+     {
+      "_Actions": "ActionList",
+      "args": [
+       {
+        "_Action": "DrawACard"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

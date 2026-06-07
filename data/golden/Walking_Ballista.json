@@ -1,0 +1,189 @@
+{
+ "name": "Walking Ballista",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "replacement",
+   "trigger": null,
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [],
+   "raw": {
+    "_Rule": "AsPermanentEnters",
+    "args": [
+     {
+      "_Permanent": "ThisPermanent"
+     },
+     [
+      {
+       "_ReplacementActionWouldEnter": "EntersWithNumberCounters",
+       "args": [
+        {
+         "_GameNumber": "ValueX"
+        },
+        {
+         "_CounterType": "PTCounter",
+         "args": [
+          1,
+          1
+         ]
+        }
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "ability_idx": 1,
+   "kind": "activated",
+   "trigger": null,
+   "cost": {
+    "other": [
+     "PayMana"
+    ]
+   },
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "PutACounterOfTypeOnPermanent",
+     "object": null,
+     "prefixes": [],
+     "scope": "ThisPermanent",
+     "quantifier": null,
+     "targeted": false,
+     "counter": "plus1",
+     "amount": null,
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "Activated",
+    "args": [
+     {
+      "_Cost": "PayMana",
+      "args": [
+       {
+        "_ManaSymbol": "ManaCostGeneric",
+        "args": 4
+       }
+      ]
+     },
+     {
+      "_Actions": "ActionList",
+      "args": [
+       {
+        "_Action": "PutACounterOfTypeOnPermanent",
+        "args": [
+         {
+          "_CounterType": "PTCounter",
+          "args": [
+           1,
+           1
+          ]
+         },
+         {
+          "_Permanent": "ThisPermanent"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "ability_idx": 2,
+   "kind": "activated",
+   "trigger": null,
+   "cost": {
+    "other": [
+     "RemoveACounterOfTypeFromPermanent"
+    ]
+   },
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "PermanentDealsDamage",
+     "object": null,
+     "prefixes": [],
+     "scope": "ThisPermanent",
+     "quantifier": null,
+     "targeted": true,
+     "counter": null,
+     "amount": {
+      "kind": "literal",
+      "value": 1,
+      "count": null
+     },
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "Activated",
+    "args": [
+     {
+      "_Cost": "RemoveACounterOfTypeFromPermanent",
+      "args": [
+       {
+        "_CounterType": "PTCounter",
+        "args": [
+         1,
+         1
+        ]
+       },
+       {
+        "_Permanent": "ThisPermanent"
+       }
+      ]
+     },
+     {
+      "_Actions": "Targeted",
+      "args": [
+       [
+        {
+         "_Target": "AnyTarget"
+        }
+       ],
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "PermanentDealsDamage",
+          "args": [
+           {
+            "_Permanent": "ThisPermanent"
+           },
+           {
+            "_GameNumber": "Integer",
+            "args": 1
+           },
+           {
+            "_DamageRecipient": "Ref_AnyTarget"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

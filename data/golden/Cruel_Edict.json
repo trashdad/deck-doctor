@@ -1,0 +1,67 @@
+{
+ "name": "Cruel Edict",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "spell",
+   "trigger": null,
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "SacrificeAPermanent",
+     "object": "Creature",
+     "prefixes": [],
+     "scope": "IsCardtype",
+     "quantifier": null,
+     "targeted": true,
+     "counter": null,
+     "amount": null,
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "SpellActions",
+    "args": {
+     "_Actions": "Targeted",
+     "args": [
+      [
+       {
+        "_Target": "TargetPlayer",
+        "args": {
+         "_Players": "Opponent"
+        }
+       }
+      ],
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "PlayerAction",
+         "args": [
+          {
+           "_Player": "Ref_TargetPlayer"
+          },
+          {
+           "_Action": "SacrificeAPermanent",
+           "args": {
+            "_Permanents": "IsCardtype",
+            "args": "Creature"
+           }
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

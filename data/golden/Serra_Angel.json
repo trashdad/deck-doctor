@@ -1,0 +1,33 @@
+{
+ "name": "Serra Angel",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "static",
+   "trigger": null,
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [],
+   "raw": {
+    "_Rule": "Flying"
+   }
+  },
+  {
+   "ability_idx": 1,
+   "kind": "static",
+   "trigger": null,
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [],
+   "raw": {
+    "_Rule": "Vigilance"
+   }
+  }
+ ]
+}

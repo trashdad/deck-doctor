@@ -1,0 +1,50 @@
+{
+ "name": "Demonic Tutor",
+ "records": [
+  {
+   "ability_idx": 0,
+   "kind": "spell",
+   "trigger": null,
+   "cost": null,
+   "timing": null,
+   "condition": null,
+   "optional": false,
+   "modal": null,
+   "effects": [
+    {
+     "verb": "SearchLibrary",
+     "object": null,
+     "prefixes": [],
+     "scope": null,
+     "quantifier": null,
+     "targeted": false,
+     "counter": null,
+     "amount": null,
+     "duration": null,
+     "grants": null,
+     "optional": false,
+     "sub_effects": []
+    }
+   ],
+   "raw": {
+    "_Rule": "SpellActions",
+    "args": {
+     "_Actions": "ActionList",
+     "args": [
+      {
+       "_Action": "SearchLibrary",
+       "args": [
+        {
+         "_SearchLibraryAction": "PutAGenericCardIntoHand"
+        },
+        {
+         "_SearchLibraryAction": "Shuffle"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ]
+}
