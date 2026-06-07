@@ -80,3 +80,83 @@ def _find_cardtype(node: Any, depth: int = 0) -> Optional[str]:
             if r:
                 return r
     return None
+
+
+# Action-arg slots that may carry an amount or a recipient/scope, by position-agnostic scan.
+def _scan_amount(args: Any) -> Optional[Amount]:
+    if isinstance(args, list):
+        for a in args:
+            amt = parse_amount(a)
+            if amt:
+                return amt
+    return parse_amount(args)
+
+
+def _scan_scope(args: Any) -> dict:
+    candidates = args if isinstance(args, list) else [args]
+    for a in candidates:
+        sc = parse_scope(a) if isinstance(a, dict) else {"scope": None, "object": None, "quantifier": None}
+        if any(sc.values()):
+            return sc
+    return {"scope": None, "object": None, "quantifier": None}
+
+
+def _leaf_effect(node: dict, *, optional: bool, targeted: bool) -> Effect:
+    args = node.get("args")
+    sc = _scan_scope(args)
+    return Effect(
+        verb=node["_Action"],
+        object=sc["object"], scope=sc["scope"], quantifier=sc["quantifier"],
+        targeted=targeted, amount=_scan_amount(args),
+    )
+
+
+def extract_effects(actions: Any, *, optional: bool = False, targeted: bool = False,
+                    depth: int = 0) -> list[Effect]:
+    """Flatten an action list into Effects, honoring control-flow wrappers."""
+    out: list[Effect] = []
+    if depth > 25 or actions is None:
+        return out
+    items = actions if isinstance(actions, list) else [actions]
+    for node in items:
+        if not isinstance(node, dict):
+            continue
+
+        # Targeted wrapper: args = [[targets], actionlist]
+        if node.get("_Actions") == "Targeted":
+            inner = node.get("args") or []
+            sub = inner[1] if len(inner) > 1 else None
+            out.extend(extract_effects(sub, optional=optional, targeted=True, depth=depth + 1))
+            continue
+
+        # Plain action list container
+        if node.get("_Actions") in ("ActionList", "Actions") or "_Actions" in node:
+            out.extend(extract_effects(node.get("args"), optional=optional,
+                                       targeted=targeted, depth=depth + 1))
+            continue
+
+        op = node.get("_Action")
+        if op == "MayAction":
+            out.extend(extract_effects(node.get("args"), optional=True,
+                                       targeted=targeted, depth=depth + 1))
+            continue
+        if op in ("If", "Unless"):
+            branch = node["args"][1] if isinstance(node.get("args"), list) and len(node["args"]) > 1 else None
+            out.extend(extract_effects(branch, optional=optional, targeted=targeted, depth=depth + 1))
+            continue
+        if op == "IfElse":
+            a = node.get("args") or []
+            for branch in a[1:3]:
+                out.extend(extract_effects(branch, optional=optional, targeted=targeted, depth=depth + 1))
+            continue
+        if op in ("PlayerAction", "EachPlayerAction", "MayActions"):
+            # wrapper carrying a nested action (+ a player scope we fold into the child)
+            out.extend(extract_effects(node.get("args"), optional=(op == "MayActions") or optional,
+                                       targeted=targeted, depth=depth + 1))
+            continue
+
+        if op is not None:
+            eff = _leaf_effect(node, optional=optional, targeted=targeted)
+            eff.optional = optional
+            out.append(eff)
+    return out
