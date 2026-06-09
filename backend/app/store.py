@@ -154,15 +154,17 @@ class Store:
         if not self.scores_path.exists():
             return None
         lo, hi = sorted([a, b])
-        with self._conn() as conn:
-            try:
-                row = conn.execute(
-                    "SELECT similarity, synergy_ab, synergy_ba, anti_synergy, combo, combo_id "
-                    "FROM card_relationships WHERE a=? AND b=?",
-                    (lo, hi),
-                ).fetchone()
-            except sqlite3.OperationalError:
-                return None
+        conn = self._conn()
+        try:
+            row = conn.execute(
+                "SELECT similarity, synergy_ab, synergy_ba, anti_synergy, combo, combo_id "
+                "FROM card_relationships WHERE a=? AND b=?",
+                (lo, hi),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            return None
+        finally:
+            conn.close()
         if row is None:
             return None
         sim, ab, ba, anti, combo, combo_id = row
@@ -184,13 +186,15 @@ class Store:
         combos: list[dict] = []
         if not self.scores_path.exists():
             return {"engines": [], "combos": []}
-        with self._conn() as conn:
-            try:
-                rows = conn.execute(
-                    "SELECT engine_id, members, kind, asserted_combo, candidate FROM engines"
-                ).fetchall()
-            except sqlite3.OperationalError:
-                return {"engines": [], "combos": []}
+        conn = self._conn()
+        try:
+            rows = conn.execute(
+                "SELECT engine_id, members, kind, asserted_combo, candidate FROM engines"
+            ).fetchall()
+        except sqlite3.OperationalError:
+            return {"engines": [], "combos": []}
+        finally:
+            conn.close()
         import json as _json
         for engine_id, members_json, kind, asserted, candidate in rows:
             members = _json.loads(members_json)

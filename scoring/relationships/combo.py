@@ -8,7 +8,6 @@ pieces aren't all present in the corpus are skipped (can't be asserted).
 from __future__ import annotations
 
 import json
-import sys
 import unicodedata
 from pathlib import Path
 

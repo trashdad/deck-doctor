@@ -222,12 +222,13 @@ def build(db_path: str, catalog_paths: list[str] | None = None, kmax: int = 5) -
     # card_relationships; unscored k>=4 chains are noise without non-additive
     # ranking (a documented v1.1 refinement), so they are not stored.
     mined_sorted = sorted(engines, key=lambda e: tuple(sorted(e["members"])))
-    for i, e in enumerate(mined_sorted):
+    stored_idx = 0
+    for e in mined_sorted:
         members = sorted(e["members"])
         if not (e["candidate"] or len(members) == 3):
             continue
         eng_rows.append((
-            f"eng-{i}",
+            f"eng-{stored_idx}",
             json.dumps(members),
             e["kind"],
             json.dumps([]),
@@ -235,6 +236,7 @@ def build(db_path: str, catalog_paths: list[str] | None = None, kmax: int = 5) -
             1 if frozenset(members) in asserted_member_sets else 0,
             1 if e["candidate"] else 0,
         ))
+        stored_idx += 1
 
     con.executemany("INSERT OR REPLACE INTO engines VALUES (?,?,?,?,?,?,?)", eng_rows)
     con.commit()

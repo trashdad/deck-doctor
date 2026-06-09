@@ -34,8 +34,13 @@ def _squash(raw: float, k: float = SYNERGY_K) -> float:
 
 
 def _directional_raw(prod: set, cons: set) -> float:
-    """Count produced resources that satisfy a consumed resource."""
-    return float(sum(1 for p in prod for c in cons if resource_match(p, c)))
+    """Count consumed resources that are satisfied by at least one produced one.
+
+    Counting per consumed resource (not per produced×consumed match) avoids
+    double-counting: a counter producer adds both "counter:+1/+1" and the generic
+    "counter", which would otherwise score a single generic-counter consumer twice.
+    """
+    return float(sum(1 for c in cons if any(resource_match(p, c) for p in prod)))
 
 
 def synergy(res_a: dict, res_b: dict) -> tuple[float, float]:

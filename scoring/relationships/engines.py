@@ -114,15 +114,16 @@ def mine_engines(
         while frontier and grown < max_per_seed:
             members = frontier.pop()
             key = frozenset(members)
-            if key not in seen:
-                seen.add(key)
-                cycle = has_cycle(members, resources)
-                engines.append({
-                    "members": sorted(members),
-                    "kind": "cycle" if cycle else "chain",
-                    "candidate": cycle,
-                })
-                grown += 1
+            if key in seen:
+                continue   # already processed; don't re-expand duplicates
+            seen.add(key)
+            cycle = has_cycle(members, resources)
+            engines.append({
+                "members": sorted(members),
+                "kind": "cycle" if cycle else "chain",
+                "candidate": cycle,
+            })
+            grown += 1
             if len(members) >= kmax:
                 continue
             # Gather neighbor candidates from adjacency (not all resources)

@@ -67,7 +67,7 @@ def test_golden_relationships():
     assert not failures, "\n".join(failures)
 
 
-def test_catalog_recall_sanity():
+def test_catalog_combos_ingested():
     """Asserted catalog combos are ingested and their pairs are combo-flagged."""
     if not DB.is_file():
         import pytest
@@ -78,3 +78,25 @@ def test_catalog_recall_sanity():
     con.close()
     assert n_asserted >= 50, f"expected >=50 asserted combos, got {n_asserted}"
     assert n_combo_pairs >= 50, f"expected >=50 combo-flagged pairs, got {n_combo_pairs}"
+
+
+def test_miner_finds_real_resource_engine():
+    """The structural miner produces real multi-card resource engines: a chain
+    engine containing Blood Artist (an aristocrats death-payoff) must exist.
+    (The miner finds resource engines/cycles; it is NOT expected to rediscover
+    Commander-Spellbook combos, which are interaction-based, not resource-flow —
+    those come from the catalog.)"""
+    if not DB.is_file():
+        import pytest
+        pytest.skip("no built DB")
+    con = sqlite3.connect(DB)
+    ba = con.execute("SELECT id FROM cards WHERE name='Blood Artist'").fetchone()
+    if ba is None:
+        con.close()
+        import pytest
+        pytest.skip("Blood Artist not in corpus")
+    ba_id = ba[0]
+    n = sum(1 for (m,) in con.execute("SELECT members FROM engines WHERE kind='chain'")
+            if ba_id in json.loads(m))
+    con.close()
+    assert n >= 1, "miner found no resource engine containing Blood Artist"
