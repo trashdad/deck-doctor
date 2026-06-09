@@ -20,3 +20,27 @@ def test_partial_overlap_between_zero_and_one():
     b = {"verb:AddMana": 1, "kind:spell": 1}
     s = similarity(a, b)
     assert 0.0 < s < 1.0
+
+
+from relationships.measures import synergy  # noqa: E402
+
+
+def test_synergy_directional_producer_to_consumer():
+    a = {"produces": {"token"}, "consumes": set()}
+    b = {"produces": set(), "consumes": {"token"}}
+    ab, ba = synergy(a, b)
+    assert ab > 0.0      # A makes tokens, B pays off tokens
+    assert ba == 0.0     # B gives A nothing
+
+
+def test_synergy_counter_generic_match():
+    a = {"produces": {"counter:+1/+1"}, "consumes": set()}
+    b = {"produces": set(), "consumes": {"counter"}}
+    ab, ba = synergy(a, b)
+    assert ab > 0.0
+
+
+def test_synergy_none_when_no_resource_overlap():
+    a = {"produces": {"mana"}, "consumes": set()}
+    b = {"produces": set(), "consumes": {"token"}}
+    assert synergy(a, b) == (0.0, 0.0)
