@@ -1,37 +1,64 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import type { DeckCard } from "@/store/deck";
 import type { Zone } from "@/lib/zones";
 import { CardTile } from "./CardTile";
+import { CardMenu } from "./CardMenu";
 
-function DraggableCard({ dc, onRemove }: { dc: DeckCard; onRemove: () => void }) {
+function DraggableCard({
+  dc,
+  onRemove,
+}: {
+  dc: DeckCard;
+  onRemove: () => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({ id: dc.card.id });
+
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+
   const style = transform
     ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: 50 }
     : undefined;
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMenu({ x: e.clientX, y: e.clientY });
+  }, []);
+
   return (
-    <div
-      ref={setNodeRef}
-      style={{ ...style, opacity: isDragging ? 0.4 : 1 }}
-      className="group relative"
-      {...listeners}
-      {...attributes}
-    >
-      <CardTile card={dc.card} compact />
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove();
-        }}
-        className="absolute -right-1 -top-1 hidden h-5 w-5 rounded-full bg-red-600 text-xs
-                   leading-5 text-white group-hover:block"
-        aria-label="remove"
+    <>
+      <div
+        ref={setNodeRef}
+        style={{ ...style, opacity: isDragging ? 0.4 : 1 }}
+        className="group relative"
+        {...listeners}
+        {...attributes}
+        onClick={handleClick}
       >
-        ×
-      </button>
-    </div>
+        <CardTile card={dc.card} compact />
+        {/* Quick-remove on hover — also available via the click menu */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          className="absolute -right-1 -top-1 hidden h-5 w-5 items-center justify-center
+                     rounded-full bg-red-600 text-xs text-white group-hover:flex"
+          aria-label="remove"
+        >
+          ×
+        </button>
+      </div>
+
+      {menu && (
+        <CardMenu
+          card={dc.card}
+          anchor={menu}
+          onRemove={onRemove}
+          onClose={() => setMenu(null)}
+        />
+      )}
+    </>
   );
 }
 

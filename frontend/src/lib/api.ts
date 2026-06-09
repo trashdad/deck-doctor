@@ -33,6 +33,47 @@ export function searchCards(params: {
   return get<Card[]>(`/cards?${qs.toString()}`);
 }
 
+export function getCommanders(): Promise<Card[]> {
+  return get<Card[]>("/cards/commanders");
+}
+
+export function searchByOracleText(
+  pattern: string,
+  limit = 50,
+): Promise<Card[]> {
+  const qs = new URLSearchParams({ pattern, limit: String(limit) });
+  return get<Card[]>(`/cards/oracle?${qs.toString()}`);
+}
+
+export interface CardSemantics {
+  flat_tags: string[];
+  ability_tags: string[][];
+}
+
+export function getCardSemantics(cardId: string): Promise<CardSemantics> {
+  return get<CardSemantics>(`/cards/${cardId}/semantics`);
+}
+
+export function searchBySemantics(params: {
+  linkedTags?: string[];
+  flatTags?: string[];
+  limit?: number;
+}): Promise<Card[]> {
+  const qs = new URLSearchParams();
+  if (params.linkedTags?.length) qs.set("linked_tags", params.linkedTags.join(","));
+  if (params.flatTags?.length) qs.set("flat_tags", params.flatTags.join(","));
+  if (params.limit != null) qs.set("limit", String(params.limit));
+  return get<Card[]>(`/cards/by-semantics?${qs.toString()}`);
+}
+
+export function getSimilarCards(cardId: string, limit = 20): Promise<Card[]> {
+  return get<Card[]>(`/cards/${cardId}/similar?limit=${limit}`);
+}
+
+export function getComboCards(cardId: string, limit = 20): Promise<Card[]> {
+  return get<Card[]>(`/cards/${cardId}/combos?limit=${limit}`);
+}
+
 export function analyzeDeck(
   cards: DeckEntry[],
   commander_id: string | null,

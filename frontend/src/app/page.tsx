@@ -6,6 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { SearchPanel } from "@/components/SearchPanel";
 import { ZoneColumn } from "@/components/ZoneColumn";
 import { StatsSidebar } from "@/components/StatsSidebar";
+import { OraclePhrasePanel } from "@/components/OraclePhrasePanel";
+import { SemanticFinder } from "@/components/SemanticFinder";
+import { CardLookupPanel } from "@/components/CardLookupPanel";
 import { useDeck } from "@/store/deck";
 import { ZONES, type Zone } from "@/lib/zones";
 import { analyzeDeck } from "@/lib/api";
@@ -41,6 +44,9 @@ export default function Page() {
 
   return (
     <div className="flex h-screen flex-col">
+      <OraclePhrasePanel />
+      <SemanticFinder />
+      <CardLookupPanel />
       <header className="flex items-center justify-between border-b border-edge bg-panel px-5 py-3">
         <div className="flex items-baseline gap-3">
           <h1 className="font-display text-xl tracking-wide text-accent">Simmander</h1>

@@ -11,13 +11,17 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
-CARDS_PATH = Path(os.environ.get("SIMMANDER_CARDS", _REPO_ROOT / "data" / "sample_cards.json"))
+CARDS_PATH = Path(os.environ.get("SIMMANDER_CARDS", _REPO_ROOT / "data" / "cards.json"))
 SCORES_PATH = Path(os.environ.get("SIMMANDER_SCORES", _REPO_ROOT / "data" / "scores.sqlite"))
 
 # CORS origins for the React dev server / deployed frontend.
 CORS_ORIGINS = os.environ.get(
     "SIMMANDER_CORS_ORIGINS",
-    "http://localhost:3000,http://localhost:5173",
+    "http://localhost:3000,http://localhost:3001,http://localhost:5173",
 ).split(",")

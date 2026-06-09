@@ -12,14 +12,13 @@ export function CardTile({
   compact?: boolean;
 }) {
   const art = card.image_uris?.normal;
+
   return (
     <div
       className="mtg-card cursor-pointer select-none"
       title={`${card.name}${card.ier != null ? ` · IER ${card.ier}` : ""}`}
       onClick={onClick}
     >
-      {/* Art loads from Scryfall in dev; the fallback frame renders the card
-          text so the layout still reads on a broken/offline image link. */}
       {art ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img

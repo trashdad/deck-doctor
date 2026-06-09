@@ -23,7 +23,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import itertools
 import json
 import logging
 import sqlite3
@@ -77,15 +76,51 @@ def load_cards(path: Path) -> list[dict]:
     return cards
 
 
-def _candidate_neighbours(cards: list[dict]) -> list[tuple[int, int]]:
-    """Return index pairs to score.
+def _candidate_neighbours(
+    cards: list[dict],
+    tags: list,
+    max_per_card: int = 300,
+) -> list[tuple[int, int]]:
+    """Return index pairs to score via tag-bucketed inverted index.
 
-    Sample/dev path: full pairwise (fine for thousands of cards). At 32k cards
-    swap this for a FAISS top-K ANN query over card embeddings so we only score
-    semantically-near candidates — same return contract.
+    Only returns pairs that share at least one mechanic tag (or are in a
+    complementary producer/payoff relationship), keeping pairs per card capped
+    at max_per_card to bound runtime on large corpora.
     """
-    n = len(cards)
-    return list(itertools.combinations(range(n), 2))
+    from collections import defaultdict
+    from simmander_scoring.mechanics import COMPLEMENTARY_PAIRS
+
+    # inverted index: tag -> sorted list of card indices
+    by_tag: dict[str, list[int]] = defaultdict(list)
+    for i, t in enumerate(tags):
+        for tag in t.mechanic_tags | {f"parasitic:{p}" for p in t.parasitic}:
+            by_tag[tag].append(i)
+
+    # also add complementary cross-pairs (producer -> payoff)
+    comp_index: dict[str, list[int]] = defaultdict(list)
+    for producer, payoff in COMPLEMENTARY_PAIRS:
+        comp_index[producer].extend(by_tag.get(payoff, []))
+        comp_index[payoff].extend(by_tag.get(producer, []))
+
+    seen: set[tuple[int, int]] = set()
+    pairs: list[tuple[int, int]] = []
+
+    for i, t in enumerate(tags):
+        candidates: set[int] = set()
+        for tag in t.mechanic_tags | {f"parasitic:{p}" for p in t.parasitic}:
+            candidates.update(by_tag.get(tag, []))
+            candidates.update(comp_index.get(tag, []))
+        candidates.discard(i)
+
+        # cap so common tags (removal, ramp) don't explode
+        capped = sorted(candidates)[:max_per_card]
+        for j in capped:
+            key = (min(i, j), max(i, j))
+            if key not in seen:
+                seen.add(key)
+                pairs.append(key)
+
+    return pairs
 
 
 def build(cards: list[dict], out: Path, top_k: int) -> None:
@@ -148,7 +183,7 @@ def build(cards: list[dict], out: Path, top_k: int) -> None:
     conn.commit()
 
     # Pass 2: pairwise CSS/DER, keep top-K per card + all Lift pairs.
-    pairs = _candidate_neighbours(cards)
+    pairs = _candidate_neighbours(cards, tags)
     log.info("Scoring %d candidate pairs", len(pairs))
     # bucket[card_index] = list of (der, other_index, css, lift)
     buckets: dict[int, list[tuple[float, int, float, bool]]] = {i: [] for i in range(len(cards))}
