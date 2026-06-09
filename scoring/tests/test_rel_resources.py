@@ -29,6 +29,16 @@ def test_dies_trigger_consumes_death_event():
     assert "death_event" in res["consumes"]
 
 
+def test_or_wrapped_dies_trigger_consumes_death_event():
+    # "~ or another creature dies" -> trigger op "Or" wrapping nested _Trigger nodes
+    rec = AbilityRecord(ability_idx=0, kind="triggered",
+                        trigger={"op": "Or", "raw": [
+                            {"_Trigger": "WhenACreatureOrPlaneswalkerDies"},
+                            {"_Trigger": "WhenACreatureOrPlaneswalkerDies"}]},
+                        effects=[Effect(verb="LoseLife")])
+    assert "death_event" in card_resources([rec])["consumes"]
+
+
 def test_sac_outlet_produces_death_and_consumes_fodder():
     rec = AbilityRecord(ability_idx=0, kind="activated",
                         cost={"sacrifice": True},

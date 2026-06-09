@@ -80,6 +80,30 @@ def _counter_label(slug: str) -> str:
     return {"plus1": "+1/+1", "minus1": "-1/-1"}.get(slug, slug)
 
 
+def _trigger_ops(trigger: dict) -> set[str]:
+    """All trigger operator strings: the top-level op plus any nested `_Trigger`
+    ops inside its raw args. Combiner triggers like "Or" (e.g. "~ or another
+    creature dies") wrap the real triggers in raw, so we must look inside."""
+    ops: set[str] = set()
+    op = trigger.get("op")
+    if op:
+        ops.add(op)
+
+    def walk(node) -> None:
+        if isinstance(node, dict):
+            t = node.get("_Trigger")
+            if isinstance(t, str):
+                ops.add(t)
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+
+    walk(trigger.get("raw"))
+    return ops
+
+
 def card_resources(records: list[AbilityRecord]) -> dict:
     """Return {'produces': set[str], 'consumes': set[str]} for a card."""
     produces: set[str] = set()
@@ -87,9 +111,10 @@ def card_resources(records: list[AbilityRecord]) -> dict:
     for rec in records:
         _effect_products(rec.effects, produces)
         if rec.trigger:
-            r = TRIGGER_CONSUMER.get(rec.trigger.get("op", ""))
-            if r:
-                consumes.add(r)
+            for op in _trigger_ops(rec.trigger):
+                r = TRIGGER_CONSUMER.get(op)
+                if r:
+                    consumes.add(r)
         if rec.cost:
             if rec.cost.get("tap"):
                 consumes.add("untap")

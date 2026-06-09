@@ -26,36 +26,42 @@ def _seed_db(db, cards, fingerprints):
     con.commit(); con.close()
 
 
+def _eff(verb):
+    return {"verb": verb, "object": None, "prefixes": [], "scope": None,
+            "quantifier": None, "targeted": False, "counter": None, "amount": None,
+            "duration": None, "grants": None, "optional": False, "sub_effects": []}
+
+
 def test_build_writes_relationship_and_engine_tables(tmp_path):
+    # A 3-card aristocrats chain: maker (tokens=fodder) -> outlet (sac -> death)
+    # -> aristocrat (dies-trigger). Validates both the typed pair edges and the
+    # k>=3 engine persistence (k<=2 chains live only in card_relationships).
     db = str(tmp_path / "scores.sqlite")
-    cards = [("id-maker", "Maker"), ("id-payoff", "Payoff")]
+    cards = [("id-maker", "Maker"), ("id-outlet", "Outlet"), ("id-aristocrat", "Aristocrat")]
     fps = {
         "id-maker": [{"ability_idx": 0, "kind": "spell", "trigger": None, "cost": None,
                       "condition": None, "optional": False, "modal": None,
-                      "effects": [{"verb": "CreateTokens", "object": None, "prefixes": [],
-                                   "scope": None, "quantifier": None, "targeted": False,
-                                   "counter": None, "amount": None, "duration": None,
-                                   "grants": None, "optional": False, "sub_effects": []}],
-                      "raw": {}}],
-        "id-payoff": [{"ability_idx": 0, "kind": "triggered",
-                       "trigger": {"op": "WhenATokenIsCreated"}, "cost": None,
-                       "condition": None, "optional": False, "modal": None,
-                       "effects": [], "raw": {}}],
+                      "effects": [_eff("CreateTokens")], "raw": {}}],
+        "id-outlet": [{"ability_idx": 0, "kind": "activated", "trigger": None,
+                       "cost": {"sacrifice": True}, "condition": None, "optional": False,
+                       "modal": None, "effects": [_eff("DrawACard")], "raw": {}}],
+        "id-aristocrat": [{"ability_idx": 0, "kind": "triggered",
+                           "trigger": {"op": "WhenACreatureOrPlaneswalkerDies"}, "cost": None,
+                           "condition": None, "optional": False, "modal": None,
+                           "effects": [_eff("LoseLife")], "raw": {}}],
     }
     _seed_db(db, cards, fps)
 
     stats = build(db, catalog_paths=[], kmax=3)
 
     con = sqlite3.connect(db)
-    row = con.execute("SELECT synergy_ab, synergy_ba, similarity FROM card_relationships "
-                      "WHERE a=? AND b=?", tuple(sorted(["id-maker", "id-payoff"]))).fetchone()
-    assert row is not None
-    a, b = sorted(["id-maker", "id-payoff"])
-    # maker produces token, payoff consumes token -> directed synergy from maker
+    # maker produces sacrifice_fodder, outlet consumes it -> directed synergy edge
+    a, b = sorted(["id-maker", "id-outlet"])
     syn = con.execute("SELECT synergy_ab, synergy_ba FROM card_relationships WHERE a=? AND b=?",
                       (a, b)).fetchone()
-    assert max(syn) > 0.0
-    n_eng = con.execute("SELECT COUNT(*) FROM engines").fetchone()[0]
+    assert syn is not None and max(syn) > 0.0
+    # the 3-card chain is stored as an engine (k>=3)
+    n_eng = con.execute("SELECT COUNT(*) FROM engines WHERE kind='chain'").fetchone()[0]
     assert n_eng >= 1
     con.close()
     assert stats["pairs"] >= 1

@@ -44,8 +44,13 @@ from relationships.engines import mine_engines         # noqa: E402
 from relationships.combo import load_catalog_combos    # noqa: E402
 
 _TOP_K = 30          # max synergy-ranked pairs retained per card
-_MAX_SEEDS = 3000    # engine-mining seed cap
-_MAX_PER_SEED = 20   # engine-mining frontier cap per seed
+# Seed cap for engine mining. The 20000th pair has synergy ~0.55 (a single
+# resource-match, e.g. an aristocrat consuming death_event), so 20000 covers the
+# major archetypes (aristocrats, untappers, spellslinger) in the global engine
+# catalog rather than only the highest-synergy counter cards. Deck-scoped mining
+# is unbounded over a deck regardless.
+_MAX_SEEDS = 20000   # engine-mining seed cap
+_MAX_PER_SEED = 10   # engine-mining frontier cap per seed
 
 
 def _load_fingerprints(con) -> dict:
@@ -211,10 +216,16 @@ def build(db_path: str, catalog_paths: list[str] | None = None, kmax: int = 5) -
             0,
         ))
 
-    # Mined engines — sorted by member tuple for determinism
+    # Mined engines — sorted by member tuple for determinism.
+    # Persist only the meaningful subset: cycle candidates (potential combos, any
+    # size) and tight 3-card chains. k<=2 chains are already the synergy edges in
+    # card_relationships; unscored k>=4 chains are noise without non-additive
+    # ranking (a documented v1.1 refinement), so they are not stored.
     mined_sorted = sorted(engines, key=lambda e: tuple(sorted(e["members"])))
     for i, e in enumerate(mined_sorted):
         members = sorted(e["members"])
+        if not (e["candidate"] or len(members) == 3):
+            continue
         eng_rows.append((
             f"eng-{i}",
             json.dumps(members),
