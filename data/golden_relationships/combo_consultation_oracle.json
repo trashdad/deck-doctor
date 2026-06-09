@@ -1,0 +1,8 @@
+{
+ "a": "Thassa's Oracle",
+ "b": "Demonic Consultation",
+ "expect": {
+  "combo": true
+ },
+ "note": "asserted Commander-Spellbook combo (win the game)"
+}

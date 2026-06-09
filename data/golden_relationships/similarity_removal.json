@@ -1,0 +1,9 @@
+{
+ "a": "Lightning Bolt",
+ "b": "Doom Blade",
+ "expect": {
+  "similarity_min": 0.4,
+  "synergy_max": 0.1
+ },
+ "note": "two removal spells: similar role, no resource synergy"
+}

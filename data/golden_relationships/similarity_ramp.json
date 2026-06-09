@@ -1,0 +1,9 @@
+{
+ "a": "Sol Ring",
+ "b": "Arcane Signet",
+ "expect": {
+  "similarity_min": 0.9,
+  "synergy_max": 0.1
+ },
+ "note": "two mana rocks: redundant (high similarity), not synergistic"
+}

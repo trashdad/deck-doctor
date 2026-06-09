@@ -1,0 +1,8 @@
+{
+ "a": "Krenko, Mob Boss",
+ "b": "Viscera Seer",
+ "expect": {
+  "synergy_min": 0.4
+ },
+ "note": "token maker (tokens=fodder) -> sac outlet (consumes fodder)"
+}

@@ -1,0 +1,8 @@
+{
+ "a": "Viscera Seer",
+ "b": "Blood Artist",
+ "expect": {
+  "synergy_min": 0.4
+ },
+ "note": "sac outlet (produces death_event) -> Blood Artist (consumes death_event)"
+}
