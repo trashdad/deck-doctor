@@ -37,6 +37,7 @@ class PairScore(BaseModel):
     css: float
     der: float
     lift: bool
+    relationship: dict | None = None
 
 
 class SynergyEdge(BaseModel):
