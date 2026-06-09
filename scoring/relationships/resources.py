@@ -64,6 +64,10 @@ def _effect_products(effects, out: set) -> None:
     for e in effects:
         if e.verb in PRODUCER_VERB:
             out.add(PRODUCER_VERB[e.verb])
+            # Tokens are also sacrifice fodder — links go-wide makers into the
+            # aristocrats engine (token maker -> sac outlet -> death payoff).
+            if PRODUCER_VERB[e.verb] == "token":
+                out.add("sacrifice_fodder")
         if e.verb in DEATH_VERBS:
             out.add("death_event")
         if e.counter:

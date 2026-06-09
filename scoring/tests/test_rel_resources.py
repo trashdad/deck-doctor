@@ -14,6 +14,13 @@ def test_token_producer_produces_token():
     assert "token" in res["produces"]
 
 
+def test_token_producer_also_provides_sacrifice_fodder():
+    # tokens are fodder -> go-wide makers feed sac outlets (aristocrats engine)
+    rec = AbilityRecord(ability_idx=0, kind="spell",
+                        effects=[Effect(verb="CreateTokens")])
+    assert "sacrifice_fodder" in card_resources([rec])["produces"]
+
+
 def test_dies_trigger_consumes_death_event():
     rec = AbilityRecord(ability_idx=0, kind="triggered",
                         trigger={"op": "WhenACreatureOrPlaneswalkerDies"},
