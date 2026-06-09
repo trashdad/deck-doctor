@@ -43,3 +43,23 @@ def synergy(res_a: dict, res_b: dict) -> tuple[float, float]:
     ab = _squash(_directional_raw(res_a["produces"], res_b["consumes"]))
     ba = _squash(_directional_raw(res_b["produces"], res_a["consumes"]))
     return ab, ba
+
+
+# Conservative anti-pattern rules over SP2 flat tags: (tagset_x, tagset_y, weight).
+# Fires when card_x has all of tagset_x AND card_y has all of tagset_y (either order).
+# Intentionally small in v1; the strong anti-synergy signal is SP3 negative co-occurrence.
+ANTI_RULES: list[tuple[set, set, float]] = [
+    ({"e:draw"}, {"cond:hellbent"}, 1.0),     # refills hand vs rewards-empty-hand
+]
+
+
+def anti_synergy(tags_a: set, tags_b: set) -> float:
+    """Conservative rule-based anti-synergy in [0, 1]. Order-independent."""
+    ta, tb = set(tags_a), set(tags_b)
+    raw = 0.0
+    for left, right, w in ANTI_RULES:
+        if left <= ta and right <= tb:
+            raw += w
+        if left <= tb and right <= ta:
+            raw += w
+    return _squash(raw)
