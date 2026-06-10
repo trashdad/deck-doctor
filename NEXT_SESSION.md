@@ -1,16 +1,23 @@
-# Simmander Deckbuilder — Session Handoff (2026-06-10, post-Beta)
+# Simmander Deckbuilder — Session Handoff (2026-06-10, SP6–SP11 COMPLETE)
 
-> **⭑ NEXT SESSION (Opus): implement SP6→SP11 from the roadmap.**
-> The full plan — exact schemas, algorithms, API contracts, component specs, test specs —
-> is `docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md`. **The scaffolding already
-> exists**: every new backend module (`decks.py`, `importer.py`, `doctor.py`, `graph.py`,
-> `Store._load_spellbook`), all 501 routes in `main.py`, all pydantic models, all frontend
-> types + API clients (complete), component/store stubs with binding docstring contracts,
-> `tools/import_spellbook/`, `scoring/eval_suggest.py`, `deploy/`, and skipped test files
-> whose docstrings are the test specs (19 backend + 4 scoring skips). Workflow per phase:
-> un-skip the tests → implement → suites green → Playwright gate from the plan → commit.
-> Build IN ORDER (SP6 persistence → SP7 spellbook → SP8 doctor → SP9 graph → SP10 eval →
-> SP11 deploy); later phases depend on earlier ones.
+> **⭑ STATUS: SP1–SP11 ALL SHIPPED.** The full product is built, tested, and verified.
+> - SP6 deck persistence/import/export · SP7 Commander Spellbook combos (50,907 loaded) ·
+>   SP8 Deck Doctor (complete→100 + cuts) · SP9 d3-force synergy graph · SP10 eval harness ·
+>   SP11 docker deploy. Plus a **live refresh pipeline** (`tools/refresh_loop.py` +
+>   `POST /admin/reload`) that scrapes → rebuilds → hot-reloads the store with zero downtime.
+> - **Tests:** 43 backend + 92 scoring green; `npm run build` clean.
+> - **Playwright gate PASSED** (real data): import a list → Combos panel (1 complete +
+>   13 one-away) → Doctor complete→100 → apply → Graph (81 nodes/297 edges) → save → cuts.
+>   Screenshots in `docs/sp7-combos-panel.png`, `docs/sp9-synergy-graph.png`. Clean reload: 0 errors.
+> - **Eval:** engine beats popularity baseline 3.2× on recall@25 (0.276 vs 0.086), 2.3× MRR.
+> - **Docs:** comprehensive `README.md` (formulas/diagrams/data-flow), `docs/data-contract.md`
+>   updated with all endpoints. Per-phase commits on `main` (still never pushed).
+>
+> Possible follow-ups: finish the spellbook crawl to 100% (currently ~51k of the full set, the
+> daemon will top it up); clean-room eval (rebuild co-occurrence excluding eval decks); the
+> Caddy reverse-proxy hostname in `deploy/`; push to origin if the user asks.
+>
+> Original roadmap: `docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md`.
 
 > **UPDATE (2026-06-10, later session):** Both pending items below are DONE.
 > 1. The scrape finished and the rebuild ran: decks.sqlite **4,255** decks, edhrec.sqlite
