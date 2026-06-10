@@ -1,0 +1,8 @@
+# SP11 SCAFFOLD — implement per roadmap §SP11.
+# Multi-stage: node:20-alpine build stage (npm ci && npm run build) with
+# `output: "standalone"` added to next.config.mjs, whose /api rewrite destination must
+# become `${process.env.BACKEND_ORIGIN ?? "http://localhost:8001"}/:path*`.
+# Runtime stage copies .next/standalone + .next/static + public;
+# ENV BACKEND_ORIGIN=http://backend:8001 (set by compose); CMD ["node", "server.js"].
+FROM node:20-alpine AS build
+# TODO(SP11): see above.

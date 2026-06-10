@@ -13,10 +13,18 @@ from typing import Literal
 
 from . import config
 from .analysis import analyze
-from .models import (Card, DeckAnalysis, DeckRequest, EngineGroup, PairScore,
-                     RelationshipNeighbor, SuggestionResponse)
+from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCombos,
+                     DeckDetail, DeckRequest, DeckSave, DeckSummary, EngineGroup,
+                     GraphResponse, ImportRequest, ImportResult, PairScore,
+                     RelationshipNeighbor, SpellbookCombo, SuggestionResponse)
 from .store import get_store
 from .suggest import is_commander, recommend
+
+_ROADMAP = "docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md"
+
+
+def _not_implemented(phase: str, section: str) -> HTTPException:
+    return HTTPException(501, f"{phase} not implemented — see {_ROADMAP} {section}")
 
 app = FastAPI(title="Simmander Deckbuilder API", version="0.1.0")
 app.add_middleware(
@@ -194,6 +202,88 @@ def card_relationships(
         if card:
             out.append({"card": card, "metric": round(metric, 4)})
     return out
+
+
+# ---- SP6: deck persistence (scaffold — roadmap §6.2) -----------------------
+# NOTE: /decks/import is declared before /decks/{deck_id} so "import" never
+# binds as a deck_id (FastAPI matches in declaration order).
+
+@app.get("/decks", response_model=list[DeckSummary])
+def decks_list() -> list[dict]:
+    """All saved decks, most recently updated first."""
+    raise _not_implemented("SP6", "§6.2")
+
+
+@app.post("/decks", response_model=DeckDetail, status_code=201)
+def decks_create(req: DeckSave) -> dict:
+    """Create a deck; cards are DeckEntry rows (id, zone, quantity)."""
+    raise _not_implemented("SP6", "§6.2")
+
+
+@app.post("/decks/import", response_model=ImportResult)
+def decks_import(req: ImportRequest) -> dict:
+    """Parse a pasted text decklist (importer.parse_decklist), create the deck,
+    return it with the list of unresolved input lines."""
+    raise _not_implemented("SP6", "§6.3")
+
+
+@app.get("/decks/{deck_id}", response_model=DeckDetail)
+def decks_get(deck_id: str) -> dict:
+    """Deck with cards resolved to Card objects (drop rows whose id no longer resolves)."""
+    raise _not_implemented("SP6", "§6.2")
+
+
+@app.put("/decks/{deck_id}", response_model=DeckDetail)
+def decks_update(deck_id: str, req: DeckSave) -> dict:
+    raise _not_implemented("SP6", "§6.2")
+
+
+@app.delete("/decks/{deck_id}", status_code=204)
+def decks_delete(deck_id: str) -> None:
+    raise _not_implemented("SP6", "§6.2")
+
+
+@app.get("/decks/{deck_id}/export")
+def decks_export(deck_id: str):
+    """text/plain decklist: `// Zone` headers, `Commander: <name>` line, `N Name` rows.
+    MUST round-trip through /decks/import with zero unresolved lines (roadmap §6.4)."""
+    raise _not_implemented("SP6", "§6.4")
+
+
+# ---- SP7: Commander Spellbook (scaffold — roadmap §7.5) --------------------
+
+@app.post("/deck/combos", response_model=DeckCombos)
+def deck_combos(req: DeckRequest) -> dict:
+    """Complete + one-card-away spellbook combos for the deck (commander counts as in-deck)."""
+    raise _not_implemented("SP7", "§7.5")
+
+
+@app.get("/cards/{card_id}/spellbook-combos", response_model=list[SpellbookCombo])
+def card_spellbook_combos(card_id: str, limit: int = Query(20, le=60)) -> list[dict]:
+    """Spellbook combos containing this card, popularity DESC. 404 unknown card."""
+    raise _not_implemented("SP7", "§7.5")
+
+
+# ---- SP8: deck doctor (scaffold — roadmap §8.4) ----------------------------
+
+@app.post("/deck/complete", response_model=CompleteResponse)
+def deck_complete(req: DeckRequest, explain: bool = False) -> dict:
+    """Complete the deck to 100 (doctor.complete_deck); 400 on missing/illegal commander."""
+    raise _not_implemented("SP8", "§8.4")
+
+
+@app.post("/deck/cuts", response_model=CutsResponse)
+def deck_cuts(req: DeckRequest, limit: int = Query(10, le=30)) -> dict:
+    """Lowest-contribution cards (doctor.suggest_cuts); 400 on missing/illegal commander."""
+    raise _not_implemented("SP8", "§8.4")
+
+
+# ---- SP9: synergy graph (scaffold — roadmap §9.1) --------------------------
+
+@app.post("/deck/graph", response_model=GraphResponse)
+def deck_graph_endpoint(req: DeckRequest) -> dict:
+    """Nodes + typed weighted edges among deck cards (graph.deck_graph)."""
+    raise _not_implemented("SP9", "§9.1")
 
 
 @app.get("/cards/{card_id}/combos-engines", response_model=list[EngineGroup])

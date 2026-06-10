@@ -82,6 +82,100 @@ export interface PairScoreFull {
   } | null;
 }
 
+// ---- SP6: deck persistence ----
+export interface DeckSummary {
+  id: string;
+  name: string;
+  commander_id: string | null;
+  card_count: number;
+  updated_at: string;
+}
+
+export interface DeckCardOut {
+  card: Card;
+  zone: string;
+  quantity: number;
+}
+
+export interface DeckDetail {
+  id: string;
+  name: string;
+  commander_id: string | null;
+  created_at: string;
+  updated_at: string;
+  cards: DeckCardOut[];
+}
+
+export interface ImportResult {
+  deck: DeckDetail;
+  unresolved: string[];
+}
+
+// ---- SP7: Commander Spellbook ----
+export interface SpellbookCombo {
+  combo_id: string;
+  identity: string;
+  popularity: number | null;
+  description: string;
+  produces: string[];
+  mana_needed: string;
+  members: Card[];
+}
+
+export interface NearCombo {
+  combo: SpellbookCombo;
+  missing: Card;
+}
+
+export interface DeckCombos {
+  complete: SpellbookCombo[];
+  near: NearCombo[];
+}
+
+// ---- SP8: deck doctor ----
+export interface CompletionAdd {
+  card: Card;
+  zone: string;
+  quantity: number;
+  reason: string;
+}
+
+export interface CompleteResponse {
+  added: CompletionAdd[];
+  final_size: number;
+}
+
+export interface Cut {
+  card: Card;
+  contribution: number;
+  reasons: Reason[];
+}
+
+export interface CutsResponse {
+  cuts: Cut[];
+}
+
+// ---- SP9: synergy graph ----
+export interface GraphNode {
+  id: string;
+  name: string;
+  ier: number | null;
+  category: string;
+  image: string | null;
+}
+
+export interface GraphEdge {
+  a: string;
+  b: string;
+  kind: "combo" | "synergy" | "cooccurrence";
+  weight: number;
+}
+
+export interface GraphResponse {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+
 export interface DeckEntry {
   id: string;
   zone: string;

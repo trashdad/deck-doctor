@@ -1,0 +1,13 @@
+# SP11 SCAFFOLD — implement per roadmap §SP11.
+# services:
+#   backend:  build deploy/Dockerfile.backend (context ..); volumes ../data:/app/data:ro
+#             + named volume userdata:/app/userdata; env SIMMANDER_CARDS=/app/data/cards.json,
+#             SIMMANDER_SCORES=/app/data/scores.sqlite, SIMMANDER_EDHREC=/app/data/edhrec.sqlite,
+#             SIMMANDER_SPELLBOOK=/app/data/spellbook.sqlite,
+#             SIMMANDER_USERDECKS=/app/userdata/userdecks.sqlite
+#   frontend: build deploy/Dockerfile.frontend (context ..); ports 3000:3000;
+#             env BACKEND_ORIGIN=http://backend:8001; depends_on backend
+#   (optional) caddy: reverse proxy with a Caddyfile — leave the simmander.app hostname as a
+#             placeholder comment for the hub operator.
+# volumes: { userdata: {} }
+services: {}

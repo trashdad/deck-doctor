@@ -90,6 +90,111 @@ class DeckRequest(BaseModel):
     cards: list[DeckEntry]
 
 
+# ---- SP6: deck persistence ----
+class DeckSummary(BaseModel):
+    id: str
+    name: str
+    commander_id: str | None = None
+    card_count: int
+    updated_at: str
+
+
+class DeckSave(BaseModel):
+    name: str
+    commander_id: str | None = None
+    cards: list[DeckEntry] = []
+
+
+class DeckCardOut(BaseModel):
+    card: Card
+    zone: str = "Utility"
+    quantity: int = 1
+
+
+class DeckDetail(BaseModel):
+    id: str
+    name: str
+    commander_id: str | None = None
+    created_at: str
+    updated_at: str
+    cards: list[DeckCardOut]
+
+
+class ImportRequest(BaseModel):
+    text: str
+    name: str = "Imported deck"
+
+
+class ImportResult(BaseModel):
+    deck: DeckDetail
+    unresolved: list[str] = []
+
+
+# ---- SP7: Commander Spellbook ----
+class SpellbookCombo(BaseModel):
+    combo_id: str
+    identity: str = ""
+    popularity: int | None = None
+    description: str = ""
+    produces: list[str] = []
+    mana_needed: str = ""
+    members: list[Card]
+
+
+class NearCombo(BaseModel):
+    combo: SpellbookCombo
+    missing: Card
+
+
+class DeckCombos(BaseModel):
+    complete: list[SpellbookCombo]
+    near: list[NearCombo]
+
+
+# ---- SP8: deck doctor ----
+class CompletionAdd(BaseModel):
+    card: Card
+    zone: str
+    quantity: int = 1
+    reason: str = ""
+
+
+class CompleteResponse(BaseModel):
+    added: list[CompletionAdd]
+    final_size: int
+
+
+class Cut(BaseModel):
+    card: Card
+    contribution: float
+    reasons: list[Reason] = []
+
+
+class CutsResponse(BaseModel):
+    cuts: list[Cut]
+
+
+# ---- SP9: synergy graph ----
+class GraphNode(BaseModel):
+    id: str
+    name: str
+    ier: float | None = None
+    category: str
+    image: str | None = None
+
+
+class GraphEdge(BaseModel):
+    a: str
+    b: str
+    kind: str  # "combo" | "synergy" | "cooccurrence"
+    weight: float
+
+
+class GraphResponse(BaseModel):
+    nodes: list[GraphNode]
+    edges: list[GraphEdge]
+
+
 class CurveBucket(BaseModel):
     cmc: int
     count: int

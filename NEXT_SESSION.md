@@ -1,5 +1,17 @@
 # Simmander Deckbuilder — Session Handoff (2026-06-10, post-Beta)
 
+> **⭑ NEXT SESSION (Opus): implement SP6→SP11 from the roadmap.**
+> The full plan — exact schemas, algorithms, API contracts, component specs, test specs —
+> is `docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md`. **The scaffolding already
+> exists**: every new backend module (`decks.py`, `importer.py`, `doctor.py`, `graph.py`,
+> `Store._load_spellbook`), all 501 routes in `main.py`, all pydantic models, all frontend
+> types + API clients (complete), component/store stubs with binding docstring contracts,
+> `tools/import_spellbook/`, `scoring/eval_suggest.py`, `deploy/`, and skipped test files
+> whose docstrings are the test specs (19 backend + 4 scoring skips). Workflow per phase:
+> un-skip the tests → implement → suites green → Playwright gate from the plan → commit.
+> Build IN ORDER (SP6 persistence → SP7 spellbook → SP8 doctor → SP9 graph → SP10 eval →
+> SP11 deploy); later phases depend on earlier ones.
+
 > **UPDATE (2026-06-10, later session):** Both pending items below are DONE.
 > 1. The scrape finished and the rebuild ran: decks.sqlite **4,255** decks, edhrec.sqlite
 >    **355 commanders / 94,970 rows**, card_cooccurrence **97,598** pairs, relationships re-fused.

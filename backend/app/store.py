@@ -81,6 +81,7 @@ class Store:
         self._load_edhrec(config.EDHREC_PATH)
         self._load_engines()
         self._load_staples()
+        self._load_spellbook(config.SPELLBOOK_PATH)
 
     def _load_cards(self, path: Path) -> None:
         if not path.exists():
@@ -318,6 +319,43 @@ class Store:
 
     def edhrec_for(self, commander_id: str) -> dict[str, tuple[float, float]]:
         return self._edhrec.get(commander_id, {})
+
+    # ---- SP7: Commander Spellbook combos (roadmap §7.3) -------------------
+    def _load_spellbook(self, path: Path) -> None:
+        """SCAFFOLD (SP7) — load data/spellbook.sqlite into memory at startup.
+
+        Implement per docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md §7.3:
+        read `combos` + `combo_cards`, resolve every card_name via self._name_to_id,
+        SKIP combos with any unresolvable member (print one summary line), build
+          self._spellbook: list[dict]  # {combo_id, members:[card_id], identity, popularity,
+                                       #  bracket_tag, description, produces:[str], mana_needed}
+          self._spellbook_by_member: dict[str, list[int]]
+        Absent file ⇒ both stay empty (current behavior — keep it).
+        """
+        self._spellbook: list[dict] = []
+        self._spellbook_by_member: dict[str, list[int]] = {}
+        if not path.exists():
+            return
+        # TODO(SP7): real load — see docstring. Keeping the no-op keeps startup green
+        # until tools/import_spellbook has produced the DB and this is implemented.
+        return
+
+    def spellbook_with(self, card_id: str) -> list[dict]:
+        """SCAFFOLD (SP7) — combos containing card_id, popularity DESC (None last).
+
+        Mirror engines_with: list of self._spellbook entries via _spellbook_by_member.
+        Safe default (empty) so suggest.py can call this before SP7 lands.
+        """
+        return [self._spellbook[i] for i in self._spellbook_by_member.get(card_id, ())]
+
+    def deck_spellbook(self, ids: list[str]) -> dict:
+        """SCAFFOLD (SP7) — {"complete": [combo], "near": [{"combo":…, "missing": card_id}]}.
+
+        Implement per roadmap §7.3: union of _spellbook_by_member over ids, dedupe by
+        combo_id, classify by missing-member count (0 ⇒ complete, 1 ⇒ near), sort each by
+        popularity DESC (None last), cap near at 50.
+        """
+        raise NotImplementedError("SP7 pending — roadmap §7.3")
 
     def staples_for_colors(self, color_identity: set[str], limit: int = 50,
                            exclude: set[str] | None = None) -> list[tuple[str, int]]:

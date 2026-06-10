@@ -1,11 +1,19 @@
 import type {
   Card,
-  DeckAnalysis,
+  CompleteResponse,
+  CutsResponse,
+  DeckCombos,
+  DeckDetail,
   DeckEntry,
+  DeckSummary,
+  DeckAnalysis,
   EngineGroup,
+  GraphResponse,
+  ImportResult,
   PairScoreFull,
   RelationshipAxis,
   RelationshipNeighbor,
+  SpellbookCombo,
   SuggestionResponse,
 } from "./types";
 
@@ -122,4 +130,101 @@ export function getPairScore(a: string, b: string): Promise<PairScoreFull> {
   return get<PairScoreFull>(
     `/score/pair?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`,
   );
+}
+
+export function getCard(cardId: string): Promise<Card> {
+  return get<Card>(`/cards/${cardId}`);
+}
+
+// ---- SP6: deck persistence ----
+async function del(path: string): Promise<void> {
+  const res = await fetch(`${BASE}${path}`, { method: "DELETE" });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+}
+
+async function put<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.json() as Promise<T>;
+}
+
+export function listDecks(): Promise<DeckSummary[]> {
+  return get<DeckSummary[]>("/decks");
+}
+
+export function saveDeck(
+  name: string,
+  commander_id: string | null,
+  cards: DeckEntry[],
+): Promise<DeckDetail> {
+  return post<DeckDetail>("/decks", { name, commander_id, cards });
+}
+
+export function updateDeck(
+  deckId: string,
+  name: string,
+  commander_id: string | null,
+  cards: DeckEntry[],
+): Promise<DeckDetail> {
+  return put<DeckDetail>(`/decks/${deckId}`, { name, commander_id, cards });
+}
+
+export function getDeck(deckId: string): Promise<DeckDetail> {
+  return get<DeckDetail>(`/decks/${deckId}`);
+}
+
+export function deleteDeck(deckId: string): Promise<void> {
+  return del(`/decks/${deckId}`);
+}
+
+export function importDeck(text: string, name?: string): Promise<ImportResult> {
+  return post<ImportResult>("/decks/import", { text, name: name ?? "Imported deck" });
+}
+
+/** Direct URL for the text export (use in an <a download> or fetch().text()). */
+export function exportDeckUrl(deckId: string): string {
+  return `${BASE}/decks/${deckId}/export`;
+}
+
+// ---- SP7: Commander Spellbook ----
+export function postDeckCombos(
+  cards: DeckEntry[],
+  commander_id: string | null,
+): Promise<DeckCombos> {
+  return post<DeckCombos>("/deck/combos", { cards, commander_id });
+}
+
+export function getSpellbookCombos(
+  cardId: string,
+  limit = 20,
+): Promise<SpellbookCombo[]> {
+  return get<SpellbookCombo[]>(`/cards/${cardId}/spellbook-combos?limit=${limit}`);
+}
+
+// ---- SP8: deck doctor ----
+export function postDeckComplete(
+  cards: DeckEntry[],
+  commander_id: string,
+): Promise<CompleteResponse> {
+  return post<CompleteResponse>("/deck/complete", { cards, commander_id });
+}
+
+export function postDeckCuts(
+  cards: DeckEntry[],
+  commander_id: string,
+  limit = 10,
+): Promise<CutsResponse> {
+  return post<CutsResponse>(`/deck/cuts?limit=${limit}`, { cards, commander_id });
+}
+
+// ---- SP9: synergy graph ----
+export function postDeckGraph(
+  cards: DeckEntry[],
+  commander_id: string | null,
+): Promise<GraphResponse> {
+  return post<GraphResponse>("/deck/graph", { cards, commander_id });
 }
