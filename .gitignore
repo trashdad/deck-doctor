@@ -34,6 +34,17 @@ data/edhrec.sqlite
 data/edhrec.sqlite-shm
 data/edhrec.sqlite-wal
 
+# All generated SQLite stores + sidecars (regenerable; too large for git — GitHub
+# rejects >100 MB). Catch-all so no built DB is ever committed again.
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
+
+# SP7 Commander Spellbook crawl artifacts (raw corpus + resumable cursor; the
+# spellbook.sqlite above is built from these by tools/import_spellbook/).
+data/spellbook_raw.jsonl
+data/spellbook_state.json
+
 # Env / editor
 .env
 .env.local
