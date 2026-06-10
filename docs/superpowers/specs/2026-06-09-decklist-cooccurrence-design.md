@@ -84,15 +84,29 @@ Rules the scraper must honor: `deck_id` is `source:nativeid` (dedup key); `card_
 sideboard/maybeboard; names are raw card names (id resolution happens here via SP2 `norm_name`);
 unknown cards are dropped at mine time, not by the scraper. Malformed lines are skipped + counted.
 
+**Two corpus databases (the query-ready form).** The JSONL is the durable, append-only,
+parallel-safe raw log. `tools/scrape_decklists/load_corpus.py` folds it — idempotently, any time,
+even mid-scrape — into **two SQLite databases** that the mining package reads:
+
+- `data/decks.sqlite`: `decks(deck_id PK, source, commander)` +
+  `deck_cards(deck_id, card_name, PRIMARY KEY(deck_id, card_name))` (normalized card *presence*,
+  the natural shape for SQL pair-counting).
+- `data/edhrec.sqlite`: `edhrec_metrics(commander, card_name, synergy, inclusion,
+  PRIMARY KEY(commander, card_name))`.
+
+Both are gitignored (rebuilt from the corpus). The loader computes nothing — it transcribes raw
+records and de-duplicates by primary key. Decks vs EDHREC aggregates live in **separate** DBs
+because they are different statistics consumed by different mining stages.
+
 ---
 
 ## 4. Mining (deterministic) — `scoring/cooccurrence/`
 
 | File | Responsibility |
 |---|---|
-| `corpus.py` | Stream `*.jsonl`, validate, split deck vs edhrec records, normalize names→ids (SP2 `norm_name`), dedup decks by `deck_id`. |
-| `mine.py` | From deck records: `df(card)` deck-frequency, `df(a,b)` co-deck count over **support-gated** candidate pairs; **lift** = `P(a,b)/(P(a)·P(b))`, **jaccard** = `df(a,b)/(df(a)+df(b)−df(a,b))`. |
-| `edhrec.py` | From edhrec records: directional `edhrec_synergy_ab` where `a` is the commander and `b` a listed card (EDHREC's own synergy score). Naturally maps to SP1's directional `synergy_ab`. |
+| `corpus.py` | Read `data/decks.sqlite` (decks + deck_cards) and `data/edhrec.sqlite`, normalize names→ids (SP2 `norm_name`); decks are already deduped by PK. (A `*.jsonl` fallback path stays for the sample fixture / DB-less test runs.) |
+| `mine.py` | From `deck_cards`: `df(card)` deck-frequency, `df(a,b)` co-deck count over **support-gated** candidate pairs; **lift** = `P(a,b)/(P(a)·P(b))`, **jaccard** = `df(a,b)/(df(a)+df(b)−df(a,b))`. |
+| `edhrec.py` | From `edhrec_metrics`: directional `edhrec_synergy_ab` where `a` is the commander and `b` a listed card (EDHREC's own synergy score). Naturally maps to SP1's directional `synergy_ab`. |
 | `fuse.py` | `fuse(structural, signals) → final` (§5). The seam SP1 only documented. |
 | `build_cooccurrence.py` | Orchestrator → writes `card_cooccurrence`, then **re-routes** `card_relationships.synergy_ab/ba` through `fuse()`. |
 
@@ -157,12 +171,17 @@ gateway later):
   (EDHREC / Archidekt / Moxfield), the §3 corpus contract, rate-limit + ToS rules
   (EDHREC ≥2s/req, cache; respect robots/ToS), dedup by `deck_id`, append-only output, and a
   "compute nothing" rule.
-- `tools/scrape_decklists/runner.py` — a thin, resumable harness the delegated LLM drives:
-  fetch → parse to corpus records → append to `data/decklists/<source>-<batch>.jsonl`. Stateless
-  across runs except the corpus itself + a `seen_deck_ids` file.
+- `tools/scrape_decklists/runner.py` — a resumable harness: a `seeds` breadth-driver that
+  BFS-expands from top/similar EDHREC commanders and pulls real source-attributed decklists via
+  EDHREC deckpreview (plus direct Archidekt/Moxfield/EDHREC fetchers). Fetches run on a worker
+  pool with **per-host rate limiting** (json.edhrec.com 0.3s · edhrec.com 0.5s · archidekt 0.7s ·
+  moxfield 1.2s) — polite but ~4× faster than a single global throttle. Stateless across runs
+  except the corpus + `.seen_deck_ids`.
+- `tools/scrape_decklists/load_corpus.py` — idempotent JSONL → `decks.sqlite` + `edhrec.sqlite`.
 
 This repo's tests **do not** run the scraper. A small committed **sample corpus**
-(`data/decklists/sample.jsonl`, a dozen hand-built decks) drives mining tests deterministically.
+(`data/decklists/sample.jsonl`, a dozen hand-built decks) drives mining tests deterministically;
+`corpus.py` accepts either the sample JSONL or the built DBs.
 
 ---
 
@@ -184,7 +203,8 @@ This repo's tests **do not** run the scraper. A small committed **sample corpus*
 ## 9. Repo changes & non-goals
 
 **New:** `scoring/cooccurrence/{corpus,mine,edhrec,fuse,build_cooccurrence}.py`,
-`tools/scrape_decklists/{PROMPT.md,runner.py}`, `data/decklists/sample.jsonl`,
+`tools/scrape_decklists/{PROMPT.md,runner.py,load_corpus.py}`, corpus DBs
+`data/{decks,edhrec}.sqlite` (gitignored), `data/decklists/sample.jsonl`,
 `data/golden_cooccurrence/`, table `card_cooccurrence`, `card_relationships` column additions,
 backend `Store.cooccurrence` + `/score/pair` block, tests `scoring/tests/test_cooc_*.py`.
 

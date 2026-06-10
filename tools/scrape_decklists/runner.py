@@ -34,20 +34,32 @@ import json
 import re
 import ssl
 import sys
+import threading
 import time
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CORPUS_DIR = ROOT / "data" / "decklists"
 SEEN_FILE = CORPUS_DIR / ".seen_deck_ids"
 
-# Politeness: public APIs, identify ourselves, throttle. EDHREC is the strictest
-# (>=2s/req per simmander/sim/edhrec_fetcher.py); keep a floor for all sources.
+# Politeness: public APIs, identify ourselves, throttle PER HOST so independent
+# hosts proceed in parallel. Intervals reflect each host's tolerance: EDHREC's
+# json endpoint is CDN-backed (lenient); edhrec.com/api and the deck sites are
+# dynamic (more conservative). A worker pool overlaps network latency; the
+# per-host limiter keeps us polite regardless of pool size.
 _UA = "Simmander-SP3/0.1 (research; co-occurrence mining)"
-_RATE_S = 2.0
-_last_req = 0.0
+_HOST_INTERVAL = {
+    "json.edhrec.com": 0.3,   # static CDN JSON — tolerant
+    "edhrec.com": 0.5,        # deckpreview API — moderate
+    "archidekt.com": 0.7,
+    "api2.moxfield.com": 1.2,  # Cloudflare-gated — gentle
+}
+_DEFAULT_INTERVAL = 1.0
+_host_lock = threading.Lock()
+_host_last: dict[str, float] = {}
 
 try:  # verified TLS where certifi is present (matches sim/edhrec_fetcher.py)
     import certifi as _certifi
@@ -56,16 +68,22 @@ except ImportError:  # pragma: no cover
     _SSL_CTX = ssl.create_default_context()
 
 
-def _throttle() -> None:
-    global _last_req
-    dt = time.monotonic() - _last_req
-    if dt < _RATE_S:
-        time.sleep(_RATE_S - dt)
-    _last_req = time.monotonic()
+def _throttle(host: str) -> None:
+    """Block until this host's min-interval has elapsed. Thread-safe: the slot is
+    reserved under the lock, so concurrent workers space out per host correctly."""
+    interval = _HOST_INTERVAL.get(host, _DEFAULT_INTERVAL)
+    while True:
+        with _host_lock:
+            now = time.monotonic()
+            wait = interval - (now - _host_last.get(host, 0.0))
+            if wait <= 0:
+                _host_last[host] = now
+                return
+        time.sleep(wait)
 
 
 def _get_json(url: str, timeout: int = 60, headers: dict | None = None) -> dict:
-    _throttle()
+    _throttle(urllib.parse.urlparse(url).hostname or "")
     hdr = {"User-Agent": _UA}
     if headers:
         hdr.update(headers)
@@ -338,15 +356,23 @@ def _run_seeds(corpus: "Corpus", seeds: list[str], decks_per: int,
         except Exception as e:  # noqa: BLE001
             print(f"[skip] edhrec-decks:{commander}: {e}", file=sys.stderr)
             hashes = []
-        for h in hashes:
+        # Fetch deckpreviews concurrently (network-bound); the per-host limiter
+        # keeps edhrec.com polite. Results are consumed serially on this thread,
+        # so corpus writes need no lock.
+        def _grab(h: str):
             try:
-                res = _fetch_edhrec_deckpreview(h)
-                if res is None:
-                    continue
-                source, nid, cmdr, names = res
-                corpus.add_deck(f"{source}:{nid}", source, cmdr, names)
+                return _fetch_edhrec_deckpreview(h)
             except Exception as e:  # noqa: BLE001
                 print(f"[skip] deckpreview:{h}: {e}", file=sys.stderr)
+                return None
+
+        if hashes:
+            with ThreadPoolExecutor(max_workers=6) as ex:
+                for res in ex.map(_grab, hashes):
+                    if res is None:
+                        continue
+                    source, nid, cmdr, names = res
+                    corpus.add_deck(f"{source}:{nid}", source, cmdr, names)
         print(f"[seeds] {display}: {corpus._written} written so far "
               f"({len(visited)} commanders, {len(queue)} queued)",
               file=sys.stderr)

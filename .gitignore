@@ -25,6 +25,14 @@ data/decklists/.seen_deck_ids
 !data/decklists/sample.jsonl
 tools/scrape_decklists/*.log
 
+# SP3 corpus databases (rebuilt from the JSONL corpus by load_corpus.py)
+data/decks.sqlite
+data/decks.sqlite-shm
+data/decks.sqlite-wal
+data/edhrec.sqlite
+data/edhrec.sqlite-shm
+data/edhrec.sqlite-wal
+
 # Env / editor
 .env
 .env.local
