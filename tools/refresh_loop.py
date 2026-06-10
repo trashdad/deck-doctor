@@ -57,6 +57,15 @@ def _reload(api: str) -> None:
 
 
 def cycle(args) -> None:
+    # 1a. RECENT — pull the freshest decks first so the corpus skews to the live
+    #     meta (Archidekt newest-first; resumable via its page cursor). Best-effort:
+    #     a failure here still lets the breadth seeds scrape run.
+    if args.recent_max > 0:
+        recent = [PY, "tools/scrape_decklists/runner.py", "recent",
+                  "--recent-source", args.recent_source, "--max", str(args.recent_max),
+                  "--saturate-pages", str(args.saturate_pages), "--batch", "recent"]
+        _run(recent, "scrape-recent")
+    # 1b. SEEDS — breadth discovery by commander (not date-ordered; the fallback).
     scrape = [PY, "tools/scrape_decklists/runner.py", "seeds",
               "--top", str(args.top), "--decks-per", str(args.decks_per),
               "--max-commanders", str(args.max_commanders), "--batch", "loop"]
@@ -89,6 +98,11 @@ def main() -> int:
     ap.add_argument("--top", type=int, default=60, help="EDHREC top-N commanders to seed")
     ap.add_argument("--decks-per", type=int, default=20)
     ap.add_argument("--max-commanders", type=int, default=60)
+    ap.add_argument("--recent-max", type=int, default=300,
+                    help="newest-first decks to pull each cycle (0 disables the recency walk)")
+    ap.add_argument("--recent-source", default="archidekt", choices=["archidekt", "moxfield"])
+    ap.add_argument("--saturate-pages", type=int, default=5,
+                    help="stop the recency walk after this many all-already-seen pages")
     ap.add_argument("--api", default="http://localhost:8001")
     ap.add_argument("--no-rebuild", action="store_true",
                     help="scrape + load only (skip the heavy rebuild + reload)")

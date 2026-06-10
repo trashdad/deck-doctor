@@ -23,6 +23,11 @@ via data/decklists/.seen_deck_ids (one id per line). Re-running is safe: already
 Usage:
     python tools/scrape_decklists/runner.py archidekt --ids 23059828,12345678
     python tools/scrape_decklists/runner.py archidekt --id 23059828 --batch hand
+    # newest-first corpus growth (biases toward the current meta; resumable):
+    python tools/scrape_decklists/runner.py recent --recent-source archidekt --max 1000
+    python tools/scrape_decklists/runner.py recent --resume --max 2000   # continue a deep walk
+    # commander-breadth discovery (not date-ordered):
+    python tools/scrape_decklists/runner.py seeds --top 200 --decks-per 40
     # moxfield / edhrec sources: see _fetch_moxfield / _fetch_edhrec (driven by the
     # delegated LLM, which fills in the site-specific request/parse per PROMPT.md).
 """
@@ -304,6 +309,122 @@ def _fetch_edhrec_deckpreview(urlhash: str) -> tuple[str, str, str | None, list[
     return source, native_id, commander, names
 
 
+# ── Recency-driven discovery (newest-first; bias the corpus to the live meta) ─
+#
+# Archidekt's deck-search API supports recency ordering and is NOT Cloudflare-
+# gated, so it is the primary newest-first source. We walk
+#   archidekt.com/api/decks/v3/?orderBy=-updatedAt&formats=3
+# from most-recently-updated backward, fetch each deck via _fetch_archidekt, and
+# append. Dedup-by-deck_id makes this incremental + resumable: a plain re-run
+# starts at page 1 and stops once it hits a run of already-seen pages (only decks
+# updated since last time sort to the top), while --resume continues a deep walk
+# from a saved page cursor. Archidekt caps a search at ~1000 results (the `next`
+# link goes null), so one pass ingests up to the freshest ~1000 Commander decks.
+#
+# Moxfield's search sits behind the same Cloudflare gate as its deck API (HTTP
+# 403 to non-browser clients), so its recency walk degrades to a logged skip and
+# Archidekt carries the growth — exactly the fallback the design calls for.
+
+ARCHIDEKT_FORMAT_COMMANDER = 3   # archidekt deckFormat id for Commander / EDH
+_RECENT_PAGESIZE = 50
+
+
+def _archidekt_recent_page(page: int, pagesize: int = _RECENT_PAGESIZE) -> tuple[list[str], bool]:
+    """One page of Commander deck ids, most-recently-updated first; (ids, has_next)."""
+    url = (f"https://archidekt.com/api/decks/v3/?orderBy=-updatedAt"
+           f"&formats={ARCHIDEKT_FORMAT_COMMANDER}&pageSize={pagesize}&page={page}")
+    data = _get_json(url)
+    ids = [str(r["id"]) for r in (data.get("results") or []) if r.get("id")]
+    return ids, bool(data.get("next"))
+
+
+def _moxfield_recent_page(page: int, pagesize: int = _RECENT_PAGESIZE) -> tuple[list[str], bool]:
+    """One page of Commander public-ids, newest first. Cloudflare-gated → usually raises."""
+    url = (f"https://api2.moxfield.com/v2/decks/search?pageNumber={page}&pageSize={pagesize}"
+           f"&sortType=updated&sortDirection=Descending&fmt=commander")
+    data = _get_json(url, headers={"Accept": "application/json"})
+    res = data.get("data") or []
+    ids = [r["publicId"] for r in res if r.get("publicId")]
+    return ids, page < int(data.get("totalPages") or 0)
+
+
+# source -> (page lister, single-deck fetcher). Both fetchers return (commander, names).
+_RECENT_SOURCES = {
+    "archidekt": (_archidekt_recent_page, _fetch_archidekt),
+    "moxfield": (_moxfield_recent_page, _fetch_moxfield),
+}
+
+
+def _recent_cursor(source: str) -> Path:
+    return CORPUS_DIR / f".recent_cursor_{source}"
+
+
+def _run_recent(corpus: "Corpus", source: str, max_decks: int, resume: bool,
+                saturate_pages: int, pagesize: int = _RECENT_PAGESIZE) -> None:
+    """Walk a source newest-first, appending decks until `max_decks` new ones are
+    written, the source is exhausted, or `saturate_pages` consecutive pages add
+    nothing new (the corpus has caught up to the live meta). Resumable via a saved
+    page cursor; writes the cursor after every page so an interrupted walk continues."""
+    pager, fetch = _RECENT_SOURCES[source]
+    cursor = _recent_cursor(source)
+    page = 1
+    if resume and cursor.exists():
+        try:
+            page = max(1, int(cursor.read_text(encoding="utf-8").strip()))
+        except (ValueError, OSError):
+            page = 1
+    fetched = 0
+    dry_streak = 0
+
+    while fetched < max_decks:
+        try:
+            ids, has_next = pager(page, pagesize)
+        except Exception as e:  # noqa: BLE001 — degrade (esp. Moxfield Cloudflare)
+            print(f"[recent] {source} page {page} failed: {e}", file=sys.stderr)
+            break
+        if not ids:
+            print(f"[recent] {source}: page {page} empty — exhausted", file=sys.stderr)
+            break
+
+        # Skip decks we already hold BEFORE fetching (saves requests + drives the
+        # saturation signal); fetch the rest concurrently (network-bound).
+        todo = [nid for nid in ids if f"{source}:{nid}" not in corpus._seen]
+
+        def _grab(nid: str):
+            try:
+                return nid, fetch(nid)
+            except Exception as e:  # noqa: BLE001
+                print(f"[recent] {source}:{nid} fetch failed: {e}", file=sys.stderr)
+                return nid, None
+
+        page_new = 0
+        if todo:
+            with ThreadPoolExecutor(max_workers=6) as ex:
+                for nid, res in ex.map(_grab, todo):
+                    if res is None:
+                        continue
+                    cmdr, names = res
+                    if corpus.add_deck(f"{source}:{nid}", source, cmdr, names):
+                        page_new += 1
+                        fetched += 1
+                        if fetched >= max_decks:
+                            break
+
+        cursor.write_text(str(page + 1), encoding="utf-8")
+        print(f"[recent] {source} page {page}: +{page_new} new "
+              f"({fetched} total, {len(ids) - len(todo)} already held)", file=sys.stderr)
+
+        dry_streak = dry_streak + 1 if page_new == 0 else 0
+        if dry_streak >= saturate_pages:
+            print(f"[recent] {source}: {saturate_pages} dry pages — corpus is current; stopping",
+                  file=sys.stderr)
+            break
+        if not has_next:
+            print(f"[recent] {source}: no further pages (reached the search cap)", file=sys.stderr)
+            break
+        page += 1
+
+
 # ── Seed commanders (top + diverse archetypes) ────────────────────────────────
 
 def _edhrec_top_commanders(limit: int = 200) -> list[str]:
@@ -407,10 +528,18 @@ def _fetch_edhrec_from_blob(data: dict, display: str) -> tuple[str, list[dict]]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Append raw decklists to the SP3 corpus.")
-    ap.add_argument("source", choices=["archidekt", "moxfield", "edhrec", "seeds"])
+    ap.add_argument("source", choices=["archidekt", "moxfield", "edhrec", "seeds", "recent"])
     ap.add_argument("--id", help="single native deck id / commander name")
     ap.add_argument("--ids", help="comma-separated native ids / commander names")
     ap.add_argument("--batch", default="auto", help="batch label for the output filename")
+    ap.add_argument("--recent-source", default="archidekt", choices=["archidekt", "moxfield"],
+                    help="[recent] which site to walk newest-first")
+    ap.add_argument("--max", type=int, default=1000,
+                    help="[recent] stop after writing this many new decks")
+    ap.add_argument("--saturate-pages", type=int, default=5,
+                    help="[recent] stop after this many consecutive all-already-seen pages")
+    ap.add_argument("--resume", action="store_true",
+                    help="[recent] continue from the saved page cursor instead of page 1")
     ap.add_argument("--decks-per", type=int, default=60,
                     help="[seeds] max real decklists to pull per commander")
     ap.add_argument("--max-commanders", type=int, default=120,
@@ -422,6 +551,12 @@ def main() -> int:
     args = ap.parse_args()
 
     corpus = Corpus(batch=args.batch)
+
+    if args.source == "recent":
+        _run_recent(corpus, args.recent_source, max_decks=args.max,
+                    resume=args.resume, saturate_pages=args.saturate_pages)
+        print(corpus.report(), file=sys.stderr)
+        return 0
 
     if args.source == "seeds":
         seeds: list[str] = []
