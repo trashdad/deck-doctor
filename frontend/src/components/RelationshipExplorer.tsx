@@ -153,7 +153,13 @@ export function RelationshipExplorer() {
   const activeAxis = AXES.find((a) => a.key === axis)!;
   const neighbors = data?.neighbors ?? null;
   const engines = data?.engines ?? null;
+  const spellbook = data?.spellbook ?? null;
   const tagSimilar = data?.tagSimilar ?? null;
+  const noCombos =
+    !loading &&
+    engines != null &&
+    engines.length === 0 &&
+    (spellbook == null || spellbook.length === 0);
 
   return (
     <>
@@ -266,7 +272,48 @@ export function RelationshipExplorer() {
             </p>
           )}
 
-          {/* Combos / engines */}
+          {/* Spellbook combos (curated) — shown first */}
+          {!loading && spellbook && spellbook.length > 0 && (
+            <div className="mb-3 space-y-3">
+              {spellbook.map((c) => (
+                <div
+                  key={c.combo_id}
+                  className="rounded-lg border border-fuchsia-500/40 bg-fuchsia-500/[0.06] p-2"
+                >
+                  <div className="mb-1 flex items-center gap-2">
+                    <span className="rounded bg-fuchsia-500/20 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-fuchsia-300">
+                      spellbook combo
+                    </span>
+                    {c.popularity != null && (
+                      <span className="text-[9px] text-zinc-500">
+                        {c.popularity.toLocaleString()} decks
+                      </span>
+                    )}
+                  </div>
+                  {c.produces.length > 0 && (
+                    <p className="mb-1.5 text-[10px] text-fuchsia-200/90">
+                      → {c.produces.join(", ")}
+                    </p>
+                  )}
+                  <div className="grid grid-cols-3 gap-2">
+                    {c.members.map((m) => (
+                      <CardTile
+                        key={`${c.combo_id}:${m.id}`}
+                        card={m}
+                        compact
+                        onClick={() => m.id !== focal.id && inspectCard(m)}
+                        onAdd={() => add(m)}
+                        onFocus={m.id !== focal.id ? () => pivot(m) : undefined}
+                        onInspect={m.id !== focal.id ? () => inspectCard(m) : undefined}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Combos / engines (mined) */}
           {!loading && engines && engines.length > 0 && (
             <div className="space-y-3">
               {engines.map((g) => (
@@ -300,7 +347,7 @@ export function RelationshipExplorer() {
               ))}
             </div>
           )}
-          {!loading && engines && engines.length === 0 && (
+          {noCombos && (
             <p className="py-8 text-center text-xs text-zinc-500">
               No combos or engines recorded for this card.
             </p>

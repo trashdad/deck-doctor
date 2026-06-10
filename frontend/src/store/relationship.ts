@@ -4,12 +4,14 @@ import type {
   EngineGroup,
   PairScoreFull,
   RelationshipNeighbor,
+  SpellbookCombo,
 } from "@/lib/types";
 import {
   getCombosEngines,
   getPairScore,
   getRelationships,
   getSimilarCards,
+  getSpellbookCombos,
 } from "@/lib/api";
 
 // The explorer's five tabs: three typed SP1/SP3 axes, the engines view, and the
@@ -19,6 +21,7 @@ export type ExplorerAxis = "similar" | "synergy" | "cooccurrence" | "combos" | "
 interface AxisData {
   neighbors?: RelationshipNeighbor[];
   engines?: EngineGroup[];
+  spellbook?: SpellbookCombo[];
   tagSimilar?: Card[];
 }
 
@@ -48,7 +51,11 @@ async function fetchAxis(card: Card, axis: ExplorerAxis): Promise<AxisData> {
   if (hit) return hit;
   let data: AxisData;
   if (axis === "combos") {
-    data = { engines: await getCombosEngines(card.id) };
+    const [engines, spellbook] = await Promise.all([
+      getCombosEngines(card.id),
+      getSpellbookCombos(card.id, 20),
+    ]);
+    data = { engines, spellbook };
   } else if (axis === "tags") {
     data = { tagSimilar: await getSimilarCards(card.id, 30) };
   } else {

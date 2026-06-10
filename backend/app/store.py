@@ -322,40 +322,90 @@ class Store:
 
     # ---- SP7: Commander Spellbook combos (roadmap §7.3) -------------------
     def _load_spellbook(self, path: Path) -> None:
-        """SCAFFOLD (SP7) — load data/spellbook.sqlite into memory at startup.
+        """Load data/spellbook.sqlite into memory; resolve card names to ids.
 
-        Implement per docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md §7.3:
-        read `combos` + `combo_cards`, resolve every card_name via self._name_to_id,
-        SKIP combos with any unresolvable member (print one summary line), build
-          self._spellbook: list[dict]  # {combo_id, members:[card_id], identity, popularity,
-                                       #  bracket_tag, description, produces:[str], mana_needed}
-          self._spellbook_by_member: dict[str, list[int]]
-        Absent file ⇒ both stay empty (current behavior — keep it).
+        Combos with any unresolvable member are skipped (counted + logged once).
+        Absent file ⇒ both structures stay empty (engine degrades, never breaks).
         """
         self._spellbook: list[dict] = []
         self._spellbook_by_member: dict[str, list[int]] = {}
         if not path.exists():
             return
-        # TODO(SP7): real load — see docstring. Keeping the no-op keeps startup green
-        # until tools/import_spellbook has produced the DB and this is implemented.
-        return
+        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+        try:
+            combos = conn.execute(
+                "SELECT combo_id, identity, popularity, bracket_tag, description, "
+                "mana_needed, produces FROM combos").fetchall()
+            members_by_combo: dict[str, list[str]] = {}
+            for combo_id, card_name in conn.execute(
+                    "SELECT combo_id, card_name FROM combo_cards"):
+                members_by_combo.setdefault(combo_id, []).append(card_name)
+        except sqlite3.OperationalError:
+            conn.close()
+            return
+        conn.close()
+
+        skipped = 0
+        for combo_id, identity, popularity, bracket_tag, description, mana_needed, produces in combos:
+            names = members_by_combo.get(combo_id, [])
+            member_ids = [self._name_to_id.get((n or "").lower()) for n in names]
+            if not member_ids or any(m is None for m in member_ids):
+                skipped += 1
+                continue
+            idx = len(self._spellbook)
+            self._spellbook.append({
+                "combo_id": combo_id,
+                "members": member_ids,
+                "identity": identity or "",
+                "popularity": popularity,
+                "bracket_tag": bracket_tag or "",
+                "description": description or "",
+                "produces": json.loads(produces or "[]"),
+                "mana_needed": mana_needed or "",
+            })
+            for m in member_ids:
+                self._spellbook_by_member.setdefault(m, []).append(idx)
+        print(f"spellbook: {len(self._spellbook)} combos loaded, "
+              f"{skipped} skipped (unresolved cards)")
 
     def spellbook_with(self, card_id: str) -> list[dict]:
-        """SCAFFOLD (SP7) — combos containing card_id, popularity DESC (None last).
-
-        Mirror engines_with: list of self._spellbook entries via _spellbook_by_member.
-        Safe default (empty) so suggest.py can call this before SP7 lands.
-        """
-        return [self._spellbook[i] for i in self._spellbook_by_member.get(card_id, ())]
+        """Combos containing card_id, popularity DESC (None last)."""
+        combos = [self._spellbook[i] for i in self._spellbook_by_member.get(card_id, ())]
+        combos.sort(key=lambda c: (c["popularity"] is None, -(c["popularity"] or 0),
+                                   c["combo_id"]))
+        return combos
 
     def deck_spellbook(self, ids: list[str]) -> dict:
-        """SCAFFOLD (SP7) — {"complete": [combo], "near": [{"combo":…, "missing": card_id}]}.
+        """{"complete": [combo], "near": [{"combo":…, "missing": card_id}]}.
 
-        Implement per roadmap §7.3: union of _spellbook_by_member over ids, dedupe by
-        combo_id, classify by missing-member count (0 ⇒ complete, 1 ⇒ near), sort each by
-        popularity DESC (None last), cap near at 50.
+        Union of member-indexed combos; classify by missing-member count
+        (0 ⇒ complete, 1 ⇒ near). Each list popularity DESC; near capped at 50.
         """
-        raise NotImplementedError("SP7 pending — roadmap §7.3")
+        idset = set(ids)
+        seen: set[str] = set()
+        complete: list[dict] = []
+        near: list[tuple[dict, str]] = []
+        for cid in idset:
+            for i in self._spellbook_by_member.get(cid, ()):
+                combo = self._spellbook[i]
+                if combo["combo_id"] in seen:
+                    continue
+                seen.add(combo["combo_id"])
+                missing = [m for m in combo["members"] if m not in idset]
+                if not missing:
+                    complete.append(combo)
+                elif len(missing) == 1:
+                    near.append((combo, missing[0]))
+
+        def _pop(c: dict) -> tuple:
+            return (c["popularity"] is None, -(c["popularity"] or 0), c["combo_id"])
+
+        complete.sort(key=_pop)
+        near.sort(key=lambda t: _pop(t[0]))
+        return {
+            "complete": complete,
+            "near": [{"combo": c, "missing": m} for c, m in near[:50]],
+        }
 
     def staples_for_colors(self, color_identity: set[str], limit: int = 50,
                            exclude: set[str] | None = None) -> list[tuple[str, int]]:

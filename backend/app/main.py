@@ -309,16 +309,49 @@ def decks_export(deck_id: str) -> str:
 
 # ---- SP7: Commander Spellbook (scaffold — roadmap §7.5) --------------------
 
+def _spellbook_combo(store, combo: dict) -> dict | None:
+    """Resolve a stored combo's member ids to Card objects; None if any unresolvable."""
+    members = [store.get(m) for m in combo["members"]]
+    if any(m is None for m in members):
+        return None
+    return {
+        "combo_id": combo["combo_id"], "identity": combo["identity"],
+        "popularity": combo["popularity"], "description": combo["description"],
+        "produces": combo["produces"], "mana_needed": combo["mana_needed"],
+        "members": members,
+    }
+
+
 @app.post("/deck/combos", response_model=DeckCombos)
 def deck_combos(req: DeckRequest) -> dict:
     """Complete + one-card-away spellbook combos for the deck (commander counts as in-deck)."""
-    raise _not_implemented("SP7", "§7.5")
+    store = get_store()
+    ids = [e.id for e in req.cards]
+    if req.commander_id:
+        ids.append(req.commander_id)
+    raw = store.deck_spellbook(ids)
+    complete = [c for c in (_spellbook_combo(store, x) for x in raw["complete"]) if c]
+    near = []
+    for entry in raw["near"]:
+        combo = _spellbook_combo(store, entry["combo"])
+        missing = store.get(entry["missing"])
+        if combo and missing:
+            near.append({"combo": combo, "missing": missing})
+    return {"complete": complete, "near": near}
 
 
 @app.get("/cards/{card_id}/spellbook-combos", response_model=list[SpellbookCombo])
 def card_spellbook_combos(card_id: str, limit: int = Query(20, le=60)) -> list[dict]:
     """Spellbook combos containing this card, popularity DESC. 404 unknown card."""
-    raise _not_implemented("SP7", "§7.5")
+    store = get_store()
+    if not store.get(card_id):
+        raise HTTPException(404, "card not found")
+    out = []
+    for combo in store.spellbook_with(card_id)[:limit]:
+        resolved = _spellbook_combo(store, combo)
+        if resolved:
+            out.append(resolved)
+    return out
 
 
 # ---- SP8: deck doctor (scaffold — roadmap §8.4) ----------------------------

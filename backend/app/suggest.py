@@ -32,6 +32,7 @@ WEIGHTS = {"edh": 0.45, "cooc": 0.30, "struct": 0.15, "engine": 0.10}
 NEIGHBOR_K = 30          # neighbors pulled per deck member per signal
 ENGINE_BONUS_ASSERTED = 1.0
 ENGINE_BONUS_CANDIDATE = 0.3
+SPELLBOOK_BONUS = 1.2    # curated Commander Spellbook combos outrank mined engines
 STAPLE_SCORE = 0.05      # below any signal-driven score; staples are a last resort
 
 # Mirror of scoring/cooccurrence/fuse.py::lift_to_norm (backend must not import scoring/).
@@ -112,6 +113,17 @@ def recommend(store: Store, commander_id: str, deck_ids: list[str],
             if bonus > a["engine"]:
                 a["engine"] = bonus
                 a["engine_with"] = eng
+        for combo in store.spellbook_with(d):
+            missing = [m for m in combo["members"] if m not in deck_set]
+            if len(missing) != 1:
+                continue
+            a = acc[missing[0]]
+            if SPELLBOOK_BONUS > a["engine"]:
+                a["engine"] = SPELLBOOK_BONUS
+                a["engine_with"] = {"asserted": True, "kind": "spellbook",
+                                    "members": combo["members"],
+                                    "produces": combo["produces"],
+                                    "engine_id": combo["combo_id"]}
 
     weights = dict(WEIGHTS)
     if not edh:
@@ -184,7 +196,13 @@ def _reasons(store: Store, a: dict, n: int, cmd_name: str) -> list[dict]:
     if a["engine"] > 0 and a["engine_with"] is not None:
         eng = a["engine_with"]
         names = [(store.get(m) or {}).get("name", m) for m in eng["members"]]
-        kind = "combo" if eng["asserted"] else f"{eng['kind']} engine"
+        if eng.get("kind") == "spellbook":
+            produces = eng.get("produces") or []
+            head = f" → {', '.join(produces[:2])}" if produces else ""
+            detail = f"completes combo{head}: {' + '.join(names)}"
+        else:
+            kind = "combo" if eng["asserted"] else f"{eng['kind']} engine"
+            detail = f"completes {kind}: {' + '.join(names)}"
         out.append({"signal": "engine", "value": round(a["engine"], 4),
-                    "detail": f"completes {kind}: {' + '.join(names)}"})
+                    "detail": detail})
     return out
