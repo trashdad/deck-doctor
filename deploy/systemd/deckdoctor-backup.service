@@ -1,0 +1,14 @@
+[Unit]
+Description=Deck Doctor — back up the deckdoctor database to tower
+After=network-online.target deckdoctor-api.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=simmander
+WorkingDirectory=/opt/deck-doctor
+# Same DATABASE_URL as the api unit. BACKUP_DEST is the tower NAS path; the
+# `simmander` user needs an SSH key authorized on tower (Tailscale-reachable).
+Environment=DATABASE_URL=postgresql://deckdoctor:CHANGE_ME@127.0.0.1:5432/deckdoctor
+Environment=BACKUP_DEST=root@tower:/mnt/user/backups/deck-doctor
+ExecStart=/opt/deck-doctor/.venv/bin/python tools/backup_db.py --keep 14

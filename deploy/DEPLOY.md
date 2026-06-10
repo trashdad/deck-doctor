@@ -100,7 +100,25 @@ curl -sI https://simmander.app/deckdoctor          # 200, Next HTML
 Open https://simmander.app/deckdoctor — commander list (popularity), Template dropdown,
 and the Doctor should all work; the tracker at https://simmander.app/ is unaffected.
 
-## 7. Auto-deploy (optional)
+## 7. Backups (to the tower NAS)
+`tools/backup_db.py` runs `pg_dump -Fc` and scp's the dump to tower, keeping the
+newest N (default 14). It needs the deploy user's SSH key authorized on tower
+(Tailscale-reachable). One-off:
+```bash
+python tools/backup_db.py --dest root@tower:/mnt/user/backups/deck-doctor --keep 14
+```
+Schedule it daily:
+- **Prod (VPS):** install the systemd timer:
+  ```bash
+  sudo cp deploy/systemd/deckdoctor-backup.{service,timer} /etc/systemd/system/
+  sudo systemctl daemon-reload && sudo systemctl enable --now deckdoctor-backup.timer
+  ```
+- **Dev (Windows):** a Daily Task Scheduler job named `DeckDoctorDBBackup` runs it
+  at 03:30 (created with `schtasks`; the dev box must be on at that time).
+
+Restore: `pg_restore --no-owner --clean --if-exists -d deckdoctor <dump>`.
+
+## 8. Auto-deploy (optional)
 Mirror the tracker's `auto-deploy` timer for `/opt/deck-doctor`: `git pull`, rebuild
 frontend, `pip install -r`, `systemctl restart deckdoctor-api deckdoctor-web`. Keep the
 heavy data rebuild on its own cadence (`tools/refresh_loop.py`), not every deploy.

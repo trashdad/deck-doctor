@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Deck Doctor database backup to tower
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+Persistent=true        # run on next boot if the box was off at 03:30
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target
