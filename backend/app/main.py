@@ -8,17 +8,37 @@ from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
 from typing import Literal
 
 from . import config
 from .analysis import analyze
+from .decks import get_userdecks
+from .importer import parse_decklist
 from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCombos,
                      DeckDetail, DeckRequest, DeckSave, DeckSummary, EngineGroup,
                      GraphResponse, ImportRequest, ImportResult, PairScore,
                      RelationshipNeighbor, SpellbookCombo, SuggestionResponse)
 from .store import get_store
 from .suggest import is_commander, recommend
+from .zones import ZONE_ORDER, export_zone_name
+
+
+def _deck_detail(deck: dict) -> dict:
+    """Resolve a stored deck's card ids to Card objects (drop unresolvable)."""
+    store = get_store()
+    cards = []
+    for row in deck["cards"]:
+        card = store.get(row["card_id"])
+        if card is None:
+            continue
+        cards.append({"card": card, "zone": row["zone"], "quantity": row["quantity"]})
+    return {
+        "id": deck["id"], "name": deck["name"], "commander_id": deck["commander_id"],
+        "created_at": deck["created_at"], "updated_at": deck["updated_at"],
+        "cards": cards,
+    }
 
 _ROADMAP = "docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md"
 
@@ -211,43 +231,80 @@ def card_relationships(
 @app.get("/decks", response_model=list[DeckSummary])
 def decks_list() -> list[dict]:
     """All saved decks, most recently updated first."""
-    raise _not_implemented("SP6", "§6.2")
+    return get_userdecks().list_decks()
 
 
 @app.post("/decks", response_model=DeckDetail, status_code=201)
 def decks_create(req: DeckSave) -> dict:
     """Create a deck; cards are DeckEntry rows (id, zone, quantity)."""
-    raise _not_implemented("SP6", "§6.2")
+    cards = [e.model_dump() for e in req.cards]
+    deck_id = get_userdecks().create(req.name, req.commander_id, cards)
+    return _deck_detail(get_userdecks().get(deck_id))
 
 
 @app.post("/decks/import", response_model=ImportResult)
 def decks_import(req: ImportRequest) -> dict:
-    """Parse a pasted text decklist (importer.parse_decklist), create the deck,
-    return it with the list of unresolved input lines."""
-    raise _not_implemented("SP6", "§6.3")
+    """Parse a pasted text decklist, create the deck, return it + unresolved lines."""
+    store = get_store()
+    cards, unresolved, commander_id = parse_decklist(store, req.text)
+    deck_id = get_userdecks().create(req.name, commander_id, cards)
+    return {"deck": _deck_detail(get_userdecks().get(deck_id)), "unresolved": unresolved}
 
 
 @app.get("/decks/{deck_id}", response_model=DeckDetail)
 def decks_get(deck_id: str) -> dict:
     """Deck with cards resolved to Card objects (drop rows whose id no longer resolves)."""
-    raise _not_implemented("SP6", "§6.2")
+    deck = get_userdecks().get(deck_id)
+    if deck is None:
+        raise HTTPException(404, "deck not found")
+    return _deck_detail(deck)
 
 
 @app.put("/decks/{deck_id}", response_model=DeckDetail)
 def decks_update(deck_id: str, req: DeckSave) -> dict:
-    raise _not_implemented("SP6", "§6.2")
+    cards = [e.model_dump() for e in req.cards]
+    if not get_userdecks().update(deck_id, req.name, req.commander_id, cards):
+        raise HTTPException(404, "deck not found")
+    return _deck_detail(get_userdecks().get(deck_id))
 
 
 @app.delete("/decks/{deck_id}", status_code=204)
 def decks_delete(deck_id: str) -> None:
-    raise _not_implemented("SP6", "§6.2")
+    if not get_userdecks().delete(deck_id):
+        raise HTTPException(404, "deck not found")
 
 
-@app.get("/decks/{deck_id}/export")
-def decks_export(deck_id: str):
+@app.get("/decks/{deck_id}/export", response_class=PlainTextResponse)
+def decks_export(deck_id: str) -> str:
     """text/plain decklist: `// Zone` headers, `Commander: <name>` line, `N Name` rows.
-    MUST round-trip through /decks/import with zero unresolved lines (roadmap §6.4)."""
-    raise _not_implemented("SP6", "§6.4")
+    Round-trips through /decks/import with zero unresolved lines (roadmap §6.4)."""
+    deck = get_userdecks().get(deck_id)
+    if deck is None:
+        raise HTTPException(404, "deck not found")
+    store = get_store()
+    by_zone: dict[str, list[tuple[str, int]]] = {}
+    for row in deck["cards"]:
+        card = store.get(row["card_id"])
+        if card is None:
+            continue
+        by_zone.setdefault(row["zone"], []).append((card["name"], row["quantity"]))
+
+    lines: list[str] = []
+    for zone in ZONE_ORDER:
+        items = by_zone.get(zone)
+        if not items:
+            continue
+        items.sort(key=lambda t: t[0])
+        if zone == "Commanders":
+            for name, _qty in items:
+                lines.append(f"Commander: {name}")
+            lines.append("")
+            continue
+        lines.append(f"// {export_zone_name(zone)}")
+        for name, qty in items:
+            lines.append(f"{qty} {name}")
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
 
 
 # ---- SP7: Commander Spellbook (scaffold — roadmap §7.5) --------------------

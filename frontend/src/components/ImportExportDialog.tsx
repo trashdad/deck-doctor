@@ -1,21 +1,14 @@
 "use client";
 
-/**
- * SP6 — paste-a-decklist import dialog. SCAFFOLD — implement per roadmap §6.5.
- *
- * Modal: fixed inset-0 z-[160] backdrop (bg-black/60) + centered panel
- * (max-w-xl w-full bg-panel border border-edge rounded-xl p-4), ESC + backdrop close.
- * Contents:
- * - title "Import decklist", hint line "Moxfield / Archidekt / MTGO / Arena formats".
- * - name <input> (default "Imported deck").
- * - <textarea> h-64 font-mono text-xs (placeholder shows two sample lines).
- * - Import button → api.importDeck(text, name) → on success:
- *     useDecksStore.load(result.deck.id); if result.unresolved.length, keep the dialog
- *     open showing an amber warning list ("N lines didn't resolve:") with the lines;
- *     else close.
- * - Errors (network/4xx) render in red below the button.
- * data-testid: "import-dialog", textarea "import-text", button "import-submit".
- */
+import { useEffect, useState } from "react";
+import { importDeck } from "@/lib/api";
+import { useDecksStore } from "@/store/decks";
+
+const PLACEHOLDER = `Commander: The Ur-Dragon
+1 Sol Ring
+1 Command Tower
+...paste a Moxfield / Archidekt / MTGO / Arena list`;
+
 export function ImportExportDialog({
   isOpen,
   onClose,
@@ -23,8 +16,118 @@ export function ImportExportDialog({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  const load = useDecksStore((s) => s.load);
+  const [name, setName] = useState("Imported deck");
+  const [text, setText] = useState("");
+  const [unresolved, setUnresolved] = useState<string[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", key);
+    return () => document.removeEventListener("keydown", key);
+  }, [onClose]);
+
   if (!isOpen) return null;
-  void onClose;
-  // TODO(SP6): implement per the docstring above.
-  return null;
+
+  async function handleImport() {
+    setBusy(true);
+    setError(null);
+    setUnresolved(null);
+    try {
+      const result = await importDeck(text, name);
+      await load(result.deck.id);
+      if (result.unresolved.length > 0) {
+        setUnresolved(result.unresolved);
+      } else {
+        onClose();
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Import failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-[160] flex items-center justify-center bg-black/60 p-4"
+      onClick={onClose}
+      data-testid="import-dialog"
+    >
+      <div
+        className="w-full max-w-xl rounded-xl border border-edge bg-panel p-4 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="text-sm font-semibold text-accent">Import decklist</h2>
+          <span className="text-[10px] text-zinc-500">
+            Moxfield / Archidekt / MTGO / Arena formats
+          </span>
+        </div>
+
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="mb-2 w-full rounded border border-edge bg-zinc-900 px-2 py-1.5 text-xs text-zinc-200
+                     outline-none focus:border-accent"
+        />
+        <textarea
+          data-testid="import-text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder={PLACEHOLDER}
+          className="h-64 w-full resize-none rounded border border-edge bg-zinc-900 p-2 font-mono
+                     text-xs text-zinc-200 outline-none focus:border-accent scrollbar-thin"
+        />
+
+        {unresolved && (
+          <div className="mt-2 rounded border border-amber-500/40 bg-amber-500/10 p-2">
+            <p className="text-[11px] font-semibold text-amber-300">
+              {unresolved.length} line{unresolved.length === 1 ? "" : "s"} didn&apos;t resolve
+              (deck still imported):
+            </p>
+            <ul className="mt-1 max-h-24 overflow-y-auto text-[10px] text-amber-200/80 scrollbar-thin">
+              {unresolved.map((l, i) => (
+                <li key={i}>{l}</li>
+              ))}
+            </ul>
+            <button
+              onClick={onClose}
+              className="mt-2 rounded border border-amber-500/40 px-2 py-1 text-[10px] text-amber-200"
+            >
+              Done
+            </button>
+          </div>
+        )}
+
+        {error && <p className="mt-2 text-[11px] text-red-400">{error}</p>}
+
+        <div className="mt-3 flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="rounded-lg border border-edge px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200"
+          >
+            Cancel
+          </button>
+          <button
+            data-testid="import-submit"
+            onClick={handleImport}
+            disabled={busy || !text.trim()}
+            className={[
+              "rounded-lg border px-3 py-1.5 text-xs font-semibold transition",
+              busy || !text.trim()
+                ? "cursor-not-allowed border-zinc-800 text-zinc-700"
+                : "border-accent/50 text-accent hover:bg-accent/10",
+            ].join(" ")}
+          >
+            {busy ? "Importing…" : "Import"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

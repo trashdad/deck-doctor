@@ -1,22 +1,14 @@
 """SP6 — text decklist importer (Moxfield / Archidekt / MTGO / MTGA formats).
 
-SCAFFOLD — implement per docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md §6.3.
-The roadmap contains the EXACT regexes and algorithm — implement as written, including:
-- count prefixes `1 ` / `1x `, bare names, `(SET) 123` + `*F*` + `#!Category` suffix stripping
-  (stacked suffixes stripped in a loop), `//` and `##` comment/category lines,
-  `SB:` lines and Sideboard/Maybeboard sections ignored, Arena section words
-  (Deck/Mainboard/About reset; Sideboard/Maybeboard/Considering enter sideboard mode),
-  `Commander: <name>` and `*CMDR*` markers set the commander,
-- name resolution via store._name_to_id (lowercased; `A // B` front faces already indexed),
-- singleton clamp: quantity kept only for cards whose type_line contains "Basic",
-- dedupe by card_id (basics sum quantities, others stay 1),
-- returns (cards, unresolved, commander_id) where cards rows are
-  {"card_id": str, "zone": str, "quantity": int} and unresolved are the ORIGINAL lines.
+parse_decklist(store, text) -> (cards, unresolved, commander_id) where
+cards = [{card_id, zone, quantity}], unresolved = original lines that didn't
+resolve, commander_id = the designated commander id (or None).
 
-Zone assignment: `_zone_for(card)` maps doctor.category_of(card) to frontend zone names:
-  land→"Lands", ramp→"Ramp", card_draw→"Card Draw", removal→"Removal",
-  board_wipe→"Board Wipes", counters→"Counters", tokens→"Tokens", synergy→"Utility";
-the designated commander (Legendary Creature) goes to "Commanders".
+Line shapes handled: count prefixes "1 " / "1x ", bare names, "(SET) 123" +
+"*F*" + "#!Category" suffixes (stacked, stripped in a loop), "//" / "#" / "##"
+comment & category lines, "SB:" lines + Sideboard/Maybeboard sections ignored,
+Arena section words, "Commander: <name>" and "*CMDR*" markers. Singleton clamp:
+quantity only kept for Basic lands; everything else clamps to 1; dedupe by id.
 """
 
 from __future__ import annotations
@@ -41,5 +33,71 @@ def _zone_for(card: dict) -> str:
 
 
 def parse_decklist(store: Store, text: str) -> tuple[list[dict], list[str], str | None]:
-    """Parse a pasted decklist. See module docstring + roadmap §6.3 for the contract."""
-    raise NotImplementedError("SP6 pending — roadmap §6.3")
+    cards: dict[str, dict] = {}          # card_id -> row (dedupe; sum basics)
+    unresolved: list[str] = []
+    commander_id: str | None = None
+    section_sideboard = False
+
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith(("//", "#", "##")):
+            continue
+        low = line.lower()
+        if low in ("deck", "mainboard", "about"):
+            section_sideboard = False
+            continue
+        if low in ("sideboard", "maybeboard", "considering"):
+            section_sideboard = True
+            continue
+        if low.startswith("sb:"):
+            continue
+        if section_sideboard:
+            continue
+
+        is_cmdr = False
+        if low.startswith("commander:"):
+            line = line.split(":", 1)[1].strip()
+            is_cmdr = True
+        if "*cmdr*" in low:
+            line = re.sub(r"\*cmdr\*", "", line, flags=re.I).strip()
+            is_cmdr = True
+
+        m = _LINE.match(line)
+        if not m:
+            unresolved.append(raw.strip())
+            continue
+        qty = int(m.group(1)) if m.group(1) else 1
+        name = m.group(2)
+        while True:                       # strip stacked suffixes: "(C21) 263 *F*"
+            stripped = _STRIP_SUFFIX.sub("", name)
+            if stripped == name:
+                break
+            name = stripped
+
+        cid = store._name_to_id.get(name.lower())
+        if cid is None:
+            unresolved.append(raw.strip())
+            continue
+
+        card = store.get(cid)
+        basic = "Basic" in (card.get("type_line") or "")
+        zone = "Commanders" if is_cmdr else _zone_for(card)
+        row = cards.setdefault(cid, {"card_id": cid, "zone": zone, "quantity": 0})
+        if basic:
+            row["quantity"] += qty
+        else:
+            row["quantity"] = 1
+        if is_cmdr:
+            row["zone"] = "Commanders"
+            commander_id = cid
+
+    # No explicit commander designation: adopt the first Legendary Creature seen.
+    if commander_id is None:
+        for cid, row in cards.items():
+            card = store.get(cid)
+            if "Legendary Creature" in (card.get("type_line") or ""):
+                commander_id = cid
+                row["zone"] = "Commanders"
+                break
+
+    return list(cards.values()), unresolved, commander_id
