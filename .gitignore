@@ -19,6 +19,11 @@ data/scores.sqlite-shm
 data/scores.sqlite-wal
 data/*.faiss
 
+# SP3 scraped decklist corpus (regenerable; sample.jsonl is the committed fixture)
+data/decklists/*.jsonl
+data/decklists/.seen_deck_ids
+!data/decklists/sample.jsonl
+
 # Env / editor
 .env
 .env.local
