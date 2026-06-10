@@ -3,8 +3,9 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Simmander Deckbuilder",
-  description: "The card-art EDH deckbuilder for simmander.app",
+  title: "Deck Doctor — Simmander",
+  description:
+    "Deck Doctor: a card-art EDH deckbuilder that diagnoses, completes, and tunes your Commander decks. Part of simmander.app.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

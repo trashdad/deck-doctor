@@ -50,7 +50,7 @@ _ROADMAP = "docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md"
 def _not_implemented(phase: str, section: str) -> HTTPException:
     return HTTPException(501, f"{phase} not implemented — see {_ROADMAP} {section}")
 
-app = FastAPI(title="Simmander Deckbuilder API", version="0.1.0")
+app = FastAPI(title="Deck Doctor API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=config.CORS_ORIGINS,

@@ -232,8 +232,10 @@ export default function Page() {
 
       <header className="flex items-center justify-between border-b border-edge bg-panel px-5 py-3">
         <div className="flex items-baseline gap-3">
-          <h1 className="font-display text-xl tracking-wide text-accent">Simmander</h1>
-          <span className="text-sm text-zinc-500">Deckbuilder</span>
+          <h1 className="font-display text-xl tracking-wide text-accent">
+            Deck Doctor
+          </h1>
+          <span className="text-sm text-zinc-500">EDH deckbuilder · Simmander</span>
         </div>
         <div className="flex items-center gap-2">
           <TemplateMenu />
@@ -272,7 +274,7 @@ export default function Page() {
           >
             ⚡ Suggestions
           </HeaderButton>
-          <div className="ml-1 text-xs text-zinc-500">{totalCards} cards · simmander.app</div>
+          <div className="ml-1 text-xs text-zinc-500">{totalCards} cards · simmander.app/deckdoctor</div>
         </div>
       </header>
 

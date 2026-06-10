@@ -1,0 +1,22 @@
+[Unit]
+Description=Deck Doctor API (FastAPI/uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+# Adjust paths/user to match the VPS layout (mirrors the tracker's units).
+User=simmander
+WorkingDirectory=/opt/deck-doctor/backend
+Environment=SIMMANDER_CARDS=/opt/deck-doctor/data/cards.json
+Environment=SIMMANDER_SCORES=/opt/deck-doctor/data/scores.sqlite
+Environment=SIMMANDER_EDHREC=/opt/deck-doctor/data/edhrec.sqlite
+Environment=SIMMANDER_DECKS=/opt/deck-doctor/data/decks.sqlite
+Environment=SIMMANDER_SPELLBOOK=/opt/deck-doctor/data/spellbook.sqlite
+Environment=SIMMANDER_USERDECKS=/opt/deck-doctor/data/userdecks.sqlite
+# Browser never hits the backend directly; nginx fronts it. Bind to loopback.
+ExecStart=/opt/deck-doctor/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8002
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

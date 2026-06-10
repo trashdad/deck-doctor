@@ -1,8 +1,17 @@
 /** @type {import('next').NextConfig} */
+// Deck Doctor is hosted under a path on simmander.app (simmander.app/deckdoctor),
+// so every route + asset is served beneath this prefix. Set NEXT_PUBLIC_BASE_PATH=""
+// to host at a domain root instead. Keep in sync with lib/api.ts BASE_PATH.
+const BASE_PATH =
+  process.env.NEXT_PUBLIC_BASE_PATH === "" ? "" : process.env.NEXT_PUBLIC_BASE_PATH || "/deckdoctor";
+
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   // Standalone output bundles a minimal server for the Docker runtime image (SP11).
   output: "standalone",
+  // basePath also auto-prefixes the /api rewrite below (→ {BASE_PATH}/api/*).
+  ...(BASE_PATH ? { basePath: BASE_PATH } : {}),
   images: {
     // Real Magic card art is served from Scryfall's CDN. When Phase 0 confirms
     // simmander's own image host, add it here.
