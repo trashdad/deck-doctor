@@ -1,0 +1,7 @@
+{
+  "a": "Lightning Greaves",
+  "b": "Sol Ring",
+  "expect": {
+    "co_count_min": 400
+  }
+}
