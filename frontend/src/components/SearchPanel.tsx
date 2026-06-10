@@ -24,19 +24,35 @@ function CardWithMenu({
     setMenu({ x: e.clientX, y: e.clientY });
   }, []);
 
+  const handleAdd = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation(); // don't open the menu
+      onAdd(card);
+    },
+    [onAdd, card],
+  );
+
   return (
     <>
-      <div onClick={handleClick}>
+      {/* Click the tile for the tag/similar menu; the overlay button adds to the deck. */}
+      <div className="group relative" onClick={handleClick}>
         <CardTile card={card} compact />
+        <button
+          onClick={handleAdd}
+          title={`Add ${card.name} to deck`}
+          className="absolute inset-x-1 bottom-1 z-10 rounded-md bg-accent/90 py-1
+                     text-[10px] font-bold uppercase tracking-widest text-ink opacity-0
+                     shadow-lg transition hover:bg-accent group-hover:opacity-100"
+        >
+          ＋ Add to deck
+        </button>
       </div>
       {menu && (
         <CardMenu
           card={card}
           anchor={menu}
           onClose={() => setMenu(null)}
-          // No onRemove — search panel cards aren't in the deck yet.
-          // We add the card via the context menu in future; for now clicking the
-          // tile directly adds it. Here just show SIMILAR CARDS.
+          // No onRemove — search-panel cards aren't in the deck yet.
         />
       )}
     </>
