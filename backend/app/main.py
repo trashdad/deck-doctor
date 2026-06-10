@@ -137,6 +137,7 @@ def score_pair(a: str, b: str) -> dict:
     result = {"a": a, "b": b, "ier_a": ier_a, "ier_b": ier_b,
               "css": css, "der": der, "lift": bool(edge and edge["lift"])}
     result["relationship"] = store.relationship(a, b)
+    result["cooccurrence"] = store.cooccurrence(a, b)
     return result
 
 

@@ -179,6 +179,24 @@ class Store:
             "combo_id": combo_id,
         }
 
+    def cooccurrence(self, a: str, b: str) -> dict | None:
+        """Co-occurrence block from card_cooccurrence, or None."""
+        if not self.scores_path.exists():
+            return None
+        lo, hi = sorted([a, b])
+        conn = self._conn()
+        try:
+            row = conn.execute(
+                "SELECT co_count, lift, jaccard, support FROM card_cooccurrence "
+                "WHERE a=? AND b=?", (lo, hi)).fetchone()
+        except sqlite3.OperationalError:
+            return None
+        finally:
+            conn.close()
+        if row is None:
+            return None
+        return {"co_count": row[0], "lift": row[1], "jaccard": row[2], "support": row[3]}
+
     def deck_engines(self, ids: list[str]) -> dict:
         """Return engines and combos from the engines table that are fully in ids."""
         idset = set(ids)

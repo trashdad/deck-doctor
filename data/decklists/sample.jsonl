@@ -1,0 +1,12 @@
+{"kind": "deck", "deck_id": "s:1", "source": "sample", "commander": "Atraxa, Praetors' Voice", "card_names": ["Sol Ring", "Arcane Signet", "Command Tower", "Cultivate", "Doubling Season"]}
+{"kind": "deck", "deck_id": "s:2", "source": "sample", "commander": "Atraxa, Praetors' Voice", "card_names": ["Sol Ring", "Arcane Signet", "Command Tower", "Counterspell"]}
+{"kind": "deck", "deck_id": "s:3", "source": "sample", "commander": "Krenko, Mob Boss", "card_names": ["Sol Ring", "Arcane Signet", "Command Tower", "Lightning Bolt"]}
+{"kind": "deck", "deck_id": "s:4", "source": "sample", "commander": "Krenko, Mob Boss", "card_names": ["Sol Ring", "Command Tower", "Lightning Bolt", "Goblin Chieftain"]}
+{"kind": "deck", "deck_id": "s:5", "source": "sample", "commander": "Atraxa, Praetors' Voice", "card_names": ["Sol Ring", "Arcane Signet", "Doubling Season", "Evolution Sage"]}
+{"kind": "deck", "deck_id": "s:6", "source": "sample", "commander": "Tymna the Weaver", "card_names": ["Sol Ring", "Arcane Signet", "Command Tower", "Swords to Plowshares"]}
+{"kind": "deck", "deck_id": "s:7", "source": "sample", "commander": "Tymna the Weaver", "card_names": ["Arcane Signet", "Command Tower", "Swords to Plowshares", "Counterspell"]}
+{"kind": "deck", "deck_id": "s:8", "source": "sample", "commander": "Krenko, Mob Boss", "card_names": ["Sol Ring", "Command Tower", "Goblin Chieftain", "Lightning Bolt"]}
+{"kind": "deck", "deck_id": "s:9", "source": "sample", "commander": "Atraxa, Praetors' Voice", "card_names": ["Sol Ring", "Arcane Signet", "Doubling Season", "Evolution Sage"]}
+{"kind": "deck", "deck_id": "s:10", "source": "sample", "commander": "Tymna the Weaver", "card_names": ["Sol Ring", "Arcane Signet", "Command Tower", "Swords to Plowshares"]}
+{"kind": "edhrec", "commander": "Atraxa, Praetors' Voice", "cards": [{"name": "Doubling Season", "synergy": 0.62, "inclusion": 0.71}, {"name": "Evolution Sage", "synergy": 0.55, "inclusion": 0.4}, {"name": "Sol Ring", "synergy": 0.01, "inclusion": 0.92}]}
+{"kind": "edhrec", "commander": "Krenko, Mob Boss", "cards": [{"name": "Goblin Chieftain", "synergy": 0.7, "inclusion": 0.6}, {"name": "Lightning Bolt", "synergy": 0.2, "inclusion": 0.5}]}

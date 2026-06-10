@@ -1,0 +1,7 @@
+{
+  "a": "Sol Ring",
+  "b": "Command Tower",
+  "expect": {
+    "co_count_min": 1500
+  }
+}

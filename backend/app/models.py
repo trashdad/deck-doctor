@@ -38,6 +38,7 @@ class PairScore(BaseModel):
     der: float
     lift: bool
     relationship: dict | None = None
+    cooccurrence: dict | None = None
 
 
 class SynergyEdge(BaseModel):

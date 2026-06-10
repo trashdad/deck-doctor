@@ -1,0 +1,7 @@
+{
+  "a": "Sol Ring",
+  "b": "Arcane Signet",
+  "expect": {
+    "co_count_min": 1500
+  }
+}
