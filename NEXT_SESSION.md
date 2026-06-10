@@ -19,6 +19,22 @@
 >
 > Original roadmap: `docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md`.
 >
+> **⭑ OPEN WORK — Maximize the deck corpus, newest-first.** Goal: scrape **as many decks as
+> possible** from the public web, prioritized in **reverse-chronological order** (most recently
+> *updated* or *built* first) so the corpus skews toward the current meta. Today's `runner.py seeds`
+> discovers by commander via EDHREC deckpreview — NOT date-ordered. Add a recency-driven mode:
+> - **Archidekt:** its deck-search API supports recency ordering (`orderBy=-updatedAt` /
+>   `-createdAt`, paginated ~100/page — verify exact params next session). Walk newest→oldest,
+>   fetch each via the existing `_fetch_archidekt`, append (dedup-by-deck_id makes it incremental +
+>   resumable; save the last page/cursor for `--resume`).
+> - **Moxfield:** browse/search sorted by `updatedAtUtc` desc (Cloudflare-gated → fall back to the
+>   EDHREC deckpreview path where blocked).
+> - **EDHREC deckpreview:** keep as the breadth fallback (not date-sortable).
+> - New runner subcommand, e.g. `runner.py recent --source archidekt --max N`, walking newest-first
+>   until sources exhaust or dedup-hit-rate saturates; reuse the per-host throttling + `.seen_deck_ids`.
+> - Wire into `tools/refresh_loop.py` so each cycle pulls the freshest decks first, then
+>   load_corpus → rebuild → `/admin/reload`. Run it to completion ("all the decks we possibly can").
+>
 > **⭑ OPEN WORK — Template System + Dual-Theme Composite.** Fully researched + decided, NOT yet
 > coded. Build-ready spec: `docs/superpowers/specs/2026-06-10-template-system-design.md` (exact
 > template numbers incl. Command Zone 38/10/8/8/4 + variants + data-derived Corpus Average; the
