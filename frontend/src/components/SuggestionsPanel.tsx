@@ -21,7 +21,7 @@ const SIGNAL_LABEL: Record<string, string> = {
   staple: "staple",
 };
 
-function ReasonChips({ reasons }: { reasons: Reason[] }) {
+export function ReasonChips({ reasons }: { reasons: Reason[] }) {
   if (reasons.length === 0) return null;
   return (
     <div className="mt-1 flex flex-wrap gap-1">

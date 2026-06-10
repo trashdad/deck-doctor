@@ -15,6 +15,7 @@ from typing import Literal
 from . import config
 from .analysis import analyze
 from .decks import get_userdecks
+from .doctor import complete_deck, suggest_cuts
 from .importer import parse_decklist
 from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCombos,
                      DeckDetail, DeckRequest, DeckSave, DeckSummary, EngineGroup,
@@ -359,13 +360,35 @@ def card_spellbook_combos(card_id: str, limit: int = Query(20, le=60)) -> list[d
 @app.post("/deck/complete", response_model=CompleteResponse)
 def deck_complete(req: DeckRequest, explain: bool = False) -> dict:
     """Complete the deck to 100 (doctor.complete_deck); 400 on missing/illegal commander."""
-    raise _not_implemented("SP8", "§8.4")
+    store = get_store()
+    if not req.commander_id or not is_commander(store.get(req.commander_id)):
+        raise HTTPException(400, "commander_id must be a legendary creature or planeswalker")
+    deck_ids = [e.id for e in req.cards if e.id != req.commander_id]
+    result = complete_deck(store, req.commander_id, deck_ids)
+    added = []
+    for a in result["added"]:
+        card = store.get(a["card_id"])
+        if card is None:
+            continue
+        added.append({"card": card, "zone": a["zone"], "quantity": a["quantity"],
+                      "reason": a["reason"]})
+    return {"added": added, "final_size": result["final_size"]}
 
 
 @app.post("/deck/cuts", response_model=CutsResponse)
 def deck_cuts(req: DeckRequest, limit: int = Query(10, le=30)) -> dict:
     """Lowest-contribution cards (doctor.suggest_cuts); 400 on missing/illegal commander."""
-    raise _not_implemented("SP8", "§8.4")
+    store = get_store()
+    if not req.commander_id or not is_commander(store.get(req.commander_id)):
+        raise HTTPException(400, "commander_id must be a legendary creature or planeswalker")
+    deck_ids = [e.id for e in req.cards]
+    cuts = []
+    for c in suggest_cuts(store, req.commander_id, deck_ids, limit=limit):
+        card = store.get(c["card_id"])
+        if card is None:
+            continue
+        cuts.append({"card": card, "contribution": c["contribution"], "reasons": c["reasons"]})
+    return {"cuts": cuts}
 
 
 # ---- SP9: synergy graph (scaffold — roadmap §9.1) --------------------------
