@@ -31,6 +31,8 @@ def lift_to_norm(lift: float, k: float = LIFT_K) -> float:
     # Clamp before rounding: large lift underflows exp to 0.0, making raw == 1.0
     raw = min(raw, _MAX_NORM)
     rounded = round(raw, 6)
+    # Near 1.0, return the unrounded clamped value so we never round up to exactly
+    # 1.0 — the codomain must stay strictly below 1.
     return raw if rounded >= 1.0 else rounded
 
 

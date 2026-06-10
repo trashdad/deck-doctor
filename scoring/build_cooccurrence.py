@@ -74,7 +74,7 @@ def build(scores_db: str, decks_source: str, edhrec_source: str,
                     (new_ab, new_ba, a, b))
         fused += 1
     con.commit(); con.close()
-    return {"pairs": len(rows), "edhrec_pairs": len(edh), "refused_rows": fused,
+    return {"pairs": len(rows), "edhrec_pairs": len(edh), "rows_fused": fused,
             "decks": len(decks)}
 
 
@@ -87,7 +87,7 @@ def main() -> None:
     a = p.parse_args()
     stats = build(a.scores, a.decks, a.edhrec, min_support=a.min_support)
     print(f"cooccurrence: {stats['pairs']:,} pairs | edhrec dir-pairs: {stats['edhrec_pairs']:,} "
-          f"| re-fused rows: {stats['refused_rows']:,} | decks: {stats['decks']:,}")
+          f"| re-fused rows: {stats['rows_fused']:,} | decks: {stats['decks']:,}")
 
 
 if __name__ == "__main__":
