@@ -18,6 +18,15 @@
 > (Spellbook crawl is COMPLETE — 91,196 variants scraped, 87,980 combos live.)
 >
 > Original roadmap: `docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md`.
+>
+> **⭑ OPEN WORK — Template System + Dual-Theme Composite.** Fully researched + decided, NOT yet
+> coded. Build-ready spec: `docs/superpowers/specs/2026-06-10-template-system-design.md` (exact
+> template numbers incl. Command Zone 38/10/8/8/4 + variants + data-derived Corpus Average; the
+> verified theme→tag catalog; backend `templates.py` + `GET /templates` + `POST /deck/theme-suggest`
+> + `DeckRequest.template`→Doctor; frontend header dropdown + `TemplatePanel` dual-theme editor +
+> theme card grid with "Show 10 more"). Locked: both published+data-derived templates; template
+> drives Doctor completion; theme cards ranked efficiency+synergy. frontend-design skill applies
+> (keep the existing amber/jewel/Cinzel language — two themes as facing "spell pages").
 
 > **UPDATE (2026-06-10, later session):** Both pending items below are DONE.
 > 1. The scrape finished and the rebuild ran: decks.sqlite **4,255** decks, edhrec.sqlite
