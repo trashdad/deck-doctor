@@ -16,6 +16,7 @@ from . import config
 from .analysis import analyze
 from .decks import get_userdecks
 from .doctor import complete_deck, suggest_cuts
+from .graph import deck_graph
 from .importer import parse_decklist
 from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCombos,
                      DeckDetail, DeckRequest, DeckSave, DeckSummary, EngineGroup,
@@ -396,7 +397,9 @@ def deck_cuts(req: DeckRequest, limit: int = Query(10, le=30)) -> dict:
 @app.post("/deck/graph", response_model=GraphResponse)
 def deck_graph_endpoint(req: DeckRequest) -> dict:
     """Nodes + typed weighted edges among deck cards (graph.deck_graph)."""
-    raise _not_implemented("SP9", "§9.1")
+    store = get_store()
+    deck_ids = [e.id for e in req.cards]
+    return deck_graph(store, req.commander_id, deck_ids)
 
 
 @app.get("/cards/{card_id}/combos-engines", response_model=list[EngineGroup])
