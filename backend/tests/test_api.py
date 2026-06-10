@@ -91,6 +91,16 @@ def test_score_pair_includes_typed_edge():
     assert "relationship" in body
 
 
+def test_score_pair_includes_cooccurrence_block():
+    sr = _id("Sol Ring")
+    lb = _id("Lightning Bolt")
+    r = client.get(f"/score/pair?a={sr}&b={lb}")
+    assert r.status_code == 200
+    body = r.json()
+    assert "relationship" in body          # SP1 field preserved
+    assert "cooccurrence" in body          # new key present (may be null)
+
+
 def test_deck_engines_endpoint():
     sr = _id("Sol Ring")
     ct = _id("Command Tower")
