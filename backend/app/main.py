@@ -60,7 +60,34 @@ app.add_middleware(
 @app.get("/health")
 def health() -> dict:
     store = get_store()
-    return {"status": "ok", "scores_loaded": store.scores_path.exists()}
+    return {
+        "status": "ok",
+        "scores_loaded": store.scores_path.exists(),
+        "cards": len(store._cards),
+        "edhrec_commanders": len(store._edhrec),
+        "spellbook_combos": len(store._spellbook),
+        "engines": len(store._engines),
+    }
+
+
+@app.post("/admin/reload")
+def admin_reload() -> dict:
+    """Hot-reload the in-memory Store from disk (no restart).
+
+    The offline pipeline (scrape → load_corpus → build_relationships →
+    build_cooccurrence → import_spellbook) rewrites the sqlite stores; calling this
+    drops the cached singleton so the next request rebuilds it. This is how newly
+    scraped decks become visible to live recommendations — see tools/refresh_loop.py.
+    """
+    get_store.cache_clear()
+    store = get_store()
+    return {
+        "status": "reloaded",
+        "cards": len(store._cards),
+        "edhrec_commanders": len(store._edhrec),
+        "spellbook_combos": len(store._spellbook),
+        "engines": len(store._engines),
+    }
 
 
 @app.get("/cards", response_model=list[Card])
