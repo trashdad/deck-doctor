@@ -82,6 +82,7 @@ class Store:
         self._load_engines()
         self._load_staples()
         self._load_spellbook(config.SPELLBOOK_PATH)
+        self._load_commander_decks(config.DECKS_PATH)
 
     def _load_cards(self, path: Path) -> None:
         if not path.exists():
@@ -319,6 +320,71 @@ class Store:
 
     def edhrec_for(self, commander_id: str) -> dict[str, tuple[float, float]]:
         return self._edhrec.get(commander_id, {})
+
+    # ---- commander popularity (corpus deck count) ------------------------
+    def _load_commander_decks(self, path: Path) -> None:
+        """commander card_id -> number of corpus decks led by it (popularity proxy).
+
+        decks.sqlite carries one row per scraped deck with a `commander` NAME; we
+        count rows per name and resolve each name to a card id via the name index.
+        Absent/empty ⇒ all zero (the commander list still renders, just without a
+        popularity signal). Partner/pair commanders are keyed on the single stored
+        name in v1 — multi-commander attribution is a later refinement.
+        """
+        self._commander_decks: dict[str, int] = {}
+        if not path.exists():
+            return
+        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+        try:
+            rows = conn.execute(
+                "SELECT commander, COUNT(*) FROM decks "
+                "WHERE commander IS NOT NULL AND commander != '' "
+                "GROUP BY commander").fetchall()
+        except sqlite3.OperationalError:
+            return
+        finally:
+            conn.close()
+        for name, count in rows:
+            cid = self._name_to_id.get((name or "").lower())
+            if cid is not None:  # several names (e.g. `A // B`) may map to one id
+                self._commander_decks[cid] = self._commander_decks.get(cid, 0) + count
+
+    def commander_deck_count(self, card_id: str) -> int:
+        return self._commander_decks.get(card_id, 0)
+
+    def commanders(self, q: str = "", colors: str = "", sort: str = "popularity",
+                   limit: int = 0) -> list[dict]:
+        """Legendary creatures + planeswalkers, enriched with `deck_count`.
+
+        q = case-insensitive name substring; colors = WUBRG subset the commander's
+        color identity must contain; sort = popularity (deck_count desc) | name |
+        ier (efficiency desc). limit<=0 ⇒ no cap. Name is the stable tiebreak.
+        """
+        q = q.lower().strip()
+        color_set = {c.upper() for c in colors if c.strip()}
+        out: list[dict] = []
+        for cid, card in self._cards.items():
+            tl = (card.get("type_line") or "").lower()
+            if "legendary" not in tl:
+                continue
+            if "creature" not in tl and "planeswalker" not in tl:
+                continue
+            if q and q not in (card.get("name") or "").lower():
+                continue
+            if color_set and not color_set.issubset(set(card.get("color_identity") or [])):
+                continue
+            enriched = self.get(cid)
+            if not enriched:
+                continue
+            enriched["deck_count"] = self._commander_decks.get(cid, 0)
+            out.append(enriched)
+        if sort == "name":
+            out.sort(key=lambda c: c.get("name", ""))
+        elif sort == "ier":
+            out.sort(key=lambda c: (-(c.get("ier") or 0.0), c.get("name", "")))
+        else:  # popularity (default)
+            out.sort(key=lambda c: (-c["deck_count"], c.get("name", "")))
+        return out[:limit] if limit and limit > 0 else out
 
     # ---- SP7: Commander Spellbook combos (roadmap §7.3) -------------------
     def _load_spellbook(self, path: Path) -> None:

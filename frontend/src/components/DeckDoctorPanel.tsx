@@ -14,11 +14,14 @@ export function DeckDoctorPanel({
   onClose,
   commander,
   entries,
+  templateCounts,
 }: {
   isOpen: boolean;
   onClose: () => void;
   commander: Card | null;
   entries: DeckEntry[];
+  /** Active template quotas (from the header Template dropdown); fills toward these. */
+  templateCounts?: Record<string, number> | null;
 }) {
   const { add, move, remove, setBasic } = useDeck();
   const [tab, setTab] = useState<Tab>("complete");
@@ -41,7 +44,7 @@ export function DeckDoctorPanel({
     if (!commander) return;
     setBusy(true);
     try {
-      const res = await postDeckComplete(entries, commander.id);
+      const res = await postDeckComplete(entries, commander.id, templateCounts);
       setAdded(res.added);
       setFinalSize(res.final_size);
     } finally {

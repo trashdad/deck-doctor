@@ -24,6 +24,8 @@ EDHREC_PATH = Path(os.environ.get("SIMMANDER_EDHREC", _REPO_ROOT / "data" / "edh
 USERDECKS_PATH = Path(os.environ.get("SIMMANDER_USERDECKS", _REPO_ROOT / "data" / "userdecks.sqlite"))
 # SP7: Commander Spellbook combo DB (read-only, built by tools/import_spellbook/)
 SPELLBOOK_PATH = Path(os.environ.get("SIMMANDER_SPELLBOOK", _REPO_ROOT / "data" / "spellbook.sqlite"))
+# Scraped decklist corpus (read-only) — drives commander popularity (deck count per commander).
+DECKS_PATH = Path(os.environ.get("SIMMANDER_DECKS", _REPO_ROOT / "data" / "decks.sqlite"))
 
 # CORS origins for the React dev server / deployed frontend.
 CORS_ORIGINS = os.environ.get(

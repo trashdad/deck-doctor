@@ -14,7 +14,11 @@ export interface Card {
   image_uris: { normal?: string } | null;
   ier: number | null;
   mechanic_tags: string[];
+  /** Commander popularity = corpus decks led by this card (commanders only). */
+  deck_count?: number | null;
 }
+
+export type CommanderSort = "popularity" | "name" | "ier";
 
 export interface SynergyEdge {
   card_a: string;
@@ -181,6 +185,48 @@ export interface DeckEntry {
   zone: string;
   quantity: number;
 }
+
+// ---- Template system + dual-theme composite ----
+export interface TemplateInfo {
+  id: string;
+  name: string;
+  source: string;
+  counts: Record<string, number>; // doctor keys: land/ramp/card_draw/removal/board_wipe
+  notes: string;
+}
+
+export interface ThemeInfo {
+  id: string;
+  label: string;
+  tags: string[];
+}
+
+export interface TemplatesResponse {
+  templates: TemplateInfo[];
+  themes: ThemeInfo[];
+}
+
+export interface ThemeSuggestion {
+  card: Card;
+  score: number;
+  themes_matched: number;
+}
+
+export interface ThemeSuggestResponse {
+  cards: ThemeSuggestion[];
+  total: number;
+  has_more: boolean;
+}
+
+/** The 5 Deck-Doctor composition categories, in display order. */
+export const TEMPLATE_CATEGORIES = [
+  "land",
+  "ramp",
+  "card_draw",
+  "removal",
+  "board_wipe",
+] as const;
+export type TemplateCategory = (typeof TEMPLATE_CATEGORIES)[number];
 
 export interface DeckAnalysis {
   card_count: number;

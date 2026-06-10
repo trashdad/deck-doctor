@@ -27,6 +27,8 @@ class Card(BaseModel):
     # Enriched from the score store when available.
     ier: float | None = None
     mechanic_tags: list[str] = []
+    # Commander popularity = number of corpus decks led by this card (commanders only).
+    deck_count: int | None = None
 
 
 class PairScore(BaseModel):
@@ -88,6 +90,47 @@ class DeckEntry(BaseModel):
 class DeckRequest(BaseModel):
     commander_id: str | None = None
     cards: list[DeckEntry]
+    # Optional composition quotas (doctor keys: land/ramp/card_draw/removal/board_wipe)
+    # set by the active template; /deck/complete fills toward these when present.
+    template: dict[str, int] | None = None
+
+
+# ---- Template system + dual-theme composite ----
+class TemplateInfo(BaseModel):
+    id: str
+    name: str
+    source: str
+    counts: dict[str, int]
+    notes: str = ""
+
+
+class ThemeInfo(BaseModel):
+    id: str
+    label: str
+    tags: list[str]
+
+
+class TemplatesResponse(BaseModel):
+    templates: list[TemplateInfo]
+    themes: list[ThemeInfo]
+
+
+class ThemeSuggestRequest(BaseModel):
+    commander_id: str
+    themes: list[str] = []
+    free_text: str = ""
+
+
+class ThemeSuggestion(BaseModel):
+    card: Card
+    score: float
+    themes_matched: int
+
+
+class ThemeSuggestResponse(BaseModel):
+    cards: list[ThemeSuggestion]
+    total: int
+    has_more: bool
 
 
 # ---- SP6: deck persistence ----

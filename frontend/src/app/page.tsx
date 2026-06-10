@@ -15,11 +15,64 @@ import { ImportExportDialog } from "@/components/ImportExportDialog";
 import { DeckCombosPanel } from "@/components/DeckCombosPanel";
 import { DeckDoctorPanel } from "@/components/DeckDoctorPanel";
 import { SynergyGraph } from "@/components/SynergyGraph";
+import { TemplatePanel } from "@/components/TemplatePanel";
 import { useDeck } from "@/store/deck";
 import { useDecksStore } from "@/store/decks";
+import { useTemplateStore } from "@/store/template";
 import { ZONES, type Zone } from "@/lib/zones";
-import { analyzeDeck } from "@/lib/api";
+import { analyzeDeck, getTemplates } from "@/lib/api";
 import type { DeckEntry } from "@/lib/types";
+
+function TemplateMenu() {
+  const { templates, selectedId, select } = useTemplateStore();
+  const [open, setOpen] = useState(false);
+  const current = templates.find((t) => t.id === selectedId);
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        data-testid="template-menu"
+        title="Composition template (sets the Deck Doctor quotas)"
+        className="rounded-lg border border-accent/50 px-3 py-1.5 text-xs font-semibold tracking-wide
+                   text-accent transition hover:bg-accent/10"
+      >
+        ⚜ {current?.name ?? "Template"} ▾
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-[130]" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 z-[131] mt-1 w-64 rounded-lg border border-edge bg-panel p-1 shadow-2xl">
+            {templates.map((t) => (
+              <button
+                key={t.id}
+                data-testid={`template-opt-${t.id}`}
+                onClick={() => {
+                  select(t.id);
+                  setOpen(false);
+                }}
+                className={[
+                  "flex w-full flex-col rounded-md px-3 py-2 text-left transition",
+                  t.id === selectedId ? "bg-accent/15" : "hover:bg-white/5",
+                ].join(" ")}
+              >
+                <span className="flex items-center justify-between gap-2 text-xs font-semibold text-zinc-200">
+                  {t.name}
+                  <span className="shrink-0 text-[8px] uppercase tracking-widest text-zinc-500">
+                    {t.source}
+                  </span>
+                </span>
+                <span className="text-[10px] tracking-wide text-zinc-500">
+                  {t.counts.land}/{t.counts.ramp}/{t.counts.card_draw}/
+                  {t.counts.removal}/{t.counts.board_wipe} · land/ramp/draw/rmv/wipe
+                </span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 function HeaderButton({
   onClick,
@@ -63,6 +116,26 @@ export default function Page() {
   const [graphOpen, setGraphOpen] = useState(false);
 
   const { currentId, saveCurrent } = useDecksStore();
+
+  // Template catalog → store (drives the header dropdown + Doctor quotas).
+  const setCatalog = useTemplateStore((s) => s.setCatalog);
+  const activeCounts = useTemplateStore((s) => s.activeCounts);
+  const templateSelectedId = useTemplateStore((s) => s.selectedId);
+  const templateComposite = useTemplateStore((s) => s.composite);
+  const { data: catalog } = useQuery({
+    queryKey: ["templates"],
+    queryFn: getTemplates,
+    staleTime: Infinity,
+  });
+  useEffect(() => {
+    if (catalog) setCatalog(catalog.templates, catalog.themes);
+  }, [catalog, setCatalog]);
+  // Recompute the active quota set whenever the selection or composite edits change.
+  const templateCounts = useMemo(
+    () => activeCounts(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeCounts, templateSelectedId, templateComposite],
+  );
 
   const deckCards = Object.values(cards);
   const basicEntries = Object.entries(basics);
@@ -138,7 +211,9 @@ export default function Page() {
         onClose={() => setDoctorOpen(false)}
         commander={commander}
         entries={entries}
+        templateCounts={templateCounts}
       />
+      <TemplatePanel />
       <SynergyGraph
         isOpen={graphOpen}
         onClose={() => setGraphOpen(false)}
@@ -161,6 +236,7 @@ export default function Page() {
           <span className="text-sm text-zinc-500">Deckbuilder</span>
         </div>
         <div className="flex items-center gap-2">
+          <TemplateMenu />
           <HeaderButton testid="open-decks" title="Saved decks" onClick={() => setDecksOpen(true)}>
             🗂 Decks
           </HeaderButton>

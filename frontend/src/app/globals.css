@@ -45,6 +45,21 @@ body {
   background: linear-gradient(160deg, #221d33, #14111f);
 }
 
+/* Staggered fade-in for the template theme-card grid (frontend-design juice). */
+@keyframes tmplReveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.tmpl-reveal {
+  animation: tmplReveal 0.32s ease both;
+}
+
 .scrollbar-thin::-webkit-scrollbar {
   width: 8px;
   height: 8px;

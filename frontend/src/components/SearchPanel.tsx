@@ -3,12 +3,29 @@
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { searchCards, getCommanders } from "@/lib/api";
-import type { Card } from "@/lib/types";
+import type { Card, CommanderSort } from "@/lib/types";
 import { CardTile } from "./CardTile";
 import { CardMenu } from "./CardMenu";
 
 const COLORS = ["W", "U", "B", "R", "G"] as const;
+const COLOR_BG: Record<string, string> = {
+  W: "#f8f5e3",
+  U: "#3b82f6",
+  B: "#5b4a63",
+  R: "#ef4444",
+  G: "#22c55e",
+};
+const SORT_LABELS: Record<CommanderSort, string> = {
+  popularity: "Most played",
+  name: "Name (A–Z)",
+  ier: "Efficiency (IER)",
+};
 type Tab = "search" | "commanders";
+
+/** Compact deck-count label: 1240 → "1.2k". */
+function fmtCount(n: number): string {
+  return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
+}
 
 function CardWithMenu({
   card,
@@ -65,6 +82,8 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
   const [colors, setColors] = useState<string[]>([]);
   const [type, setType] = useState("");
   const [cmdQ, setCmdQ] = useState("");
+  const [cmdColors, setCmdColors] = useState<string[]>([]);
+  const [cmdSort, setCmdSort] = useState<CommanderSort>("popularity");
 
   const searchQuery = useQuery({
     queryKey: ["cards", q, colors, type],
@@ -72,10 +91,12 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
     enabled: tab === "search",
   });
 
+  // Server sorts (popularity/name/ier) + filters by color identity; the free-text
+  // box filters the returned list instantly client-side (no refetch per keystroke).
   const commandersQuery = useQuery({
-    queryKey: ["commanders"],
-    queryFn: getCommanders,
-    staleTime: Infinity,
+    queryKey: ["commanders", cmdColors, cmdSort],
+    queryFn: () => getCommanders({ colors: cmdColors.join(""), sort: cmdSort }),
+    staleTime: 60_000,
     enabled: tab === "commanders",
   });
 
@@ -176,17 +197,53 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
         </>
       ) : (
         <>
-          <div className="border-b border-edge p-3">
+          <div className="space-y-2 border-b border-edge p-3">
             <input
               value={cmdQ}
               onChange={(e) => setCmdQ(e.target.value)}
-              placeholder="Filter commanders…"
+              placeholder="Search commanders…"
               className="w-full rounded-md border border-edge bg-ink px-3 py-2 text-sm
                          outline-none focus:border-accent"
             />
+            <div className="flex items-center gap-1">
+              {COLORS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() =>
+                    setCmdColors((cur) =>
+                      cur.includes(c) ? cur.filter((x) => x !== c) : [...cur, c],
+                    )
+                  }
+                  className={`h-7 w-7 rounded-full border text-xs font-bold transition ${
+                    cmdColors.includes(c)
+                      ? "border-accent text-ink"
+                      : "border-edge text-zinc-400"
+                  }`}
+                  style={{
+                    background: cmdColors.includes(c) ? COLOR_BG[c] : "transparent",
+                  }}
+                >
+                  {c}
+                </button>
+              ))}
+              <select
+                value={cmdSort}
+                onChange={(e) => setCmdSort(e.target.value as CommanderSort)}
+                className="ml-auto rounded-md border border-edge bg-ink px-2 py-1.5 text-[11px]
+                           text-zinc-300 outline-none focus:border-accent"
+                title="Sort commanders"
+              >
+                {(Object.keys(SORT_LABELS) as CommanderSort[]).map((s) => (
+                  <option key={s} value={s}>
+                    {SORT_LABELS[s]}
+                  </option>
+                ))}
+              </select>
+            </div>
             {commandersList.length > 0 && (
-              <p className="mt-1 text-[10px] text-zinc-600">
+              <p className="text-[10px] text-zinc-600">
                 {filteredCommanders.length} of {commandersList.length} commanders
+                {cmdSort === "popularity" && " · by deck count"}
               </p>
             )}
           </div>
@@ -195,15 +252,33 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
             {commandersQuery.isLoading && (
               <p className="col-span-2 text-xs text-zinc-500">Loading commanders…</p>
             )}
-            {filteredCommanders.map((card) => (
-              <div
-                key={card.id}
-                onClick={() => onAdd(card)}
-                className="cursor-pointer"
-              >
-                <CardTile card={card} compact />
-              </div>
-            ))}
+            {filteredCommanders.map((card) => {
+              const decks = card.deck_count ?? 0;
+              return (
+                <div
+                  key={card.id}
+                  onClick={() => onAdd(card)}
+                  className="cursor-pointer"
+                  data-testid="commander-tile"
+                >
+                  <CardTile
+                    card={card}
+                    compact
+                    badge={decks > 0 ? `▲ ${fmtCount(decks)}` : undefined}
+                  />
+                  <p className="mt-0.5 flex items-baseline justify-between px-0.5 text-[9px] leading-tight">
+                    <span className="truncate text-zinc-500" title={card.name}>
+                      {decks > 0 ? `${decks.toLocaleString()} decks` : "—"}
+                    </span>
+                    {card.ier != null && (
+                      <span className="shrink-0 font-semibold text-accent/70">
+                        {card.ier}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              );
+            })}
             {!commandersQuery.isLoading && filteredCommanders.length === 0 && (
               <p className="col-span-2 text-xs text-zinc-600">No commanders found.</p>
             )}

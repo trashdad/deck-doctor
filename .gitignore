@@ -22,6 +22,7 @@ data/*.faiss
 # SP3 scraped decklist corpus (regenerable; sample.jsonl is the committed fixture)
 data/decklists/*.jsonl
 data/decklists/.seen_deck_ids
+data/decklists/.recent_cursor_*
 !data/decklists/sample.jsonl
 tools/scrape_decklists/*.log
 

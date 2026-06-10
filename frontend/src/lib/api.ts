@@ -1,5 +1,6 @@
 import type {
   Card,
+  CommanderSort,
   CompleteResponse,
   CutsResponse,
   DeckCombos,
@@ -15,6 +16,8 @@ import type {
   RelationshipNeighbor,
   SpellbookCombo,
   SuggestionResponse,
+  TemplatesResponse,
+  ThemeSuggestResponse,
 } from "./types";
 
 // Calls go through Next's /api rewrite -> FastAPI (see next.config.mjs).
@@ -50,8 +53,16 @@ export function searchCards(params: {
   return get<Card[]>(`/cards?${qs.toString()}`);
 }
 
-export function getCommanders(): Promise<Card[]> {
-  return get<Card[]>("/cards/commanders");
+export function getCommanders(
+  params: { q?: string; colors?: string; sort?: CommanderSort; limit?: number } = {},
+): Promise<Card[]> {
+  const qs = new URLSearchParams();
+  if (params.q) qs.set("q", params.q);
+  if (params.colors) qs.set("colors", params.colors);
+  if (params.sort) qs.set("sort", params.sort);
+  if (params.limit != null) qs.set("limit", String(params.limit));
+  const suffix = qs.toString();
+  return get<Card[]>(`/cards/commanders${suffix ? `?${suffix}` : ""}`);
 }
 
 export function searchByOracleText(
@@ -209,8 +220,33 @@ export function getSpellbookCombos(
 export function postDeckComplete(
   cards: DeckEntry[],
   commander_id: string,
+  template?: Record<string, number> | null,
 ): Promise<CompleteResponse> {
-  return post<CompleteResponse>("/deck/complete", { cards, commander_id });
+  return post<CompleteResponse>("/deck/complete", {
+    cards,
+    commander_id,
+    template: template ?? null,
+  });
+}
+
+// ---- Template system + dual-theme composite ----
+export function getTemplates(): Promise<TemplatesResponse> {
+  return get<TemplatesResponse>("/templates");
+}
+
+export function themeSuggest(
+  commanderId: string,
+  themes: string[],
+  freeText: string,
+  limit = 10,
+  offset = 0,
+): Promise<ThemeSuggestResponse> {
+  const qs = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  return post<ThemeSuggestResponse>(`/deck/theme-suggest?${qs.toString()}`, {
+    commander_id: commanderId,
+    themes,
+    free_text: freeText,
+  });
 }
 
 export function postDeckCuts(

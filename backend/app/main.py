@@ -15,15 +15,17 @@ from typing import Literal
 from . import config
 from .analysis import analyze
 from .decks import get_userdecks
-from .doctor import complete_deck, suggest_cuts
+from .doctor import TEMPLATE as DOCTOR_TEMPLATE, complete_deck, suggest_cuts
 from .graph import deck_graph
 from .importer import parse_decklist
 from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCombos,
                      DeckDetail, DeckRequest, DeckSave, DeckSummary, EngineGroup,
                      GraphResponse, ImportRequest, ImportResult, PairScore,
-                     RelationshipNeighbor, SpellbookCombo, SuggestionResponse)
+                     RelationshipNeighbor, SpellbookCombo, SuggestionResponse,
+                     TemplatesResponse, ThemeSuggestRequest, ThemeSuggestResponse)
 from .store import get_store
 from .suggest import is_commander, recommend
+from .templates import TEMPLATES, THEMES, theme_suggest
 from .zones import ZONE_ORDER, export_zone_name
 
 
@@ -102,21 +104,18 @@ def search_cards(
 
 
 @app.get("/cards/commanders", response_model=list[Card])
-def commanders() -> list[dict]:
-    """All legendary creatures + legendary planeswalkers legal in Commander."""
-    store = get_store()
-    results = []
-    for card in store._cards.values():
-        tl = (card.get("type_line") or "").lower()
-        if "legendary" not in tl:
-            continue
-        if "creature" not in tl and "planeswalker" not in tl:
-            continue
-        enriched = store.get(card["id"])
-        if enriched:
-            results.append(enriched)
-    results.sort(key=lambda c: c.get("name", ""))
-    return results
+def commanders(
+    q: str = "",
+    colors: str = "",
+    sort: Literal["popularity", "name", "ier"] = "popularity",
+    limit: int = Query(0, le=2000),
+) -> list[dict]:
+    """Legendary creatures + planeswalkers, each enriched with `deck_count`.
+
+    Defaults to most-played-first (corpus deck count). `q` = name substring,
+    `colors` = WUBRG color-identity subset filter, `sort` = popularity|name|ier.
+    """
+    return get_store().commanders(q=q, colors=colors, sort=sort, limit=limit)
 
 
 @app.get("/cards/oracle", response_model=list[Card])
@@ -251,6 +250,29 @@ def card_relationships(
         if card:
             out.append({"card": card, "metric": round(metric, 4)})
     return out
+
+
+# ---- Template system + dual-theme composite --------------------------------
+
+@app.get("/templates", response_model=TemplatesResponse)
+def templates() -> dict:
+    """Composition presets (Doctor quotas) + the theme catalog (Card-free, static)."""
+    return {"templates": TEMPLATES, "themes": THEMES}
+
+
+@app.post("/deck/theme-suggest", response_model=ThemeSuggestResponse)
+def theme_suggest_endpoint(
+    req: ThemeSuggestRequest,
+    limit: int = Query(10, le=60),
+    offset: int = Query(0, ge=0),
+) -> dict:
+    """Ranked cards for the selected themes (+ free text), in the commander's colors."""
+    store = get_store()
+    try:
+        return theme_suggest(store, req.commander_id, req.themes, req.free_text,
+                             limit=limit, offset=offset)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
 
 
 # ---- SP6: deck persistence (scaffold — roadmap §6.2) -----------------------
@@ -392,7 +414,10 @@ def deck_complete(req: DeckRequest, explain: bool = False) -> dict:
     if not req.commander_id or not is_commander(store.get(req.commander_id)):
         raise HTTPException(400, "commander_id must be a legendary creature or planeswalker")
     deck_ids = [e.id for e in req.cards if e.id != req.commander_id]
-    result = complete_deck(store, req.commander_id, deck_ids)
+    # The active template (if any) sets the quotas; merge over the default so a
+    # partial template still has every category complete_deck expects.
+    template = {**DOCTOR_TEMPLATE, **(req.template or {})}
+    result = complete_deck(store, req.commander_id, deck_ids, template=template)
     added = []
     for a in result["added"]:
         card = store.get(a["card_id"])
