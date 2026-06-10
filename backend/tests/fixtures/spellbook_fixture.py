@@ -46,6 +46,8 @@ def _restore_if_stashed(cur) -> None:
 
 
 def seed_spellbook_pg(store) -> dict:
+    from tests.conftest import assert_safe_destructive_db
+    assert_safe_destructive_db()                       # never rename live prod tables
     with db.cursor(commit=True) as cur:
         _restore_if_stashed(cur)                       # clean up any prior crash
         cur.execute("ALTER TABLE combos RENAME TO combos_real")
@@ -69,5 +71,7 @@ def seed_spellbook_pg(store) -> dict:
 
 
 def restore_spellbook_pg() -> None:
+    from tests.conftest import assert_safe_destructive_db
+    assert_safe_destructive_db()
     with db.cursor(commit=True) as cur:
         _restore_if_stashed(cur)

@@ -7,9 +7,12 @@
 services:
   db:
     image: postgres:16-alpine
+    # Password is required at deploy time — compose refuses to start if unset.
+    # Put it in deploy/.env (gitignored) or the shell env, e.g.
+    #   POSTGRES_PASSWORD=$(openssl rand -base64 32)
     environment:
       POSTGRES_USER: deckdoctor
-      POSTGRES_PASSWORD: deckdoctor
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}
       POSTGRES_DB: deckdoctor
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -27,7 +30,7 @@ services:
       - ../data:/app/data:ro            # cards.json + the SQLite build artifacts (loader input)
     environment:
       SIMMANDER_CARDS: /app/data/cards.json
-      DATABASE_URL: postgresql://deckdoctor:deckdoctor@db:5432/deckdoctor
+      DATABASE_URL: postgresql://deckdoctor:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}@db:5432/deckdoctor
     depends_on:
       db:
         condition: service_healthy
