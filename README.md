@@ -39,7 +39,7 @@ human decklists into that engine so the advice keeps getting smarter on its own.
 Think of the app as a **library with a card-recommendation librarian**.
 
 - The **library** is a set of databases: ~31,000 Magic cards, ~4,300 real human decklists, EDHREC's
-  community statistics, and ~51,000 known card combos.
+  community statistics, and ~88,000 known card combos.
 - The **librarian** (the *scoring pipeline*) reads the whole library **once, offline**, and writes
   index cards: "card A goes well with card B (here's a number)", "these two cards are basically
   interchangeable", "these three cards form a combo." This is slow (minutes) but happens in the
@@ -84,7 +84,7 @@ Everything is a one-way river from raw public data on the left to your screen on
   │  Moxfield  │──┘          └──────────────────┘     └──────────────┘     └───────────────────────┘       └─────────────────┘     │ /deck/graph  │     │ :3000    │
   └───────────┘                                                                                            ┌─────────────────┐     │ /deck/cuts   │     └──────────┘
   ┌───────────┐            ┌──────────────────┐     ┌──────────────┐                                       │ spellbook.sqlite│     │              │
-  │ Commander  │───────────▶│ import_spellbook │────▶│ 50,907 combos│──────────────────────────────────────▶│ (loaded into   │────▶│ Suggestions, │
+  │ Commander  │───────────▶│ import_spellbook │────▶│ 87,980 combos│──────────────────────────────────────▶│ (loaded into   │────▶│ Suggestions, │
   │ Spellbook  │  REST/JSON │  runner+load     │     │              │                                       │  memory)        │     │ Combos, Graph│
   └───────────┘            └──────────────────┘     └──────────────┘                                       └─────────────────┘     └──────────────┘
 
@@ -98,7 +98,7 @@ The key databases (all gitignored, rebuilt from the pipelines; sizes as of this 
 | `data/cards.json` | ~31k Magic cards (Scryfall fields) — *committed* | bundled |
 | `data/decks.sqlite` | 4,255 real human decklists (which cards appear together) | `scrape_decklists` |
 | `data/edhrec.sqlite` | EDHREC's per-commander card stats (354 commanders, 94,970 rows) | `scrape_decklists` |
-| `data/spellbook.sqlite` | 50,907 curated two-to-six-card combos | `import_spellbook` |
+| `data/spellbook.sqlite` | 87,980 curated two-to-six-card combos | `import_spellbook` |
 | `data/scores.sqlite` | the **query store**: per-card power, card↔card relationships, co-occurrence, engines | `scoring/build_*.py` |
 
 ---
@@ -304,7 +304,7 @@ cut candidates — they're powerful but contribute little to *this* deck's web o
 ## 7. Combos
 
 [Commander Spellbook](https://commanderspellbook.com) is the community's canonical database of
-proven combos. We scrape all **50,907** commander-legal combos (each: the cards it needs and what
+proven combos. We scrape all **87,980** commander-legal combos (each: the cards it needs and what
 it produces — "Infinite mana", "Win the game", etc.) into `spellbook.sqlite`.
 
 This powers the product's killer feature, the **Combos panel**, which classifies every combo
@@ -425,7 +425,7 @@ the server**:
    freshly-written sqlite — new decks are now live, with ZERO downtime.
 ```
 
-This was demonstrated live during build: the combo database was hot-reloaded from 10,646 → 50,907
+This was demonstrated live during build: the combo database was hot-reloaded from 10,646 → 87,980
 combos via a single `POST /admin/reload`, with the server never stopping. Run the daemon alongside
 the app:
 
@@ -537,7 +537,7 @@ spec → plan → build cycle under `docs/superpowers/`:
 | SP4 | Relationship explorer UI | five-axis side panel: similar / synergizes / played-with / combos / tags |
 | SP5 | Suggestion engine | the four-signal blend (§4) with tiered cold-start |
 | SP6 | Deck persistence | save/load/import/export decks (Moxfield/Archidekt/MTGO/Arena formats) |
-| SP7 | Commander Spellbook | 50,907 curated combos → completion bonus + Combos panel |
+| SP7 | Commander Spellbook | 87,980 curated combos → completion bonus + Combos panel |
 | SP8 | Deck Doctor | type-aware completion to 100 + cut suggestions |
 | SP9 | Synergy graph | d3-force visualization of the deck as a relationship web |
 | SP10 | Eval harness | objective recall@k / MRR measurement + weight grid search |

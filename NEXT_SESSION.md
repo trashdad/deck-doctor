@@ -1,7 +1,7 @@
 # Simmander Deckbuilder — Session Handoff (2026-06-10, SP6–SP11 COMPLETE)
 
 > **⭑ STATUS: SP1–SP11 ALL SHIPPED.** The full product is built, tested, and verified.
-> - SP6 deck persistence/import/export · SP7 Commander Spellbook combos (50,907 loaded) ·
+> - SP6 deck persistence/import/export · SP7 Commander Spellbook combos (87,980 loaded) ·
 >   SP8 Deck Doctor (complete→100 + cuts) · SP9 d3-force synergy graph · SP10 eval harness ·
 >   SP11 docker deploy. Plus a **live refresh pipeline** (`tools/refresh_loop.py` +
 >   `POST /admin/reload`) that scrapes → rebuilds → hot-reloads the store with zero downtime.
@@ -13,9 +13,9 @@
 > - **Docs:** comprehensive `README.md` (formulas/diagrams/data-flow), `docs/data-contract.md`
 >   updated with all endpoints. Per-phase commits on `main` (still never pushed).
 >
-> Possible follow-ups: finish the spellbook crawl to 100% (currently ~51k of the full set, the
-> daemon will top it up); clean-room eval (rebuild co-occurrence excluding eval decks); the
+> Possible follow-ups: clean-room eval (rebuild co-occurrence excluding eval decks); the
 > Caddy reverse-proxy hostname in `deploy/`; push to origin if the user asks.
+> (Spellbook crawl is COMPLETE — 91,196 variants scraped, 87,980 combos live.)
 >
 > Original roadmap: `docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md`.
 
