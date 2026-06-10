@@ -1,0 +1,25 @@
+{
+  "caveat": "LEAKAGE CAVEAT: co-occurrence and EDHREC tables were built FROM these same decks; absolute numbers are optimistic. Valid for RELATIVE comparison (weights A vs B, engine vs baseline) only.",
+  "config": {
+    "decks": "C:\\simmander\\simmander-deckbuilder\\data\\decks.sqlite",
+    "holdout": 10,
+    "limit": 50,
+    "weights": null,
+    "grid": false,
+    "split": "test",
+    "max_decks": 400
+  },
+  "aggregate": {
+    "n_decks": 400,
+    "r10": 0.1785,
+    "r25": 0.2755,
+    "r50": 0.3425,
+    "mrr": 0.0813,
+    "base_r25": 0.0858,
+    "base_mrr": 0.0353,
+    "tiers": {
+      "edhrec": 394,
+      "cooccurrence": 6
+    }
+  }
+}
