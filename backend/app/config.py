@@ -18,13 +18,22 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
 CARDS_PATH = Path(os.environ.get("SIMMANDER_CARDS", _REPO_ROOT / "data" / "cards.json"))
+
+# --- Postgres (the deckdoctor database) ------------------------------------
+# The running app reads/writes Postgres only. The read-only analytical tables are
+# loaded into it from the offline SQLite build artifacts by
+# scoring/load_to_postgres.py; userdecks is read-write (app/decks.py). In prod set
+# DATABASE_URL to the VPS's deckdoctor database (its own DB on the shared PG server).
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL", "postgresql://deckdoctor:deckdoctor@localhost:5432/deckdoctor"
+)
+
+# --- Offline build artifacts (SQLite) --------------------------------------
+# These are the pipeline's intermediate output, consumed by load_to_postgres.py.
+# They are NOT read at request time; the app uses Postgres above.
 SCORES_PATH = Path(os.environ.get("SIMMANDER_SCORES", _REPO_ROOT / "data" / "scores.sqlite"))
 EDHREC_PATH = Path(os.environ.get("SIMMANDER_EDHREC", _REPO_ROOT / "data" / "edhrec.sqlite"))
-# SP6: user deck persistence (read-write, owned by app/decks.py, NOT by Store)
-USERDECKS_PATH = Path(os.environ.get("SIMMANDER_USERDECKS", _REPO_ROOT / "data" / "userdecks.sqlite"))
-# SP7: Commander Spellbook combo DB (read-only, built by tools/import_spellbook/)
 SPELLBOOK_PATH = Path(os.environ.get("SIMMANDER_SPELLBOOK", _REPO_ROOT / "data" / "spellbook.sqlite"))
-# Scraped decklist corpus (read-only) — drives commander popularity (deck count per commander).
 DECKS_PATH = Path(os.environ.get("SIMMANDER_DECKS", _REPO_ROOT / "data" / "decks.sqlite"))
 
 # CORS origins for the React dev server / deployed frontend.

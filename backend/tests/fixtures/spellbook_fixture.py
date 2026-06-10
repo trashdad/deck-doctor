@@ -1,33 +1,34 @@
-"""SP7 test fixture — build a tiny synthetic spellbook.sqlite over REAL card names.
+"""SP7 test fixture — seed a tiny synthetic spellbook into Postgres over REAL names.
 
-make_spellbook_db(path, store) creates a spellbook.sqlite (load_spellbook schema) with:
+The app reads combos from Postgres, so tests can't point it at a throwaway SQLite
+file any more. Instead we swap the real combos/combo_cards tables ASIDE (instant
+metadata rename), stand up a 2-combo fixture, run the test, then swap the real
+tables back. Fixture combos:
+
   combo "fxA": 2 colorless cards, produces ["Infinite mana"], popularity 100
-  combo "fxB": 3 cards, produces ["Infinite draw"], popularity 50
-  combo "fxC": 1 real card + a fake name (must be skipped at Store load)
-Returns {"a_members": [ids], "b_members": [ids]} for tests to assert against.
+  combo "fxB": 3 cards,           produces ["Infinite draw"], popularity 50
+  combo "fxC": 1 real card + a fake name  → skipped at Store load (so 2 load)
+
+seed_spellbook_pg(store) returns {"a_members": [...], "b_members": [...]}.
+restore_spellbook_pg() puts the real tables back. Both are idempotent.
 """
 
 from __future__ import annotations
 
 import json
-import sqlite3
-from pathlib import Path
 
-_SCHEMA = """
-CREATE TABLE combos (
-    combo_id TEXT PRIMARY KEY, identity TEXT, popularity INTEGER, bracket_tag TEXT,
-    description TEXT, mana_needed TEXT, easy_prereq TEXT, notable_prereq TEXT,
-    produces TEXT NOT NULL, card_count INTEGER NOT NULL);
-CREATE TABLE combo_cards (
-    combo_id TEXT NOT NULL, card_name TEXT NOT NULL, quantity INTEGER NOT NULL DEFAULT 1,
-    must_be_commander INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (combo_id, card_name));
-CREATE INDEX idx_combo_cards_name ON combo_cards(card_name);
-"""
+from app import db
 
-# Real, ubiquitous names — assert-resolved below so a missing one fails loudly.
 A_NAMES = ["Sol Ring", "Mana Vault"]
 B_NAMES = ["Lightning Bolt", "Counterspell", "Llanowar Elves"]
 C_NAMES = ["Command Tower", "Nonexistent Card XYZ"]
+
+# (combo_id, identity, popularity, produces-json, [names])
+_COMBOS = [
+    ("fxA", "", 100, json.dumps(["Infinite mana"]), A_NAMES),
+    ("fxB", "GUR", 50, json.dumps(["Infinite draw"]), B_NAMES),
+    ("fxC", "", 10, json.dumps(["Win the game"]), C_NAMES),
+]
 
 
 def _name_id(store, name: str) -> str:
@@ -36,27 +37,37 @@ def _name_id(store, name: str) -> str:
     return cid
 
 
-def make_spellbook_db(path: Path, store) -> dict:
-    con = sqlite3.connect(path)
-    con.executescript(_SCHEMA)
-    combos = [
-        ("fxA", "", 100, json.dumps(["Infinite mana"]), A_NAMES),
-        ("fxB", "GUR", 50, json.dumps(["Infinite draw"]), B_NAMES),
-        ("fxC", "", 10, json.dumps(["Win the game"]), C_NAMES),
-    ]
-    for combo_id, identity, pop, produces, names in combos:
-        con.execute(
-            "INSERT INTO combos (combo_id, identity, popularity, bracket_tag, description, "
-            "mana_needed, easy_prereq, notable_prereq, produces, card_count) "
-            "VALUES (?,?,?,?,?,?,?,?,?,?)",
-            (combo_id, identity, pop, "", f"{combo_id} desc", "", "", "", produces, len(names)),
-        )
-        con.executemany(
-            "INSERT INTO combo_cards (combo_id, card_name, quantity, must_be_commander) "
-            "VALUES (?,?,1,0)", [(combo_id, n) for n in names])
-    con.commit()
-    con.close()
+def _restore_if_stashed(cur) -> None:
+    cur.execute("SELECT to_regclass('combos_real')")
+    if cur.fetchone()[0] is not None:
+        cur.execute("DROP TABLE IF EXISTS combos, combo_cards")
+        cur.execute("ALTER TABLE combos_real RENAME TO combos")
+        cur.execute("ALTER TABLE combo_cards_real RENAME TO combo_cards")
+
+
+def seed_spellbook_pg(store) -> dict:
+    with db.cursor(commit=True) as cur:
+        _restore_if_stashed(cur)                       # clean up any prior crash
+        cur.execute("ALTER TABLE combos RENAME TO combos_real")
+        cur.execute("ALTER TABLE combo_cards RENAME TO combo_cards_real")
+        cur.execute(
+            "CREATE TABLE combos (combo_id TEXT, identity TEXT, popularity BIGINT, "
+            "bracket_tag TEXT, description TEXT, mana_needed TEXT, produces TEXT)")
+        cur.execute("CREATE TABLE combo_cards (combo_id TEXT, card_name TEXT)")
+        for combo_id, identity, pop, produces, names in _COMBOS:
+            cur.execute(
+                "INSERT INTO combos (combo_id, identity, popularity, bracket_tag, "
+                "description, mana_needed, produces) VALUES (%s,%s,%s,%s,%s,%s,%s)",
+                (combo_id, identity, pop, "", f"{combo_id} desc", "", produces))
+            cur.executemany(
+                "INSERT INTO combo_cards (combo_id, card_name) VALUES (%s,%s)",
+                [(combo_id, n) for n in names])
     return {
         "a_members": [_name_id(store, n) for n in A_NAMES],
         "b_members": [_name_id(store, n) for n in B_NAMES],
     }
+
+
+def restore_spellbook_pg() -> None:
+    with db.cursor(commit=True) as cur:
+        _restore_if_stashed(cur)

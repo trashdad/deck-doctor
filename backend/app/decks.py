@@ -1,22 +1,20 @@
-"""SP6 — user deck persistence over data/userdecks.sqlite (read-WRITE).
+"""SP6 — user deck persistence in Postgres (the deckdoctor database, read-WRITE).
 
-This module owns the ONLY writable DB in the app. `Store` stays read-only.
-One connection, opened in `UserDecks.__init__` with check_same_thread=False,
-WAL + foreign_keys ON; a threading.Lock guards writes (FastAPI sync endpoints
-run in a threadpool). Saving cards is a FULL REPLACE inside one transaction.
-All methods return plain dicts; pydantic validation happens in the routers.
+The only mutable data in the app. Tables `decks` / `deck_cards` live in the same
+Postgres database as the read-only analytical tables (which are named
+corpus_*/cards/etc., so there is no collision). Postgres handles concurrency, so
+no app-level lock is needed; each call borrows a pooled connection. Saving cards
+is a FULL REPLACE inside one transaction. Timestamps are stored as ISO-8601 TEXT
+to keep the JSON contract identical to the previous SQLite implementation.
 """
 
 from __future__ import annotations
 
-import sqlite3
-import threading
 import uuid
 from datetime import datetime, timezone
 from functools import lru_cache
-from pathlib import Path
 
-from . import config
+from . import db
 
 
 def _now() -> str:
@@ -42,28 +40,24 @@ CREATE TABLE IF NOT EXISTS deck_cards (
 
 
 class UserDecks:
-    def __init__(self, path: Path):
-        self.path = path
-        path.parent.mkdir(parents=True, exist_ok=True)
-        self._lock = threading.Lock()
-        self._conn = sqlite3.connect(str(path), check_same_thread=False)
-        self._conn.execute("PRAGMA journal_mode=WAL")
-        self._conn.execute("PRAGMA foreign_keys=ON")
-        self._conn.executescript(_SCHEMA)
-        self._conn.commit()
+    def __init__(self) -> None:
+        with db.cursor(commit=True) as cur:
+            cur.execute(_SCHEMA)
 
     # ---- reads -----------------------------------------------------------
     def list_decks(self) -> list[dict]:
-        rows = self._conn.execute(
-            """
-            SELECT d.id, d.name, d.commander_id, d.updated_at,
-                   COALESCE(SUM(c.quantity), 0) AS card_count
-            FROM decks d
-            LEFT JOIN deck_cards c ON c.deck_id = d.id
-            GROUP BY d.id
-            ORDER BY d.updated_at DESC
-            """
-        ).fetchall()
+        with db.cursor() as cur:
+            cur.execute(
+                """
+                SELECT d.id, d.name, d.commander_id, d.updated_at,
+                       COALESCE(SUM(c.quantity), 0) AS card_count
+                FROM decks d
+                LEFT JOIN deck_cards c ON c.deck_id = d.id
+                GROUP BY d.id
+                ORDER BY d.updated_at DESC
+                """
+            )
+            rows = cur.fetchall()
         return [
             {"id": r[0], "name": r[1], "commander_id": r[2],
              "updated_at": r[3], "card_count": int(r[4])}
@@ -71,16 +65,17 @@ class UserDecks:
         ]
 
     def get(self, deck_id: str) -> dict | None:
-        row = self._conn.execute(
-            "SELECT id, name, commander_id, created_at, updated_at FROM decks WHERE id=?",
-            (deck_id,),
-        ).fetchone()
-        if row is None:
-            return None
-        cards = self._conn.execute(
-            "SELECT card_id, zone, quantity FROM deck_cards WHERE deck_id=?",
-            (deck_id,),
-        ).fetchall()
+        with db.cursor() as cur:
+            cur.execute(
+                "SELECT id, name, commander_id, created_at, updated_at FROM decks WHERE id=%s",
+                (deck_id,))
+            row = cur.fetchone()
+            if row is None:
+                return None
+            cur.execute(
+                "SELECT card_id, zone, quantity FROM deck_cards WHERE deck_id=%s",
+                (deck_id,))
+            cards = cur.fetchall()
         return {
             "id": row[0], "name": row[1], "commander_id": row[2],
             "created_at": row[3], "updated_at": row[4],
@@ -88,50 +83,44 @@ class UserDecks:
         }
 
     # ---- writes ----------------------------------------------------------
-    def _write_cards(self, deck_id: str, cards: list[dict]) -> None:
-        """Replace deck_cards for one deck. Caller holds the lock + a txn."""
-        self._conn.execute("DELETE FROM deck_cards WHERE deck_id=?", (deck_id,))
-        self._conn.executemany(
-            "INSERT INTO deck_cards (deck_id, card_id, zone, quantity) VALUES (?,?,?,?)",
-            [(deck_id, c.get("id") or c["card_id"], c.get("zone", "Utility"),
-              int(c.get("quantity", 1))) for c in cards],
-        )
+    def _write_cards(self, cur, deck_id: str, cards: list[dict]) -> None:
+        """Replace deck_cards for one deck. Caller holds the open cursor + txn."""
+        cur.execute("DELETE FROM deck_cards WHERE deck_id=%s", (deck_id,))
+        if cards:
+            cur.executemany(
+                "INSERT INTO deck_cards (deck_id, card_id, zone, quantity) VALUES (%s,%s,%s,%s)",
+                [(deck_id, c.get("id") or c["card_id"], c.get("zone", "Utility"),
+                  int(c.get("quantity", 1))) for c in cards])
 
     def create(self, name: str, commander_id: str | None, cards: list[dict]) -> str:
         deck_id = uuid.uuid4().hex
         ts = _now()
-        with self._lock:
-            self._conn.execute(
+        with db.cursor(commit=True) as cur:
+            cur.execute(
                 "INSERT INTO decks (id, name, commander_id, created_at, updated_at) "
-                "VALUES (?,?,?,?,?)",
-                (deck_id, name, commander_id, ts, ts),
-            )
-            self._write_cards(deck_id, cards)
-            self._conn.commit()
+                "VALUES (%s,%s,%s,%s,%s)",
+                (deck_id, name, commander_id, ts, ts))
+            self._write_cards(cur, deck_id, cards)
         return deck_id
 
     def update(self, deck_id: str, name: str, commander_id: str | None,
                cards: list[dict]) -> bool:
-        with self._lock:
-            exists = self._conn.execute(
-                "SELECT 1 FROM decks WHERE id=?", (deck_id,)).fetchone()
-            if exists is None:
+        with db.cursor(commit=True) as cur:
+            cur.execute("SELECT 1 FROM decks WHERE id=%s", (deck_id,))
+            if cur.fetchone() is None:
                 return False
-            self._conn.execute(
-                "UPDATE decks SET name=?, commander_id=?, updated_at=? WHERE id=?",
-                (name, commander_id, _now(), deck_id),
-            )
-            self._write_cards(deck_id, cards)
-            self._conn.commit()
+            cur.execute(
+                "UPDATE decks SET name=%s, commander_id=%s, updated_at=%s WHERE id=%s",
+                (name, commander_id, _now(), deck_id))
+            self._write_cards(cur, deck_id, cards)
         return True
 
     def delete(self, deck_id: str) -> bool:
-        with self._lock:
-            cur = self._conn.execute("DELETE FROM decks WHERE id=?", (deck_id,))
-            self._conn.commit()
-        return cur.rowcount > 0
+        with db.cursor(commit=True) as cur:
+            cur.execute("DELETE FROM decks WHERE id=%s", (deck_id,))
+            return cur.rowcount > 0
 
 
 @lru_cache(maxsize=1)
 def get_userdecks() -> UserDecks:
-    return UserDecks(config.USERDECKS_PATH)
+    return UserDecks()

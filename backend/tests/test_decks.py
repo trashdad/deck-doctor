@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
-from app import config, decks as decks_module  # noqa: E402
+from app import db, decks as decks_module  # noqa: E402
 from app.main import app  # noqa: E402
 from app.store import get_store  # noqa: E402
 
@@ -17,11 +17,15 @@ store = get_store()
 
 
 @pytest.fixture(autouse=True)
-def userdecks_tmp(tmp_path, monkeypatch):
-    """Fresh file-backed userdecks DB per test; clear the lru_cache around each."""
-    monkeypatch.setattr(config, "USERDECKS_PATH", tmp_path / "userdecks.sqlite")
+def userdecks_tmp():
+    """Clean userdecks (Postgres) slate per test; clear the lru_cache around each."""
     decks_module.get_userdecks.cache_clear()
+    decks_module.get_userdecks()            # ensure the schema exists
+    with db.cursor(commit=True) as cur:
+        cur.execute("TRUNCATE deck_cards, decks RESTART IDENTITY CASCADE")
     yield
+    with db.cursor(commit=True) as cur:
+        cur.execute("TRUNCATE deck_cards, decks RESTART IDENTITY CASCADE")
     decks_module.get_userdecks.cache_clear()
 
 

@@ -11,37 +11,58 @@ simmander.app/deckdoctor/api -> Deck Doctor API  (FastAPI :8002)
 ```
 
 ## 0. Prerequisites on the box
-- Node 20+ and a Python 3.13 venv (`/opt/deck-doctor/.venv`).
+- Node 20+ and a Python 3.13+ venv (`/opt/deck-doctor/.venv`).
 - The repo cloned to `/opt/deck-doctor` (origin: the `deck-doctor` GitHub repo).
+- **Postgres 16** (the tracker already runs it) — Deck Doctor gets its **own
+  database** on that server, isolated from the tracker.
 - Ports **8002** (API) and **3001** (web) free — the tracker uses 8000.
 
 ## 1. Backend
 ```bash
 cd /opt/deck-doctor/backend
-/opt/deck-doctor/.venv/bin/pip install -r requirements.txt   # fastapi, uvicorn, pydantic, python-dotenv
+/opt/deck-doctor/.venv/bin/pip install -r requirements.txt   # incl. psycopg2-binary
 ```
 
-## 2. Data (the one heavy step)
-The API reads `data/cards.json` (committed, ~21 MB) plus several SQLite stores that are
-**gitignored and must be present on the box**:
-`scores.sqlite` (~292 MB), `edhrec.sqlite`, `decks.sqlite`, `spellbook.sqlite`.
-Two ways to get them there:
+## 2. Database (its own deckdoctor DB on the shared Postgres)
+Create an isolated role + database (one line; separate from the tracker's DB):
+```bash
+sudo -u postgres psql -c "CREATE ROLE deckdoctor LOGIN PASSWORD 'STRONG_PW';"
+sudo -u postgres psql -c "CREATE DATABASE deckdoctor OWNER deckdoctor;"
+export DATABASE_URL=postgresql://deckdoctor:STRONG_PW@127.0.0.1:5432/deckdoctor
+```
+Put the same `DATABASE_URL` in `deploy/systemd/deckdoctor-api.service`.
 
-- **Ship the prebuilt stores (fastest):** rsync them from a machine that already built them:
+The app reads `data/cards.json` (committed, ~21 MB) and **Postgres** for everything
+else. The analytical tables are loaded into Postgres from the offline SQLite build
+artifacts (gitignored, regenerable). Two ways to populate the DB:
+
+- **Ship a dump (fastest, dev→prod):** on a machine that already built + loaded the
+  data, `pg_dump` it; restore on the box:
+  ```bash
+  # on dev:
+  pg_dump --no-owner --no-acl -Fc deckdoctor > deckdoctor.dump
+  rsync -avz deckdoctor.dump simmander@VPS:/tmp/
+  # on the box:
+  pg_restore --no-owner --clean --if-exists -d deckdoctor /tmp/deckdoctor.dump
+  ```
+- **Or rsync the SQLite artifacts + load them into PG on the box:**
   ```bash
   rsync -avz data/{scores.sqlite,edhrec.sqlite,decks.sqlite,spellbook.sqlite} \
         simmander@VPS:/opt/deck-doctor/data/
+  python tools/load_to_postgres.py        # mirrors the artifacts into Postgres
   ```
-- **Or rebuild on the box** (needs the scraped corpus + sibling combo catalogs):
+- **Or rebuild from scratch** (needs the scraped corpus + sibling combo catalogs),
+  then `python tools/load_to_postgres.py`:
   ```bash
   python tools/scrape_decklists/load_corpus.py
   python scoring/build_relationships.py --db data/scores.sqlite \
     --catalog ../simmander/data/combo_catalog.json --catalog ../simmander/data/known_combos.json
   python scoring/build_cooccurrence.py --scores data/scores.sqlite \
     --decks data/decks.sqlite --edhrec data/edhrec.sqlite --min-support 20
-  python tools/import_spellbook/load_spellbook.py   # spellbook.sqlite
+  python tools/import_spellbook/load_spellbook.py
+  python tools/load_to_postgres.py
   ```
-`userdecks.sqlite` is created automatically on first write.
+The userdecks tables are created automatically on first write.
 
 ## 3. Frontend (build with the path prefix)
 `basePath=/deckdoctor` is the default; nothing to set.

@@ -1,21 +1,36 @@
-# SP11 — full deckbuilder stack. Run from the repo root:
+# Deck Doctor — full stack. Run from the repo root:
 #   docker compose -f deploy/compose.yaml up --build
-# The backend reads the prebuilt sqlite stores from the mounted ../data (read-only)
-# and writes user decks to the named `userdata` volume.
+# Postgres holds all app data; the backend reads cards.json from the mounted ../data.
+# Load data once after the DB is up:
+#   docker compose -f deploy/compose.yaml exec backend python /app/tools/load_to_postgres.py
+# (the SQLite artifacts in ../data are the build input the loader mirrors into PG.)
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: deckdoctor
+      POSTGRES_PASSWORD: deckdoctor
+      POSTGRES_DB: deckdoctor
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U deckdoctor"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
     build:
       context: ..
       dockerfile: deploy/Dockerfile.backend
     volumes:
-      - ../data:/app/data:ro            # scores/edhrec/decks/spellbook sqlite (host-built)
-      - userdata:/app/userdata          # writable: userdecks.sqlite
+      - ../data:/app/data:ro            # cards.json + the SQLite build artifacts (loader input)
     environment:
       SIMMANDER_CARDS: /app/data/cards.json
-      SIMMANDER_SCORES: /app/data/scores.sqlite
-      SIMMANDER_EDHREC: /app/data/edhrec.sqlite
-      SIMMANDER_SPELLBOOK: /app/data/spellbook.sqlite
-      SIMMANDER_USERDECKS: /app/userdata/userdecks.sqlite
+      DATABASE_URL: postgresql://deckdoctor:deckdoctor@db:5432/deckdoctor
+    depends_on:
+      db:
+        condition: service_healthy
     expose:
       - "8001"
 
@@ -41,5 +56,5 @@ services:
   #   depends_on: [frontend]
 
 volumes:
-  userdata: {}
+  pgdata: {}
   # caddy_data: {}

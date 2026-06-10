@@ -8,23 +8,24 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
-from app import config, store as store_module  # noqa: E402
+from app import store as store_module  # noqa: E402
 from app.main import app  # noqa: E402
 from app.store import get_store  # noqa: E402
 from app.suggest import recommend  # noqa: E402
-from tests.fixtures.spellbook_fixture import make_spellbook_db  # noqa: E402
+from tests.fixtures.spellbook_fixture import (  # noqa: E402
+    restore_spellbook_pg, seed_spellbook_pg)
 
 client = TestClient(app)
 
 
 @pytest.fixture
-def fx(tmp_path, monkeypatch):
-    """Swap in the fixture spellbook + a fresh Store; restore the real store after."""
+def fx():
+    """Swap a 2-combo fixture into Postgres + a fresh Store; restore after."""
     real = get_store()                       # resolve fixture names via the real index
-    members = make_spellbook_db(tmp_path / "spellbook.sqlite", real)
-    monkeypatch.setattr(config, "SPELLBOOK_PATH", tmp_path / "spellbook.sqlite")
+    members = seed_spellbook_pg(real)
     store_module.get_store.cache_clear()
     yield {"store": get_store(), "members": members}
+    restore_spellbook_pg()
     store_module.get_store.cache_clear()     # next access rebuilds the real store
 
 

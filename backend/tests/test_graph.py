@@ -58,11 +58,10 @@ def test_graph_thresholds():
             assert e["weight"] == 1.0
 
 
-def test_graph_combo_edges(tmp_path, monkeypatch):
-    from app import config, store as store_module
-    from tests.fixtures.spellbook_fixture import make_spellbook_db
-    members = make_spellbook_db(tmp_path / "spellbook.sqlite", store)
-    monkeypatch.setattr(config, "SPELLBOOK_PATH", tmp_path / "spellbook.sqlite")
+def test_graph_combo_edges():
+    from app import store as store_module
+    from tests.fixtures.spellbook_fixture import restore_spellbook_pg, seed_spellbook_pg
+    members = seed_spellbook_pg(store)
     store_module.get_store.cache_clear()
     try:
         s = get_store()
@@ -74,6 +73,7 @@ def test_graph_combo_edges(tmp_path, monkeypatch):
         assert (lo, hi) in combo_edges
         assert all(e["weight"] == 1.0 for e in g["edges"] if e["kind"] == "combo")
     finally:
+        restore_spellbook_pg()
         store_module.get_store.cache_clear()
 
 

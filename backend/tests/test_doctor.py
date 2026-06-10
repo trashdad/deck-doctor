@@ -109,11 +109,10 @@ def test_cuts_orders_low_contribution_first():
     assert any(o in cut_ids[:3] for o in offplan)
 
 
-def test_cuts_protects_complete_combos(tmp_path, monkeypatch):
-    from app import config, store as store_module
-    from tests.fixtures.spellbook_fixture import make_spellbook_db
-    members = make_spellbook_db(tmp_path / "spellbook.sqlite", store)
-    monkeypatch.setattr(config, "SPELLBOOK_PATH", tmp_path / "spellbook.sqlite")
+def test_cuts_protects_complete_combos():
+    from app import store as store_module
+    from tests.fixtures.spellbook_fixture import restore_spellbook_pg, seed_spellbook_pg
+    members = seed_spellbook_pg(store)
     store_module.get_store.cache_clear()
     try:
         s = get_store()
@@ -124,4 +123,5 @@ def test_cuts_protects_complete_combos(tmp_path, monkeypatch):
         cut_ids = {c["card_id"] for c in cuts}
         assert not (set(a) & cut_ids)                  # combo members protected
     finally:
+        restore_spellbook_pg()
         store_module.get_store.cache_clear()

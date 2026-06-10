@@ -23,6 +23,7 @@ from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCom
                      GraphResponse, ImportRequest, ImportResult, PairScore,
                      RelationshipNeighbor, SpellbookCombo, SuggestionResponse,
                      TemplatesResponse, ThemeSuggestRequest, ThemeSuggestResponse)
+from . import db
 from .store import get_store
 from .suggest import is_commander, recommend
 from .templates import TEMPLATES, THEMES, theme_suggest
@@ -64,7 +65,7 @@ def health() -> dict:
     store = get_store()
     return {
         "status": "ok",
-        "scores_loaded": store.scores_path.exists(),
+        "scores_loaded": store.scores_loaded,
         "cards": len(store._cards),
         "edhrec_commanders": len(store._edhrec),
         "spellbook_combos": len(store._spellbook),
@@ -82,6 +83,7 @@ def admin_reload() -> dict:
     scraped decks become visible to live recommendations — see tools/refresh_loop.py.
     """
     get_store.cache_clear()
+    db.reset_pool()       # reconnect so a fresh load_to_postgres run is picked up
     store = get_store()
     return {
         "status": "reloaded",

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 import math
-import sqlite3
 from functools import lru_cache
 from pathlib import Path
 
@@ -65,24 +64,24 @@ _COMPLEMENT_PAIRS: list[tuple[str, str]] = [
     ("e:tap",          "t:tapped"),
 ]
 
-from . import config
+from . import config, db
 
 
 class Store:
-    def __init__(self, cards_path: Path, scores_path: Path):
+    def __init__(self, cards_path: Path):
         self._cards: dict[str, dict] = {}
         self._ier: dict[str, float] = {}
         self._tags: dict[str, list[str]] = {}
-        self.scores_path = scores_path
+        self.scores_loaded = False
         self._load_cards(cards_path)
-        self._load_score_enrichment(scores_path)
+        self._load_score_enrichment()
         self._load_semantics()
         self._load_name_index()
-        self._load_edhrec(config.EDHREC_PATH)
+        self._load_edhrec()
         self._load_engines()
         self._load_staples()
-        self._load_spellbook(config.SPELLBOOK_PATH)
-        self._load_commander_decks(config.DECKS_PATH)
+        self._load_spellbook()
+        self._load_commander_decks()
 
     def _load_cards(self, path: Path) -> None:
         if not path.exists():
@@ -93,14 +92,12 @@ class Store:
         for c in cards:
             self._cards[c["id"]] = c
 
-    def _load_score_enrichment(self, path: Path) -> None:
-        if not path.exists():
-            return
-        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
-        for cid, ier, tags in conn.execute("SELECT id, ier, mechanic_tags FROM cards"):
+    def _load_score_enrichment(self) -> None:
+        rows = db.query("SELECT id, ier, mechanic_tags FROM cards")
+        for cid, ier, tags in rows:
             self._ier[cid] = ier
             self._tags[cid] = json.loads(tags or "[]")
-        conn.close()
+        self.scores_loaded = bool(rows)
 
     # ---- card access -----------------------------------------------------
     def get(self, card_id: str) -> dict | None:
@@ -135,21 +132,12 @@ class Store:
     def ier(self, card_id: str) -> float | None:
         return self._ier.get(card_id)
 
-    # ---- synergy access (O(1) indexed reads) -----------------------------
-    def _conn(self) -> sqlite3.Connection:
-        return sqlite3.connect(f"file:{self.scores_path}?mode=ro", uri=True)
-
+    # ---- synergy access (O(1) indexed reads against Postgres) ------------
     def pair(self, a: str, b: str) -> dict | None:
-        if not self.scores_path.exists():
-            return None
         key = tuple(sorted((a, b)))
-        conn = self._conn()
-        row = conn.execute(
+        row = db.query_one(
             "SELECT card_a, card_b, css, der, lift FROM synergies "
-            "WHERE card_a=? AND card_b=?",
-            key,
-        ).fetchone()
-        conn.close()
+            "WHERE card_a=%s AND card_b=%s", key)
         if not row:
             return None
         return {"card_a": row[0], "card_b": row[1], "css": row[2],
@@ -157,20 +145,10 @@ class Store:
 
     def relationship(self, a: str, b: str) -> dict | None:
         """Return the typed relationship edge from card_relationships, or None."""
-        if not self.scores_path.exists():
-            return None
         lo, hi = sorted([a, b])
-        conn = self._conn()
-        try:
-            row = conn.execute(
-                "SELECT similarity, synergy_ab, synergy_ba, anti_synergy, combo, combo_id "
-                "FROM card_relationships WHERE a=? AND b=?",
-                (lo, hi),
-            ).fetchone()
-        except sqlite3.OperationalError:
-            return None
-        finally:
-            conn.close()
+        row = db.query_one(
+            "SELECT similarity, synergy_ab, synergy_ba, anti_synergy, combo, combo_id "
+            "FROM card_relationships WHERE a=%s AND b=%s", (lo, hi))
         if row is None:
             return None
         sim, ab, ba, anti, combo, combo_id = row
@@ -187,18 +165,10 @@ class Store:
 
     def cooccurrence(self, a: str, b: str) -> dict | None:
         """Co-occurrence block from card_cooccurrence, or None."""
-        if not self.scores_path.exists():
-            return None
         lo, hi = sorted([a, b])
-        conn = self._conn()
-        try:
-            row = conn.execute(
-                "SELECT co_count, lift, jaccard, support FROM card_cooccurrence "
-                "WHERE a=? AND b=?", (lo, hi)).fetchone()
-        except sqlite3.OperationalError:
-            return None
-        finally:
-            conn.close()
+        row = db.query_one(
+            "SELECT co_count, lift, jaccard, support FROM card_cooccurrence "
+            "WHERE a=%s AND b=%s", (lo, hi))
         if row is None:
             return None
         return {"co_count": row[0], "lift": row[1], "jaccard": row[2], "support": row[3]}
@@ -226,15 +196,10 @@ class Store:
         return {"engines": engines, "combos": combos}
 
     def neighbours(self, card_id: str, limit: int = 12) -> list[dict]:
-        if not self.scores_path.exists():
-            return []
-        conn = self._conn()
-        rows = conn.execute(
+        rows = db.query(
             "SELECT card_a, card_b, css, der, lift FROM synergies "
-            "WHERE card_a=? OR card_b=? ORDER BY der DESC LIMIT ?",
-            (card_id, card_id, limit),
-        ).fetchall()
-        conn.close()
+            "WHERE card_a=%s OR card_b=%s ORDER BY der DESC LIMIT %s",
+            (card_id, card_id, limit))
         return [{"card_a": r[0], "card_b": r[1], "css": r[2],
                  "der": r[3], "lift": bool(r[4])} for r in rows]
 
@@ -250,20 +215,11 @@ class Store:
             if " // " in name:
                 self._name_to_id.setdefault(name.split(" // ", 1)[0], cid)
 
-    def _load_edhrec(self, path: Path) -> None:
-        """commander_id -> {card_id: (synergy, inclusion)}; empty when file absent."""
+    def _load_edhrec(self) -> None:
+        """commander_id -> {card_id: (synergy, inclusion)}; empty when table absent."""
         self._edhrec: dict[str, dict[str, tuple[float, float]]] = {}
-        if not path.exists():
-            return
-        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
-        try:
-            rows = conn.execute(
-                "SELECT commander, card_name, synergy, inclusion FROM edhrec_metrics"
-            ).fetchall()
-        except sqlite3.OperationalError:
-            return
-        finally:
-            conn.close()
+        rows = db.query(
+            "SELECT commander, card_name, synergy, inclusion FROM edhrec_metrics")
         for commander, card_name, synergy, inclusion in rows:
             cmd_id = self._name_to_id.get((commander or "").lower())
             card_id = self._name_to_id.get((card_name or "").lower())
@@ -276,17 +232,8 @@ class Store:
         """All engines rows in memory + inverted member -> engine indices."""
         self._engines: list[dict] = []
         self._engines_by_member: dict[str, list[int]] = {}
-        if not self.scores_path.exists():
-            return
-        conn = self._conn()
-        try:
-            rows = conn.execute(
-                "SELECT engine_id, members, kind, asserted_combo, candidate, score "
-                "FROM engines").fetchall()
-        except sqlite3.OperationalError:
-            return
-        finally:
-            conn.close()
+        rows = db.query(
+            "SELECT engine_id, members, kind, asserted_combo, candidate, score FROM engines")
         for engine_id, members_json, kind, asserted, candidate, score in rows:
             members = json.loads(members_json)
             idx = len(self._engines)
@@ -301,19 +248,11 @@ class Store:
     def _load_staples(self) -> None:
         """Per-card deck-frequency proxy (max co_count over its pairs), sorted desc."""
         freq: dict[str, int] = {}
-        if self.scores_path.exists():
-            conn = self._conn()
-            try:
-                for side in ("a", "b"):
-                    for cid, mx in conn.execute(
-                        f"SELECT {side}, MAX(co_count) FROM card_cooccurrence GROUP BY {side}"
-                    ):
-                        if mx and mx > freq.get(cid, 0):
-                            freq[cid] = mx
-            except sqlite3.OperationalError:
-                pass
-            finally:
-                conn.close()
+        for side in ("a", "b"):
+            for cid, mx in db.query(
+                    f"SELECT {side}, MAX(co_count) FROM card_cooccurrence GROUP BY {side}"):
+                if mx and mx > freq.get(cid, 0):
+                    freq[cid] = mx
         self._deck_freq = freq
         self._staples: list[tuple[str, int]] = sorted(
             freq.items(), key=lambda kv: (-kv[1], kv[0]))
@@ -322,28 +261,20 @@ class Store:
         return self._edhrec.get(commander_id, {})
 
     # ---- commander popularity (corpus deck count) ------------------------
-    def _load_commander_decks(self, path: Path) -> None:
+    def _load_commander_decks(self) -> None:
         """commander card_id -> number of corpus decks led by it (popularity proxy).
 
-        decks.sqlite carries one row per scraped deck with a `commander` NAME; we
+        corpus_decks carries one row per scraped deck with a `commander` NAME; we
         count rows per name and resolve each name to a card id via the name index.
         Absent/empty ⇒ all zero (the commander list still renders, just without a
         popularity signal). Partner/pair commanders are keyed on the single stored
         name in v1 — multi-commander attribution is a later refinement.
         """
         self._commander_decks: dict[str, int] = {}
-        if not path.exists():
-            return
-        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
-        try:
-            rows = conn.execute(
-                "SELECT commander, COUNT(*) FROM decks "
-                "WHERE commander IS NOT NULL AND commander != '' "
-                "GROUP BY commander").fetchall()
-        except sqlite3.OperationalError:
-            return
-        finally:
-            conn.close()
+        rows = db.query(
+            "SELECT commander, COUNT(*) FROM corpus_decks "
+            "WHERE commander IS NOT NULL AND commander != '' "
+            "GROUP BY commander")
         for name, count in rows:
             cid = self._name_to_id.get((name or "").lower())
             if cid is not None:  # several names (e.g. `A // B`) may map to one id
@@ -387,29 +318,21 @@ class Store:
         return out[:limit] if limit and limit > 0 else out
 
     # ---- SP7: Commander Spellbook combos (roadmap §7.3) -------------------
-    def _load_spellbook(self, path: Path) -> None:
-        """Load data/spellbook.sqlite into memory; resolve card names to ids.
+    def _load_spellbook(self) -> None:
+        """Load the spellbook combos into memory; resolve card names to ids.
 
         Combos with any unresolvable member are skipped (counted + logged once).
-        Absent file ⇒ both structures stay empty (engine degrades, never breaks).
+        Empty tables ⇒ both structures stay empty (engine degrades, never breaks).
         """
         self._spellbook: list[dict] = []
         self._spellbook_by_member: dict[str, list[int]] = {}
-        if not path.exists():
-            return
-        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
-        try:
-            combos = conn.execute(
-                "SELECT combo_id, identity, popularity, bracket_tag, description, "
-                "mana_needed, produces FROM combos").fetchall()
-            members_by_combo: dict[str, list[str]] = {}
-            for combo_id, card_name in conn.execute(
-                    "SELECT combo_id, card_name FROM combo_cards"):
-                members_by_combo.setdefault(combo_id, []).append(card_name)
-        except sqlite3.OperationalError:
-            conn.close()
-            return
-        conn.close()
+        combos = db.query(
+            "SELECT combo_id, identity, popularity, bracket_tag, description, "
+            "mana_needed, produces FROM combos")
+        members_by_combo: dict[str, list[str]] = {}
+        for combo_id, card_name in db.query(
+                "SELECT combo_id, card_name FROM combo_cards"):
+            members_by_combo.setdefault(combo_id, []).append(card_name)
 
         skipped = 0
         for combo_id, identity, popularity, bracket_tag, description, mana_needed, produces in combos:
@@ -496,39 +419,23 @@ class Store:
     # ---- SP5/SP4 neighbor reads (indexed, O(neighbors)) -------------------
     def cooccurrence_neighbors(self, card_id: str, limit: int = 30) -> list[tuple[str, float, float]]:
         """[(other_id, lift, jaccard)] ordered by lift desc."""
-        if not self.scores_path.exists():
-            return []
-        conn = self._conn()
-        try:
-            rows = conn.execute(
-                "SELECT b, lift, jaccard FROM card_cooccurrence WHERE a=? "
-                "ORDER BY lift DESC LIMIT ?", (card_id, limit)).fetchall()
-            rows += conn.execute(
-                "SELECT a, lift, jaccard FROM card_cooccurrence WHERE b=? "
-                "ORDER BY lift DESC LIMIT ?", (card_id, limit)).fetchall()
-        except sqlite3.OperationalError:
-            return []
-        finally:
-            conn.close()
+        rows = db.query(
+            "SELECT b, lift, jaccard FROM card_cooccurrence WHERE a=%s "
+            "ORDER BY lift DESC LIMIT %s", (card_id, limit))
+        rows += db.query(
+            "SELECT a, lift, jaccard FROM card_cooccurrence WHERE b=%s "
+            "ORDER BY lift DESC LIMIT %s", (card_id, limit))
         rows.sort(key=lambda r: -(r[1] or 0.0))
         return [(r[0], r[1] or 0.0, r[2] or 0.0) for r in rows[:limit]]
 
     def synergy_neighbors(self, card_id: str, limit: int = 30) -> list[tuple[str, float]]:
         """[(other_id, max(synergy_ab, synergy_ba))] ordered desc."""
-        if not self.scores_path.exists():
-            return []
-        conn = self._conn()
-        try:
-            rows = conn.execute(
-                "SELECT b, synergy_ab, synergy_ba FROM card_relationships WHERE a=? "
-                "ORDER BY synergy_ab DESC LIMIT ?", (card_id, limit)).fetchall()
-            rows += conn.execute(
-                "SELECT a, synergy_ab, synergy_ba FROM card_relationships WHERE b=? "
-                "ORDER BY synergy_ba DESC LIMIT ?", (card_id, limit)).fetchall()
-        except sqlite3.OperationalError:
-            return []
-        finally:
-            conn.close()
+        rows = db.query(
+            "SELECT b, synergy_ab, synergy_ba FROM card_relationships WHERE a=%s "
+            "ORDER BY synergy_ab DESC LIMIT %s", (card_id, limit))
+        rows += db.query(
+            "SELECT a, synergy_ab, synergy_ba FROM card_relationships WHERE b=%s "
+            "ORDER BY synergy_ba DESC LIMIT %s", (card_id, limit))
         best: dict[str, float] = {}
         for other, ab, ba in rows:
             v = max(ab or 0.0, ba or 0.0)
@@ -538,20 +445,12 @@ class Store:
 
     def similarity_neighbors(self, card_id: str, limit: int = 30) -> list[tuple[str, float]]:
         """[(other_id, similarity)] ordered desc (per-card rows fetched via index, sorted here)."""
-        if not self.scores_path.exists():
-            return []
-        conn = self._conn()
-        try:
-            rows = conn.execute(
-                "SELECT b, similarity FROM card_relationships WHERE a=? AND similarity > 0",
-                (card_id,)).fetchall()
-            rows += conn.execute(
-                "SELECT a, similarity FROM card_relationships WHERE b=? AND similarity > 0",
-                (card_id,)).fetchall()
-        except sqlite3.OperationalError:
-            return []
-        finally:
-            conn.close()
+        rows = db.query(
+            "SELECT b, similarity FROM card_relationships WHERE a=%s AND similarity > 0",
+            (card_id,))
+        rows += db.query(
+            "SELECT a, similarity FROM card_relationships WHERE b=%s AND similarity > 0",
+            (card_id,))
         rows.sort(key=lambda r: (-(r[1] or 0.0), r[0]))
         return [(r[0], r[1] or 0.0) for r in rows[:limit]]
 
@@ -563,25 +462,22 @@ class Store:
 
     # ---- semantic tag access -----------------------------------------------
     def _load_semantics(self) -> None:
-        """Load per-ability and flat semantic tags from the SQLite store."""
+        """Load per-ability and flat semantic tags from Postgres."""
         self._ability_tags: dict[str, list[list[str]]] = {}  # card_id -> [[tags per ability]]
         self._flat_tags_sem: dict[str, list[str]] = {}        # card_id -> flat union
         self._tag_inverted: dict[str, list[str]] = {}         # tag -> [card_ids]
         self._idf: dict[str, float] = {}                      # tag -> IDF weight
-        if not self.scores_path.exists():
-            return
-        conn = sqlite3.connect(f"file:{self.scores_path}?mode=ro", uri=True)
         # ability tags
-        rows = conn.execute("SELECT card_id, ability_idx, tags FROM card_ability_tags ORDER BY card_id, ability_idx").fetchall()
-        for card_id, _, tags_json in rows:
+        for card_id, _, tags_json in db.query(
+                "SELECT card_id, ability_idx, tags FROM card_ability_tags "
+                "ORDER BY card_id, ability_idx"):
             self._ability_tags.setdefault(card_id, []).append(json.loads(tags_json))
         # flat tags
-        for card_id, tags_json in conn.execute("SELECT card_id, tags FROM card_flat_tags").fetchall():
+        for card_id, tags_json in db.query("SELECT card_id, tags FROM card_flat_tags"):
             self._flat_tags_sem[card_id] = json.loads(tags_json)
         # inverted index
-        for tag, ids_json in conn.execute("SELECT tag, card_ids FROM tag_inverted_index").fetchall():
+        for tag, ids_json in db.query("SELECT tag, card_ids FROM tag_inverted_index"):
             self._tag_inverted[tag] = json.loads(ids_json)
-        conn.close()
         # IDF weights: log(N / df)
         N = max(len(self._flat_tags_sem), 1)
         for tag, ids in self._tag_inverted.items():
@@ -766,4 +662,4 @@ class Store:
 
 @lru_cache(maxsize=1)
 def get_store() -> Store:
-    return Store(config.CARDS_PATH, config.SCORES_PATH)
+    return Store(config.CARDS_PATH)
