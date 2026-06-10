@@ -1,4 +1,15 @@
-# Simmander Deckbuilder — Session Handoff (2026-06-10)
+# Simmander Deckbuilder — Session Handoff (2026-06-10, post-Beta)
+
+> **UPDATE (2026-06-10, later session):** Both pending items below are DONE.
+> 1. The scrape finished and the rebuild ran: decks.sqlite **4,255** decks, edhrec.sqlite
+>    **355 commanders / 94,970 rows**, card_cooccurrence **97,598** pairs, relationships re-fused.
+> 2. SP5 + SP4 are **implemented and shipped** (plan: `docs/superpowers/plans/2026-06-10-sp5-sp4-beta.md`),
+>    plus a Suggestions panel UI. Senior redesign deltas vs. the specs: accumulation scoring
+>    (O(|D|·K) not O(|D|²·K)), in-memory engines index (replaces per-request full scan in
+>    `deck_engines`), name→id resolution incl. `//` front faces, static banlist in `suggest.py`.
+>    Verified: 24 backend + 88 scoring tests pass, `npm run build` clean, full Playwright pass
+>    (explorer all 5 axes, pair inspect, pivot/breadcrumb, add; suggestions tier=EDHREC w/ reasons).
+> Remaining ideas: graph view of relationships; type-aware suggestion balancing; weight tuning UI.
 
 Self-contained handoff for resuming in a fresh session / different model. Repo:
 `C:\simmander\simmander-deckbuilder` (its own git repo, **on `main`**, **49 commits ahead of

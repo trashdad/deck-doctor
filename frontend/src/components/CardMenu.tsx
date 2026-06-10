@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Card } from "@/lib/types";
 import { useSemanticStore } from "@/store/semantic";
-import { useCardLookupStore } from "@/store/cardLookup";
+import { useRelationshipStore } from "@/store/relationship";
 
 interface CardMenuProps {
   card: Card;
@@ -14,7 +14,7 @@ interface CardMenuProps {
 
 export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
   const openCard = useSemanticStore((s) => s.openCard);
-  const openLookup = useCardLookupStore((s) => s.open);
+  const openExplorer = useRelationshipStore((s) => s.open);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
 
   const W = 220;
   const maxLeft = typeof window !== "undefined" ? window.innerWidth - W - 8 : 9999;
-  const maxTop = typeof window !== "undefined" ? window.innerHeight - 260 : 9999;
+  const maxTop = typeof window !== "undefined" ? window.innerHeight - 360 : 9999;
   const left = Math.min(anchor.x, maxLeft);
   const top = Math.min(anchor.y, maxTop);
 
@@ -57,7 +57,7 @@ export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
       <div className="py-1">
         <button
           onClick={() => {
-            void openLookup(card, "similar");
+            openExplorer(card, "similar");
             onClose();
           }}
           className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs
@@ -65,12 +65,38 @@ export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
                      hover:bg-accent/10 hover:text-accent"
         >
           <span className="text-accent opacity-80">◈</span>
-          CARDS MOST SIMILAR
+          SIMILAR CARDS
         </button>
 
         <button
           onClick={() => {
-            void openLookup(card, "combos");
+            openExplorer(card, "synergy");
+            onClose();
+          }}
+          className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs
+                     font-semibold tracking-wide text-zinc-200 transition
+                     hover:bg-accent/10 hover:text-accent"
+        >
+          <span className="text-accent opacity-80">⚡</span>
+          SYNERGIZES WITH
+        </button>
+
+        <button
+          onClick={() => {
+            openExplorer(card, "cooccurrence");
+            onClose();
+          }}
+          className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs
+                     font-semibold tracking-wide text-zinc-200 transition
+                     hover:bg-accent/10 hover:text-accent"
+        >
+          <span className="text-accent opacity-80">◫</span>
+          PLAYED WITH
+        </button>
+
+        <button
+          onClick={() => {
+            openExplorer(card, "combos");
             onClose();
           }}
           className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs
@@ -78,7 +104,7 @@ export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
                      hover:bg-accent/10 hover:text-accent"
         >
           <span className="text-accent opacity-80">⬡</span>
-          BEST PAIRING / COMBOS
+          COMBOS &amp; ENGINES
         </button>
 
         <button

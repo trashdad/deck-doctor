@@ -77,6 +77,10 @@ class Store:
         self._load_cards(cards_path)
         self._load_score_enrichment(scores_path)
         self._load_semantics()
+        self._load_name_index()
+        self._load_edhrec(config.EDHREC_PATH)
+        self._load_engines()
+        self._load_staples()
 
     def _load_cards(self, path: Path) -> None:
         if not path.exists():
@@ -198,32 +202,25 @@ class Store:
         return {"co_count": row[0], "lift": row[1], "jaccard": row[2], "support": row[3]}
 
     def deck_engines(self, ids: list[str]) -> dict:
-        """Return engines and combos from the engines table that are fully in ids."""
+        """Return engines and combos (from the in-memory index) fully contained in ids."""
         idset = set(ids)
         engines: list[dict] = []
         combos: list[dict] = []
-        if not self.scores_path.exists():
-            return {"engines": [], "combos": []}
-        conn = self._conn()
-        try:
-            rows = conn.execute(
-                "SELECT engine_id, members, kind, asserted_combo, candidate FROM engines"
-            ).fetchall()
-        except sqlite3.OperationalError:
-            return {"engines": [], "combos": []}
-        finally:
-            conn.close()
-        import json as _json
-        for engine_id, members_json, kind, asserted, candidate in rows:
-            members = _json.loads(members_json)
-            if set(members) <= idset:
-                entry = {
-                    "engine_id": engine_id,
-                    "members": members,
-                    "kind": kind,
-                    "candidate": bool(candidate),
-                }
-                (combos if asserted else engines).append(entry)
+        seen: set[str] = set()
+        for cid in idset:
+            for idx in self._engines_by_member.get(cid, ()):
+                eng = self._engines[idx]
+                if eng["engine_id"] in seen:
+                    continue
+                if set(eng["members"]) <= idset:
+                    seen.add(eng["engine_id"])
+                    entry = {
+                        "engine_id": eng["engine_id"],
+                        "members": eng["members"],
+                        "kind": eng["kind"],
+                        "candidate": eng["candidate"],
+                    }
+                    (combos if eng["asserted"] else engines).append(entry)
         return {"engines": engines, "combos": combos}
 
     def neighbours(self, card_id: str, limit: int = 12) -> list[dict]:
@@ -238,6 +235,177 @@ class Store:
         conn.close()
         return [{"card_a": r[0], "card_b": r[1], "css": r[2],
                  "der": r[3], "lift": bool(r[4])} for r in rows]
+
+    # ---- SP5/SP4 startup loads -------------------------------------------
+    def _load_name_index(self) -> None:
+        """name (lowercased; full + front face of `A // B`) -> card id."""
+        self._name_to_id: dict[str, str] = {}
+        for cid, card in self._cards.items():
+            name = (card.get("name") or "").lower()
+            if not name:
+                continue
+            self._name_to_id.setdefault(name, cid)
+            if " // " in name:
+                self._name_to_id.setdefault(name.split(" // ", 1)[0], cid)
+
+    def _load_edhrec(self, path: Path) -> None:
+        """commander_id -> {card_id: (synergy, inclusion)}; empty when file absent."""
+        self._edhrec: dict[str, dict[str, tuple[float, float]]] = {}
+        if not path.exists():
+            return
+        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+        try:
+            rows = conn.execute(
+                "SELECT commander, card_name, synergy, inclusion FROM edhrec_metrics"
+            ).fetchall()
+        except sqlite3.OperationalError:
+            return
+        finally:
+            conn.close()
+        for commander, card_name, synergy, inclusion in rows:
+            cmd_id = self._name_to_id.get((commander or "").lower())
+            card_id = self._name_to_id.get((card_name or "").lower())
+            if cmd_id is None or card_id is None:
+                continue
+            self._edhrec.setdefault(cmd_id, {})[card_id] = (
+                synergy or 0.0, inclusion or 0.0)
+
+    def _load_engines(self) -> None:
+        """All engines rows in memory + inverted member -> engine indices."""
+        self._engines: list[dict] = []
+        self._engines_by_member: dict[str, list[int]] = {}
+        if not self.scores_path.exists():
+            return
+        conn = self._conn()
+        try:
+            rows = conn.execute(
+                "SELECT engine_id, members, kind, asserted_combo, candidate, score "
+                "FROM engines").fetchall()
+        except sqlite3.OperationalError:
+            return
+        finally:
+            conn.close()
+        for engine_id, members_json, kind, asserted, candidate, score in rows:
+            members = json.loads(members_json)
+            idx = len(self._engines)
+            self._engines.append({
+                "engine_id": engine_id, "members": members, "kind": kind,
+                "asserted": bool(asserted), "candidate": bool(candidate),
+                "score": score or 0.0,
+            })
+            for m in members:
+                self._engines_by_member.setdefault(m, []).append(idx)
+
+    def _load_staples(self) -> None:
+        """Per-card deck-frequency proxy (max co_count over its pairs), sorted desc."""
+        freq: dict[str, int] = {}
+        if self.scores_path.exists():
+            conn = self._conn()
+            try:
+                for side in ("a", "b"):
+                    for cid, mx in conn.execute(
+                        f"SELECT {side}, MAX(co_count) FROM card_cooccurrence GROUP BY {side}"
+                    ):
+                        if mx and mx > freq.get(cid, 0):
+                            freq[cid] = mx
+            except sqlite3.OperationalError:
+                pass
+            finally:
+                conn.close()
+        self._deck_freq = freq
+        self._staples: list[tuple[str, int]] = sorted(
+            freq.items(), key=lambda kv: (-kv[1], kv[0]))
+
+    def edhrec_for(self, commander_id: str) -> dict[str, tuple[float, float]]:
+        return self._edhrec.get(commander_id, {})
+
+    def staples_for_colors(self, color_identity: set[str], limit: int = 50,
+                           exclude: set[str] | None = None) -> list[tuple[str, int]]:
+        """Top deck-frequency cards whose color identity fits, basics excluded."""
+        exclude = exclude or set()
+        out: list[tuple[str, int]] = []
+        for cid, fq in self._staples:
+            if cid in exclude:
+                continue
+            card = self._cards.get(cid)
+            if card is None:
+                continue
+            if "Basic" in (card.get("type_line") or ""):
+                continue
+            if not set(card.get("color_identity") or []) <= color_identity:
+                continue
+            out.append((cid, fq))
+            if len(out) >= limit:
+                break
+        return out
+
+    # ---- SP5/SP4 neighbor reads (indexed, O(neighbors)) -------------------
+    def cooccurrence_neighbors(self, card_id: str, limit: int = 30) -> list[tuple[str, float, float]]:
+        """[(other_id, lift, jaccard)] ordered by lift desc."""
+        if not self.scores_path.exists():
+            return []
+        conn = self._conn()
+        try:
+            rows = conn.execute(
+                "SELECT b, lift, jaccard FROM card_cooccurrence WHERE a=? "
+                "ORDER BY lift DESC LIMIT ?", (card_id, limit)).fetchall()
+            rows += conn.execute(
+                "SELECT a, lift, jaccard FROM card_cooccurrence WHERE b=? "
+                "ORDER BY lift DESC LIMIT ?", (card_id, limit)).fetchall()
+        except sqlite3.OperationalError:
+            return []
+        finally:
+            conn.close()
+        rows.sort(key=lambda r: -(r[1] or 0.0))
+        return [(r[0], r[1] or 0.0, r[2] or 0.0) for r in rows[:limit]]
+
+    def synergy_neighbors(self, card_id: str, limit: int = 30) -> list[tuple[str, float]]:
+        """[(other_id, max(synergy_ab, synergy_ba))] ordered desc."""
+        if not self.scores_path.exists():
+            return []
+        conn = self._conn()
+        try:
+            rows = conn.execute(
+                "SELECT b, synergy_ab, synergy_ba FROM card_relationships WHERE a=? "
+                "ORDER BY synergy_ab DESC LIMIT ?", (card_id, limit)).fetchall()
+            rows += conn.execute(
+                "SELECT a, synergy_ab, synergy_ba FROM card_relationships WHERE b=? "
+                "ORDER BY synergy_ba DESC LIMIT ?", (card_id, limit)).fetchall()
+        except sqlite3.OperationalError:
+            return []
+        finally:
+            conn.close()
+        best: dict[str, float] = {}
+        for other, ab, ba in rows:
+            v = max(ab or 0.0, ba or 0.0)
+            if v > best.get(other, -1.0):
+                best[other] = v
+        return sorted(best.items(), key=lambda kv: (-kv[1], kv[0]))[:limit]
+
+    def similarity_neighbors(self, card_id: str, limit: int = 30) -> list[tuple[str, float]]:
+        """[(other_id, similarity)] ordered desc (per-card rows fetched via index, sorted here)."""
+        if not self.scores_path.exists():
+            return []
+        conn = self._conn()
+        try:
+            rows = conn.execute(
+                "SELECT b, similarity FROM card_relationships WHERE a=? AND similarity > 0",
+                (card_id,)).fetchall()
+            rows += conn.execute(
+                "SELECT a, similarity FROM card_relationships WHERE b=? AND similarity > 0",
+                (card_id,)).fetchall()
+        except sqlite3.OperationalError:
+            return []
+        finally:
+            conn.close()
+        rows.sort(key=lambda r: (-(r[1] or 0.0), r[0]))
+        return [(r[0], r[1] or 0.0) for r in rows[:limit]]
+
+    def engines_with(self, card_id: str) -> list[dict]:
+        """Engines/combos containing card_id, asserted first then score desc."""
+        engines = [self._engines[i] for i in self._engines_by_member.get(card_id, ())]
+        engines.sort(key=lambda e: (not e["asserted"], -e["score"], e["engine_id"]))
+        return engines
 
     # ---- semantic tag access -----------------------------------------------
     def _load_semantics(self) -> None:

@@ -70,13 +70,45 @@ def test_deck_analyze_shapes():
     assert isinstance(a["mana_curve"], list)
 
 
-def test_recommend_excludes_in_deck():
+def test_recommend_requires_commander():
+    """SP5 replaced the legacy DER recommend; commander-less requests are 400."""
     es = _id("Evolution Sage")
     deck = {"commander_id": None, "cards": [{"id": es}]}
-    recs = client.post("/deck/recommend", json=deck).json()
-    in_deck = {es}
-    for e in recs:
-        assert not ({e["card_a"], e["card_b"]} <= in_deck)
+    assert client.post("/deck/recommend", json=deck).status_code == 400
+
+
+def test_relationships_axes():
+    sr = _id("Sol Ring")
+    for axis in ("similar", "synergy", "cooccurrence"):
+        r = client.get(f"/cards/{sr}/relationships?axis={axis}&limit=10")
+        assert r.status_code == 200, axis
+        rows = r.json()
+        assert isinstance(rows, list)
+        metrics = [row["metric"] for row in rows]
+        assert metrics == sorted(metrics, reverse=True), axis
+        for row in rows:
+            assert row["card"]["id"] != sr
+            assert "name" in row["card"]
+
+
+def test_relationships_bad_axis_422():
+    sr = _id("Sol Ring")
+    assert client.get(f"/cards/{sr}/relationships?axis=bogus").status_code == 422
+
+
+def test_relationships_unknown_card_404():
+    assert client.get("/cards/not-a-card/relationships").status_code == 404
+
+
+def test_combos_engines_endpoint():
+    sr = _id("Sol Ring")
+    r = client.get(f"/cards/{sr}/combos-engines")
+    assert r.status_code == 200
+    groups = r.json()
+    assert isinstance(groups, list)
+    for g in groups:
+        assert {"engine_id", "kind", "asserted", "candidate", "members"} <= set(g)
+        assert any(m["id"] == sr for m in g["members"])
 
 
 def test_score_pair_includes_typed_edge():

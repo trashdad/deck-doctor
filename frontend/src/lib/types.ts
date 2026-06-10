@@ -24,6 +24,64 @@ export interface SynergyEdge {
   lift: boolean;
 }
 
+// ---- SP5 suggestions ----
+export interface Reason {
+  signal: string; // "edhrec" | "cooccurrence" | "synergy" | "engine" | "staple"
+  detail: string;
+  value: number;
+}
+
+export interface Suggestion {
+  card: Card;
+  score: number;
+  reasons: Reason[];
+}
+
+export interface SuggestionResponse {
+  tier: "edhrec" | "cooccurrence" | "color_staple";
+  suggestions: Suggestion[];
+}
+
+// ---- SP4 relationship explorer ----
+export type RelationshipAxis = "similar" | "synergy" | "cooccurrence";
+
+export interface RelationshipNeighbor {
+  card: Card;
+  metric: number;
+}
+
+export interface EngineGroup {
+  engine_id: string;
+  kind: string;
+  asserted: boolean;
+  candidate: boolean;
+  members: Card[];
+}
+
+export interface PairScoreFull {
+  a: string;
+  b: string;
+  ier_a: number;
+  ier_b: number;
+  css: number;
+  der: number;
+  lift: boolean;
+  relationship: {
+    similarity: number;
+    synergy_ab: number;
+    synergy_ba: number;
+    anti_synergy: number;
+    combo: boolean;
+    combo_id: string | null;
+  } | null;
+  cooccurrence: {
+    co_count: number;
+    lift: number;
+    jaccard: number;
+    support: number;
+  } | null;
+}
+
 export interface DeckEntry {
   id: string;
   zone: string;

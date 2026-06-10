@@ -49,6 +49,36 @@ class SynergyEdge(BaseModel):
     lift: bool
 
 
+class Reason(BaseModel):
+    signal: str
+    detail: str
+    value: float
+
+
+class Suggestion(BaseModel):
+    card: Card
+    score: float
+    reasons: list[Reason] = []
+
+
+class SuggestionResponse(BaseModel):
+    tier: str  # "edhrec" | "cooccurrence" | "color_staple"
+    suggestions: list[Suggestion]
+
+
+class RelationshipNeighbor(BaseModel):
+    card: Card
+    metric: float
+
+
+class EngineGroup(BaseModel):
+    engine_id: str
+    kind: str
+    asserted: bool
+    candidate: bool
+    members: list[Card]
+
+
 class DeckEntry(BaseModel):
     id: str
     zone: str = "Unsorted"

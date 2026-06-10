@@ -19,6 +19,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 
 CARDS_PATH = Path(os.environ.get("SIMMANDER_CARDS", _REPO_ROOT / "data" / "cards.json"))
 SCORES_PATH = Path(os.environ.get("SIMMANDER_SCORES", _REPO_ROOT / "data" / "scores.sqlite"))
+EDHREC_PATH = Path(os.environ.get("SIMMANDER_EDHREC", _REPO_ROOT / "data" / "edhrec.sqlite"))
 
 # CORS origins for the React dev server / deployed frontend.
 CORS_ORIGINS = os.environ.get(

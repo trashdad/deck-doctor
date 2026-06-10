@@ -1,4 +1,13 @@
-import type { Card, DeckAnalysis, DeckEntry, SynergyEdge } from "./types";
+import type {
+  Card,
+  DeckAnalysis,
+  DeckEntry,
+  EngineGroup,
+  PairScoreFull,
+  RelationshipAxis,
+  RelationshipNeighbor,
+  SuggestionResponse,
+} from "./types";
 
 // Calls go through Next's /api rewrite -> FastAPI (see next.config.mjs).
 const BASE = "/api";
@@ -81,9 +90,36 @@ export function analyzeDeck(
   return post<DeckAnalysis>("/deck/analyze", { cards, commander_id });
 }
 
-export function recommend(
+export function recommendCards(
   cards: DeckEntry[],
-  commander_id: string | null,
-): Promise<SynergyEdge[]> {
-  return post<SynergyEdge[]>("/deck/recommend", { cards, commander_id });
+  commander_id: string,
+  opts: { limit?: number; explain?: boolean } = {},
+): Promise<SuggestionResponse> {
+  const qs = new URLSearchParams();
+  if (opts.limit != null) qs.set("limit", String(opts.limit));
+  if (opts.explain) qs.set("explain", "true");
+  return post<SuggestionResponse>(`/deck/recommend?${qs.toString()}`, {
+    cards,
+    commander_id,
+  });
+}
+
+export function getRelationships(
+  cardId: string,
+  axis: RelationshipAxis,
+  limit = 30,
+): Promise<RelationshipNeighbor[]> {
+  return get<RelationshipNeighbor[]>(
+    `/cards/${cardId}/relationships?axis=${axis}&limit=${limit}`,
+  );
+}
+
+export function getCombosEngines(cardId: string): Promise<EngineGroup[]> {
+  return get<EngineGroup[]>(`/cards/${cardId}/combos-engines`);
+}
+
+export function getPairScore(a: string, b: string): Promise<PairScoreFull> {
+  return get<PairScoreFull>(
+    `/score/pair?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`,
+  );
 }

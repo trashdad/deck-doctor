@@ -6,16 +6,28 @@ export function CardTile({
   card,
   onClick,
   compact = false,
+  badge,
+  onAdd,
+  onFocus,
+  onInspect,
 }: {
   card: Card;
   onClick?: () => void;
   compact?: boolean;
+  /** Small metric pill rendered top-right (replaces the bare IER pill). */
+  badge?: string;
+  /** When any of these are set, a hover action bar renders over the art. */
+  onAdd?: () => void;
+  onFocus?: () => void;
+  onInspect?: () => void;
 }) {
   const art = card.image_uris?.normal;
+  const hasActions = Boolean(onAdd || onFocus || onInspect);
+  const pill = badge ?? (card.ier != null ? String(card.ier) : null);
 
   return (
     <div
-      className="mtg-card cursor-pointer select-none"
+      className="mtg-card group cursor-pointer select-none"
       title={`${card.name}${card.ier != null ? ` · IER ${card.ier}` : ""}`}
       onClick={onClick}
     >
@@ -50,10 +62,55 @@ export function CardTile({
           )}
         </div>
       </div>
-      {card.ier != null && art && (
-        <span className="absolute right-1 top-1 rounded bg-black/70 px-1 text-[10px] text-accent">
-          {card.ier}
+
+      {pill && (
+        <span className="absolute right-1 top-1 z-10 rounded bg-black/75 px-1 text-[10px] font-semibold text-accent">
+          {pill}
         </span>
+      )}
+
+      {hasActions && (
+        <div
+          className="absolute inset-x-0 bottom-0 z-10 flex items-stretch justify-center gap-px
+                     bg-black/80 opacity-0 transition-opacity group-hover:opacity-100"
+        >
+          {onAdd && (
+            <button
+              title="Add to deck"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd();
+              }}
+              className="flex-1 py-1.5 text-[11px] font-bold text-accent hover:bg-accent/20"
+            >
+              ＋
+            </button>
+          )}
+          {onFocus && (
+            <button
+              title="Focus explorer on this card"
+              onClick={(e) => {
+                e.stopPropagation();
+                onFocus();
+              }}
+              className="flex-1 py-1.5 text-[11px] font-bold text-sky-300 hover:bg-sky-400/20"
+            >
+              ◎
+            </button>
+          )}
+          {onInspect && (
+            <button
+              title="Inspect this pair"
+              onClick={(e) => {
+                e.stopPropagation();
+                onInspect();
+              }}
+              className="flex-1 py-1.5 text-[11px] font-bold text-zinc-300 hover:bg-white/15"
+            >
+              ⓘ
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
