@@ -1,13 +1,45 @@
-# SP11 SCAFFOLD — implement per roadmap §SP11.
-# services:
-#   backend:  build deploy/Dockerfile.backend (context ..); volumes ../data:/app/data:ro
-#             + named volume userdata:/app/userdata; env SIMMANDER_CARDS=/app/data/cards.json,
-#             SIMMANDER_SCORES=/app/data/scores.sqlite, SIMMANDER_EDHREC=/app/data/edhrec.sqlite,
-#             SIMMANDER_SPELLBOOK=/app/data/spellbook.sqlite,
-#             SIMMANDER_USERDECKS=/app/userdata/userdecks.sqlite
-#   frontend: build deploy/Dockerfile.frontend (context ..); ports 3000:3000;
-#             env BACKEND_ORIGIN=http://backend:8001; depends_on backend
-#   (optional) caddy: reverse proxy with a Caddyfile — leave the simmander.app hostname as a
-#             placeholder comment for the hub operator.
-# volumes: { userdata: {} }
-services: {}
+# SP11 — full deckbuilder stack. Run from the repo root:
+#   docker compose -f deploy/compose.yaml up --build
+# The backend reads the prebuilt sqlite stores from the mounted ../data (read-only)
+# and writes user decks to the named `userdata` volume.
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.backend
+    volumes:
+      - ../data:/app/data:ro            # scores/edhrec/decks/spellbook sqlite (host-built)
+      - userdata:/app/userdata          # writable: userdecks.sqlite
+    environment:
+      SIMMANDER_CARDS: /app/data/cards.json
+      SIMMANDER_SCORES: /app/data/scores.sqlite
+      SIMMANDER_EDHREC: /app/data/edhrec.sqlite
+      SIMMANDER_SPELLBOOK: /app/data/spellbook.sqlite
+      SIMMANDER_USERDECKS: /app/userdata/userdecks.sqlite
+    expose:
+      - "8001"
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.frontend
+    environment:
+      BACKEND_ORIGIN: http://backend:8001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  # Optional reverse proxy. Point your DNS (e.g. deck.simmander.app) at this host and
+  # uncomment; fill the hostname in deploy/Caddyfile.
+  # caddy:
+  #   image: caddy:2-alpine
+  #   ports: ["80:80", "443:443"]
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - caddy_data:/data
+  #   depends_on: [frontend]
+
+volumes:
+  userdata: {}
+  # caddy_data: {}

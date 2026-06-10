@@ -1,8 +1,20 @@
-# SP11 SCAFFOLD — implement per roadmap §SP11.
-# python:3.13-slim; copy backend/ only (self-contained — scoring/ is offline tooling);
-# pip install -r backend/requirements.txt;
-# data is volume-mounted at /app/data (SIMMANDER_* env vars point there; userdecks goes to
-# a WRITABLE mount, e.g. SIMMANDER_USERDECKS=/app/userdata/userdecks.sqlite).
-# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+# SP11 — backend image. Self-contained FastAPI app; data is volume-mounted, not baked in.
 FROM python:3.13-slim
-# TODO(SP11): COPY backend/ /app/backend, install, WORKDIR /app/backend, CMD uvicorn.
+
+WORKDIR /app
+# cards.json (committed, 21 MB) ships in the image so the app boots without a volume;
+# the sqlite stores arrive via the mounted /app/data volume (see deploy/compose.yaml).
+COPY backend/ /app/backend/
+COPY data/cards.json /app/data/cards.json
+
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+
+WORKDIR /app/backend
+ENV SIMMANDER_CARDS=/app/data/cards.json \
+    SIMMANDER_SCORES=/app/data/scores.sqlite \
+    SIMMANDER_EDHREC=/app/data/edhrec.sqlite \
+    SIMMANDER_SPELLBOOK=/app/data/spellbook.sqlite \
+    SIMMANDER_USERDECKS=/app/userdata/userdecks.sqlite
+
+EXPOSE 8001
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
