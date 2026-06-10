@@ -35,6 +35,24 @@
 > - Wire into `tools/refresh_loop.py` so each cycle pulls the freshest decks first, then
 >   load_corpus → rebuild → `/admin/reload`. Run it to completion ("all the decks we possibly can").
 >
+> **⭑ OPEN WORK — Commander list: popularity-sorted + filter/sort/search.** The Commanders view
+> (frontend `SearchPanel.tsx` "Commanders" tab → `GET /cards/commanders`, today sorted by name)
+> should default to **most-played first** (deck count descending) and gain filter, sort, and a
+> free-text search box.
+> - **Popularity source = corpus deck count.** `decks.sqlite` has `decks(deck_id, source, commander)`
+>   (commander is a name). At startup, Store loads `_commander_decks: dict[card_id, int]` = count of
+>   decks per commander, resolving the commander name → id via `_name_to_id`. Add `config.DECKS_PATH`
+>   (default `data/decks.sqlite`); empty/absent → all zero (degrade, never break). Handle partner/pair
+>   commanders later — v1 keys on the single `commander` name. `Card` model gains optional `deck_count`.
+> - **Endpoint:** `GET /cards/commanders?q=&colors=&sort=popularity|name|ier&limit=` — `q` = name
+>   substring (free-text), `colors` = color-identity subset filter (reuse existing WUBRG buttons),
+>   default `sort=popularity` (deck_count desc, tiebreak name); enrich each with `deck_count`.
+> - **Frontend (SearchPanel Commanders tab):** default popularity order; a free-text input; a sort
+>   dropdown (Popularity / Name / Efficiency-IER); reuse the color-pip filter buttons; show
+>   `{deck_count} decks` on each commander tile. Keep react-query keyed on q+colors+sort.
+> - Verify with Playwright: list opens most-played first; typing filters; switching sort reorders;
+>   color filter narrows; deck counts render.
+>
 > **⭑ OPEN WORK — Template System + Dual-Theme Composite.** Fully researched + decided, NOT yet
 > coded. Build-ready spec: `docs/superpowers/specs/2026-06-10-template-system-design.md` (exact
 > template numbers incl. Command Zone 38/10/8/8/4 + variants + data-derived Corpus Average; the
