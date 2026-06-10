@@ -23,6 +23,7 @@ data/*.faiss
 data/decklists/*.jsonl
 data/decklists/.seen_deck_ids
 !data/decklists/sample.jsonl
+tools/scrape_decklists/*.log
 
 # Env / editor
 .env
