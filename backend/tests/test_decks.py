@@ -153,6 +153,8 @@ def test_user_cannot_see_or_touch_another_users_deck():
     _as(_USER_B)
     assert client.get("/decks").json() == []                 # B sees nothing
     assert client.get(f"/decks/{deck_id}").status_code == 404  # B can't read A's
+    assert client.put(f"/decks/{deck_id}",
+                      json={"name": "hijacked", "cards": []}).status_code == 404  # B can't update A's
     assert client.delete(f"/decks/{deck_id}").status_code == 404  # B can't delete A's
     _as(_USER_A)
     assert any(d["id"] == deck_id for d in client.get("/decks").json())  # A still has it
