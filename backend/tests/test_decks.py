@@ -1,29 +1,46 @@
 """SP6 deck persistence + import/export tests."""
 
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import jwt  # noqa: E402
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
-from app import db, decks as decks_module  # noqa: E402
+from app import config, db, decks as decks_module  # noqa: E402
 from app.main import app  # noqa: E402
 from app.store import get_store  # noqa: E402
 
 client = TestClient(app)
 store = get_store()
 
+_USER_A = 1
+_USER_B = 2
+
+
+def _token(user_id: int) -> str:
+    return jwt.encode(
+        {"sub": str(user_id), "admin": False, "exp": int(time.time()) + 3600},
+        config.SIMMANDER_JWT_SECRET, algorithm=config.SIMMANDER_JWT_ALG)
+
+
+def _as(user_id: int) -> None:
+    client.cookies.set("simmander_session", _token(user_id))
+
 
 @pytest.fixture(autouse=True)
 def userdecks_tmp():
-    """Clean userdecks (Postgres) slate per test; clear the lru_cache around each."""
+    """Clean userdecks slate per test; authenticated as user A by default."""
     decks_module.get_userdecks.cache_clear()
     decks_module.get_userdecks()            # ensure the schema exists
     with db.cursor(commit=True) as cur:
         cur.execute("TRUNCATE deck_cards, decks RESTART IDENTITY CASCADE")
+    _as(_USER_A)
     yield
+    client.cookies.clear()
     with db.cursor(commit=True) as cur:
         cur.execute("TRUNCATE deck_cards, decks RESTART IDENTITY CASCADE")
     decks_module.get_userdecks.cache_clear()
@@ -119,5 +136,31 @@ def test_persistence_across_instances():
                         "cards": [{"id": ur, "zone": "Commanders", "quantity": 1}]},
     ).json()["id"]
     decks_module.get_userdecks.cache_clear()      # drop the in-memory instance
-    again = decks_module.get_userdecks().get(deck_id)
+    again = decks_module.get_userdecks().get(deck_id, _USER_A)
     assert again is not None and again["name"] == "P"
+
+
+def test_decks_require_login():
+    client.cookies.clear()
+    assert client.get("/decks").status_code == 401
+    assert client.post("/decks", json={"name": "x", "cards": []}).status_code == 401
+    _as(_USER_A)  # restore for any later assertions in this test
+
+
+def test_user_cannot_see_or_touch_another_users_deck():
+    made = client.post("/decks", json={"name": "A's deck", "cards": []}).json()
+    deck_id = made["id"]
+    _as(_USER_B)
+    assert client.get("/decks").json() == []                 # B sees nothing
+    assert client.get(f"/decks/{deck_id}").status_code == 404  # B can't read A's
+    assert client.delete(f"/decks/{deck_id}").status_code == 404  # B can't delete A's
+    _as(_USER_A)
+    assert any(d["id"] == deck_id for d in client.get("/decks").json())  # A still has it
+
+
+def test_auth_me_shapes():
+    me = client.get("/auth/me").json()
+    assert me["user"]["id"] == _USER_A
+    client.cookies.clear()
+    assert client.get("/auth/me").json() == {"user": None}
+    _as(_USER_A)
