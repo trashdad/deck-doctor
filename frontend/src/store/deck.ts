@@ -34,6 +34,18 @@ interface DeckState {
   move: (id: string, zone: Zone) => void;
   setBasic: (id: string, quantity: number, card?: Card) => void;
   clear: () => void;
+  /**
+   * Bulk-load an imported decklist directly into the store.
+   *
+   * Bypasses the color-identity gate — import is authoritative. Basic lands
+   * (type_line includes "Basic") go to `basics` with their quantity; everything
+   * else goes to `cards` at its given zone (singleton). If `replace` is true
+   * (default), the store is cleared first.
+   */
+  loadImported: (
+    rows: { card: Card; zone: Zone; quantity: number }[],
+    replace?: boolean,
+  ) => void;
 }
 
 export const useDeck = create<DeckState>((set) => ({
@@ -94,4 +106,25 @@ export const useDeck = create<DeckState>((set) => ({
       return { basics: next };
     }),
   clear: () => set({ cards: {}, basics: {} }),
+  loadImported: (rows, replace = true) =>
+    set((s) => {
+      const nextCards: Record<string, DeckCard> = replace ? {} : { ...s.cards };
+      const nextBasics: Record<string, BasicEntry> = replace ? {} : { ...s.basics };
+
+      for (const { card, zone, quantity } of rows) {
+        if ((card.type_line ?? "").includes("Basic")) {
+          // Basic land — track with multiplicity
+          const existing = nextBasics[card.id];
+          nextBasics[card.id] = {
+            card,
+            quantity: existing ? existing.quantity + quantity : quantity,
+          };
+        } else {
+          // Non-basic — singleton; zone comes from the imported row
+          nextCards[card.id] = { card, zone };
+        }
+      }
+
+      return { cards: nextCards, basics: nextBasics };
+    }),
 }));
