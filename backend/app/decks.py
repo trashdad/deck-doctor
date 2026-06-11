@@ -43,9 +43,11 @@ class UserDecks:
     def __init__(self) -> None:
         with db.cursor(commit=True) as cur:
             cur.execute(_SCHEMA)
+            cur.execute("ALTER TABLE decks ADD COLUMN IF NOT EXISTS user_id INTEGER")
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_decks_user ON decks(user_id)")
 
     # ---- reads -----------------------------------------------------------
-    def list_decks(self) -> list[dict]:
+    def list_decks(self, user_id: int) -> list[dict]:
         with db.cursor() as cur:
             cur.execute(
                 """
@@ -53,10 +55,11 @@ class UserDecks:
                        COALESCE(SUM(c.quantity), 0) AS card_count
                 FROM decks d
                 LEFT JOIN deck_cards c ON c.deck_id = d.id
+                WHERE d.user_id = %s
                 GROUP BY d.id
                 ORDER BY d.updated_at DESC
-                """
-            )
+                """,
+                (user_id,))
             rows = cur.fetchall()
         return [
             {"id": r[0], "name": r[1], "commander_id": r[2],
@@ -64,11 +67,11 @@ class UserDecks:
             for r in rows
         ]
 
-    def get(self, deck_id: str) -> dict | None:
+    def get(self, deck_id: str, user_id: int) -> dict | None:
         with db.cursor() as cur:
             cur.execute(
-                "SELECT id, name, commander_id, created_at, updated_at FROM decks WHERE id=%s",
-                (deck_id,))
+                "SELECT id, name, commander_id, created_at, updated_at "
+                "FROM decks WHERE id=%s AND user_id=%s", (deck_id, user_id))
             row = cur.fetchone()
             if row is None:
                 return None
@@ -84,7 +87,6 @@ class UserDecks:
 
     # ---- writes ----------------------------------------------------------
     def _write_cards(self, cur, deck_id: str, cards: list[dict]) -> None:
-        """Replace deck_cards for one deck. Caller holds the open cursor + txn."""
         cur.execute("DELETE FROM deck_cards WHERE deck_id=%s", (deck_id,))
         if cards:
             cur.executemany(
@@ -92,32 +94,34 @@ class UserDecks:
                 [(deck_id, c.get("id") or c["card_id"], c.get("zone", "Utility"),
                   int(c.get("quantity", 1))) for c in cards])
 
-    def create(self, name: str, commander_id: str | None, cards: list[dict]) -> str:
+    def create(self, user_id: int, name: str, commander_id: str | None,
+               cards: list[dict]) -> str:
         deck_id = uuid.uuid4().hex
         ts = _now()
         with db.cursor(commit=True) as cur:
             cur.execute(
-                "INSERT INTO decks (id, name, commander_id, created_at, updated_at) "
-                "VALUES (%s,%s,%s,%s,%s)",
-                (deck_id, name, commander_id, ts, ts))
+                "INSERT INTO decks (id, user_id, name, commander_id, created_at, updated_at) "
+                "VALUES (%s,%s,%s,%s,%s,%s)",
+                (deck_id, user_id, name, commander_id, ts, ts))
             self._write_cards(cur, deck_id, cards)
         return deck_id
 
-    def update(self, deck_id: str, name: str, commander_id: str | None,
-               cards: list[dict]) -> bool:
+    def update(self, deck_id: str, user_id: int, name: str,
+               commander_id: str | None, cards: list[dict]) -> bool:
         with db.cursor(commit=True) as cur:
-            cur.execute("SELECT 1 FROM decks WHERE id=%s", (deck_id,))
+            cur.execute("SELECT 1 FROM decks WHERE id=%s AND user_id=%s", (deck_id, user_id))
             if cur.fetchone() is None:
                 return False
             cur.execute(
-                "UPDATE decks SET name=%s, commander_id=%s, updated_at=%s WHERE id=%s",
-                (name, commander_id, _now(), deck_id))
+                "UPDATE decks SET name=%s, commander_id=%s, updated_at=%s "
+                "WHERE id=%s AND user_id=%s",
+                (name, commander_id, _now(), deck_id, user_id))
             self._write_cards(cur, deck_id, cards)
         return True
 
-    def delete(self, deck_id: str) -> bool:
+    def delete(self, deck_id: str, user_id: int) -> bool:
         with db.cursor(commit=True) as cur:
-            cur.execute("DELETE FROM decks WHERE id=%s", (deck_id,))
+            cur.execute("DELETE FROM decks WHERE id=%s AND user_id=%s", (deck_id, user_id))
             return cur.rowcount > 0
 
 
