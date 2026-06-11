@@ -49,3 +49,4 @@ data/spellbook_state.json
 .env
 .env.local
 .DS_Store
+.superpowers/
