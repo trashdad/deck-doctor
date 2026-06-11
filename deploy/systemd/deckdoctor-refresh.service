@@ -1,0 +1,21 @@
+[Unit]
+Description=Deck Doctor — daily corpus refresh (scrape → load → rebuild → push → reload)
+After=network-online.target deckdoctor-api.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=simmander
+WorkingDirectory=/opt/deck-doctor
+# Same DATABASE_URL as the api unit so load_to_postgres writes the live DB.
+# Use the real password in prod (loopback-only; keep it off the public net).
+Environment=DATABASE_URL=postgresql://deckdoctor:CHANGE_ME@127.0.0.1:5432/deckdoctor
+Environment=API=http://localhost:8002
+# Bounded batch sizes — keep one cycle short so the daily timer never piles up.
+Environment=RECENT_MAX=150
+Environment=SEED_TOP=100
+Environment=SEED_DECKS_PER=15
+Environment=SEED_MAX_COMMANDERS=100
+# The scrapers reach the public internet; allow a generous ceiling but never hang.
+TimeoutStartSec=3600
+ExecStart=/opt/deck-doctor/deploy/refresh_corpus.sh

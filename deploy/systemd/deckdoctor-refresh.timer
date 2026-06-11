@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily Deck Doctor corpus refresh
+
+[Timer]
+# 04:30 UTC — off-peak, and after the 03:30 DB backup so a refresh can never
+# clobber a backup mid-run.
+OnCalendar=*-*-* 04:30:00
+Persistent=true        # run on next boot if the box was off at 04:30
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target
