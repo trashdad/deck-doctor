@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { useQuery } from "@tanstack/react-query";
 import { SearchPanel } from "@/components/SearchPanel";
-import { ZoneColumn } from "@/components/ZoneColumn";
+import { EngineBoard } from "@/components/EngineBoard";
 import { StatsSidebar } from "@/components/StatsSidebar";
 import { OraclePhrasePanel } from "@/components/OraclePhrasePanel";
 import { SemanticFinder } from "@/components/SemanticFinder";
@@ -22,6 +22,7 @@ import { useDecksStore } from "@/store/decks";
 import { useTemplateStore } from "@/store/template";
 import { useAuth } from "@/store/auth";
 import { ZONES, type Zone } from "@/lib/zones";
+import type { EngineKey } from "@/components/EngineColumn";
 import { analyzeDeck, getTemplates } from "@/lib/api";
 import type { DeckEntry } from "@/lib/types";
 
@@ -108,7 +109,7 @@ function HeaderButton({
 }
 
 export default function Page() {
-  const { cards, basics, add, remove, move, setBasic } = useDeck();
+  const { cards, basics, add, remove, move } = useDeck();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [decksOpen, setDecksOpen] = useState(false);
@@ -207,12 +208,31 @@ export default function Page() {
   }, [sig, currentId]);
 
   function onDragEnd(e: DragEndEvent) {
-    const id = String(e.active.id);
-    const zone = e.over?.id ? (String(e.over.id) as Zone) : null;
-    if (zone && ZONES.includes(zone)) move(id, zone);
+    // BoardCard draggable ids are "bc::<cardId>::<variant>::<stackIndex>".
+    // Strip back to just the card id.
+    const rawId = String(e.active.id);
+    const cardId = rawId.startsWith("bc::")
+      ? rawId.split("::")[1] ?? rawId
+      : rawId;
+
+    if (!e.over) return;
+
+    // Drop target id may be prefixed by engine key ("e1-", "e2-", "neutral-")
+    const rawDropId = String(e.over.id);
+    const engineKeys: EngineKey[] = ["e1", "e2", "neutral"];
+    let zonePart = rawDropId;
+    for (const ek of engineKeys) {
+      if (rawDropId.startsWith(`${ek}-`)) {
+        zonePart = rawDropId.slice(ek.length + 1);
+        break;
+      }
+    }
+
+    if (ZONES.includes(zonePart as Zone)) {
+      move(cardId, zonePart as Zone);
+    }
   }
 
-  const byZone = (z: Zone) => deckCards.filter((dc) => dc.zone === z);
   const totalCards = deckCards.length + basicCount;
 
   return (
@@ -328,18 +348,7 @@ export default function Page() {
         <div className="flex min-h-0 flex-1">
           <SearchPanel onAdd={add} />
 
-          <main className="grid flex-1 auto-rows-min grid-cols-1 gap-3 overflow-y-auto p-4 scrollbar-thin lg:grid-cols-2 2xl:grid-cols-3">
-            {ZONES.map((z) => (
-              <ZoneColumn
-                key={z}
-                zone={z}
-                cards={byZone(z)}
-                onRemove={remove}
-                basics={z === "Lands" ? basics : undefined}
-                onSetBasic={z === "Lands" ? setBasic : undefined}
-              />
-            ))}
-          </main>
+          <EngineBoard />
 
           <StatsSidebar analysis={analysis ?? null} />
         </div>
