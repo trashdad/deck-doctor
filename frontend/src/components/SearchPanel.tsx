@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { searchCards, getCommanders } from "@/lib/api";
 import type { Card, CommanderSort } from "@/lib/types";
 import { useDeck, commanderIdentity, withinIdentity } from "@/store/deck";
+import { isValidPartner } from "@/lib/partners";
 import { useUI } from "@/store/ui";
 import { CardTile } from "./CardTile";
 import { CardMenu } from "./CardMenu";
@@ -96,6 +97,22 @@ function CardWithMenu({
 export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
   const tab = useUI((s) => s.searchTab);
   const setTab = useUI((s) => s.setSearchTab);
+  const partnerPick = useUI((s) => s.partnerPick);
+  const setPartnerPick = useUI((s) => s.setPartnerPick);
+  const setCommander = useDeck((s) => s.setCommander);
+  const deckCards = useDeck((s) => s.cards);
+  const existingCommander =
+    Object.values(deckCards).find((dc) => dc.zone === "Commanders")?.card ?? null;
+  // Picking from the commander list: in partner-pick mode add a (validated)
+  // second commander; otherwise set/replace the primary commander.
+  const pickCommander = (card: Card) => {
+    if (partnerPick) {
+      setCommander(card, true);
+      setPartnerPick(false);
+    } else {
+      setCommander(card, false);
+    }
+  };
   const [q, setQ] = useState("");
   const [colors, setColors] = useState<string[]>([]);
   const [type, setType] = useState("");
@@ -120,11 +137,17 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
   });
 
   const commandersList = commandersQuery.data ?? [];
-  const filteredCommanders = cmdQ.trim()
+  let filteredCommanders = cmdQ.trim()
     ? commandersList.filter((c) =>
         c.name.toLowerCase().includes(cmdQ.toLowerCase()),
       )
     : commandersList;
+  // While choosing a partner, only show cards that legally pair with the commander.
+  if (partnerPick && existingCommander) {
+    filteredCommanders = filteredCommanders.filter((c) =>
+      isValidPartner(c, existingCommander),
+    );
+  }
 
   return (
     <section className="flex w-80 shrink-0 flex-col border-r border-edge bg-panel/60">
@@ -267,16 +290,37 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
             )}
           </div>
 
+          {partnerPick && existingCommander && (
+            <div className="flex items-center justify-between gap-2 border-b border-accent/30 bg-accent/10 px-3 py-2">
+              <span className="text-[11px] text-accent">
+                Pick a valid partner for{" "}
+                <span className="font-semibold">{existingCommander.name}</span>
+              </span>
+              <button
+                onClick={() => setPartnerPick(false)}
+                className="shrink-0 rounded border border-edge px-1.5 py-0.5 text-[10px] text-zinc-400
+                           transition hover:text-zinc-200"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-2 overflow-y-auto p-3 scrollbar-thin">
             {commandersQuery.isLoading && (
               <p className="col-span-2 text-xs text-zinc-500">Loading commanders…</p>
+            )}
+            {partnerPick && existingCommander && filteredCommanders.length === 0 && (
+              <p className="col-span-2 text-xs italic text-zinc-600">
+                No legal partners for {existingCommander.name} in the list.
+              </p>
             )}
             {filteredCommanders.map((card) => {
               const decks = card.deck_count ?? 0;
               return (
                 <div
                   key={card.id}
-                  onClick={() => onAdd(card)}
+                  onClick={() => pickCommander(card)}
                   className="cursor-pointer"
                   data-testid="commander-tile"
                 >

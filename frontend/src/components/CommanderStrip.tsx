@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Card } from "@/lib/types";
+import { canHavePartner } from "@/lib/partners";
 import { useUI } from "@/store/ui";
 import { HoverPreview } from "./HoverPreview";
 
@@ -88,6 +89,9 @@ function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void })
  */
 export function CommanderStrip({ commanders, onRemove }: Props) {
   const setSearchTab = useUI((s) => s.setSearchTab);
+  const setPartnerPick = useUI((s) => s.setPartnerPick);
+  // Only offer a partner when the lone commander actually has a partner ability.
+  const canPartner = commanders.length === 1 && canHavePartner(commanders[0]);
 
   return (
     <div
@@ -108,12 +112,16 @@ export function CommanderStrip({ commanders, onRemove }: Props) {
           {commanders.map((c) => (
             <CommanderCard key={c.id} card={c} onRemove={() => onRemove(c.id)} />
           ))}
-          {/* A partner pair is at most 2 commanders. */}
-          {commanders.length < 2 && (
+          {/* A partner pair is at most 2 commanders, and only if the commander
+              actually has a partner ability. */}
+          {canPartner && (
             <button
-              onClick={() => setSearchTab("commanders")}
+              onClick={() => {
+                setPartnerPick(true);
+                setSearchTab("commanders");
+              }}
               data-testid="add-partner"
-              title="Add a second (partner) commander"
+              title="Add a valid partner commander"
               className="flex h-[88px] w-[72px] flex-none flex-col items-center justify-center gap-1
                          rounded-md border border-dashed border-accent/50 text-accent/80
                          transition hover:border-accent hover:bg-accent/10"

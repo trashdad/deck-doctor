@@ -33,6 +33,12 @@ interface DeckState {
   remove: (id: string) => void;
   move: (id: string, zone: Zone) => void;
   setBasic: (id: string, quantity: number, card?: Card) => void;
+  /**
+   * Set a commander. `asPartner` false (default) replaces any existing
+   * commander(s) and prunes the deck to the new color identity; true adds the
+   * card alongside as a partner (color identity widens to the union).
+   */
+  setCommander: (card: Card, asPartner?: boolean) => void;
   clear: () => void;
   /**
    * Bulk-load an imported decklist directly into the store.
@@ -104,6 +110,26 @@ export const useDeck = create<DeckState>((set) => ({
         next[id] = { card: c, quantity };
       }
       return { basics: next };
+    }),
+  setCommander: (card, asPartner = false) =>
+    set((s) => {
+      const cards: Record<string, DeckCard> = { ...s.cards };
+      if (!asPartner) {
+        // Replacing the commander: drop any existing commander(s) first.
+        for (const [id, dc] of Object.entries(cards)) {
+          if (dc.zone === "Commanders") delete cards[id];
+        }
+      }
+      cards[card.id] = { card, zone: "Commanders" };
+      // Re-enforce color identity against the (possibly new/union) commander set.
+      const ci = commanderIdentity(cards);
+      const prunedCards = Object.fromEntries(
+        Object.entries(cards).filter(([, dc]) => dc.zone === "Commanders" || withinIdentity(ci, dc.card)),
+      );
+      const prunedBasics = Object.fromEntries(
+        Object.entries(s.basics).filter(([, be]) => withinIdentity(ci, be.card)),
+      );
+      return { cards: prunedCards, basics: prunedBasics };
     }),
   clear: () => set({ cards: {}, basics: {} }),
   loadImported: (rows, replace = true) =>
