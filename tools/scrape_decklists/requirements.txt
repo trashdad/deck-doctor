@@ -1,0 +1,17 @@
+# Runtime dependencies for tools/scrape_decklists/runner.py
+# Install: pip install -r tools/scrape_decklists/requirements.txt
+#
+# Core scraping helpers — not in the main backend requirements because the
+# scraper is a standalone data-acquisition tool, not part of the web service.
+
+# Cloudflare bypass (Deckstats, AetherHub, ManaStack, TappedOut)
+cloudscraper>=1.2.71
+
+# HTTP client used by cloudscraper
+requests>=2.28
+
+# HTML parsing (TappedOut board-container, Deckstats listing page)
+beautifulsoup4>=4.12
+
+# TLS certificates (already in the main env but listed explicitly for isolation)
+certifi>=2024.1
