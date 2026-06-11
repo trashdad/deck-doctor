@@ -377,6 +377,13 @@ export default function Page() {
             ⚡ Suggestions
           </HeaderButton>
           <HeaderButton
+            testid="open-import"
+            title="Import a Moxfield or Archidekt decklist"
+            onClick={() => setImportOpen(true)}
+          >
+            📥 Import
+          </HeaderButton>
+          <HeaderButton
             testid="open-export"
             title={totalCards > 0 ? "Export / share your deck" : "Add cards first"}
             disabled={totalCards === 0}

@@ -22,7 +22,7 @@ const PLACEHOLDER = `Commander: The Ur-Dragon
 1 Sol Ring
 1 Command Tower
 37 Forest
-...paste a Moxfield / Archidekt / MTGO / Arena list`;
+...paste a Moxfield or Archidekt list`;
 
 /** Resolution for one unresolved line: a card id or the sentinel "skip". */
 type LineChoice = string | "skip";
@@ -161,7 +161,7 @@ export function ImportDialog({
               Import Decklist
             </p>
             <p className="text-[10px] uppercase tracking-widest text-zinc-500">
-              Moxfield · Archidekt · MTGO · Arena
+              Moxfield · Archidekt
             </p>
           </div>
           <button
