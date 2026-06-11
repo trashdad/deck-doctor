@@ -28,6 +28,13 @@ DATABASE_URL = os.environ.get(
     "DATABASE_URL", "postgresql://deckdoctor:deckdoctor@localhost:5432/deckdoctor"
 )
 
+# --- Shared auth (validate the tracker's simmander_session JWT) -------------
+# The SAME secret + algorithm the tracker signs its JWTs with (tracker
+# backend/config.ini [auth]). In prod this is set from the tracker's secret via
+# the systemd unit; the dev default only validates locally-minted test tokens.
+SIMMANDER_JWT_SECRET = os.environ.get("SIMMANDER_JWT_SECRET", "dev-insecure-deckdoctor-secret")
+SIMMANDER_JWT_ALG = os.environ.get("SIMMANDER_JWT_ALG", "HS256")
+
 # --- Offline build artifacts (SQLite) --------------------------------------
 # These are the pipeline's intermediate output, consumed by load_to_postgres.py.
 # They are NOT read at request time; the app uses Postgres above.
