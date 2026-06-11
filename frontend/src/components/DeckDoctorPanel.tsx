@@ -45,11 +45,31 @@ export function DeckDoctorPanel({
     setBusy(true);
     try {
       const res = await postDeckComplete(entries, commander.id, templateCounts);
+      // One click: apply straight to the board (Undo restores).
+      for (const a of res.added) {
+        const isBasic = (a.card.type_line || "").includes("Basic");
+        if (isBasic) {
+          setBasic(a.card.id, a.quantity, a.card);
+        } else {
+          add(a.card);
+          move(a.card.id, a.zone as DeckZone);
+        }
+      }
       setAdded(res.added);
       setFinalSize(res.final_size);
     } finally {
       setBusy(false);
     }
+  }
+
+  function undoComplete() {
+    if (!added) return;
+    for (const a of added) {
+      const isBasic = (a.card.type_line || "").includes("Basic");
+      if (isBasic) setBasic(a.card.id, 0);
+      else remove(a.card.id);
+    }
+    setAdded(null);
   }
 
   async function runCuts() {
@@ -63,22 +83,7 @@ export function DeckDoctorPanel({
     }
   }
 
-  function applyComplete() {
-    if (!added) return;
-    for (const a of added) {
-      const isBasic = (a.card.type_line || "").includes("Basic");
-      if (isBasic) {
-        setBasic(a.card.id, a.quantity, a.card);
-      } else {
-        add(a.card);
-        move(a.card.id, a.zone as DeckZone);
-      }
-    }
-    setAdded(null);
-    onClose();
-  }
-
-  // Group the completion preview by zone for readability.
+  // Group the just-added cards by zone for the summary.
   const grouped: Record<string, CompletionAdd[]> = {};
   for (const a of added ?? []) (grouped[a.zone] ??= []).push(a);
   const maxContrib = Math.max(1e-6, ...(cuts ?? []).map((c) => c.contribution));
@@ -133,13 +138,23 @@ export function DeckDoctorPanel({
                 className="mb-3 w-full rounded-lg border border-accent/50 py-2 text-xs font-semibold
                            text-accent transition hover:bg-accent/10 disabled:opacity-50"
               >
-                {busy ? "Building…" : "Complete my deck"}
+                {busy ? "Building…" : added ? "Complete again" : "Complete my deck"}
               </button>
               {added && (
                 <>
-                  <p className="mb-2 text-[11px] text-zinc-400">
-                    Adds {added.reduce((s, a) => s + a.quantity, 0)} cards → {finalSize}
-                  </p>
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <p className="text-[11px] text-accent">
+                      ✓ Added {added.reduce((s, a) => s + a.quantity, 0)} cards → {finalSize} (on the board)
+                    </p>
+                    <button
+                      data-testid="doctor-undo"
+                      onClick={undoComplete}
+                      className="shrink-0 rounded border border-red-500/40 px-2 py-1 text-[10px]
+                                 font-semibold text-red-400 transition hover:bg-red-500/10"
+                    >
+                      Undo
+                    </button>
+                  </div>
                   {Object.entries(grouped).map(([zone, items]) => (
                     <div key={zone} className="mb-2">
                       <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600">
@@ -161,14 +176,6 @@ export function DeckDoctorPanel({
                       ))}
                     </div>
                   ))}
-                  <button
-                    data-testid="doctor-apply"
-                    onClick={applyComplete}
-                    className="mt-2 w-full rounded-lg bg-accent py-2 text-xs font-bold text-ink
-                               transition hover:bg-accent/80"
-                  >
-                    Apply to deck
-                  </button>
                 </>
               )}
             </>
