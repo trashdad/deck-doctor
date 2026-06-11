@@ -12,6 +12,7 @@ import { RelationshipExplorer } from "@/components/RelationshipExplorer";
 import { SuggestionsPanel } from "@/components/SuggestionsPanel";
 import { DeckManagerPanel } from "@/components/DeckManagerPanel";
 import { ImportExportDialog } from "@/components/ImportExportDialog";
+import { ImportDialog } from "@/components/ImportDialog";
 import { DeckCombosPanel } from "@/components/DeckCombosPanel";
 import { DeckDoctorPanel } from "@/components/DeckDoctorPanel";
 import { SynergyGraph } from "@/components/SynergyGraph";
@@ -320,7 +321,8 @@ export default function Page() {
           setImportOpen(true);
         }}
       />
-      <ImportExportDialog isOpen={importOpen} onClose={() => setImportOpen(false)} />
+      <ImportDialog isOpen={importOpen} onClose={() => setImportOpen(false)} />
+      <ImportExportDialog isOpen={false} onClose={() => {}} />
       <HowWeCalcModal isOpen={howOpen} onClose={() => setHowOpen(false)} />
       <ExportPanel
         isOpen={exportOpen}

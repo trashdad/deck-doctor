@@ -313,6 +313,31 @@ export function postDeckCuts(
   return post<CutsResponse>(`/deck/cuts?limit=${limit}`, { cards, commander_id });
 }
 
+// ---- Working-deck import (no auth) ----
+
+export interface ParseImportUnresolved {
+  line: string;
+  name: string;
+  quantity: number;
+  suggestions: Card[];
+}
+
+export interface ParseImportResolved {
+  card: Card;
+  zone: string;
+  quantity: number;
+}
+
+export interface ParseImportResult {
+  resolved: ParseImportResolved[];
+  unresolved: ParseImportUnresolved[];
+  commander_id: string | null;
+}
+
+export function parseImport(text: string): Promise<ParseImportResult> {
+  return post<ParseImportResult>("/deck/parse-import", { text });
+}
+
 // ---- SP9: synergy graph ----
 export function postDeckGraph(
   cards: DeckEntry[],
