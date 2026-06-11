@@ -16,11 +16,13 @@ import { DeckCombosPanel } from "@/components/DeckCombosPanel";
 import { DeckDoctorPanel } from "@/components/DeckDoctorPanel";
 import { SynergyGraph } from "@/components/SynergyGraph";
 import { TemplatePanel } from "@/components/TemplatePanel";
+import { UserMenu } from "@/components/UserMenu";
 import { useDeck } from "@/store/deck";
 import { useDecksStore } from "@/store/decks";
 import { useTemplateStore } from "@/store/template";
+import { useAuth } from "@/store/auth";
 import { ZONES, type Zone } from "@/lib/zones";
-import { analyzeDeck, getTemplates } from "@/lib/api";
+import { analyzeDeck, getTemplates, saveDeck } from "@/lib/api";
 import type { DeckEntry } from "@/lib/types";
 
 function TemplateMenu() {
@@ -158,6 +160,30 @@ export default function Page() {
   const commander = deckCards.find((dc) => dc.zone === "Commanders")?.card ?? null;
   const commanderId = commander?.id ?? null;
 
+  // Auth: hydrate on mount; offer migrate-on-login when the user had a working deck.
+  const { user, ready, refresh } = useAuth();
+  const [migratePrompt, setMigratePrompt] = useState(false);
+  const prevUser = useRef<number | null>(null);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  // When the user transitions anonymous -> logged-in with a non-empty unsaved
+  // working deck, offer to save it to their account.
+  useEffect(() => {
+    const was = prevUser.current;
+    prevUser.current = user?.id ?? null;
+    if (user && was == null && currentId == null && entries.length > 0) {
+      setMigratePrompt(true);
+    }
+  }, [user, currentId, entries.length]);
+
+  async function migrateWorkingDeck() {
+    await saveDeck("Imported deck", commanderId, entries);
+    setMigratePrompt(false);
+  }
+
   const { data: analysis } = useQuery({
     queryKey: ["analyze", entries.map((e) => `${e.id}:${e.quantity}`).sort().join(","), commanderId],
     queryFn: () => analyzeDeck(entries, commanderId),
@@ -191,6 +217,25 @@ export default function Page() {
 
   return (
     <div className="flex h-screen flex-col">
+      {migratePrompt && (
+        <div className="flex items-center justify-between gap-3 border-b border-accent/40 bg-accent/10 px-5 py-2 text-xs text-accent">
+          <span>Save the deck you&apos;re building to your account?</span>
+          <span className="flex gap-2">
+            <button
+              onClick={() => void migrateWorkingDeck()}
+              className="rounded border border-accent/60 px-2 py-1 font-semibold hover:bg-accent/20"
+            >
+              Save it
+            </button>
+            <button
+              onClick={() => setMigratePrompt(false)}
+              className="rounded border border-edge px-2 py-1 text-zinc-400 hover:text-zinc-200"
+            >
+              Not now
+            </button>
+          </span>
+        </div>
+      )}
       <OraclePhrasePanel />
       <SemanticFinder />
       <RelationshipExplorer />
@@ -238,6 +283,7 @@ export default function Page() {
           <span className="text-sm text-zinc-500">EDH deckbuilder · Simmander</span>
         </div>
         <div className="flex items-center gap-2">
+          <UserMenu />
           <TemplateMenu />
           <HeaderButton testid="open-decks" title="Saved decks" onClick={() => setDecksOpen(true)}>
             🗂 Decks

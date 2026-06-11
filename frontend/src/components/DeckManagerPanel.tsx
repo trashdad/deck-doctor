@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useDecksStore } from "@/store/decks";
 import { exportDeckUrl } from "@/lib/api";
+import { useAuth } from "@/store/auth";
 
 function relativeTime(iso: string): string {
   const then = new Date(iso).getTime();
@@ -24,6 +25,7 @@ export function DeckManagerPanel({
 }) {
   const { deckList, currentId, currentName, refresh, saveCurrent, load, remove } =
     useDecksStore();
+  const user = useAuth((s) => s.user);
   const [name, setName] = useState(currentName);
 
   useEffect(() => {
@@ -75,67 +77,77 @@ export function DeckManagerPanel({
           </button>
         </div>
 
-        {/* Save row */}
-        <div className="flex items-center gap-2 border-b border-edge px-4 py-3">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Deck name"
-            className="flex-1 rounded border border-edge bg-zinc-900 px-2 py-1.5 text-xs text-zinc-200
-                       outline-none focus:border-accent"
-          />
-          <button
-            data-testid="deck-save"
-            onClick={() => void saveCurrent(name)}
-            className="rounded-lg border border-accent/50 px-3 py-1.5 text-xs font-semibold
-                       text-accent transition hover:bg-accent/10"
-          >
-            {currentId ? "Save" : "Save as…"}
-          </button>
-        </div>
-
-        {/* Deck list */}
-        <div className="flex-1 overflow-y-auto scrollbar-thin">
-          {deckList.length === 0 && (
-            <p className="px-4 py-10 text-center text-xs text-zinc-500">
-              No saved decks yet. Build a deck and hit Save.
-            </p>
-          )}
-          <ul className="divide-y divide-white/5">
-            {deckList.map((d) => (
-              <li
-                key={d.id}
-                data-testid="deck-row"
-                className={[
-                  "flex items-center gap-2 px-4 py-2.5 transition hover:bg-white/[0.03]",
-                  d.id === currentId ? "border-l-2 border-accent bg-accent/5" : "",
-                ].join(" ")}
+        {!user ? (
+          <div className="flex-1 px-4 py-10 text-center text-xs text-zinc-500">
+            Log in to save decks to your account.
+            <br />
+            (Your current deck still autosaves in this browser.)
+          </div>
+        ) : (
+          <>
+            {/* Save row */}
+            <div className="flex items-center gap-2 border-b border-edge px-4 py-3">
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Deck name"
+                className="flex-1 rounded border border-edge bg-zinc-900 px-2 py-1.5 text-xs text-zinc-200
+                           outline-none focus:border-accent"
+              />
+              <button
+                data-testid="deck-save"
+                onClick={() => void saveCurrent(name)}
+                className="rounded-lg border border-accent/50 px-3 py-1.5 text-xs font-semibold
+                           text-accent transition hover:bg-accent/10"
               >
-                <button
-                  className="min-w-0 flex-1 text-left"
-                  onClick={() => {
-                    void load(d.id);
-                    onClose();
-                  }}
-                >
-                  <p className="truncate text-xs font-semibold text-zinc-200">{d.name}</p>
-                  <p className="text-[10px] text-zinc-500">
-                    {d.card_count} cards · {relativeTime(d.updated_at)}
-                  </p>
-                </button>
-                <button
-                  title="Delete"
-                  onClick={() => {
-                    if (window.confirm(`Delete "${d.name}"?`)) void remove(d.id);
-                  }}
-                  className="shrink-0 rounded p-1 text-zinc-600 transition hover:bg-red-500/10 hover:text-red-400"
-                >
-                  🗑
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+                {currentId ? "Save" : "Save as…"}
+              </button>
+            </div>
+
+            {/* Deck list */}
+            <div className="flex-1 overflow-y-auto scrollbar-thin">
+              {deckList.length === 0 && (
+                <p className="px-4 py-10 text-center text-xs text-zinc-500">
+                  No saved decks yet. Build a deck and hit Save.
+                </p>
+              )}
+              <ul className="divide-y divide-white/5">
+                {deckList.map((d) => (
+                  <li
+                    key={d.id}
+                    data-testid="deck-row"
+                    className={[
+                      "flex items-center gap-2 px-4 py-2.5 transition hover:bg-white/[0.03]",
+                      d.id === currentId ? "border-l-2 border-accent bg-accent/5" : "",
+                    ].join(" ")}
+                  >
+                    <button
+                      className="min-w-0 flex-1 text-left"
+                      onClick={() => {
+                        void load(d.id);
+                        onClose();
+                      }}
+                    >
+                      <p className="truncate text-xs font-semibold text-zinc-200">{d.name}</p>
+                      <p className="text-[10px] text-zinc-500">
+                        {d.card_count} cards · {relativeTime(d.updated_at)}
+                      </p>
+                    </button>
+                    <button
+                      title="Delete"
+                      onClick={() => {
+                        if (window.confirm(`Delete "${d.name}"?`)) void remove(d.id);
+                      }}
+                      className="shrink-0 rounded p-1 text-zinc-600 transition hover:bg-red-500/10 hover:text-red-400"
+                    >
+                      🗑
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
 
         {/* Footer actions */}
         <div className="flex gap-2 border-t border-edge px-4 py-3">
