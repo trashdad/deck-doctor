@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useOracle } from "@/store/oracle";
 import { OracleTextRenderer } from "./OracleTextRenderer";
-import { manapoolCardUrl, tcgplayerCardUrl } from "@/lib/affiliate";
+import { amazonCardUrl, manapoolCardUrl, tcgplayerCardUrl } from "@/lib/affiliate";
 
 const PIP_COLORS: Record<string, string> = {
   W: "#f8f5e3", U: "#3b82f6", B: "#a78bbd", R: "#ef4444", G: "#22c55e", C: "#9aa0a6",
@@ -119,6 +119,17 @@ export function CardHoverDetail() {
                      hover:border-accent/50 hover:text-accent"
         >
           TCGplayer ↗
+        </a>
+        <a
+          href={amazonCardUrl(card.name)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-1 items-center justify-center rounded border
+                     border-zinc-600 px-1.5 py-1 text-[9px] font-semibold
+                     uppercase tracking-wide text-zinc-400 transition
+                     hover:border-accent/50 hover:text-accent"
+        >
+          Amazon ↗
         </a>
       </div>
     </div>

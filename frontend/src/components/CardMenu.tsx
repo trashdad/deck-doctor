@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import type { Card } from "@/lib/types";
 import { useSemanticStore } from "@/store/semantic";
 import { useRelationshipStore } from "@/store/relationship";
-import { manapoolCardUrl, tcgplayerCardUrl } from "@/lib/affiliate";
+import { amazonCardUrl, manapoolCardUrl, tcgplayerCardUrl } from "@/lib/affiliate";
 
 interface CardMenuProps {
   card: Card;
@@ -160,6 +160,17 @@ export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
                        hover:border-accent/50 hover:text-accent"
           >
             TCGplayer ↗
+          </a>
+          <a
+            href={amazonCardUrl(card.name)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-1 items-center justify-center gap-1 rounded border
+                       border-zinc-600 px-2 py-1.5 text-[10px] font-semibold
+                       uppercase tracking-wide text-zinc-400 transition
+                       hover:border-accent/50 hover:text-accent"
+          >
+            Amazon ↗
           </a>
         </div>
       </div>
