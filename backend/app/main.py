@@ -28,7 +28,7 @@ from .auth import current_user, require_user
 from .store import get_store
 from .suggest import is_commander, recommend
 from .templates import TEMPLATES, THEMES, theme_suggest
-from .zones import ZONE_ORDER, export_zone_name
+from .export import ExportRow, to_archidekt_csv, to_manapool, to_moxfield_csv, to_text
 
 
 def _deck_detail(deck: dict) -> dict:
@@ -210,6 +210,51 @@ def score_pair(a: str, b: str) -> dict:
     return result
 
 
+_EXPORT_FORMATS = {"text", "moxfield", "archidekt", "manapool"}
+
+
+def _resolve_rows(req: DeckRequest) -> list[ExportRow]:
+    """Resolve card ids in a DeckRequest to ExportRow dicts via the store."""
+    store = get_store()
+    rows: list[ExportRow] = []
+    for entry in req.cards:
+        card = store.get(entry.id)
+        if card is None:
+            continue
+        rows.append({
+            "name": card["name"],
+            "zone": entry.zone,
+            "quantity": entry.quantity,
+            "commander": entry.id == req.commander_id,
+        })
+    return rows
+
+
+@app.post("/deck/export", response_class=PlainTextResponse)
+def deck_export(req: DeckRequest, format: str = Query("text")) -> str:
+    """Export the current working deck in the requested format.
+
+    Accepts the same ``DeckRequest`` body as /deck/analyze (commander_id +
+    cards list).  Resolves card ids → names via the store.  No auth required —
+    formats client-supplied card ids only.
+
+    Supported formats: ``text`` (default), ``moxfield``, ``archidekt``,
+    ``manapool``.  Unknown format → 400.
+    """
+    if format not in _EXPORT_FORMATS:
+        raise HTTPException(400, f"Unknown format {format!r}. "
+                            f"Accepted: {', '.join(sorted(_EXPORT_FORMATS))}")
+    rows = _resolve_rows(req)
+    if format == "text":
+        return to_text(rows)
+    if format == "moxfield":
+        return to_moxfield_csv(rows)
+    if format == "archidekt":
+        return to_archidekt_csv(rows)
+    # manapool
+    return to_manapool(rows)
+
+
 @app.post("/deck/engines")
 def deck_engines(req: DeckRequest) -> dict:
     """Return engines and combos from the prebuilt engines table that are fully present in the deck."""
@@ -333,32 +378,24 @@ def decks_delete(deck_id: str, user: dict = Depends(require_user)) -> None:
 
 @app.get("/decks/{deck_id}/export", response_class=PlainTextResponse)
 def decks_export(deck_id: str, user: dict = Depends(require_user)) -> str:
+    """Export a saved deck as text.  Delegates to export.to_text (DRY)."""
     deck = get_userdecks().get(deck_id, user["id"])
     if deck is None:
         raise HTTPException(404, "deck not found")
     store = get_store()
-    by_zone: dict[str, list[tuple[str, int]]] = {}
+    commander_id = deck.get("commander_id")
+    rows: list[ExportRow] = []
     for row in deck["cards"]:
         card = store.get(row["card_id"])
         if card is None:
             continue
-        by_zone.setdefault(row["zone"], []).append((card["name"], row["quantity"]))
-    lines: list[str] = []
-    for zone in ZONE_ORDER:
-        items = by_zone.get(zone)
-        if not items:
-            continue
-        items.sort(key=lambda t: t[0])
-        if zone == "Commanders":
-            for name, _qty in items:
-                lines.append(f"Commander: {name}")
-            lines.append("")
-            continue
-        lines.append(f"// {export_zone_name(zone)}")
-        for name, qty in items:
-            lines.append(f"{qty} {name}")
-        lines.append("")
-    return "\n".join(lines).rstrip() + "\n"
+        rows.append({
+            "name": card["name"],
+            "zone": row["zone"],
+            "quantity": row["quantity"],
+            "commander": row["card_id"] == commander_id,
+        })
+    return to_text(rows)
 
 
 # ---- SP7: Commander Spellbook (scaffold — roadmap §7.5) --------------------
