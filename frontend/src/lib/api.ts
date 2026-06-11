@@ -257,6 +257,21 @@ export function getSpellbookCombos(
   return get<SpellbookCombo[]>(`/cards/${cardId}/spellbook-combos?limit=${limit}`);
 }
 
+// ---- SP12: fill-my-lands manabase tool ----
+export function fillLands(
+  cards: DeckEntry[],
+  commander_id: string,
+  maxPrice: number,
+  template?: Record<string, number> | null,
+): Promise<CompleteResponse> {
+  const qs = new URLSearchParams({ max_price: String(maxPrice) });
+  return post<CompleteResponse>(`/deck/lands?${qs.toString()}`, {
+    cards,
+    commander_id,
+    template: template ?? null,
+  });
+}
+
 // ---- SP8: deck doctor ----
 export function postDeckComplete(
   cards: DeckEntry[],

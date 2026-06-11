@@ -1,13 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { postDeckComplete, postDeckCuts } from "@/lib/api";
+import { postDeckComplete, postDeckCuts, fillLands } from "@/lib/api";
 import { useDeck } from "@/store/deck";
 import { ReasonChips } from "./SuggestionsPanel";
 import type { Card, CompletionAdd, Cut, DeckEntry } from "@/lib/types";
 import type { Zone as DeckZone } from "@/lib/zones";
 
-type Tab = "complete" | "cuts";
+type Tab = "complete" | "cuts" | "lands";
+
+const PRICE_CAP_OPTIONS: { label: string; value: number }[] = [
+  { label: "No cap", value: 0 },
+  { label: "$10", value: 10 },
+  { label: "$20", value: 20 },
+  { label: "$30", value: 30 },
+  { label: "$50", value: 50 },
+  { label: "$100", value: 100 },
+];
 
 export function DeckDoctorPanel({
   isOpen,
@@ -29,6 +38,10 @@ export function DeckDoctorPanel({
   const [finalSize, setFinalSize] = useState(0);
   const [cuts, setCuts] = useState<Cut[] | null>(null);
   const [busy, setBusy] = useState(false);
+  // Lands tab state
+  const [landPriceCap, setLandPriceCap] = useState<number>(20);
+  const [landsAdded, setLandsAdded] = useState<CompletionAdd[] | null>(null);
+  const [landsFinalSize, setLandsFinalSize] = useState(0);
 
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
@@ -72,6 +85,37 @@ export function DeckDoctorPanel({
     setAdded(null);
   }
 
+  async function runFillLands() {
+    if (!commander) return;
+    setBusy(true);
+    try {
+      const res = await fillLands(entries, commander.id, landPriceCap, templateCounts);
+      for (const a of res.added) {
+        const isBasic = (a.card.type_line || "").includes("Basic");
+        if (isBasic) {
+          setBasic(a.card.id, a.quantity, a.card);
+        } else {
+          add(a.card);
+          move(a.card.id, "Lands" as DeckZone);
+        }
+      }
+      setLandsAdded(res.added);
+      setLandsFinalSize(res.final_size);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function undoFillLands() {
+    if (!landsAdded) return;
+    for (const a of landsAdded) {
+      const isBasic = (a.card.type_line || "").includes("Basic");
+      if (isBasic) setBasic(a.card.id, 0);
+      else remove(a.card.id);
+    }
+    setLandsAdded(null);
+  }
+
   async function runCuts() {
     if (!commander) return;
     setBusy(true);
@@ -112,7 +156,7 @@ export function DeckDoctorPanel({
         </div>
 
         <div className="flex border-b border-edge bg-zinc-900/50">
-          {(["complete", "cuts"] as Tab[]).map((t) => (
+          {(["complete", "lands", "cuts"] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -123,7 +167,7 @@ export function DeckDoctorPanel({
                   : "border-b-2 border-transparent text-zinc-500 hover:text-zinc-300",
               ].join(" ")}
             >
-              {t === "complete" ? "Complete" : "Cuts"}
+              {t === "complete" ? "Complete" : t === "lands" ? "Lands" : "Cuts"}
             </button>
           ))}
         </div>
@@ -177,6 +221,113 @@ export function DeckDoctorPanel({
                     </div>
                   ))}
                 </>
+              )}
+            </>
+          )}
+
+          {tab === "lands" && (
+            <>
+              {/* Price cap selector */}
+              <div className="mb-3 flex items-center gap-2">
+                <span className="shrink-0 text-[10px] uppercase tracking-widest text-zinc-500">
+                  Price cap
+                </span>
+                <div className="flex flex-wrap gap-1">
+                  {PRICE_CAP_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setLandPriceCap(opt.value)}
+                      className={[
+                        "rounded border px-2 py-0.5 text-[10px] font-semibold transition",
+                        landPriceCap === opt.value
+                          ? "border-amber-500/70 bg-amber-500/20 text-amber-300"
+                          : "border-zinc-700 text-zinc-500 hover:border-zinc-500 hover:text-zinc-300",
+                      ].join(" ")}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                data-testid="doctor-fill-lands"
+                onClick={runFillLands}
+                disabled={busy || !commander}
+                className="mb-3 w-full rounded-lg border border-amber-500/50 bg-amber-500/5 py-2
+                           text-xs font-semibold text-amber-300 transition
+                           hover:bg-amber-500/15 disabled:opacity-50"
+              >
+                {busy ? "Filling lands…" : landsAdded ? "Fill lands again" : "Fill in my lands for me"}
+              </button>
+
+              {landsAdded && (
+                <>
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <p className="text-[11px] text-amber-300">
+                      ✓ Added {landsAdded.reduce((s, a) => s + a.quantity, 0)} lands → {landsFinalSize} total
+                    </p>
+                    <button
+                      data-testid="doctor-undo-lands"
+                      onClick={undoFillLands}
+                      className="shrink-0 rounded border border-red-500/40 px-2 py-1 text-[10px]
+                                 font-semibold text-red-400 transition hover:bg-red-500/10"
+                    >
+                      Undo
+                    </button>
+                  </div>
+                  {landsAdded.length === 0 && (
+                    <p className="py-4 text-center text-xs text-zinc-500">
+                      Lands already at target — nothing to add.
+                    </p>
+                  )}
+                  {/* Group by basic vs nonbasic */}
+                  {(() => {
+                    const basics = landsAdded.filter(a => (a.card.type_line || "").includes("Basic"));
+                    const nonbasics = landsAdded.filter(a => !(a.card.type_line || "").includes("Basic"));
+                    return (
+                      <>
+                        {nonbasics.length > 0 && (
+                          <div className="mb-2">
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600">
+                              Nonbasic Lands
+                            </p>
+                            {nonbasics.map((a) => (
+                              <div key={a.card.id} className="flex items-baseline justify-between gap-2 py-0.5 text-xs">
+                                <span className="truncate text-zinc-300">{a.card.name}</span>
+                                <span className="shrink-0 text-[9px] text-zinc-600">{a.reason}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {basics.length > 0 && (
+                          <div className="mb-2">
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600">
+                              Basic Lands
+                            </p>
+                            {basics.map((a) => (
+                              <div key={a.card.id} className="flex items-baseline justify-between gap-2 py-0.5 text-xs">
+                                <span className="truncate text-zinc-300">
+                                  {a.card.name}
+                                  {a.quantity > 1 && (
+                                    <span className="ml-1 text-amber-300">×{a.quantity}</span>
+                                  )}
+                                </span>
+                                <span className="shrink-0 text-[9px] text-zinc-600">{a.reason}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
+                </>
+              )}
+
+              {!commander && (
+                <p className="py-4 text-center text-xs text-zinc-500">
+                  Select a commander to fill lands.
+                </p>
               )}
             </>
           )}
