@@ -177,6 +177,31 @@ class ImportResult(BaseModel):
     unresolved: list[str] = []
 
 
+# ---- parse-import (working-deck importer) -----------------------------------
+
+class ParseImportRequest(BaseModel):
+    text: str
+
+
+class ParseImportUnresolved(BaseModel):
+    line: str
+    name: str
+    quantity: int
+    suggestions: list[Card] = []
+
+
+class ParseImportResolved(BaseModel):
+    card: Card
+    zone: str
+    quantity: int
+
+
+class ParseImportResult(BaseModel):
+    resolved: list[ParseImportResolved] = []
+    unresolved: list[ParseImportUnresolved] = []
+    commander_id: str | None = None
+
+
 # ---- SP7: Commander Spellbook ----
 class SpellbookCombo(BaseModel):
     combo_id: str

@@ -18,10 +18,11 @@ from .decks import get_userdecks
 from .doctor import TEMPLATE as DOCTOR_TEMPLATE, complete_deck, suggest_cuts
 from .manabase import fill_lands
 from .graph import deck_graph
-from .importer import parse_decklist
+from .importer import parse_decklist, parse_decklist_rich
 from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCombos,
                      DeckDetail, DeckRequest, DeckSave, DeckSummary, EngineGroup,
                      GraphResponse, ImportRequest, ImportResult, PairScore,
+                     ParseImportRequest, ParseImportResult,
                      RelationshipNeighbor, SpellbookCombo, SuggestionResponse,
                      TemplatesResponse, ThemeSuggestRequest, ThemeSuggestResponse)
 from . import db
@@ -254,6 +255,43 @@ def deck_export(req: DeckRequest, format: str = Query("text")) -> str:
         return to_archidekt_csv(rows)
     # manapool
     return to_manapool(rows)
+
+
+@app.post("/deck/parse-import", response_model=ParseImportResult)
+def deck_parse_import(req: ParseImportRequest) -> dict:
+    """Parse a decklist text and return resolved cards + fuzzy suggestions for misses.
+
+    No auth required — analogous to /deck/complete (working-deck operations).
+    Empty text returns an empty result (not an error).
+    """
+    store = get_store()
+    raw = parse_decklist_rich(store, req.text)
+
+    # Expand resolved card_id rows -> {card, zone, quantity}
+    resolved = []
+    for row in raw["resolved"]:
+        card = store.get(row["card_id"])
+        if card is None:
+            continue
+        resolved.append({"card": card, "zone": row["zone"], "quantity": row["quantity"]})
+
+    # Expand unresolved rows -> {line, name, quantity, suggestions: [Card, ...]}
+    unresolved = []
+    for entry in raw["unresolved"]:
+        suggestions = [store.get(sid) for sid in entry["suggestion_ids"]]
+        suggestions = [c for c in suggestions if c is not None]
+        unresolved.append({
+            "line": entry["line"],
+            "name": entry["name"],
+            "quantity": entry["quantity"],
+            "suggestions": suggestions,
+        })
+
+    return {
+        "resolved": resolved,
+        "unresolved": unresolved,
+        "commander_id": raw["commander_id"],
+    }
 
 
 @app.post("/deck/engines")
