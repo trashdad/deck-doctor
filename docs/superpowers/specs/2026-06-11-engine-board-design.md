@@ -17,12 +17,19 @@ a card serving both engines gets a 50%-ghost copy in the other half.
 - **Home vs additional (no rank):** every card has exactly one **home** field (its primary
   classification). For every *other* function its tags touch, it shows a ghost marked **"additional"**
   (not "secondary"; all additionals equal, no ordering).
-- **Engines (Composite only):** when the active template is **Simmander Composite**, each field splits
-  **Engine 1 (left, translucent red) | Engine 2 (right, translucent blue)** with a gilded divider. A
-  card sits solid in the engine whose theme it matches; if it also fits the other engine, a **50%-ghost
-  copy** appears in that half. Bridging both engines is the desired signal.
-- **Progressive reveal:** a field is hidden until at least one card (home or additional) belongs to it.
-  Commander is always shown (deck anchor); all others appear as relevant cards arrive.
+- **Layout (corrected after mockup v2):** the **commander sits ABOVE** the board in its own strip — it
+  is not a field. In **Simmander Composite** mode the board is **two engine columns — Engine 1 (left,
+  translucent red) | Engine 2 (right, translucent blue)** with a gilded divider; the function fields
+  appear as **tinted subsections nested INSIDE each engine** (Ramp / Card Draw / Removal / … as red
+  subsections in Engine 1, blue subsections in Engine 2). In any non-Composite template there are no
+  engine columns — just a single column of field subsections (commander still above).
+- **Engine placement:** a card is **solid** in the engine whose theme it matches, in its home field's
+  subsection. When it matches **both** engines, Engine 1 holds the solid copy and a **50%-ghost "bridge"
+  copy** appears in Engine 2's matching subsection. A card matching **neither** theme goes to a
+  **neutral section** (full-width, below the two engine columns) carrying the same field subsections.
+- **Progressive reveal:** a field subsection is hidden until at least one card belongs to it (within its
+  engine). An engine column shows only its non-empty subsections; the neutral section appears only if
+  some card matches no theme. The commander strip is always present (prompts to add one).
 - **3D tuck:** cards within a field overlap like a fanned pile (CSS transforms), not a flat grid; hover
   raises/fans the pile so you can see tucked cards.
 - **250% hover preview:** mousing any card pops it to ~250% as a cursor-following tooltip.
@@ -45,19 +52,39 @@ catalog from `GET /templates` (already loaded into `useTemplateStore.themes`).
     `themes` catalog keyed by the composite's `themeA`/`themeB` ids. A card matching neither renders
     **neutral** (centered, untinted) within its field.
 
+## Placement algorithm (the core derivation)
+For each non-commander card in the deck, with `fns = cardFunctions(card)` and (Composite)
+`eng = cardEngines(card, themeA, themeB)`:
+
+- **Composite mode:**
+  - `solidEngine` = 1 if `eng.e1` (matches theme A), else 2 if `eng.e2`, else **neutral**.
+  - Emit **solid** at `(solidEngine, fns.home)`.
+  - Emit **additional ghost** at `(solidEngine, f)` for each `f` in `fns.additional` (same engine, other
+    function subsections).
+  - If `eng.e1 && eng.e2`, emit a **bridge ghost** at `(2, fns.home)` (the other engine, home field).
+- **Non-Composite mode:** one lane — emit solid at `fns.home` and additional ghosts at each
+  `fns.additional`; no engines, no bridge.
+
+The board groups these into `column → fieldSubsection → { solid: Card[], ghosts: {card,kind}[] }`,
+renders only non-empty subsections, and only shows the neutral column when something lands there.
+
 ## Component architecture (`frontend/src/components/`)
 Replaces the flat `main` grid of `ZoneColumn`s in `app/page.tsx`.
 
-- **`EngineBoard.tsx`** — orchestrator. From `useDeck` (cards + basics) and `useTemplateStore` (active
-  template + composite themes), compute per-field placements: `{ field: Zone, engine1: Card[],
-  engine2: Card[], neutral: Card[], ghosts: {card, kind:'additional'|'bridge', engine}[] }`. Render only
-  fields with ≥1 placement (+ Commander always). Composite on → split layout; off → single lane per field.
-- **`EngineField.tsx`** — one field row: label (name + count) + body. Composite → two `<EnginePile>`
-  halves with the gilded divider; non-Composite → one `<EnginePile>`. A drop target (dnd-kit) for
-  re-homing.
-- **`EnginePile.tsx`** — the tucked 3D stack of `BoardCard`s (overlapping transforms; hover fans/raises).
-- **`BoardCard.tsx`** — a single card; `variant: 'solid' | 'ghost'` (ghost = 50% opacity + dashed edge,
-  used for both "additional" and engine "bridge"); fires the 250% hover preview; draggable when solid.
+- **`EngineBoard.tsx`** — orchestrator. Reads `useDeck` (cards + basics) + `useTemplateStore` (active
+  template + composite `themeA`/`themeB`), runs the placement algorithm, and renders: a
+  `<CommanderStrip>` on top, then — Composite → `<EngineColumn engine=1 red>` + `<EngineColumn engine=2
+  blue>` + (if any) a neutral `<EngineColumn>` below; non-Composite → a single `<EngineColumn>` with no
+  tint/engine.
+- **`CommanderStrip.tsx`** — the commander(s) above the board (gilded strip); empty-state prompts to add one.
+- **`EngineColumn.tsx`** — one engine (red/blue/neutral): header (engine name + theme) + its non-empty
+  field subsections as `<FieldSection>`s.
+- **`FieldSection.tsx`** — one function subsection within an engine: label (name + count) + a
+  `<CardPile>`; a dnd-kit drop target for re-homing a dragged card into this field.
+- **`CardPile.tsx`** — the tucked 3D stack of `BoardCard`s (overlapping transforms; hover fans/raises).
+- **`BoardCard.tsx`** — a single card; `variant: 'solid' | 'ghost'` (ghost = 50% opacity + dashed amber
+  edge + a small "additional"/"bridge" label, per mockup v2); fires the 250% hover preview; draggable
+  when solid.
 - **`HoverPreview.tsx`** — cursor-following 250% card image (extend the existing `CardHoverDetail`).
 - `app/page.tsx` swaps `<main>{ZONES.map(ZoneColumn)}</main>` for `<EngineBoard/>`. `ZoneColumn.tsx`
   is retired (or kept behind a flag during rollout).
@@ -72,11 +99,13 @@ Replaces the flat `main` grid of `ZoneColumn`s in `app/page.tsx`.
   (re-hidden).
 
 ## Composite vs. normal mode
-- **Composite active:** split fields (red/blue), engine ghosts, bridge highlighting. If a theme half
-  isn't chosen yet (composite themeA/themeB empty), that side has no engine match, so cards render
-  **neutral** (centered, untinted) until the user picks themes — the split frame still shows.
-- **Any other template / default:** single-lane fields (no split, no engine ghosts) — the home/additional
-  ghosting still applies. Switching templates re-renders without touching deck data.
+- **Composite active:** two engine columns (red / blue) each with its function subsections; engine
+  bridge ghosts; neutral column below for theme-less cards. If a theme isn't chosen yet (themeA/themeB
+  empty), nothing matches that engine, so cards fall to the **neutral** column until themes are picked —
+  the two empty engine columns still frame the board.
+- **Any other template / default:** a single column of field subsections (no engine columns, no engine
+  bridges) — the home/additional ghosting still applies. Switching templates re-renders without touching
+  deck data.
 
 ## Visual language (frontend-design — keep the amber/jewel/Cinzel deck)
 Red engine `rgba(239,68,68,…)`, blue engine `rgba(59,132,246,…)`, gilded divider (reuse the
@@ -88,10 +117,12 @@ drop shadows, a short staggered fade when a field first appears. Validated mocku
 - **Unit** (`lib/functions.ts`): a multi-function card → correct `home` + `additional`; a single-function
   card → empty `additional`; a both-theme card → `{e1:true,e2:true}` (bridge); neither-theme → neutral.
   (Add a vitest runner if none exists, else assert via Playwright.)
-- **Playwright:** add cards of several functions → fields reveal progressively → solid home + ghost
-  additional render in the right fields → a multi-function card appears in 2+ fields → switch to
-  Simmander Composite → fields split red/blue → choose two themes → a both-theme card shows the bridge
-  ghost in the other half → hover pops the 250% preview → removing the card collapses an emptied field.
+- **Playwright:** commander shows above the board; add cards of several functions → field subsections
+  reveal progressively → solid home + ghost additional render in the right subsections → a multi-function
+  card appears in 2+ subsections → switch to Simmander Composite → two engine columns appear → choose two
+  themes → cards sort into the matching engine, a both-theme card shows the bridge ghost in the other
+  engine, a theme-less card lands in the neutral column → hover pops the 250% preview → removing a card
+  collapses an emptied subsection.
 
 ## Out of scope (v1)
 Manual drag into a specific engine half (engine membership stays theme-derived); per-card manual
