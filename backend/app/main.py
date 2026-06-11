@@ -6,7 +6,7 @@ SQLite synergy store — no live model inference, per Doc A.
 
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 
@@ -24,6 +24,7 @@ from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCom
                      RelationshipNeighbor, SpellbookCombo, SuggestionResponse,
                      TemplatesResponse, ThemeSuggestRequest, ThemeSuggestResponse)
 from . import db
+from .auth import current_user, require_user
 from .store import get_store
 from .suggest import is_commander, recommend
 from .templates import TEMPLATES, THEMES, theme_suggest
@@ -92,6 +93,12 @@ def admin_reload() -> dict:
         "spellbook_combos": len(store._spellbook),
         "engines": len(store._engines),
     }
+
+
+@app.get("/auth/me")
+def auth_me(request: Request) -> dict:
+    """Current user from the shared session cookie, or null (anonymous). 200 always."""
+    return {"user": current_user(request)}
 
 
 @app.get("/cards", response_model=list[Card])
@@ -282,56 +289,51 @@ def theme_suggest_endpoint(
 # binds as a deck_id (FastAPI matches in declaration order).
 
 @app.get("/decks", response_model=list[DeckSummary])
-def decks_list() -> list[dict]:
-    """All saved decks, most recently updated first."""
-    return get_userdecks().list_decks()
+def decks_list(user: dict = Depends(require_user)) -> list[dict]:
+    return get_userdecks().list_decks(user["id"])
 
 
 @app.post("/decks", response_model=DeckDetail, status_code=201)
-def decks_create(req: DeckSave) -> dict:
-    """Create a deck; cards are DeckEntry rows (id, zone, quantity)."""
+def decks_create(req: DeckSave, user: dict = Depends(require_user)) -> dict:
     cards = [e.model_dump() for e in req.cards]
-    deck_id = get_userdecks().create(req.name, req.commander_id, cards)
-    return _deck_detail(get_userdecks().get(deck_id))
+    deck_id = get_userdecks().create(user["id"], req.name, req.commander_id, cards)
+    return _deck_detail(get_userdecks().get(deck_id, user["id"]))
 
 
 @app.post("/decks/import", response_model=ImportResult)
-def decks_import(req: ImportRequest) -> dict:
-    """Parse a pasted text decklist, create the deck, return it + unresolved lines."""
+def decks_import(req: ImportRequest, user: dict = Depends(require_user)) -> dict:
     store = get_store()
     cards, unresolved, commander_id = parse_decklist(store, req.text)
-    deck_id = get_userdecks().create(req.name, commander_id, cards)
-    return {"deck": _deck_detail(get_userdecks().get(deck_id)), "unresolved": unresolved}
+    deck_id = get_userdecks().create(user["id"], req.name, commander_id, cards)
+    return {"deck": _deck_detail(get_userdecks().get(deck_id, user["id"])),
+            "unresolved": unresolved}
 
 
 @app.get("/decks/{deck_id}", response_model=DeckDetail)
-def decks_get(deck_id: str) -> dict:
-    """Deck with cards resolved to Card objects (drop rows whose id no longer resolves)."""
-    deck = get_userdecks().get(deck_id)
+def decks_get(deck_id: str, user: dict = Depends(require_user)) -> dict:
+    deck = get_userdecks().get(deck_id, user["id"])
     if deck is None:
         raise HTTPException(404, "deck not found")
     return _deck_detail(deck)
 
 
 @app.put("/decks/{deck_id}", response_model=DeckDetail)
-def decks_update(deck_id: str, req: DeckSave) -> dict:
+def decks_update(deck_id: str, req: DeckSave, user: dict = Depends(require_user)) -> dict:
     cards = [e.model_dump() for e in req.cards]
-    if not get_userdecks().update(deck_id, req.name, req.commander_id, cards):
+    if not get_userdecks().update(deck_id, user["id"], req.name, req.commander_id, cards):
         raise HTTPException(404, "deck not found")
-    return _deck_detail(get_userdecks().get(deck_id))
+    return _deck_detail(get_userdecks().get(deck_id, user["id"]))
 
 
 @app.delete("/decks/{deck_id}", status_code=204)
-def decks_delete(deck_id: str) -> None:
-    if not get_userdecks().delete(deck_id):
+def decks_delete(deck_id: str, user: dict = Depends(require_user)) -> None:
+    if not get_userdecks().delete(deck_id, user["id"]):
         raise HTTPException(404, "deck not found")
 
 
 @app.get("/decks/{deck_id}/export", response_class=PlainTextResponse)
-def decks_export(deck_id: str) -> str:
-    """text/plain decklist: `// Zone` headers, `Commander: <name>` line, `N Name` rows.
-    Round-trips through /decks/import with zero unresolved lines (roadmap §6.4)."""
-    deck = get_userdecks().get(deck_id)
+def decks_export(deck_id: str, user: dict = Depends(require_user)) -> str:
+    deck = get_userdecks().get(deck_id, user["id"])
     if deck is None:
         raise HTTPException(404, "deck not found")
     store = get_store()
@@ -341,7 +343,6 @@ def decks_export(deck_id: str) -> str:
         if card is None:
             continue
         by_zone.setdefault(row["zone"], []).append((card["name"], row["quantity"]))
-
     lines: list[str] = []
     for zone in ZONE_ORDER:
         items = by_zone.get(zone)
