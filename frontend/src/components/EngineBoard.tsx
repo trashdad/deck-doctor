@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { DeckCard, BasicEntry } from "@/store/deck";
 import { useDeck } from "@/store/deck";
 import { useTemplateStore, COMPOSITE_TEMPLATE_ID } from "@/store/template";
-import { cardFunctions, cardEngines } from "@/lib/functions";
+import { cardFunctions, cardEngines, matchingZones } from "@/lib/functions";
 import type { Zone } from "@/lib/zones";
 import type { PileEntry } from "./CardPile";
 import type { ColumnSections, EngineKey } from "./EngineColumn";
@@ -61,13 +61,10 @@ export function EngineBoard() {
     [composite.themeB, themes],
   );
 
-  // Separate commander from non-commander deck cards
-  const deckCards = Object.values(cards);
-  const commander = deckCards.find((dc) => dc.zone === "Commanders")?.card ?? null;
-  const nonCommanderCards = deckCards.filter((dc) => dc.zone !== "Commanders");
-
-  // Basic lands go into the Lands section as solid cards
-  const basicEntries = Object.values(basics);
+  // Commander (used in the render). The rest of the deck is derived inside the
+  // placement memo below so the deps are the stable store references.
+  const commander =
+    Object.values(cards).find((dc) => dc.zone === "Commanders")?.card ?? null;
 
   // ---------------------------------------------------------------------------
   // Placement algorithm
@@ -78,86 +75,45 @@ export function EngineBoard() {
     const neutral: Partial<Record<Zone, PileEntry[]>> = {};
     const single: Partial<Record<Zone, PileEntry[]>> = {};
 
-    // Add basics to Lands
+    const nonCommanderCards = Object.values(cards).filter((dc) => dc.zone !== "Commanders");
+    const basicEntries = Object.values(basics);
+
+    // Basics → Lands (solid). Neutral in composite (lands rarely match a theme).
     for (const b of basicEntries) {
       const entry: PileEntry = { card: b.card, variant: "solid" };
-      if (isComposite) {
-        // Basics are neutral (lands rarely match theme tags)
-        addToSection(neutral, "Lands", entry);
-      } else {
-        addToSection(single, "Lands", entry);
-      }
+      addToSection(isComposite ? neutral : single, "Lands", entry);
     }
 
     for (const dc of nonCommanderCards) {
       const fns = cardFunctions(dc.card);
+      // Honor a manual drag-rehome: dc.zone overrides the derived home; the
+      // remaining matching functions still show as ghosts.
+      const home: Zone = dc.zone !== fns.home ? (dc.zone as Zone) : fns.home;
+      const additional = matchingZones(dc.card).filter((z) => z !== home);
 
       if (isComposite) {
         const eng = cardEngines(dc.card, themeATags, themeBTags);
-        const solidEngine: EngineKey =
-          eng.e1 ? "e1" : eng.e2 ? "e2" : "neutral";
+        const solidEngine: EngineKey = eng.e1 ? "e1" : eng.e2 ? "e2" : "neutral";
+        const target = solidEngine === "e1" ? e1 : solidEngine === "e2" ? e2 : neutral;
 
-        // Solid in home field of solid engine
-        const solidEntry: PileEntry = { card: dc.card, variant: "solid" };
-        if (solidEngine === "e1") {
-          addToSection(e1, fns.home, solidEntry);
-        } else if (solidEngine === "e2") {
-          addToSection(e2, fns.home, solidEntry);
-        } else {
-          addToSection(neutral, fns.home, solidEntry);
+        addToSection(target, home, { card: dc.card, variant: "solid" });
+        for (const z of additional) {
+          addToSection(target, z, { card: dc.card, variant: "ghost", ghostKind: "additional" });
         }
-
-        // Additional ghosts in same engine, other function subsections
-        for (const addlZone of fns.additional) {
-          const ghostEntry: PileEntry = {
-            card: dc.card,
-            variant: "ghost",
-            ghostKind: "additional",
-          };
-          if (solidEngine === "e1") {
-            addToSection(e1, addlZone, ghostEntry);
-          } else if (solidEngine === "e2") {
-            addToSection(e2, addlZone, ghostEntry);
-          } else {
-            addToSection(neutral, addlZone, ghostEntry);
-          }
-        }
-
-        // Bridge ghost: if card matches both engines, emit 50% ghost in E2's home field
+        // Bridge ghost in E2's home field when the card serves both engines.
         if (eng.e1 && eng.e2) {
-          const bridgeEntry: PileEntry = {
-            card: dc.card,
-            variant: "ghost",
-            ghostKind: "bridge",
-          };
-          addToSection(e2, fns.home, bridgeEntry);
+          addToSection(e2, home, { card: dc.card, variant: "ghost", ghostKind: "bridge" });
         }
       } else {
-        // Non-composite: single column
-        const solidEntry: PileEntry = { card: dc.card, variant: "solid" };
-        addToSection(single, fns.home, solidEntry);
-
-        // Additional ghosts
-        for (const addlZone of fns.additional) {
-          const ghostEntry: PileEntry = {
-            card: dc.card,
-            variant: "ghost",
-            ghostKind: "additional",
-          };
-          addToSection(single, addlZone, ghostEntry);
+        addToSection(single, home, { card: dc.card, variant: "solid" });
+        for (const z of additional) {
+          addToSection(single, z, { card: dc.card, variant: "ghost", ghostKind: "additional" });
         }
       }
     }
 
     return { e1Sections: e1, e2Sections: e2, neutralSections: neutral, singleSections: single };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    nonCommanderCards,
-    basicEntries,
-    isComposite,
-    themeATags,
-    themeBTags,
-  ]);
+  }, [cards, basics, isComposite, themeATags, themeBTags]);
 
   // Handle drag-drop re-home: the EngineBoard passes the remove handler down;
   // move is handled by the DndContext in page.tsx (same as ZoneColumn).
