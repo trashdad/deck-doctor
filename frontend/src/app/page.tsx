@@ -274,7 +274,7 @@ export default function Page() {
           >
             ⚡ Suggestions
           </HeaderButton>
-          <div className="ml-1 text-xs text-zinc-500">{totalCards} cards · simmander.app/deckdoctor</div>
+          <div className="ml-1 text-xs text-zinc-500">{totalCards} cards · simmander.app/deck-doctor</div>
         </div>
       </header>
 

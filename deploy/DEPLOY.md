@@ -1,13 +1,13 @@
-# Deploying Deck Doctor at simmander.app/deckdoctor
+# Deploying Deck Doctor at simmander.app/deck-doctor
 
 Deck Doctor is path-hosted **alongside** the price tracker on the same VPS — it does
 **not** replace simmander.app. The tracker keeps serving `/`; Deck Doctor serves
-`/deckdoctor`. Two small services + three nginx location blocks; the tracker is untouched.
+`/deck-doctor`. Two small services + three nginx location blocks; the tracker is untouched.
 
 ```
 simmander.app/               -> tracker  (Vite static, FastAPI :8000)   [unchanged]
-simmander.app/deckdoctor     -> Deck Doctor web  (Next.js standalone :3001)
-simmander.app/deckdoctor/api -> Deck Doctor API  (FastAPI :8002)
+simmander.app/deck-doctor     -> Deck Doctor web  (Next.js standalone :3001)
+simmander.app/deck-doctor/api -> Deck Doctor API  (FastAPI :8002)
 ```
 
 ## 0. Prerequisites on the box
@@ -65,7 +65,7 @@ artifacts (gitignored, regenerable). Two ways to populate the DB:
 The userdecks tables are created automatically on first write.
 
 ## 3. Frontend (build with the path prefix)
-`basePath=/deckdoctor` is the default; nothing to set.
+`basePath=/deck-doctor` is the default; nothing to set.
 ```bash
 cd /opt/deck-doctor/frontend
 npm ci && npm run build
@@ -81,7 +81,7 @@ sudo cp deploy/systemd/deckdoctor-api.service deploy/systemd/deckdoctor-web.serv
 sudo systemctl daemon-reload
 sudo systemctl enable --now deckdoctor-api deckdoctor-web
 curl -s localhost:8002/health        # {"status":"ok",...}
-curl -s localhost:3001/deckdoctor    # Next HTML
+curl -s localhost:3001/deck-doctor    # Next HTML
 ```
 
 ## 5. nginx
@@ -94,10 +94,10 @@ No new TLS cert needed — it's the same hostname as the tracker.
 
 ## 6. Verify live
 ```bash
-curl -s https://simmander.app/deckdoctor/api/health
-curl -sI https://simmander.app/deckdoctor          # 200, Next HTML
+curl -s https://simmander.app/deck-doctor/api/health
+curl -sI https://simmander.app/deck-doctor          # 200, Next HTML
 ```
-Open https://simmander.app/deckdoctor — commander list (popularity), Template dropdown,
+Open https://simmander.app/deck-doctor — commander list (popularity), Template dropdown,
 and the Doctor should all work; the tracker at https://simmander.app/ is unaffected.
 
 ## 7. Backups (to the tower NAS)

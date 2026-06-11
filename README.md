@@ -1,6 +1,6 @@
 # Deck Doctor
 
-**The card-art Commander (EDH) deckbuilder at [simmander.app/deckdoctor](https://simmander.app/deckdoctor) — a deck
+**The card-art Commander (EDH) deckbuilder at [simmander.app/deck-doctor](https://simmander.app/deck-doctor) — a deck
 editor with a recommendation engine that finds synergies, combos, and card relationships
 *before* you do.**
 

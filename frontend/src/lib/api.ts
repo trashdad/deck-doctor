@@ -20,7 +20,7 @@ import type {
   ThemeSuggestResponse,
 } from "./types";
 
-// Deck Doctor is path-hosted (simmander.app/deckdoctor), so API calls must carry
+// Deck Doctor is path-hosted (simmander.app/deck-doctor), so API calls must carry
 // the same prefix: a raw fetch() is NOT basePath-aware. In dev this matches Next's
 // rewrite (auto-prefixed to {BASE_PATH}/api → :8001); in prod nginx routes
 // {BASE_PATH}/api/ straight to the FastAPI backend. Keep BASE_PATH in sync with
@@ -28,7 +28,7 @@ import type {
 const BASE_PATH =
   process.env.NEXT_PUBLIC_BASE_PATH === ""
     ? ""
-    : process.env.NEXT_PUBLIC_BASE_PATH || "/deckdoctor";
+    : process.env.NEXT_PUBLIC_BASE_PATH || "/deck-doctor";
 const BASE = `${BASE_PATH}/api`;
 
 async function get<T>(path: string): Promise<T> {

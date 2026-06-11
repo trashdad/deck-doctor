@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
-// Deck Doctor is hosted under a path on simmander.app (simmander.app/deckdoctor),
+// Deck Doctor is hosted under a path on simmander.app (simmander.app/deck-doctor),
 // so every route + asset is served beneath this prefix. Set NEXT_PUBLIC_BASE_PATH=""
 // to host at a domain root instead. Keep in sync with lib/api.ts BASE_PATH.
 const BASE_PATH =
-  process.env.NEXT_PUBLIC_BASE_PATH === "" ? "" : process.env.NEXT_PUBLIC_BASE_PATH || "/deckdoctor";
+  process.env.NEXT_PUBLIC_BASE_PATH === "" ? "" : process.env.NEXT_PUBLIC_BASE_PATH || "/deck-doctor";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
