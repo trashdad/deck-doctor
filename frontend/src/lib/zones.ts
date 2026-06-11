@@ -1,4 +1,5 @@
 import type { Card } from "./types";
+import { matchingZones } from "./functions";
 
 // The designated category "zones" of the builder board.
 export const ZONES = [
@@ -18,18 +19,12 @@ export type Zone = (typeof ZONES)[number];
 // Auto-categorize a freshly added card using its machine-coded mechanic tags
 // (from the simmander DB via the scoring store) and type line. This is what
 // makes adding a card "just land" in the right lane.
+//
+// Delegates to matchingZones (lib/functions.ts) so both autoZone and the Engine
+// Board use the same priority list and can never drift.
 export function autoZone(card: Card): Zone {
-  const t = (card.type_line || "").toLowerCase();
-  const tags = card.mechanic_tags || [];
   if (card.type_line.includes("Legendary Creature")) return "Commanders";
-  if (t.includes("land")) return "Lands";
-  if (tags.includes("board_wipe")) return "Board Wipes";
-  if (tags.includes("removal")) return "Removal";
-  if (tags.includes("ramp")) return "Ramp";
-  if (tags.includes("card_draw")) return "Card Draw";
-  if (tags.some((x) => x.startsWith("counter_"))) return "Counters";
-  if (tags.some((x) => x.startsWith("token_"))) return "Tokens";
-  return "Utility";
+  return matchingZones(card)[0];
 }
 
 export const MANA_COLORS: Record<string, string> = {
