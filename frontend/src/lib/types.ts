@@ -19,6 +19,9 @@ export interface Card {
   image_uris: { normal?: string } | null;
   ier: number | null;
   mechanic_tags: string[];
+  /** Fine-grained semantic tags (e:gain_life, k:lifelink, …) — the same vocabulary
+   * template themes use, so the Engine Board can match a card to an engine. */
+  semantic_tags?: string[];
   /** Commander popularity = corpus decks led by this card (commanders only). */
   deck_count?: number | null;
 }

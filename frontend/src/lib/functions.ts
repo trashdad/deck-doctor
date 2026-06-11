@@ -66,12 +66,13 @@ export interface CardEngines {
  * @param themeATags mechanic_tags from the theme chosen for Engine 1 (may be empty).
  * @param themeBTags mechanic_tags from the theme chosen for Engine 2 (may be empty).
  *
- * e1 = the card's mechanic_tags intersect themeATags.
- * e2 = the card's mechanic_tags intersect themeBTags.
- * Neither → neutral.
+ * e1 = the card's SEMANTIC tags intersect themeATags.
+ * e2 = the card's SEMANTIC tags intersect themeBTags.
+ * Neither → neutral. (Themes are defined in the semantic-tag vocabulary —
+ * e:gain_life, k:lifelink, … — NOT the coarse mechanic_tags used for zones.)
  */
 export function cardEngines(card: Card, themeATags: string[], themeBTags: string[]): CardEngines {
-  const tags = card.mechanic_tags || [];
+  const tags = card.semantic_tags || [];
   const e1 = themeATags.length > 0 && tags.some((t) => themeATags.includes(t));
   const e2 = themeBTags.length > 0 && tags.some((t) => themeBTags.includes(t));
   return { e1, e2 };

@@ -27,6 +27,10 @@ class Card(BaseModel):
     # Enriched from the score store when available.
     ier: float | None = None
     mechanic_tags: list[str] = []
+    # Fine-grained semantic tags (e:gain_life, k:lifelink, …) — the SAME vocabulary
+    # the template themes are defined in, so the Engine Board can match a card to a
+    # theme/engine. Distinct from mechanic_tags (coarse zone classes).
+    semantic_tags: list[str] = []
     # Commander popularity = number of corpus decks led by this card (commanders only).
     deck_count: int | None = None
 

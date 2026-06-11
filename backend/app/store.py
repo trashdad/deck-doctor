@@ -107,6 +107,7 @@ class Store:
         enriched = dict(card)
         enriched["ier"] = self._ier.get(card_id)
         enriched["mechanic_tags"] = self._tags.get(card_id, [])
+        enriched["semantic_tags"] = self._flat_tags_sem.get(card_id, [])
         return enriched
 
     def search(self, q: str = "", colors: str = "", type_q: str = "",
