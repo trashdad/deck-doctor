@@ -16,14 +16,10 @@ interface Props {
   onRemove?: () => void;
   /** Stacking index for CSS tuck offset — 0 = front, increases into the pile. */
   stackIndex: number;
-  /** Total cards in this pile (used to clamp offset). */
-  stackSize: number;
-  /** When true, the pile is fanned (hover state from parent CardPile). */
-  fanned: boolean;
 }
 
 const TUCK_OFFSET_X = 44; // px overlap between consecutive cards
-const FAN_TRANSLATE_Y = -12; // px each card rises when fanned
+const HOVER_LIFT_Y = -18; // px the hovered card rises above the static pile
 const MAX_TUCK_ROT = [0, 2.5, -2, 1.5, -1]; // rotation per position (wraps)
 
 export function BoardCard({
@@ -32,8 +28,6 @@ export function BoardCard({
   ghostKind,
   onRemove,
   stackIndex,
-  stackSize,
-  fanned,
 }: Props) {
   const [hovering, setHovering] = useState(false);
 
@@ -50,19 +44,20 @@ export function BoardCard({
   const handleMouseLeave = useCallback(() => setHovering(false), []);
 
   const rot = MAX_TUCK_ROT[stackIndex % MAX_TUCK_ROT.length] ?? 0;
-  // When fanned, each card translates upward by stackIndex * FAN_TRANSLATE_Y
-  const fanY = fanned ? stackIndex * FAN_TRANSLATE_Y : 0;
+  // Only the hovered card lifts (and straightens) — the rest of the pile is static.
+  const liftY = hovering ? HOVER_LIFT_Y : 0;
   // Drag override
   const dragX = transform ? transform.x : 0;
   const dragY = transform ? transform.y : 0;
 
   const tuckStyle: React.CSSProperties = {
     position: "relative",
-    // Overlap cards like a fanned pile
+    // Overlap cards like a tucked pile
     marginLeft: stackIndex === 0 ? 0 : -TUCK_OFFSET_X,
-    transform: `rotate(${rot}deg) translate(${dragX}px, ${dragY + fanY}px)`,
-    transition: fanned ? "transform 0.18s ease" : "transform 0.12s ease",
-    zIndex: fanned ? stackSize - stackIndex : stackIndex,
+    transform: `rotate(${hovering ? 0 : rot}deg) translate(${dragX}px, ${dragY + liftY}px)`,
+    transition: "transform 0.12s ease",
+    // Hovered card floats above the pile; otherwise later cards sit atop earlier ones.
+    zIndex: hovering ? 999 : stackIndex,
     opacity: isDragging ? 0.35 : variant === "ghost" ? 0.5 : 1,
   };
 

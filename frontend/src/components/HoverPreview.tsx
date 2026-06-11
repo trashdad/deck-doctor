@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Card } from "@/lib/types";
 
 interface Props {
@@ -9,12 +10,25 @@ interface Props {
   active: boolean;
 }
 
-const PREVIEW_W = 220; // px — ~250% of the 70px board card
+const PREVIEW_W = 440; // px — 2× the previous 220 (≈500% of the 70px board card)
+
+// Track the cursor globally so the preview can position itself the instant a card
+// is hovered (without waiting for the next mousemove).
+const lastMouse = { x: 0, y: 0 };
+if (typeof window !== "undefined") {
+  window.addEventListener(
+    "mousemove",
+    (e) => {
+      lastMouse.x = e.clientX;
+      lastMouse.y = e.clientY;
+    },
+    { passive: true },
+  );
+}
 
 /**
- * Cursor-following 250% card preview.
- * Mount it (active=true) while the parent card is hovered; it attaches
- * a mousemove listener and follows the pointer offset from the cursor.
+ * Cursor-following 2× card preview, portaled to <body> so no transformed
+ * ancestor can offset its fixed position. Appears immediately on hover.
  */
 export function HoverPreview({ card, active }: Props) {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
@@ -25,18 +39,23 @@ export function HoverPreview({ card, active }: Props) {
       setPos(null);
       return;
     }
+    const place = (cx: number, cy: number) => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const PREVIEW_H = Math.round(PREVIEW_W * (680 / 488));
+      let x = cx + 24;
+      let y = cy - PREVIEW_H / 2;
+      if (x + PREVIEW_W > vw - 8) x = cx - PREVIEW_W - 24;
+      if (y < 8) y = 8;
+      if (y + PREVIEW_H > vh - 8) y = vh - PREVIEW_H - 8;
+      setPos({ x, y });
+    };
+    // Position immediately at the current cursor, then follow.
+    place(lastMouse.x, lastMouse.y);
     const onMove = (e: MouseEvent) => {
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const PREVIEW_H = Math.round(PREVIEW_W * (680 / 488));
-        let x = e.clientX + 16;
-        let y = e.clientY - PREVIEW_H / 2;
-        if (x + PREVIEW_W > vw - 8) x = e.clientX - PREVIEW_W - 16;
-        if (y < 8) y = 8;
-        if (y + PREVIEW_H > vh - 8) y = vh - PREVIEW_H - 8;
-        setPos({ x, y });
+        place(e.clientX, e.clientY);
         rafRef.current = null;
       });
     };
@@ -47,11 +66,11 @@ export function HoverPreview({ card, active }: Props) {
     };
   }, [active]);
 
-  if (!active || !pos) return null;
+  if (!active || !pos || typeof document === "undefined") return null;
 
   const art = card.image_uris?.normal;
 
-  return (
+  return createPortal(
     <div
       className="pointer-events-none fixed z-[300] overflow-hidden rounded-[4.75%/3.4%]
                  shadow-[0_0_0_1px_rgba(201,162,39,0.6),_0_16px_48px_rgba(0,0,0,0.8)]"
@@ -76,6 +95,7 @@ export function HoverPreview({ card, active }: Props) {
           <span className="text-zinc-400">{card.color_identity.join("") || "C"}</span>
         </div>
       )}
-    </div>
+    </div>,
+    document.body,
   );
 }

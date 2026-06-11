@@ -119,6 +119,7 @@ export function EngineBoard() {
   // move is handled by the DndContext in page.tsx (same as ZoneColumn).
 
   const hasNeutral = Object.values(neutralSections).some((arr) => arr && arr.length > 0);
+  const hasThemes = themeATags.length > 0 || themeBTags.length > 0;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 scrollbar-thin">
@@ -128,53 +129,42 @@ export function EngineBoard() {
         onRemove={commander ? () => remove(commander.id) : undefined}
       />
 
-      {isComposite ? (
-        /* ── COMPOSITE MODE: two engine columns + optional neutral ── */
-        <div className="flex flex-col gap-4">
-          {/* Engine columns row */}
-          <div className="relative flex gap-0">
-            {/* Gilded divider */}
-            <div
-              className="pointer-events-none absolute inset-y-2 left-1/2 z-10 w-px -translate-x-px"
-              style={{
-                background:
-                  "linear-gradient(180deg, transparent, rgba(201,162,39,0.65), transparent)",
-              }}
-            />
-
-            <EngineColumn
-              engineKey="e1"
-              label="Engine 1"
-              themeLabel={themeALabel || undefined}
-              sections={e1Sections}
-              onRemove={remove}
-            />
-            <EngineColumn
-              engineKey="e2"
-              label="Engine 2"
-              themeLabel={themeBLabel || undefined}
-              sections={e2Sections}
-              onRemove={remove}
-            />
-          </div>
-
-          {/* Neutral column — full width, below */}
+      {isComposite && hasThemes ? (
+        /* ── COMPOSITE w/ themes: engine columns side by side (red | blue | neutral) ── */
+        <div className="flex items-start gap-3">
+          <EngineColumn
+            engineKey="e1"
+            label="Engine 1"
+            themeLabel={themeALabel || undefined}
+            sections={e1Sections}
+            onRemove={remove}
+          />
+          <EngineColumn
+            engineKey="e2"
+            label="Engine 2"
+            themeLabel={themeBLabel || undefined}
+            sections={e2Sections}
+            onRemove={remove}
+          />
+          {/* Theme-less cards live in a neutral column BESIDE the engines, not below. */}
           {hasNeutral && (
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <div className="h-px flex-1 bg-edge" />
-                <span className="text-[10px] uppercase tracking-widest text-zinc-600">
-                  Neutral
-                </span>
-                <div className="h-px flex-1 bg-edge" />
-              </div>
-              <EngineColumn
-                engineKey="neutral"
-                sections={neutralSections}
-                onRemove={remove}
-              />
-            </div>
+            <EngineColumn
+              engineKey="neutral"
+              label="Neutral"
+              themeLabel="no engine"
+              sections={neutralSections}
+              onRemove={remove}
+            />
           )}
+        </div>
+      ) : isComposite ? (
+        /* ── COMPOSITE, no themes chosen yet: one clean column + a prompt ── */
+        <div className="flex flex-col gap-2">
+          <p className="text-[11px] text-zinc-500">
+            Pick two themes in the <span className="text-accent">Simmander Composite</span> panel to
+            split these into red / blue engines.
+          </p>
+          <EngineColumn engineKey="single" sections={neutralSections} onRemove={remove} />
         </div>
       ) : (
         /* ── SINGLE-COLUMN MODE: function fields stacked ── */
