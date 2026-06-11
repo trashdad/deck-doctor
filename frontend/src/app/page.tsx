@@ -22,7 +22,7 @@ import { useDecksStore } from "@/store/decks";
 import { useTemplateStore } from "@/store/template";
 import { useAuth } from "@/store/auth";
 import { ZONES, type Zone } from "@/lib/zones";
-import { analyzeDeck, getTemplates, saveDeck } from "@/lib/api";
+import { analyzeDeck, getTemplates } from "@/lib/api";
 import type { DeckEntry } from "@/lib/types";
 
 function TemplateMenu() {
@@ -180,7 +180,7 @@ export default function Page() {
   }, [user, currentId, entries.length]);
 
   async function migrateWorkingDeck() {
-    await saveDeck("Imported deck", commanderId, entries);
+    await useDecksStore.getState().saveCurrent("Imported deck");
     setMigratePrompt(false);
   }
 

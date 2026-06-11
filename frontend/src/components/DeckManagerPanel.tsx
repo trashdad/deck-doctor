@@ -29,8 +29,8 @@ export function DeckManagerPanel({
   const [name, setName] = useState(currentName);
 
   useEffect(() => {
-    if (isOpen) void refresh();
-  }, [isOpen, refresh]);
+    if (isOpen && user) void refresh();
+  }, [isOpen, refresh, user]);
 
   useEffect(() => setName(currentName), [currentName]);
 
@@ -46,7 +46,7 @@ export function DeckManagerPanel({
 
   async function handleExport() {
     if (!currentId) return;
-    const text = await fetch(exportDeckUrl(currentId)).then((r) => r.text());
+    const text = await fetch(exportDeckUrl(currentId), { credentials: "include" }).then((r) => r.text());
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

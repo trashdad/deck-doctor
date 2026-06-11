@@ -34,6 +34,9 @@ export const useAuth = create<AuthState>((set) => ({
       return;
     }
     const cached = cacheGet();
+    if (cached && cached.id !== session.id) {
+      localStorage.removeItem(USER_KEY);
+    }
     const username = cached && cached.id === session.id ? cached.username : "";
     set({ user: { id: session.id, username }, ready: true });
   },
