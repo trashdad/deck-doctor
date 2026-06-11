@@ -19,6 +19,7 @@ import type {
   TemplatesResponse,
   ThemeSuggestResponse,
 } from "./types";
+import type { User } from "./types";
 
 // Deck Doctor is path-hosted (simmander.app/deck-doctor), so API calls must carry
 // the same prefix: a raw fetch() is NOT basePath-aware. In dev this matches Next's
@@ -31,8 +32,10 @@ const BASE_PATH =
     : process.env.NEXT_PUBLIC_BASE_PATH || "/deck-doctor";
 const BASE = `${BASE_PATH}/api`;
 
+const TRACKER_API = "/api"; // simmander.app root — the tracker's shared auth
+
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE}${path}`);
+  const res = await fetch(`${BASE}${path}`, { credentials: "include" });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json() as Promise<T>;
 }
@@ -42,9 +45,38 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+    credentials: "include",
   });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json() as Promise<T>;
+}
+
+/** Current user from the shared session, or null. (Deck Doctor's own API.) */
+export async function authMe(): Promise<User | null> {
+  const res = await fetch(`${BASE}/auth/me`, { credentials: "include" });
+  if (!res.ok) return null;
+  const data = (await res.json()) as { user: { id: number } | null };
+  return data.user ? { id: data.user.id, username: "" } : null;
+}
+
+/** Log in via the tracker's shared endpoint (form-encoded). Sets the shared cookie. */
+export async function trackerLogin(username: string, password: string): Promise<User> {
+  const body = new URLSearchParams({ username, password });
+  const res = await fetch(`${TRACKER_API}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Invalid username or password");
+  const data = (await res.json()) as { user: { id: number; username: string } };
+  return { id: data.user.id, username: data.user.username };
+}
+
+export async function trackerLogout(): Promise<void> {
+  await fetch(`${TRACKER_API}/auth/logout`, { method: "POST", credentials: "include" }).catch(
+    () => {},
+  );
 }
 
 export function searchCards(params: {
@@ -157,7 +189,7 @@ export function getCard(cardId: string): Promise<Card> {
 
 // ---- SP6: deck persistence ----
 async function del(path: string): Promise<void> {
-  const res = await fetch(`${BASE}${path}`, { method: "DELETE" });
+  const res = await fetch(`${BASE}${path}`, { method: "DELETE", credentials: "include" });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
 }
 
@@ -166,6 +198,7 @@ async function put<T>(path: string, body: unknown): Promise<T> {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+    credentials: "include",
   });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json() as Promise<T>;

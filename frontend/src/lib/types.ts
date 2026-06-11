@@ -1,5 +1,10 @@
 // Shared data contract — keep in lockstep with backend/app/models.py.
 
+export interface User {
+  id: number;
+  username: string;
+}
+
 export interface Card {
   id: string;
   name: string;
