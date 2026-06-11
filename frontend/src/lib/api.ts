@@ -305,3 +305,36 @@ export function postDeckGraph(
 ): Promise<GraphResponse> {
   return post<GraphResponse>("/deck/graph", { cards, commander_id });
 }
+
+// ---- SP11 (B): deck export ----
+
+/** Fetch the backend and return the response body as plain text (not JSON). */
+async function postText(path: string, body: unknown): Promise<string> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.text();
+}
+
+/**
+ * Export the current working deck in the given format.
+ *
+ * @param entries     - The deck's card list (id + zone + quantity).
+ * @param commanderId - The commander card id (or null).
+ * @param format      - One of "text" | "moxfield" | "archidekt" | "manapool".
+ * @returns           The formatted deck as a plain string.
+ */
+export function exportDeck(
+  entries: DeckEntry[],
+  commanderId: string | null,
+  format: string,
+): Promise<string> {
+  return postText(`/deck/export?format=${encodeURIComponent(format)}`, {
+    cards: entries,
+    commander_id: commanderId,
+  });
+}

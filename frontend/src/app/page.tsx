@@ -16,6 +16,7 @@ import { DeckCombosPanel } from "@/components/DeckCombosPanel";
 import { DeckDoctorPanel } from "@/components/DeckDoctorPanel";
 import { SynergyGraph } from "@/components/SynergyGraph";
 import { TemplatePanel } from "@/components/TemplatePanel";
+import { ExportPanel } from "@/components/ExportPanel";
 import { UserMenu } from "@/components/UserMenu";
 import { useDeck } from "@/store/deck";
 import { useDecksStore } from "@/store/decks";
@@ -117,6 +118,7 @@ export default function Page() {
   const [combosOpen, setCombosOpen] = useState(false);
   const [doctorOpen, setDoctorOpen] = useState(false);
   const [graphOpen, setGraphOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
 
   const { currentId, saveCurrent } = useDecksStore();
 
@@ -294,6 +296,12 @@ export default function Page() {
         }}
       />
       <ImportExportDialog isOpen={importOpen} onClose={() => setImportOpen(false)} />
+      <ExportPanel
+        isOpen={exportOpen}
+        onClose={() => setExportOpen(false)}
+        entries={entries}
+        commanderId={commanderId}
+      />
 
       <header className="flex items-center justify-between border-b border-edge bg-panel px-5 py-3">
         <div className="flex items-baseline gap-3">
@@ -339,6 +347,14 @@ export default function Page() {
             onClick={() => setSuggestOpen(true)}
           >
             ⚡ Suggestions
+          </HeaderButton>
+          <HeaderButton
+            testid="open-export"
+            title={totalCards > 0 ? "Export / share your deck" : "Add cards first"}
+            disabled={totalCards === 0}
+            onClick={() => setExportOpen(true)}
+          >
+            📤 Export
           </HeaderButton>
           <div className="ml-1 text-xs text-zinc-500">{totalCards} cards · simmander.app/deck-doctor</div>
         </div>
