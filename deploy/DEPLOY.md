@@ -83,6 +83,9 @@ cp -r public        .next/standalone/public   # if present
 ```bash
 sudo cp deploy/systemd/deckdoctor-api.service deploy/systemd/deckdoctor-web.service /etc/systemd/system/
 # edit User=/paths if your layout differs from /opt/deck-doctor + user `simmander`
+# Shared login needs the SAME JWT secret the tracker signs with — copy it in:
+SECRET=$(sudo grep -iP '^\s*secret_key' /opt/simmander-tracker/backend/config.ini | head -1 | sed 's/.*=\s*//')
+sudo sed -i "s|SIMMANDER_JWT_SECRET=.*|SIMMANDER_JWT_SECRET=$SECRET|" /etc/systemd/system/deckdoctor-api.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now deckdoctor-api deckdoctor-web
 curl -s localhost:8002/health        # {"status":"ok",...}
