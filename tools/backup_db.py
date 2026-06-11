@@ -50,9 +50,10 @@ def main() -> int:
     host, remote_dir = args.dest.split(":", 1)
 
     # Host-tagged so dev + prod dumps coexist in one dir and prune independently.
-    host = re.sub(r"[^A-Za-z0-9_-]", "", socket.gethostname()) or "host"
+    # (Distinct from `host`, which is the SSH destination host parsed above.)
+    hostlabel = re.sub(r"[^A-Za-z0-9_-]", "", socket.gethostname()) or "host"
     ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%SZ")
-    fname = f"deckdoctor-{host}-{ts}.dump"
+    fname = f"deckdoctor-{hostlabel}-{ts}.dump"
     local = Path(tempfile.gettempdir()) / fname
 
     print(f"[backup] pg_dump -> {local}")
@@ -79,11 +80,11 @@ def main() -> int:
 
     # Prune: keep the newest --keep dumps FROM THIS HOST (so dev pruning never
     # touches prod dumps sharing the directory).
-    prune = (f"ls -1t '{remote_dir}'/deckdoctor-{host}-*.dump 2>/dev/null | "
+    prune = (f"ls -1t '{remote_dir}'/deckdoctor-{hostlabel}-*.dump 2>/dev/null | "
              f"tail -n +{args.keep + 1} | xargs -r rm -f")
     subprocess.run(ssh + [prune])
     kept = subprocess.run(
-        ssh + [f"ls -1 '{remote_dir}'/deckdoctor-{host}-*.dump 2>/dev/null | wc -l"],
+        ssh + [f"ls -1 '{remote_dir}'/deckdoctor-{hostlabel}-*.dump 2>/dev/null | wc -l"],
         capture_output=True, text=True).stdout.strip()
     print(f"[backup] done — {args.dest}/{fname} ({kept} dumps retained, keep={args.keep})")
     return 0
