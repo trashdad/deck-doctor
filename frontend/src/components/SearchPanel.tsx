@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { searchCards, getCommanders } from "@/lib/api";
 import type { Card, CommanderSort } from "@/lib/types";
 import { useDeck, commanderIdentity, withinIdentity } from "@/store/deck";
+import { useUI } from "@/store/ui";
 import { CardTile } from "./CardTile";
 import { CardMenu } from "./CardMenu";
 
@@ -93,13 +94,15 @@ function CardWithMenu({
 }
 
 export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
-  const [tab, setTab] = useState<Tab>("search");
+  const tab = useUI((s) => s.searchTab);
+  const setTab = useUI((s) => s.setSearchTab);
   const [q, setQ] = useState("");
   const [colors, setColors] = useState<string[]>([]);
   const [type, setType] = useState("");
   const [cmdQ, setCmdQ] = useState("");
   const [cmdColors, setCmdColors] = useState<string[]>([]);
-  const [cmdSort, setCmdSort] = useState<CommanderSort>("popularity");
+  // Default the commander list to efficiency (IER), highest first.
+  const [cmdSort, setCmdSort] = useState<CommanderSort>("ier");
 
   const searchQuery = useQuery({
     queryKey: ["cards", q, colors, type],

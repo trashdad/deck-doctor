@@ -54,10 +54,11 @@ export function EngineBoard() {
     return themes.find((t) => t.id === composite.themeB)?.tags ?? [];
   }, [isComposite, composite.themeB, themes]);
 
-  // Commander (used in the render). The rest of the deck is derived inside the
+  // Commander(s) (used in the render). The rest of the deck is derived inside the
   // placement memo below so the deps are the stable store references.
-  const commander =
-    Object.values(cards).find((dc) => dc.zone === "Commanders")?.card ?? null;
+  const commanders = Object.values(cards)
+    .filter((dc) => dc.zone === "Commanders")
+    .map((dc) => dc.card);
 
   // ---------------------------------------------------------------------------
   // Placement algorithm
@@ -116,10 +117,7 @@ export function EngineBoard() {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 scrollbar-thin">
       {/* Commander strip — always present */}
-      <CommanderStrip
-        commander={commander}
-        onRemove={commander ? () => remove(commander.id) : undefined}
-      />
+      <CommanderStrip commanders={commanders} onRemove={remove} />
 
       {isComposite ? (
         /* ── COMPOSITE: engine columns always visible (red | blue | neutral) ──
