@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 /**
- * "HOW WE CALC" — a plain-language overlay explaining how Deck Doctor rates
+ * "HOW WE CALC": a plain-language overlay explaining how Deck Doctor rates
  * efficiency and makes its recommendations. Process, not formulas.
  */
 export function HowWeCalcModal({
@@ -38,7 +38,7 @@ export function HowWeCalcModal({
           <div>
             <p className="font-display text-lg font-bold tracking-wide text-accent">How We Calc</p>
             <p className="text-[11px] uppercase tracking-widest text-zinc-500">
-              How Deck Doctor rates cards &amp; makes its calls
+              What&apos;s actually behind the numbers
             </p>
           </div>
           <button
@@ -54,55 +54,48 @@ export function HowWeCalcModal({
         <div className="space-y-5 overflow-y-auto px-6 py-5 text-[13px] leading-relaxed text-zinc-300 scrollbar-thin">
           <section className="rounded-lg border border-accent/30 bg-accent/5 p-4">
             <p>
-              <span className="font-semibold text-accent">The 30-second version.</span> Every number you
-              see in Deck Doctor was figured out <em>ahead of time</em>. We read a giant pile of real
-              Magic data once, in the background, and boil it down into simple &ldquo;index cards&rdquo;
-              of pre-chewed answers. So when you drop a card onto the board, the site isn&apos;t
-              thinking &mdash; it&apos;s <em>looking up</em> what it already worked out. That&apos;s why
-              it answers in a blink, and why it doesn&apos;t need a supercomputer to do it.
+              <span className="font-semibold text-accent">Short version:</span> we worked out all the
+              numbers before you ever showed up. There&apos;s a mountain of real Magic data behind this
+              thing, and we chew through it in the background and write the answers down. By the time
+              you&apos;re dropping cards on the board, the site isn&apos;t calculating anything. It&apos;s
+              reading what we already figured out. That&apos;s why it&apos;s fast, and why it runs fine on
+              your phone.
             </p>
           </section>
 
           <div>
             <h3 className="mb-1.5 font-display text-base font-semibold text-accent">
-              What &ldquo;efficiency&rdquo; really measures
+              What efficiency actually means
             </h3>
             <p className="mb-2">
-              When we put an efficiency number on a card, we&apos;re asking one question:{" "}
-              <strong className="text-zinc-100">
-                how much does this card give you back compared to what it costs you?
-              </strong>
+              An efficiency number answers one thing: what a card gives you back versus what it costs to
+              play it.
             </p>
             <p className="mb-2">
-              Every card is a trade. You pay mana &mdash; and usually a card out of your hand &mdash; and
-              you get something in return: more cards, a creature on the board, a problem removed, damage,
-              ramp, protection. A card is <em>efficient</em> when the stuff you get clearly outweighs the
-              price you paid, and <em>inefficient</em> when you overpay for a small effect.
+              Every card is a trade. You spend mana, usually a card out of your hand too, and you get
+              something for it. More cards, a body on the board, a dead removal spell, some damage, a bit of
+              ramp. When the payoff is clearly bigger than the price, the card scores well. When you&apos;re
+              overpaying for a small effect, it doesn&apos;t.
             </p>
             <p className="mb-2">
-              So we look at the whole picture of a card &mdash; what it costs, how much board presence or
-              card advantage it generates, how big or impactful it is, and how quickly it pays you back
-              &mdash; and put all of that onto <strong className="text-zinc-100">one shared scale</strong>.
-              That lets you line up a one-mana rock next to a six-mana bomb and actually compare them
-              fairly.
+              We weigh up the whole card and drop the result onto one scale, so a one-mana rock and a
+              six-mana bomb sit side by side and you can actually compare them.
             </p>
-            <p>Two things worth keeping in mind:</p>
+            <p>A couple of things people get wrong about this number:</p>
             <ul className="mt-1.5 space-y-1.5 pl-1">
               <li className="flex gap-2">
                 <span className="text-accent">•</span>
                 <span>
-                  It&apos;s an <strong className="text-zinc-100">&ldquo;in a vacuum&rdquo; rating</strong>{" "}
-                  &mdash; how strong the card is on its own, before we know anything about <em>your</em>{" "}
-                  deck. A card can be wildly efficient and still be wrong for you, and a humble-looking
-                  card can be the perfect glue for your strategy.
+                  It rates the card on its own, with zero knowledge of your deck. Plenty of high-scoring
+                  cards are completely wrong for what you&apos;re building, and plenty of low-scoring ones
+                  are the exact glue your deck needs.
                 </span>
               </li>
               <li className="flex gap-2">
                 <span className="text-accent">•</span>
                 <span>
-                  It&apos;s deliberately <strong className="text-zinc-100">not</strong> the thing we use to
-                  rank suggestions. Raw power is one ingredient, not the whole recipe. It mostly shows up
-                  to break ties and give you a gut sense of a card&apos;s ceiling.
+                  We don&apos;t rank suggestions by it. It&apos;s one input, not the answer. Mostly it sits
+                  there to break ties and tell you a card&apos;s ceiling at a glance.
                 </span>
               </li>
             </ul>
@@ -110,139 +103,118 @@ export function HowWeCalcModal({
 
           <div>
             <h3 className="mb-1.5 font-display text-base font-semibold text-accent">
-              How we decide what to recommend
+              How we pick cards for you
             </h3>
             <p className="mb-2">
-              Picking the <em>right</em> card for your deck is a different job than rating raw power. We
-              look at your card pool through <strong className="text-zinc-100">four lenses at once</strong>,
-              because no single one tells the whole story:
+              Rating power and picking the right card are two different jobs. For the second one we read
+              your card pool four ways at once.
             </p>
-            <ol className="space-y-2.5">
-              <li>
-                <span className="font-semibold text-zinc-100">1. Is the card strong on its own?</span>{" "}
-                That&apos;s the efficiency rating above &mdash; a sanity check that we&apos;re not
-                suggesting junk.
-              </li>
-              <li>
-                <span className="font-semibold text-zinc-100">
-                  2. Do real decks actually run these cards together?
-                </span>{" "}
-                This is the heart of it. We&apos;ve studied thousands of real, human-built decklists. When
-                two cards show up <em>together</em> far more often than random chance would explain,
-                that&apos;s the community quietly telling us they belong in the same deck. We trust that
-                signal a lot, because it&apos;s earned from real games, not guessed.
-              </li>
-              <li>
-                <span className="font-semibold text-zinc-100">
-                  3. Are two cards basically doing the same job?
-                </span>{" "}
-                We map out which cards are <em>interchangeable</em> &mdash; the five different
-                &ldquo;destroy target creature&rdquo; spells, the dozen mana rocks, the redundant draw
-                engines. Knowing this lets us suggest real swaps, avoid handing you eight versions of the
-                same effect, and understand the <em>role</em> each card plays.
-              </li>
-              <li>
-                <span className="font-semibold text-zinc-100">
-                  4. Do these cards combine into something bigger?
-                </span>{" "}
-                We cross-reference a big, curated catalog of known card interactions and combos. If your
-                deck is one piece away from a finisher, we want to be the one to point it out.
-              </li>
-            </ol>
-            <p className="mt-2">
-              Then we <strong className="text-zinc-100">blend those four lenses together</strong>, weighted
-              by your commander and everything already on your board. A card that&apos;s powerful, beloved
-              by decks like yours, fills a role you&apos;re missing, <em>and</em> plays nicely with what
-              you&apos;ve got is going to rise to the top. Something that only checks one box won&apos;t.
+            <p className="mb-2">
+              First, is the card any good on its own? That&apos;s the efficiency score, a quick sanity
+              check so we&apos;re not handing you junk.
+            </p>
+            <p className="mb-2">
+              Second, and this is the big one: do real decks actually run these cards together? We&apos;ve
+              been through thousands of decklists that real people built and played. When two cards keep
+              turning up in the same deck far more than chance would explain, that&apos;s everyone who plays
+              the format telling us they belong together. We lean on that hard. It came from real games, not
+              from somebody&apos;s opinion.
+            </p>
+            <p className="mb-2">
+              Third, are two cards just doing the same job? We track which cards are swappable. The five
+              &ldquo;destroy target creature&rdquo; spells, the pile of mana rocks, the draw engines that
+              all do roughly the same thing. That keeps us from offering you eight versions of one effect,
+              and it lets us suggest real swaps.
+            </p>
+            <p className="mb-2">
+              Fourth, do any of these cards go off together? We check your pool against a big catalog of
+              known combos and interactions. If you&apos;re one card short of a wincon, you should hear it
+              from us.
+            </p>
+            <p>
+              Then we mix those four together and weight the whole thing by your commander and what&apos;s
+              already on the board. A card that&apos;s strong, shows up in decks like yours, covers a job
+              you&apos;re missing, and plays nice with your other cards floats to the top. One that only
+              manages a single one of those doesn&apos;t.
             </p>
           </div>
 
           <div>
             <h3 className="mb-1.5 font-display text-base font-semibold text-accent">
-              Where the knowledge comes from
+              Where this all comes from
             </h3>
-            <p className="mb-2">
-              None of this is invented. It all traces back to{" "}
-              <strong className="text-zinc-100">real human play</strong>:
-            </p>
+            <p className="mb-2">We didn&apos;t make any of it up. It&apos;s built on:</p>
             <ul className="mb-2 space-y-1.5 pl-1">
               <li className="flex gap-2">
                 <span className="text-accent">•</span>
-                <span>A large, constantly-growing library of actual decklists people have built and played.</span>
+                <span>a big pile of real decklists, and it keeps growing</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-accent">•</span>
-                <span>Community-wide statistics about what gets played with which commanders.</span>
+                <span>format-wide stats on what gets played with which commanders</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-accent">•</span>
-                <span>A curated catalog of known combos and interactions.</span>
+                <span>a hand-checked catalog of combos</span>
               </li>
             </ul>
             <p>
-              We pull that data in, clean it up, and keep it fresh &mdash; which means the advice
-              isn&apos;t frozen in time. As the format shifts and new cards land, the patterns update, and
-              your recommendations quietly get smarter without you doing a thing.
+              We pull that in, scrub it, and keep it current, so the advice doesn&apos;t go stale. New sets
+              land, the format moves, the patterns shift with it, and your recommendations get a little
+              sharper on their own.
             </p>
           </div>
 
           <div>
             <h3 className="mb-1.5 font-display text-base font-semibold text-accent">
-              Why there&apos;s no &ldquo;AI&rdquo; thinking when you click
+              Why nothing&apos;s &ldquo;thinking&rdquo; when you click
             </h3>
             <p className="mb-2">
-              Here&apos;s the trick that makes the whole thing feel instant:{" "}
-              <strong className="text-zinc-100">we do the expensive thinking offline, ahead of time.</strong>{" "}
-              Figuring out how every card relates to every other card is an enormous amount of work &mdash;
-              so we do it in the background, once, and write the conclusions down. The live website never
-              re-does that math. When you add a card, it just reads the relevant pre-computed numbers and
-              blends a few of them on the spot.
+              The reason this feels instant is that the slow part already happened. Working out how every
+              card relates to every other card is a mountain of math, so we run it offline, once, and save
+              the results. The live site never touches that math again. You add a card, it grabs the numbers
+              it needs and blends a few of them right there.
             </p>
             <p>
-              That&apos;s why answers come back in the blink of an eye, why it works on a phone, and why it
-              doesn&apos;t cost a fortune to run. The genius isn&apos;t a giant brain answering each
-              question &mdash; it&apos;s having already done the homework.
+              So you get an answer immediately, it works on a phone, and it doesn&apos;t cost a fortune to
+              keep running. We just did the homework early.
             </p>
           </div>
 
           <div>
             <h3 className="mb-1.5 font-display text-base font-semibold text-accent">
-              Completing your deck, and trimming it
+              Finishing a deck, and trimming one down
             </h3>
             <p className="mb-2">
-              When you ask the Doctor to <strong className="text-zinc-100">complete your deck</strong>,
-              we&apos;re not stuffing it with the most powerful cards we can find. We&apos;re filling it
-              toward a <em>sensible shape</em> &mdash; enough lands, ramp, card draw, removal, board wipes,
-              and so on &mdash; and for each slot we pick the card that pulls the most weight alongside what
-              you already have, using those same four lenses.
+              When you hit &ldquo;complete my deck,&rdquo; we&apos;re not jamming in the most powerful cards
+              we can find. We fill toward a shape that actually works: enough lands, ramp, draw, removal,
+              wipes, the usual. For each open slot we grab the card that does the most for the cards
+              you&apos;ve already got, using that same four-way read.
             </p>
             <p>
-              When you ask for <strong className="text-zinc-100">cuts</strong>, we flip it around: we rank
-              the cards already in your deck by how <em>little</em> they&apos;re contributing to everything
-              else, and surface the weakest links so you can decide what to trim.
+              Cuts run backwards. We take what&apos;s already in the deck and rank it by how little each card
+              is doing for the rest, then put the weakest stuff in front of you so you can call it.
             </p>
           </div>
 
           <div>
-            <h3 className="mb-1.5 font-display text-base font-semibold text-accent">Building your manabase</h3>
+            <h3 className="mb-1.5 font-display text-base font-semibold text-accent">Your lands</h3>
             <p>
-              Lands get the same treatment. When you fill your lands, we start from the fixing and utility
-              lands that <em>real decks in your colors actually run</em> &mdash; dual lands included, with
-              an optional price cap so you can keep it on budget &mdash; and then round the rest out with
-              basics matched to your deck&apos;s real color demands, not just an even split. The goal is a
-              mana base that actually casts your spells, not a pretty pile of off-color lands.
+              Lands get the same treatment. We start from the fixing and utility lands that real decks in
+              your colors actually run, duals included, with a price cap if you want to keep it cheap. Then
+              we fill the rest with basics in the right amounts for the colors your deck leans on, instead of
+              splitting them evenly and calling it a day. The point is a mana base that casts your spells.
             </p>
           </div>
 
           <div className="rounded-lg border border-edge bg-zinc-900/40 p-4">
-            <h3 className="mb-1.5 font-display text-base font-semibold text-accent">The honest part</h3>
+            <h3 className="mb-1.5 font-display text-base font-semibold text-accent">One honest note</h3>
             <p>
-              Deck Doctor is a sharp <strong className="text-zinc-100">starting point and a second
-              opinion</strong> &mdash; a tireless librarian who has read more decklists than any human ever
-              could and remembers all of them. But it&apos;s reflecting the <em>consensus</em> of what
-              people play, so it can lean a little safe and conventional. The spicy, deck-defining choices?
-              That&apos;s still you. You&apos;re the deckbuilder. We just make sure you never miss an obvious
-              synergy, a one-card-away combo, or a piece of dead weight that should&apos;ve been cut.
+              This is a strong starting point and a good second opinion. It&apos;s read more decklists than
+              you ever could and it remembers all of them. But it&apos;s showing you the consensus, so it
+              plays it safe sometimes. The weird, personal, deck-defining picks are still on you. You build
+              the deck. We just make sure you don&apos;t miss an obvious synergy, a combo you&apos;re one
+              card away from, or some dead weight you should&apos;ve cut ages ago.
             </p>
           </div>
         </div>
