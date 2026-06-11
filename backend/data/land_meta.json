@@ -1,0 +1,9278 @@
+{
+  "2e6c0b8d-c7a1-46aa-ae70-6b86c02315dc": {
+    "name": "Abandoned Air Temple",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 8.36
+  },
+  "ee0565f5-ebdb-43f9-bbb4-0485b1968937": {
+    "name": "Abandoned Campground",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.28
+  },
+  "4945031e-1158-474c-9e50-1ec817acc767": {
+    "name": "Abandoned Outpost",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "19e96521-b4ce-4a36-a887-200e05ccc804": {
+    "name": "Abraded Bluffs",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.33
+  },
+  "4d197866-7633-493c-80dd-ec3a09165934": {
+    "name": "Abstergo Entertainment",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 2.43
+  },
+  "37478625-dd07-476d-bd9b-b2e0d71ac0d1": {
+    "name": "Abundant Countryside",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 2.69
+  },
+  "128deed2-b9bc-4065-95c9-ccd7b08f1230": {
+    "name": "Academy Ruins",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 5.16
+  },
+  "92d37929-fc8b-40a9-8c25-ca79ae750d58": {
+    "name": "Access Tunnel",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "7f288449-e9a8-444e-9639-fbcb742d2409": {
+    "name": "Accursed Duneyard",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.19
+  },
+  "627c392c-4d18-4eb2-a4e8-c668f61f5487": {
+    "name": "Aclazotz, Deepest Betrayal // Temple of the Dead",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 10.66
+  },
+  "4d6901e7-d519-4dfc-a74d-63fff5e4ffae": {
+    "name": "Adagia, Windswept Bastion",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 7.57
+  },
+  "42e0aa15-639a-4e88-9bd8-ce5e7c7d7649": {
+    "name": "Adarkar Wastes",
+    "produced_mana": [
+      "C",
+      "U",
+      "W"
+    ],
+    "usd": 0.33
+  },
+  "f0da2ee1-986e-4cbf-92eb-d96fdb572ca5": {
+    "name": "Adventurer's Inn",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.23
+  },
+  "32865e68-5842-4f17-b2ea-4ffa743b511f": {
+    "name": "Adventurers' Guildhouse",
+    "produced_mana": [],
+    "usd": 11.82
+  },
+  "bb6a8c30-e824-4137-b83e-b9d175a0d037": {
+    "name": "Aether Hub",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.31
+  },
+  "e8c9ed27-1e50-43cc-b921-9746aad18b95": {
+    "name": "Agadeem's Awakening // Agadeem, the Undercrypt",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": null
+  },
+  "501c24b4-26e4-47ac-8a5c-3289d937620e": {
+    "name": "Agna Qel'a",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 2.92
+  },
+  "0b98ba34-f251-4bd0-9d75-1d4445be5cfd": {
+    "name": "Airship Engine Room",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.25
+  },
+  "fd9b7070-7702-4e10-ad66-b2782590810e": {
+    "name": "Akoum Refuge",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.15
+  },
+  "ecccecea-781e-4cdf-bc6b-fe243e00ce77": {
+    "name": "Akoum Warrior // Akoum Teeth",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": null
+  },
+  "36a11c11-1ea9-48e2-b1bc-49cba1390620": {
+    "name": "Alchemist's Refuge",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.31
+  },
+  "b0970bd7-fdc4-4f81-81e8-20060446870d": {
+    "name": "Ally Encampment",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 9.94
+  },
+  "8702d6b9-bb01-4841-a76d-4a576066c772": {
+    "name": "Alpine Meadow",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.36
+  },
+  "4f312807-ea2a-4385-8774-4e23b4a5d4a6": {
+    "name": "Amonkhet Raceway",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.35
+  },
+  "9afac347-4316-43e2-848b-e474ed563af6": {
+    "name": "An-Havva Township",
+    "produced_mana": [
+      "C",
+      "G",
+      "R",
+      "W"
+    ],
+    "usd": 0.28
+  },
+  "ac1a0c88-dc72-459d-bcca-f37eb46cba92": {
+    "name": "Ancient Amphitheater",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.27
+  },
+  "f9333d0e-e7b7-40e6-a510-3fcab1a9b655": {
+    "name": "Ancient Den",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": null
+  },
+  "004eefa4-947b-45fc-b45c-5263bfd763bc": {
+    "name": "Ancient Spring",
+    "produced_mana": [
+      "B",
+      "U",
+      "W"
+    ],
+    "usd": 0.2
+  },
+  "2c8b3180-6e29-484a-95f1-3e75af2766d3": {
+    "name": "Ancient Tomb",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 159.57
+  },
+  "136f1e4e-ca24-45cb-a39c-4dd159bb1488": {
+    "name": "Ancient Ziggurat",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.38
+  },
+  "902f2a7a-566e-4388-a280-4f68e5f6c1d5": {
+    "name": "Animal Sanctuary",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 4.12
+  },
+  "e2384e42-2442-4b40-9bae-8db470d2fb8c": {
+    "name": "Arcane Lighthouse",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.22
+  },
+  "82ce1102-a88c-46ff-9fc1-7153beb50b6a": {
+    "name": "Arcane Sanctum",
+    "produced_mana": [
+      "B",
+      "U",
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "581dcadd-7de4-4b39-bab0-d3567194a252": {
+    "name": "Arch of Orazca",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.32
+  },
+  "35f55af0-5a46-4900-b3d0-ca796b710e07": {
+    "name": "Archaeological Dig",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.4
+  },
+  "b95d20ba-ad3a-4405-a3f2-e79df56e1a93": {
+    "name": "Archway Commons",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.14
+  },
+  "472905ac-1eb9-4951-8180-b8c35fbab3d7": {
+    "name": "Archway of Innovation",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 1.63
+  },
+  "609b15f6-e65b-46d6-95e8-dc39f25d7efa": {
+    "name": "Arctic Flats",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 1.88
+  },
+  "b20e3117-f1e4-4449-ae9d-0b66abfc717d": {
+    "name": "Arctic Treeline",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.39
+  },
+  "2a972559-249a-4a35-92e6-71e7e0474c9d": {
+    "name": "Arena",
+    "produced_mana": [],
+    "usd": 0.74
+  },
+  "3d7d07bb-b875-4a6d-8b87-4187e823af75": {
+    "name": "Arena of Glory",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 14.37
+  },
+  "79a840ed-91cf-45ea-bad2-757856e88544": {
+    "name": "Argoth, Sanctum of Nature",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 7.04
+  },
+  "2b31d323-a715-4085-a711-8f2a3f4d9942": {
+    "name": "Arguel's Blood Fast // Temple of Aclazotz",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 2.14
+  },
+  "3f8c8fa2-12ab-4f6a-9f7a-2bc69e9ba024": {
+    "name": "Arid Archway",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.59
+  },
+  "152ddaab-83dd-4f74-bd7f-8a14c1a9d0f2": {
+    "name": "Arid Mesa",
+    "produced_mana": [],
+    "usd": 310.85
+  },
+  "e8510205-4baa-4f1c-bf64-5d931e2ddf48": {
+    "name": "Ash Barrens",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.24
+  },
+  "c5585b62-b9dc-4a48-bf2a-a25d14dbd7a3": {
+    "name": "Auntie's Hovel",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 9.25
+  },
+  "08a6b378-c7fa-4226-a310-4ee7e550b4d6": {
+    "name": "Avishkar Raceway",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.22
+  },
+  "f9c77d35-8418-48fb-b7d7-7cfa763545c5": {
+    "name": "Axgard Armory",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.38
+  },
+  "2a2e669b-61b2-4729-b636-094796fb1d93": {
+    "name": "Aysen Abbey",
+    "produced_mana": [
+      "C",
+      "G",
+      "U",
+      "W"
+    ],
+    "usd": 0.31
+  },
+  "de3daeef-e352-4cd9-8411-94ce25c57060": {
+    "name": "Azor's Gateway // Sanctum of the Sun",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 2.89
+  },
+  "50ef0ac3-e911-4d67-a751-8d86160ae843": {
+    "name": "Azorius Chancery",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.27
+  },
+  "2102f501-6c85-44ae-8a0e-c8a63b908444": {
+    "name": "Azorius Guildgate",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "a822d4bf-67c5-44a1-ac8c-7b7353b544ed": {
+    "name": "Ba Sing Se",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 10.9
+  },
+  "ca79caa8-9893-49be-bc39-f021adb28220": {
+    "name": "Bad River",
+    "produced_mana": [],
+    "usd": 1.22
+  },
+  "4800a492-cc37-40f1-9686-3c36f3410ec1": {
+    "name": "Badlands",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 414.33
+  },
+  "9e6fd3ad-4f40-43f3-b56e-c320f6b16533": {
+    "name": "Bala Ged Recovery // Bala Ged Sanctuary",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": null
+  },
+  "001e9f20-5b15-41cb-bf82-46172decc235": {
+    "name": "Balamb Garden, SeeD Academy // Balamb Garden, Airborne",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.38
+  },
+  "096012fb-a92b-4842-aee3-56d6598e9419": {
+    "name": "Baldur's Gate",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 4.09
+  },
+  "7eee4911-a654-46c3-a998-a3eac9c31791": {
+    "name": "Balduvian Trading Post",
+    "produced_mana": [
+      "C",
+      "R"
+    ],
+    "usd": null
+  },
+  "6e982bf8-382f-4987-bc39-28e1ce290340": {
+    "name": "Ballroom",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.39
+  },
+  "dc506497-4ecd-41d3-9042-f92f498251b0": {
+    "name": "Bant Panorama",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.4
+  },
+  "8306fe9f-e6c2-4875-958c-e79c0513e254": {
+    "name": "Barad-dûr",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 12.77
+  },
+  "c184406c-b22c-4b9b-9d3a-3e7b17efd8a0": {
+    "name": "Barbarian Ring",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.3
+  },
+  "79631e0a-b962-48f1-98fa-d871b2862866": {
+    "name": "Barkchannel Pathway // Tidechannel Pathway",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 10.04
+  },
+  "6e4bf840-802d-47d5-bffd-8ba495e19cf6": {
+    "name": "Baron, Airship Kingdom",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.21
+  },
+  "380eb7fd-bc79-4cad-9c2b-9b2b10761a72": {
+    "name": "Barren Moor",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.36
+  },
+  "dc85412e-333d-4e7d-8c85-40618cf1b6c2": {
+    "name": "Base Camp",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.1
+  },
+  "0f2587b5-ab79-4b14-8b49-83e94cef177f": {
+    "name": "Basilisk Gate",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.43
+  },
+  "c47c1bf5-f11e-4f86-b20b-5d899a11dc56": {
+    "name": "Battlefield Forge",
+    "produced_mana": [
+      "C",
+      "R",
+      "W"
+    ],
+    "usd": 0.34
+  },
+  "538dfd90-5215-4aa0-8e10-1e6fd9f717c8": {
+    "name": "Bayou",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 226.2
+  },
+  "e9595a2d-a3ff-4757-be02-23a317fcf1a1": {
+    "name": "Bazaar of Baghdad",
+    "produced_mana": [],
+    "usd": null
+  },
+  "5f411f08-45dd-4d73-8894-daf51c175150": {
+    "name": "Beyeen Veil // Beyeen Coast",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.21
+  },
+  "b9cc16f9-fea3-4527-9b81-3c84ce9c5e01": {
+    "name": "Big Apple, 3 a.m.",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.42
+  },
+  "dc2a3de1-01ac-4425-8534-e5019e01f2cd": {
+    "name": "Billiard Room",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.33
+  },
+  "a28c674c-ae89-416e-bac6-edfd9f24ee7b": {
+    "name": "Black Dragon Gate",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.47
+  },
+  "8f64a6ac-d9ce-45eb-8278-63e442ad6916": {
+    "name": "Blackbloom Rogue // Blackbloom Bog",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": null
+  },
+  "f75715ce-744f-409c-aeb1-e66eb9186a74": {
+    "name": "Blackcleave Cliffs",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 1.76
+  },
+  "68a19f91-82b2-4f60-94a1-911d817125a1": {
+    "name": "Blast Zone",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 9.72
+  },
+  "eb6a101b-be36-4915-beba-64ed09165469": {
+    "name": "Blasted Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 3.74
+  },
+  "73a926c5-ba2b-4ac5-9717-6c9181f9a827": {
+    "name": "Blazemire Verge",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 11.01
+  },
+  "49dc74ff-74ac-4258-9586-2cc04c22b387": {
+    "name": "Bleachbone Verge",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 19.38
+  },
+  "cb224874-aff5-461f-82ee-89b06663231a": {
+    "name": "Bleeding Woods",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.19
+  },
+  "a6d03a79-4219-492f-bf9a-0b810e97e5f5": {
+    "name": "Blighted Cataract",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.24
+  },
+  "09994b67-4b83-4b23-834b-73bae87e8272": {
+    "name": "Blighted Fen",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.16
+  },
+  "f133ba0a-e141-4f57-9819-bc17bbacd7b3": {
+    "name": "Blighted Gorge",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.22
+  },
+  "f43df8ee-d3e4-419e-aed0-1059d95f9cab": {
+    "name": "Blighted Steppe",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.13
+  },
+  "94e0ad38-31b3-46ba-9999-9b6ff57906ae": {
+    "name": "Blighted Woodland",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.38
+  },
+  "022c7fe3-45bb-4efe-9b0c-2e4807d607b8": {
+    "name": "Blightstep Pathway // Searstep Pathway",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 9.04
+  },
+  "0dcf26d2-4fe0-41cf-8fb9-cb2c529b109b": {
+    "name": "Blinkmoth Nexus",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 6.16
+  },
+  "e4c79155-b6d8-46df-891f-487b24c4e0d5": {
+    "name": "Blinkmoth Well",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.33
+  },
+  "5d2bb101-e0b5-4c9c-9f94-ee4f605ddff0": {
+    "name": "Blood Crypt",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 9.98
+  },
+  "1dde3c68-6f29-4c00-b668-c25ac9e3e13b": {
+    "name": "Bloodfell Caves",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.21
+  },
+  "0a08e0d2-1e60-47f5-9228-4c11a127089d": {
+    "name": "Bloodsoaked Insight // Sanguine Morass",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.34
+  },
+  "115400ae-a43b-4b3d-9ea0-be1e7224dea5": {
+    "name": "Bloodstained Mire",
+    "produced_mana": [],
+    "usd": 24.56
+  },
+  "1cfb4a80-3319-41ad-9d97-a9a53c9f84fb": {
+    "name": "Blooming Marsh",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 3.19
+  },
+  "0a9df994-e0f4-4919-af99-4f643eb9199c": {
+    "name": "Blossoming Sands",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.16
+  },
+  "189b4925-b34b-43bd-869e-1b1db99450e6": {
+    "name": "Bog Wreckage",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.13
+  },
+  "d0d484a6-5610-4f1d-95ec-eda273c255e4": {
+    "name": "Boggart Trawler // Boggart Bog",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.91
+  },
+  "1c2e2220-54d1-4180-93a0-964e3b0ba8b8": {
+    "name": "Boiling Rock Prison",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.22
+  },
+  "55b5b094-9d2d-4d96-b90c-78fecdae725a": {
+    "name": "Bojuka Bog",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.71
+  },
+  "02a16e1e-1ea8-49af-9cde-2166134f7bdc": {
+    "name": "Bonders' Enclave",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.33
+  },
+  "3f2f8396-72ab-4387-9276-987836427107": {
+    "name": "Boreal Shelf",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.97
+  },
+  "76ec3366-98f3-4903-8f7b-cfcdd60e3be1": {
+    "name": "Boros Garrison",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.21
+  },
+  "e05daa90-a9c7-4b04-b2ec-c468ea010133": {
+    "name": "Boros Guildgate",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": null
+  },
+  "66eb1b9c-5326-41dc-82bd-2eeb154f9ab5": {
+    "name": "Boseiju, Who Endures",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": null
+  },
+  "18402090-02af-4dc3-94ed-633a03848ab2": {
+    "name": "Boseiju, Who Shelters All",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "9f8a6f93-1fc8-4690-add4-538763277f8e": {
+    "name": "Botanical Plaza",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "77e04331-2e37-47f8-b18c-0391d4605732": {
+    "name": "Botanical Sanctum",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 1.58
+  },
+  "c8913994-c3e7-4d9e-9409-a8409ce68442": {
+    "name": "Bottomless Vault",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 1.83
+  },
+  "f1c99617-6e38-4af7-a064-6db9a5e2cc6a": {
+    "name": "Bountiful Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.22
+  },
+  "7e423417-238a-4dde-abe9-fa79385b1bdb": {
+    "name": "Bountiful Promenade",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 20.19
+  },
+  "73a8169f-b858-47a5-9c76-2e7c50ad4ecd": {
+    "name": "Branch of Vitu-Ghazi",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "5dfa0e82-da04-418b-9c60-038f3c2c31a5": {
+    "name": "Branchloft Pathway // Boulderloft Pathway",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 5.26
+  },
+  "d61d8895-7f2e-4c77-951f-4f1a49e96f57": {
+    "name": "Brass's Tunnel-Grinder // Tecutlan, the Searing Rift",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 4.63
+  },
+  "1c575871-9b46-4cd4-8596-54dc04f76456": {
+    "name": "Breeding Pool",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 13.93
+  },
+  "67733bb9-9151-4ddc-b104-e48328bd1b28": {
+    "name": "Bretagard Stronghold",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.25
+  },
+  "ebef3db0-2b58-4581-a79c-fbca9a059e63": {
+    "name": "Bridgeworks Battle // Tanglespan Bridgeworks",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.68
+  },
+  "1dce4e5a-08ab-4f52-bdfb-6d2dafbb055f": {
+    "name": "Brightclimb Pathway // Grimclimb Pathway",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 9.32
+  },
+  "d61dfeb7-7f6b-4601-8396-2cbb98165489": {
+    "name": "Bristling Backwoods",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.29
+  },
+  "989b299b-daa9-4bda-94e2-9a2f0e8f2bce": {
+    "name": "Brokers Hideout",
+    "produced_mana": [],
+    "usd": 1.01
+  },
+  "280e43b4-2208-4df0-a8b2-380cfd22dde5": {
+    "name": "Brotherhood Headquarters",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "c2bc3f62-1e3a-4ec3-a83b-f6547d7c7b0d": {
+    "name": "Brushland",
+    "produced_mana": [
+      "C",
+      "G",
+      "W"
+    ],
+    "usd": 0.46
+  },
+  "6c4f6b81-53d0-49fb-b404-c2ad67de7493": {
+    "name": "Bucolic Ranch",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "7ab1a074-9d92-4125-9200-84cd035f8f53": {
+    "name": "Buried Ruin",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.36
+  },
+  "0b1cbebd-9552-4628-bbb7-e235a812063e": {
+    "name": "Cabal Coffers",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 21.81
+  },
+  "ea97b641-b8fa-45f8-91d0-e94cdae1d8db": {
+    "name": "Cabal Pit",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.39
+  },
+  "0bda51ef-ee3e-48d4-92e2-c9083bbe0f80": {
+    "name": "Cabal Stronghold",
+    "produced_mana": [
+      "B",
+      "C"
+    ],
+    "usd": 13.31
+  },
+  "c54ddd4e-f668-4ec8-b123-59afa977eba4": {
+    "name": "Cabaretti Courtyard",
+    "produced_mana": [],
+    "usd": 0.32
+  },
+  "ad9d426f-5870-42bb-a589-9218f7e35d62": {
+    "name": "Cactus Preserve",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 5.09
+  },
+  "297a2b09-562a-46d8-905d-0b32e854e9d2": {
+    "name": "Calciform Pools",
+    "produced_mana": [
+      "C",
+      "U",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "f79313f8-0b79-4fe3-8eb1-db523587b714": {
+    "name": "Caldera Lake",
+    "produced_mana": [
+      "C",
+      "R",
+      "U"
+    ],
+    "usd": null
+  },
+  "5d33aeaa-df27-4c41-9926-79e9dc6a9c69": {
+    "name": "Canopy Vista",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.32
+  },
+  "84f04ba2-efae-464c-96c1-8b929288fba6": {
+    "name": "Canyon Slough",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 1.91
+  },
+  "f73ce8ec-c916-48eb-ae20-c0d6d03d7145": {
+    "name": "Capital City",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.26
+  },
+  "1d1a645e-85c7-4044-b817-6e24744d245e": {
+    "name": "Captivating Cave",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.27
+  },
+  "22acccd2-4e9d-46de-a060-863b08152e50": {
+    "name": "Cascade Bluffs",
+    "produced_mana": [
+      "C",
+      "R",
+      "U"
+    ],
+    "usd": 0.34
+  },
+  "016a3d0d-08f5-4352-97a2-262b802c46e2": {
+    "name": "Cascading Cataracts",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 3.88
+  },
+  "65e4de2e-47d2-4967-be31-9df0057a9c74": {
+    "name": "Castle Ardenvale",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "337f2d97-b317-4c10-b151-7acccf38fca8": {
+    "name": "Castle Embereth",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.29
+  },
+  "e33285ee-aaf8-4fe4-9991-9fb16dfdd531": {
+    "name": "Castle Garenbrig",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 7.81
+  },
+  "19336e3a-2242-4a30-a563-32f2e4fc18e9": {
+    "name": "Castle Locthwain",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 3.6
+  },
+  "16bfba30-4075-4bd6-9e4b-3a37641d43ce": {
+    "name": "Castle Sengir",
+    "produced_mana": [
+      "B",
+      "C",
+      "R",
+      "U"
+    ],
+    "usd": 0.27
+  },
+  "dead85f7-865c-4f7d-ad6c-014d4e90f8be": {
+    "name": "Castle Vantress",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.29
+  },
+  "e65356e6-0ead-49fd-b069-be1ea9b1c105": {
+    "name": "Cathedral of Serra",
+    "produced_mana": [],
+    "usd": 32.26
+  },
+  "1cb9aaeb-4996-4c21-969d-5861b05dc432": {
+    "name": "Cathedral of War",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 4.68
+  },
+  "4c468c5f-f2c6-473a-8353-a762ec3ab467": {
+    "name": "Cave of Temptation",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "bde28ceb-8b92-4a8c-8e35-5c9f72d20d52": {
+    "name": "Cave of the Frost Dragon",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.62
+  },
+  "09f9b3b8-090e-4152-8d44-52d92375905b": {
+    "name": "Cavern of Souls",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 339.29
+  },
+  "2a51ebf6-a465-42e2-82b7-d2cb928ca632": {
+    "name": "Cavernous Maw",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.24
+  },
+  "a8a57915-5226-4d3c-ae8e-a55c50f3c131": {
+    "name": "Caves of Koilos",
+    "produced_mana": [
+      "B",
+      "C",
+      "W"
+    ],
+    "usd": 0.56
+  },
+  "19082885-8180-430c-9c7a-e1d77f31f726": {
+    "name": "Celestial Colonnade",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 1.27
+  },
+  "1ab33858-17ac-42e9-941c-1bf2409030f5": {
+    "name": "Centaur Garden",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 5.99
+  },
+  "03b9c9ed-fb6f-4f8d-bb1d-7999dec4245c": {
+    "name": "Cephalid Coliseum",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.22
+  },
+  "4fcd08ad-4dac-4236-9030-f59e473b3ec7": {
+    "name": "Chocobo Camp",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 9.53
+  },
+  "d9cf2b77-afb0-4c21-bc23-6942ec292035": {
+    "name": "Choked Estuary",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.31
+  },
+  "27fd5194-4131-4a47-a29a-d36b36525808": {
+    "name": "Cinder Barrens",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.18
+  },
+  "45f13a94-c693-4a3b-a0bb-f18ae9fb1ca0": {
+    "name": "Cinder Glade",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.38
+  },
+  "8c6dc9af-ea7e-41f8-8c1e-22c588312053": {
+    "name": "Cinder Marsh",
+    "produced_mana": [
+      "B",
+      "C",
+      "R"
+    ],
+    "usd": null
+  },
+  "7dca83ce-1b75-4dcc-a839-598106a92ca9": {
+    "name": "Citadel Gate",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 1.27
+  },
+  "c21565d0-fc40-4d89-9b27-87c03385e0af": {
+    "name": "City of Brass",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 10.05
+  },
+  "0629322b-e9e8-4cac-abe5-fff083bcc240": {
+    "name": "City of Shadows",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "4c19926a-7792-4e0f-8418-a44f0cf5eeea": {
+    "name": "City of Traitors",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "94598167-dec4-425a-86bc-5989e2c3ba7c": {
+    "name": "Clearwater Pathway // Murkwater Pathway",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 9.38
+  },
+  "efcc59e2-5976-4895-89f5-a80fd57a0fe2": {
+    "name": "Cliffgate",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.44
+  },
+  "09d0e0dd-28e6-4d78-b768-b08188681d92": {
+    "name": "Clifftop Retreat",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "3e99c91c-7bcb-4405-8cd4-87290710f8c0": {
+    "name": "Clive's Hideaway",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 6.35
+  },
+  "9bcbd030-762e-4754-ae95-685d59ccdfb9": {
+    "name": "Cloudcrest Lake",
+    "produced_mana": [
+      "C",
+      "U",
+      "W"
+    ],
+    "usd": 0.31
+  },
+  "5355eecf-c03e-406c-9e7d-70e73dcd7510": {
+    "name": "Cloudpost",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.29
+  },
+  "494034a4-581a-45fe-8e87-0b0cbf339052": {
+    "name": "Coastal Peak",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.69
+  },
+  "11721250-c377-475c-86b7-78be44153114": {
+    "name": "Coastal Tower",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.15
+  },
+  "2670653e-fcaa-46e3-b3bf-cb8e8b981a9c": {
+    "name": "Command Beacon",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 6.74
+  },
+  "247670d2-a7cd-4ed7-9c77-704c7962b815": {
+    "name": "Command Bridge",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.22
+  },
+  "c46a217c-0ed2-4b3c-9a01-ee38d12d76f3": {
+    "name": "Command Tower",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.32
+  },
+  "3a9889ab-3527-414e-9c30-539f0608bd2b": {
+    "name": "Commercial District",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 11.67
+  },
+  "220d2feb-7a17-44b1-9736-678067233a85": {
+    "name": "Concealed Courtyard",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 1.02
+  },
+  "5ffa48cc-b991-4d47-b7ec-cf678915c758": {
+    "name": "Conduit Pylons",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.31
+  },
+  "5f233ff1-5a4a-47d3-b3d5-6a00a7a00732": {
+    "name": "Conqueror's Galleon // Conqueror's Foothold",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 4.43
+  },
+  "8bab22c5-4742-4f2e-bda1-26c72b09cd9c": {
+    "name": "Conservatory",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "bf544abb-c338-4da4-bb77-eddd3aaacc9a": {
+    "name": "Contaminated Aquifer",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.28
+  },
+  "e2312c49-1627-47ad-8113-78a999a97d8d": {
+    "name": "Contaminated Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.21
+  },
+  "5796e5e4-32a0-4fe3-9912-80684aee489d": {
+    "name": "Contested Cliffs",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.72
+  },
+  "1617ef81-5815-47e1-9532-2af791bbd5b3": {
+    "name": "Contested War Zone",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.37
+  },
+  "c25daaa2-2a04-4fb0-8db3-6e564c26fadc": {
+    "name": "Copperline Gorge",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.4
+  },
+  "77e3ea71-ea9f-4bbf-93cb-0f6339f8a3ab": {
+    "name": "Coral Atoll",
+    "produced_mana": [
+      "C",
+      "U"
+    ],
+    "usd": 0.56
+  },
+  "14b7728e-710c-4553-8d16-fb59d1d752ea": {
+    "name": "Cori Mountain Monastery",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 1.35
+  },
+  "03b91bd1-de0f-4e3e-b467-174beba8ffeb": {
+    "name": "Corrupted Crossroads",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "897acd91-12ba-4fa8-a26e-c09f009167a8": {
+    "name": "Country Roads",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.26
+  },
+  "41713e82-c3d3-4c2f-b075-f684cbd68ce8": {
+    "name": "Cradle of the Accursed",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.15
+  },
+  "5e5288f2-b27e-4009-b537-d19f61b34c4a": {
+    "name": "Cragcrown Pathway // Timbercrown Pathway",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 4.57
+  },
+  "ac2aff0e-1319-4d3b-903c-fa1ce3db7602": {
+    "name": "Crawling Barrens",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.15
+  },
+  "080edb03-932f-4e0f-a230-5c7794925017": {
+    "name": "Creeping Tar Pit",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 9.49
+  },
+  "c5523dac-7aa0-4486-89c8-3b22a1411f26": {
+    "name": "Creosote Heath",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "52ce462b-e4de-4972-9e96-2e3d3a20d1fc": {
+    "name": "Crosis's Catacombs",
+    "produced_mana": [
+      "B",
+      "R",
+      "U"
+    ],
+    "usd": 0.31
+  },
+  "64db46d4-f91f-49cc-971c-b8e19f0c4ea9": {
+    "name": "Crossroads Village",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "257a5ae9-f754-4c45-a47d-5196f1b625b7": {
+    "name": "Crucible of the Spirit Dragon",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.52
+  },
+  "d3600e12-5633-42fd-b1cc-e90790a16b20": {
+    "name": "Crumbling Necropolis",
+    "produced_mana": [
+      "B",
+      "R",
+      "U"
+    ],
+    "usd": 0.37
+  },
+  "d1fed543-8330-4cd5-ab2b-bf5ab766fa08": {
+    "name": "Crumbling Vestige",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "18adafe6-de67-4101-8b39-b53ab695ec4a": {
+    "name": "Crypt of Agadeem",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 2.23
+  },
+  "cff6f158-7aaa-4abb-9171-98cb09d1afaa": {
+    "name": "Crypt of the Eternals",
+    "produced_mana": [
+      "B",
+      "C",
+      "R",
+      "U"
+    ],
+    "usd": null
+  },
+  "9d126c8f-a3df-497c-aad5-a448c55f51cc": {
+    "name": "Cryptic Caves",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "d9168fde-3d3d-4d24-81a6-bc77fe25daee": {
+    "name": "Cryptic Spires",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "2a3c8b7d-0b85-4e5c-acc4-253406deef27": {
+    "name": "Crystal Grotto",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "095b2580-9f15-41eb-9f2f-bc5fd5889565": {
+    "name": "Crystal Quarry",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 4.02
+  },
+  "c7c51eae-2c45-4f12-859d-56bd83247c2e": {
+    "name": "Crystal Vein",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 6.11
+  },
+  "669bbcb1-0981-40e7-905e-b94e74bc4861": {
+    "name": "Daily Bugle Building",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.22
+  },
+  "72474b66-1dda-409d-8703-b026c1777081": {
+    "name": "Dakmor Salvage",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.31
+  },
+  "1cf26613-4111-41a9-b445-7ee06dbc0dca": {
+    "name": "Dalkovan Encampment",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.92
+  },
+  "27b1ad2d-f02e-4e6b-a49a-f65d174bb0fc": {
+    "name": "Darigaaz's Caldera",
+    "produced_mana": [
+      "B",
+      "G",
+      "R"
+    ],
+    "usd": 0.26
+  },
+  "09c224c7-418d-4b64-9d56-a87e4ff631ab": {
+    "name": "Dark Depths",
+    "produced_mana": [],
+    "usd": 3.93
+  },
+  "e3d06331-a819-40d8-a0b4-bbc97ba1f42c": {
+    "name": "Darkbore Pathway // Slitherbore Pathway",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 9.32
+  },
+  "3ca3ef68-ea62-4098-bd43-4597ff0647d4": {
+    "name": "Darkmoss Bridge",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.29
+  },
+  "c49305d1-ac95-43ea-b02d-c3c7205bcda6": {
+    "name": "Darkslick Shores",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 2.13
+  },
+  "0b9605b7-5146-4bdc-890a-c23fa1bfebc2": {
+    "name": "Darksteel Citadel",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.37
+  },
+  "bcb5a670-7c8f-4b76-82c6-c89abffbb4bd": {
+    "name": "Darkwater Catacombs",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.29
+  },
+  "12306750-86d6-4f70-820a-365894884e56": {
+    "name": "Daru Encampment",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.42
+  },
+  "78897104-80e1-4d8a-9958-145b40f679e8": {
+    "name": "Deathcap Glade",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 2.04
+  },
+  "ba863744-929b-43f3-a773-342ba3437b18": {
+    "name": "Deceptive Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.24
+  },
+  "7f6d8cae-face-4bff-8c0a-348cefe1e9dd": {
+    "name": "Demolition Field",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.33
+  },
+  "461ea351-9dfb-4e40-90db-e95f5faf2b03": {
+    "name": "Den of the Bugbear",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 4.94
+  },
+  "5aa802d3-f9b1-49d1-87de-91d5fd9850ad": {
+    "name": "Desert",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.59
+  },
+  "af1a1c41-2cdf-4ba9-83ad-989eb8717641": {
+    "name": "Desert of the Fervent",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.29
+  },
+  "5f28907a-491d-4d09-93cb-b5729696607d": {
+    "name": "Desert of the Glorified",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.31
+  },
+  "c8ff47b8-467b-4fdc-8ba1-3460301b1de7": {
+    "name": "Desert of the Indomitable",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.33
+  },
+  "39a20c39-2254-4052-822f-eb5bbd501cdd": {
+    "name": "Desert of the Mindful",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.14
+  },
+  "e8513dd3-6e2b-42da-89c7-e35ab0c0c927": {
+    "name": "Desert of the True",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.22
+  },
+  "c819de09-dac2-407a-98c8-775865e9bdf8": {
+    "name": "Deserted Beach",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 5.42
+  },
+  "463d8132-fe98-4b71-b6a8-0feb4d40a391": {
+    "name": "Deserted Temple",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 3.64
+  },
+  "c155cc10-09f4-424b-b366-142adf9c1712": {
+    "name": "Desolate Lighthouse",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.2
+  },
+  "6a261c7d-38a4-4000-97b2-76e7ab9989c5": {
+    "name": "Desolate Mire",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.28
+  },
+  "02f99756-d334-4dba-a375-ba3d91ecae62": {
+    "name": "Detection Tower",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.86
+  },
+  "2259e77f-0a15-43e2-bb94-41e8c585d927": {
+    "name": "Diamond City",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 4.47
+  },
+  "37ccc3ab-9875-4bd2-bdbd-e3af5e01d682": {
+    "name": "Diamond Valley",
+    "produced_mana": [],
+    "usd": null
+  },
+  "1c244fc2-70f0-4149-b0d2-d49fc6bac2b0": {
+    "name": "Dimension X",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "84bf9d60-64b8-4209-acfe-e07eefc6bf1f": {
+    "name": "Dimir Aqueduct",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.36
+  },
+  "65dd6a3a-ab7a-47cf-b762-6d836387ed44": {
+    "name": "Dimir Guildgate",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": null
+  },
+  "1bf8dcb2-6fe7-4ab3-b290-fb427d116c74": {
+    "name": "Dining Room",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.34
+  },
+  "a8e9ea5a-5e10-4b77-baef-0352ff035483": {
+    "name": "Disciple of Freyalise // Garden of Freyalise",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 1.68
+  },
+  "082b52c9-c46e-44d3-b723-546ba528e07b": {
+    "name": "Dismal Backwater",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.2
+  },
+  "83f90da4-9b01-431d-83b1-f54c132efec1": {
+    "name": "Dormant Volcano",
+    "produced_mana": [
+      "C",
+      "R"
+    ],
+    "usd": 1.08
+  },
+  "c5c10ebb-3a56-4ea2-813f-f56cf9aaaed2": {
+    "name": "Dowsing Dagger // Lost Vale",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 8.01
+  },
+  "3d715e9f-223d-462e-8ce3-eebbaf1cd021": {
+    "name": "Dowsing Device // Geode Grotto",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.24
+  },
+  "897976cb-a242-493e-b215-843bcdb6b44d": {
+    "name": "Dragonskull Summit",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.55
+  },
+  "524ad98a-0cd1-49d4-b347-c5b87caceef8": {
+    "name": "Drannith Ruins",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.65
+  },
+  "6e54bace-7484-484e-987e-8d3a9a430ab9": {
+    "name": "Dread Statuary",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.19
+  },
+  "18642a9e-ac45-402b-bb56-08cb6336c485": {
+    "name": "Dreadship Reef",
+    "produced_mana": [
+      "B",
+      "C",
+      "U"
+    ],
+    "usd": 0.35
+  },
+  "bb911ec9-4354-46af-8750-6920555eb1e7": {
+    "name": "Dreamroot Cascade",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 1.84
+  },
+  "8cb024fa-2df1-4414-b0d7-6f700d152c51": {
+    "name": "Drifting Meadow",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "10380662-88bd-4bc5-b8c3-14af425fc5a5": {
+    "name": "Dromar's Cavern",
+    "produced_mana": [
+      "B",
+      "U",
+      "W"
+    ],
+    "usd": 0.22
+  },
+  "707bc538-cdc1-49ca-9c36-3d6d5245d962": {
+    "name": "Drossforge Bridge",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 4.28
+  },
+  "39daa04c-51a7-44de-8960-35cdca3e7c44": {
+    "name": "Drowned Catacomb",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": null
+  },
+  "7a1d3c1d-1373-4ac4-bb26-9780976efc4f": {
+    "name": "Drowner of Truth // Drowned Jungle",
+    "produced_mana": [
+      "C",
+      "G",
+      "U"
+    ],
+    "usd": 0.27
+  },
+  "dbc8512a-9f6c-40d4-8049-14505e260746": {
+    "name": "Drownyard Temple",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.25
+  },
+  "5c4fb7f9-a551-4253-a46e-f6284d355388": {
+    "name": "Dryad Arbor",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 17.63
+  },
+  "cd86b0af-9c26-4c3a-8e1e-74a28263bd83": {
+    "name": "Dunes of the Dead",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.35
+  },
+  "17f8a921-9983-4703-adbf-706085539e69": {
+    "name": "Dungeon Descent",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.41
+  },
+  "7742fe61-9f0a-428b-9965-0d6f0b064cc2": {
+    "name": "Duskmantle, House of Shadow",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.34
+  },
+  "0c0b83b9-f6fd-4236-b96f-54c46b76be26": {
+    "name": "Dust Bowl",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 29.71
+  },
+  "79cb55f0-f0e8-4644-8c19-54efe5854973": {
+    "name": "Dwarven Hold",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 1.68
+  },
+  "5c83074d-0c9b-4b58-94ca-d75240485579": {
+    "name": "Dwarven Mine",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.35
+  },
+  "0b6adef9-a1c5-452d-94c7-4110f4998180": {
+    "name": "Dwarven Ruins",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": null
+  },
+  "93b057e4-1ef2-4ce0-a74b-899ff41ffd13": {
+    "name": "Ebon Stronghold",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.76
+  },
+  "6f80b450-70fe-4148-a7ce-1463c4c7b28c": {
+    "name": "Echoing Deeps",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.47
+  },
+  "a174f0db-8b4f-4c37-9583-44c92d37b9c0": {
+    "name": "Eclipsed Realms",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.43
+  },
+  "93ca39ae-0173-44ba-8c66-9f52f468983d": {
+    "name": "Eclipsed Steppe",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 2.88
+  },
+  "4786e79c-1e64-41bd-87f6-9a33110afa71": {
+    "name": "Eden, Seat of the Sanctum",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.36
+  },
+  "ec435e54-628a-43bd-8804-cbc37e375bce": {
+    "name": "Edgewall Inn",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.26
+  },
+  "b3bc5f0b-81d8-461b-9b0a-ee2e8acc6bf5": {
+    "name": "Eiganjo Castle",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 7.88
+  },
+  "18cdb7b8-bd52-407c-8752-6d6883449a3e": {
+    "name": "Eiganjo, Seat of the Empire",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": null
+  },
+  "010abd40-3f9c-44bc-8570-d539750c3cd7": {
+    "name": "Eldrazi Temple",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 3.29
+  },
+  "1f0cef88-50bd-4baa-8d02-26ec4967a7be": {
+    "name": "Elegant Parlor",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 14.91
+  },
+  "88e7d9d5-3bca-4791-b850-5ae104706042": {
+    "name": "Elephant Graveyard",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "667bb9ad-b014-42f9-b0c8-132e0c3b4485": {
+    "name": "Elfhame Palace",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.12
+  },
+  "ab95f6e7-b806-47fe-a071-6c38b3176d94": {
+    "name": "Emergence Zone",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 4.56
+  },
+  "ba453850-4983-4728-8a02-9be15279d791": {
+    "name": "Emeria's Call // Emeria, Shattered Skyclave",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": null
+  },
+  "90f148e6-1a5e-46fc-9557-40c5c0038069": {
+    "name": "Emeria, the Sky Ruin",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 5.0
+  },
+  "abfce47a-310a-4ca3-bd5b-746528415706": {
+    "name": "Encroaching Wastes",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "0d79548c-bcef-46b5-929c-efbaf72cb29e": {
+    "name": "Endless Sands",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.43
+  },
+  "5c9d080f-28d7-41d6-a4e0-5b3e3a5ed770": {
+    "name": "Eroded Canyon",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.28
+  },
+  "5df90940-15ea-418c-8547-6c75d69ec6d3": {
+    "name": "Escape Tunnel",
+    "produced_mana": [],
+    "usd": 0.26
+  },
+  "b89070ab-4fe6-4919-b160-b32100fb4930": {
+    "name": "Esper Panorama",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.39
+  },
+  "f8900b89-0e10-4602-bba2-da8d60ea5885": {
+    "name": "Etched Cornfield",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.17
+  },
+  "00281944-a9d3-4294-8f63-34ad09e4c627": {
+    "name": "Eumidian Hatchery",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 1.13
+  },
+  "064255cc-445f-4794-aa64-3aee34e11181": {
+    "name": "Evendo, Waking Haven",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 56.79
+  },
+  "5f82ffe7-c5a2-453d-9820-3c576b6f263c": {
+    "name": "Everglades",
+    "produced_mana": [
+      "B",
+      "C"
+    ],
+    "usd": 1.16
+  },
+  "a30f5555-2fbe-4c88-9e4f-1f2e81ea6cfd": {
+    "name": "Evolving Wilds",
+    "produced_mana": [],
+    "usd": 0.36
+  },
+  "7db2934a-43a0-46ad-8380-ff6703f8fd6d": {
+    "name": "Exotic Orchard",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "927596bc-4c9f-404a-97f2-89db53826f6b": {
+    "name": "Eye of Ugin",
+    "produced_mana": [],
+    "usd": 78.02
+  },
+  "8119d329-6ee5-433c-bd81-8579bb061162": {
+    "name": "Fabled Passage",
+    "produced_mana": [],
+    "usd": 1.05
+  },
+  "96b80dc6-91e1-43a6-b864-a69eb8fbaf8a": {
+    "name": "Faceless Haven",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "b41920ea-a57c-41ec-a3bd-765abb902bc3": {
+    "name": "Faerie Conclave",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 2.0
+  },
+  "a3cb782d-c459-468d-9779-9b5669abc337": {
+    "name": "Fell the Profane // Fell Mire",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 3.28
+  },
+  "92fa559c-a99b-4bc1-86c4-0c5eeeac9f4f": {
+    "name": "Ferrous Lake",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.33
+  },
+  "c30fb2f1-f0a6-430f-86e5-817b55da469e": {
+    "name": "Fertile Thicket",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.23
+  },
+  "4ad841eb-da0d-43d4-8b60-efe30922990b": {
+    "name": "Festering Gulch",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.29
+  },
+  "f71c87db-54ea-4611-8692-096d9714d854": {
+    "name": "Festering Thicket",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.28
+  },
+  "f465ded8-0d38-42ac-bafc-a12185013c5d": {
+    "name": "Fetid Heath",
+    "produced_mana": [
+      "B",
+      "C",
+      "W"
+    ],
+    "usd": 0.39
+  },
+  "87bb746a-7959-4567-87a0-09e69fc78a4c": {
+    "name": "Fetid Pools",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 2.29
+  },
+  "8d9d6a9d-18a3-4cc8-8276-29fb826ed1fa": {
+    "name": "Field of Ruin",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.26
+  },
+  "1e1f470f-1194-4a87-ab6e-3574f5731642": {
+    "name": "Field of the Dead",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 29.59
+  },
+  "3dc7a4c3-c356-4fba-bea0-e8788da3eb57": {
+    "name": "Fields of Strife",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "3e73be68-aec6-4033-9cdd-bc473d7db93a": {
+    "name": "Fiery Islet",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 11.17
+  },
+  "07c4bc76-9793-4ab0-921a-a7f5f66a19da": {
+    "name": "Fire Nation Palace",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 5.72
+  },
+  "bcab849e-336d-490f-8dd2-0936fba2afbe": {
+    "name": "Fire-Lit Thicket",
+    "produced_mana": [
+      "C",
+      "G",
+      "R"
+    ],
+    "usd": 1.18
+  },
+  "a0acea27-88de-4d27-8da2-8f82439526a1": {
+    "name": "Flagstones of Trokair",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 4.0
+  },
+  "df0affe7-92d8-422f-833d-74089626b829": {
+    "name": "Flamekin Village",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.27
+  },
+  "61fc0fba-c285-4fad-85a6-79fd7f3f9c35": {
+    "name": "Flood Plain",
+    "produced_mana": [],
+    "usd": 0.41
+  },
+  "df797e0d-8ae2-4fdb-a33d-4ba7852b0172": {
+    "name": "Flooded Grove",
+    "produced_mana": [
+      "C",
+      "G",
+      "U"
+    ],
+    "usd": 0.3
+  },
+  "431eca69-ba8c-47c8-a325-22a844f83e80": {
+    "name": "Flooded Strand",
+    "produced_mana": [],
+    "usd": 19.04
+  },
+  "025152a1-4fdf-4e4e-a792-c540dd43fccd": {
+    "name": "Floodfarm Verge",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 12.59
+  },
+  "226af626-873d-4bd2-b889-000f8316786f": {
+    "name": "Foggy Bottom Swamp",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.18
+  },
+  "bf5c3883-ca22-4850-9721-d1acb16acbd8": {
+    "name": "Fomori Vault",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 8.59
+  },
+  "45e68113-3f05-4547-947d-4cb9ebfa73c7": {
+    "name": "Foot Headquarters",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.17
+  },
+  "3f79add5-6c23-4a36-86d3-8647605d2a71": {
+    "name": "Forbidden Orchard",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 9.19
+  },
+  "97b2c000-a4ee-4b7b-b42d-e538de6896df": {
+    "name": "Forbidding Watchtower",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.33
+  },
+  "cf53f97c-dd4c-44bd-93ba-faa6d64c985a": {
+    "name": "Foreboding Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.19
+  },
+  "a7659f3f-a26a-4097-88ea-d72c3abb5e1d": {
+    "name": "Foreboding Ruins",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.38
+  },
+  "aea42376-97f6-4313-b139-7eeaf427b22b": {
+    "name": "Forest",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 8.55
+  },
+  "7ac60dfc-040e-4cc1-a967-3c915770fc8e": {
+    "name": "Forge of Heroes",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.23
+  },
+  "def316dd-0fed-4595-9c8d-23a0123d8d20": {
+    "name": "Forgotten Cave",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.28
+  },
+  "de8c1c02-e533-46b2-a3eb-91dff561854b": {
+    "name": "Forgotten Monument",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.17
+  },
+  "963c100e-4e12-438f-b5ae-14391406dff6": {
+    "name": "Forlorn Flats",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "b61aae1a-9fdc-4e19-98ba-8a11839ca51c": {
+    "name": "Forsaken City",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 6.67
+  },
+  "1938ea52-29a4-493d-bcf6-032fefa63a53": {
+    "name": "Forsaken Sanctuary",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": null
+  },
+  "fe4f146a-73c5-49e7-992f-1e2e885ab106": {
+    "name": "Fortified Beachhead",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "1028b210-db71-4bbd-8bd7-59dc4032f426": {
+    "name": "Fortified Village",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.26
+  },
+  "1de6c6cc-0c55-4997-8623-d7f796bd9ab8": {
+    "name": "Forum of Amity",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "c01aec6f-77c0-4240-9306-4a27cedb2f46": {
+    "name": "Foul Orchard",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": null
+  },
+  "a37c026a-c89f-41f3-8812-424124dd3760": {
+    "name": "Foul Roads",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.17
+  },
+  "09d83c1d-6916-48e7-8a0d-b5abadc34b2a": {
+    "name": "Foundry of the Consuls",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.37
+  },
+  "41f352c3-4b63-4174-b2b4-6c19fb8c06ff": {
+    "name": "Fountain of Cho",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.43
+  },
+  "28633d14-c6f0-45a8-a1c1-2ed197d80037": {
+    "name": "Fountainport",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 5.69
+  },
+  "48810b27-0646-4ff9-9d4d-c6d09b2e0267": {
+    "name": "Frontier Bivouac",
+    "produced_mana": [
+      "G",
+      "R",
+      "U"
+    ],
+    "usd": 0.3
+  },
+  "0eeefa91-5084-4671-ab82-b19807a9f617": {
+    "name": "Frost Marsh",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.38
+  },
+  "3dbddf20-1b92-482e-bbd9-1597531913a8": {
+    "name": "Frostboil Snarl",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.27
+  },
+  "bfb5d83f-2b7c-4c22-ac37-938e7cd1654a": {
+    "name": "Frostwalk Bastion",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.23
+  },
+  "1a3580d6-345a-46ba-a327-0e924989d6b1": {
+    "name": "Fungal Reaches",
+    "produced_mana": [
+      "C",
+      "G",
+      "R"
+    ],
+    "usd": 0.13
+  },
+  "25a1cd4f-be6c-4e05-93ba-9e393cec76df": {
+    "name": "Furycalm Snarl",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.26
+  },
+  "af241147-ebf3-4ef6-b8b2-58298e34b6b9": {
+    "name": "Gaea's Cradle",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": null
+  },
+  "0e03370a-05a7-4f84-aadd-9eba459e2696": {
+    "name": "Gallifrey Council Chamber",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 3.71
+  },
+  "4d62258f-135b-44ca-a27d-3c2267f408a5": {
+    "name": "Game Trail",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.28
+  },
+  "9834b4e1-7e9f-4f93-a2aa-13a52e8a11fc": {
+    "name": "Gargoyle Castle",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.31
+  },
+  "2627acb7-57d9-4429-9bc5-e7dd444d8d48": {
+    "name": "Gates of Istfell",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.16
+  },
+  "8df2bfae-233f-41ff-9acf-e0ca25dac128": {
+    "name": "Gateway Plaza",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "ce46c4e2-a515-41d7-8d70-d20cf4925996": {
+    "name": "Gavony Township",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 5.48
+  },
+  "4b9c92f0-4242-4a3e-9ede-6a4935f5c75d": {
+    "name": "Geier Reach Sanitarium",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.53
+  },
+  "80c235ae-8297-4860-babe-de4a9df48c58": {
+    "name": "Gemstone Caverns",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 69.21
+  },
+  "bdd581e3-6ed4-4a2c-91d6-ef3aa304b7e8": {
+    "name": "Gemstone Mine",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 1.97
+  },
+  "d504caa5-e557-4e69-8899-44760b88f076": {
+    "name": "Geothermal Bog",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.32
+  },
+  "e744b593-13fe-4967-b492-ac02f5815e57": {
+    "name": "Geothermal Crevice",
+    "produced_mana": [
+      "B",
+      "G",
+      "R"
+    ],
+    "usd": 0.29
+  },
+  "896a02a6-5348-4f90-90b1-68aa61e84b73": {
+    "name": "Ghitu Encampment",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.33
+  },
+  "b3699c15-d834-4dde-ae3b-b3eb8241b442": {
+    "name": "Ghost Quarter",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.61
+  },
+  "3a2c5fd9-0ad8-49c8-a68d-f767a014a4eb": {
+    "name": "Ghost Town",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.8
+  },
+  "262d0329-db88-4bcb-87d3-979edb5bac8b": {
+    "name": "Gilt-Leaf Palace",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 15.65
+  },
+  "3b583cc8-95e6-4772-afe3-d405b65836e0": {
+    "name": "Gingerbread Cabin",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.34
+  },
+  "c5d439cb-50bc-4a33-bb1e-7bb2b81bfce7": {
+    "name": "Glacial Chasm",
+    "produced_mana": [],
+    "usd": 52.97
+  },
+  "9de5fadd-4559-479f-b45d-abe792f0f6e5": {
+    "name": "Glacial Floodplain",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.42
+  },
+  "fa02eab4-06f9-48dd-9db8-70724653fd32": {
+    "name": "Glacial Fortress",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "0a88ad2c-a1a6-4946-b34d-b93c8ac7769e": {
+    "name": "Glasspool Mimic // Glasspool Shore",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": null
+  },
+  "90630b20-fc83-475f-bcd5-8bcfee0cf241": {
+    "name": "Glasswing Grace // Age-Graced Chapel",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "3ba372ea-b4a0-4db3-baec-9cbf5d3384b1": {
+    "name": "Glimmerpost",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.29
+  },
+  "4a639687-d9e3-46a8-bc9f-6ca3912c46ab": {
+    "name": "Glimmervoid",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 4.24
+  },
+  "0f741296-c523-49bd-9ff4-ce2a1a70883e": {
+    "name": "Glittering Massif",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "3406179e-9692-4147-a990-624087618c68": {
+    "name": "Gloomlake Verge",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 15.85
+  },
+  "735470df-65d8-43e9-837e-4869c8e4f052": {
+    "name": "Gnottvold Slumbermound",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.23
+  },
+  "232bcc20-bb2f-4e45-89f4-6c797f1bea3b": {
+    "name": "Goblin Burrows",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.37
+  },
+  "7bb18340-5507-44da-b008-6b010daad617": {
+    "name": "Godless Shrine",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 12.57
+  },
+  "bdc33a21-d196-4c17-a296-87ff08e7ef69": {
+    "name": "Gods' Eye, Gate to the Reikai",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.0
+  },
+  "99582781-613e-4a33-aec7-7569b4a961aa": {
+    "name": "Gohn, Town of Ruin",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.24
+  },
+  "397ba02d-f347-46f7-b028-dd4ba55faa2f": {
+    "name": "Golden Guardian // Gold-Forge Garrison",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 1.5
+  },
+  "3235954d-a1b1-4822-b177-1691347d1e58": {
+    "name": "Goldmire Bridge",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 1.53
+  },
+  "b7a49624-1a4c-4e41-b50c-a3cc62a2607a": {
+    "name": "Golgari Guildgate",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": null
+  },
+  "42486edd-24b7-4299-84fa-50559917b2a8": {
+    "name": "Golgari Rot Farm",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.29
+  },
+  "a01096b1-a026-4dfd-bea2-de9ecb686ffa": {
+    "name": "Gond Gate",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 1.47
+  },
+  "7beccfa6-3e4b-4460-954e-870cb39e462d": {
+    "name": "Gongaga, Reactor Town",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.24
+  },
+  "b07eb189-559a-4cd5-95ac-f6612fd11cf1": {
+    "name": "Grand Coliseum",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "a8fcc939-6a31-4fb3-abe7-7663b85868dd": {
+    "name": "Grasping Dunes",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.35
+  },
+  "81b8b9c9-725d-476d-a3cf-55e3dc3e433d": {
+    "name": "Grasping Shadows // Shadows' Lair",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.23
+  },
+  "ecf52798-b2e0-4d0a-a41b-8927bfa60375": {
+    "name": "Grasslands",
+    "produced_mana": [],
+    "usd": 0.27
+  },
+  "7f33cce1-1484-43da-a825-b090eb5403a4": {
+    "name": "Graven Cairns",
+    "produced_mana": [
+      "B",
+      "C",
+      "R"
+    ],
+    "usd": 1.88
+  },
+  "07e81ace-4d75-4d79-ab99-c42288580def": {
+    "name": "Graypelt Refuge",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.33
+  },
+  "25785fc0-0949-467c-9305-f4614567e601": {
+    "name": "Great Arashin City",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.26
+  },
+  "7119ea5e-8041-43e0-861b-6276a5914e26": {
+    "name": "Great Furnace",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": null
+  },
+  "a23c757e-5944-47ce-b06f-27b4c403044c": {
+    "name": "Great Hall of Starnheim",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.14
+  },
+  "42d92674-2664-411c-b9c5-b04da7c845f4": {
+    "name": "Great Hall of the Biblioplex",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.48
+  },
+  "b97f2ed8-d8e3-40a6-bcf8-a36cfd81f685": {
+    "name": "Great Hall of the Citadel",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 1.39
+  },
+  "705d8194-3ad0-41b7-ae32-9c0cd8cd46b9": {
+    "name": "Griffin Canyon",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 5.68
+  },
+  "606c5f42-fe5f-4dcd-b8f4-b67beabe3f0a": {
+    "name": "Grim Backwoods",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.27
+  },
+  "e49dd5f0-1afa-4301-acdb-28424e2553b9": {
+    "name": "Grixis Panorama",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.4
+  },
+  "38900352-9087-4842-9a99-aceb862e5d70": {
+    "name": "Grove of the Burnwillows",
+    "produced_mana": [
+      "C",
+      "G",
+      "R"
+    ],
+    "usd": 6.23
+  },
+  "0079326b-ef87-49b8-9772-9134fb5deb3e": {
+    "name": "Grove of the Guardian",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.3
+  },
+  "004524bf-b249-4dac-9c10-44d57143feb9": {
+    "name": "Growing Rites of Itlimoc // Itlimoc, Cradle of the Sun",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 8.42
+  },
+  "7e7843a0-4e69-4132-948d-b4dc92c5eb2c": {
+    "name": "Gruul Guildgate",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": null
+  },
+  "f19d2b68-1415-4a0c-bb68-cfacb611c4d2": {
+    "name": "Gruul Turf",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.28
+  },
+  "dfcbc131-fd50-4908-b539-c8e52bb70c58": {
+    "name": "Guadosalam, Farplane Gateway",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.23
+  },
+  "26a21ef8-e9c8-4a33-a08f-ff96f0ece8a5": {
+    "name": "Guildless Commons",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.33
+  },
+  "cba12bda-d460-4206-8469-4357c967b9b8": {
+    "name": "Guildmages' Forum",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.33
+  },
+  "1b31d55a-44f3-4745-bc40-1399532d558e": {
+    "name": "HELIOS One",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.46
+  },
+  "c7b3b169-0d59-46bb-b750-9151abd78af6": {
+    "name": "Hadana's Climb // Winged Temple of Orazca",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 3.89
+  },
+  "23cb0d56-5d37-4478-ac8b-71d0fb14d6b8": {
+    "name": "Hagra Mauling // Hagra Broodpit",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": null
+  },
+  "638e752c-fcfc-4277-ab93-943d0195e351": {
+    "name": "Halimar Depths",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 3.16
+  },
+  "ab3d0e50-630a-4ccc-aa79-1db912ea801e": {
+    "name": "Hall",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.28
+  },
+  "20d80606-fefd-4033-a3e3-91201a5227ef": {
+    "name": "Hall of Heliod's Generosity",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "c29b896e-eee0-4f40-89b8-89262dae44e1": {
+    "name": "Hall of Oracles",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.26
+  },
+  "3185eeb2-b1a2-494b-9169-4145d034ff9d": {
+    "name": "Hall of Storm Giants",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 2.01
+  },
+  "3a861732-5e40-4381-96c0-9a5cc47b31d0": {
+    "name": "Hall of Tagsin",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "1b0d75ad-82a9-4145-ba3c-df4a86bd91d7": {
+    "name": "Hall of the Bandit Lord",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 19.73
+  },
+  "805316fb-a96f-4770-abf2-8ad2572b9b5c": {
+    "name": "Hallowed Fountain",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 8.77
+  },
+  "b926a189-90b6-47bb-b5d6-b033e57007b4": {
+    "name": "Halls of Mist",
+    "produced_mana": [],
+    "usd": 3.08
+  },
+  "5c278bd1-f120-4ade-95f1-c2cfc23bd763": {
+    "name": "Hammerheim",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 17.16
+  },
+  "8c0acb91-edfc-43a5-af77-6614327fce43": {
+    "name": "Hanweir Battlements",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.99
+  },
+  "1e8afbcf-c5a6-428c-8d91-a309821362b3": {
+    "name": "Hashep Oasis",
+    "produced_mana": [
+      "C",
+      "G"
+    ],
+    "usd": 0.27
+  },
+  "60642c42-15f7-4e22-80ad-4eed3a14b624": {
+    "name": "Haunted Fengraf",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.32
+  },
+  "3e041aef-5771-4a3f-af07-e85a66c48979": {
+    "name": "Haunted Mire",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.3
+  },
+  "32f1e668-89b8-4f82-afc1-6c3efb1fef3b": {
+    "name": "Haunted Ridge",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 8.71
+  },
+  "d0c552da-874e-49eb-b221-47220b8b7786": {
+    "name": "Haven of the Spirit Dragon",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.37
+  },
+  "823b019e-10c0-4712-8167-d4f37a71e782": {
+    "name": "Havengul Laboratory // Havengul Mystery",
+    "produced_mana": [
+      "B",
+      "C"
+    ],
+    "usd": 0.7
+  },
+  "6aded00a-0bf3-416e-8eac-15c04554705d": {
+    "name": "Havenwood Battleground",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.45
+  },
+  "756a8e0a-f76e-4947-ac67-bc76d6fe98a6": {
+    "name": "Heap Gate",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.52
+  },
+  "c05b097f-5b76-49b7-88fb-aef56431df39": {
+    "name": "Heart of Yavimaya",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": null
+  },
+  "15cbc81d-e464-4583-a9a8-b8a4931b1521": {
+    "name": "Hedge Maze",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 17.63
+  },
+  "ad8274ef-a46a-4f5f-8ad1-6ce828f24210": {
+    "name": "Hellion Crucible",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.21
+  },
+  "0582b42f-5ae5-4be2-ba2d-ed62b3cb20c5": {
+    "name": "Henge of Ramos",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "8b13ff20-1dad-4c6a-979b-4d2662af5e74": {
+    "name": "Hengegate Pathway // Mistgate Pathway",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 6.49
+  },
+  "af7aafb7-6870-4d09-a191-70786766c459": {
+    "name": "Hickory Woodlot",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 3.87
+  },
+  "a3b53320-57bf-4b9f-903d-f14ff0afdd19": {
+    "name": "Hidden Cataract",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.18
+  },
+  "b8685d46-99fc-44b3-be95-707a4b7b8327": {
+    "name": "Hidden Courtyard",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "4ba8f2e7-8357-4862-97dc-1942d066023a": {
+    "name": "Hidden Grotto",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.28
+  },
+  "f356522c-018d-43c7-988a-9ef9829ae75c": {
+    "name": "Hidden Hideout",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 3.1
+  },
+  "f67fd04f-05da-4418-97de-abeb7346cc69": {
+    "name": "Hidden Necropolis",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.23
+  },
+  "fcd447b3-4d96-4d85-924d-2c5043ba054f": {
+    "name": "Hidden Nursery",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.26
+  },
+  "9fa06aed-52c1-48f1-9906-362db12a3cf7": {
+    "name": "Hidden Volcano",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.27
+  },
+  "894aa6b6-0d08-4c43-8734-9cb7b31359c6": {
+    "name": "High Market",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.49
+  },
+  "59f64a32-c364-4750-94ed-d4d71c1a3511": {
+    "name": "Highland Forest",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.47
+  },
+  "530507ee-afbf-4b97-849b-b697dd0cfb81": {
+    "name": "Highland Lake",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": null
+  },
+  "38bcd111-0830-4fc0-a113-37eb306fb1a0": {
+    "name": "Highland Weald",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.32
+  },
+  "c13adc8c-03bb-4088-98af-0c06d83369aa": {
+    "name": "Hinterland Harbor",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.31
+  },
+  "a0948c7e-b3ca-422d-ba04-94b907042566": {
+    "name": "Hissing Quagmire",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 4.02
+  },
+  "81b9d17d-3ab0-4755-b396-391df50e70dd": {
+    "name": "Hive of the Eye Tyrant",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.94
+  },
+  "abaf9baa-f9f6-429f-adad-af57d010a80a": {
+    "name": "Holdout Settlement",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "3d6d30a4-a24e-4537-9230-bf6f57fbcd98": {
+    "name": "Hollow Trees",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.91
+  },
+  "197a4f38-0c19-4ba4-82f5-3d1fd6d054d3": {
+    "name": "Homeward Path",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 13.89
+  },
+  "014281b4-172c-4c4e-b859-4ca9ba110cce": {
+    "name": "Horizon Canopy",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 2.25
+  },
+  "5ae3a9c8-194e-421b-b77d-9c8784442651": {
+    "name": "Horizon of Progress",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 6.51
+  },
+  "d71031c2-7379-4d83-b6d6-61f3104593c4": {
+    "name": "Hostile Desert",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.25
+  },
+  "6e0f348b-fcd5-4c08-be35-2b8547357785": {
+    "name": "Hostile Hostel // Creeping Inn",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "5c678643-6640-49e1-a5b0-2954123bcabc": {
+    "name": "Howltooth Hollow",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.59
+  },
+  "2bc1b38f-11bf-4eb0-b333-4d605290e75b": {
+    "name": "Hushwood Verge",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 9.18
+  },
+  "8689ecd7-e9a6-458b-99d2-6dbaca527f00": {
+    "name": "Hydroelectric Specimen // Hydroelectric Laboratory",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.84
+  },
+  "e68c45d3-0f3c-4429-a93e-4ca70ea6b1a4": {
+    "name": "Icatian Store",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.83
+  },
+  "9a974983-b9aa-4f12-8279-2e74089f7f31": {
+    "name": "Ice Floe",
+    "produced_mana": [],
+    "usd": null
+  },
+  "8cff3ef0-4dfb-472e-aa1e-77613dd0f6d8": {
+    "name": "Ice Tunnel",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.48
+  },
+  "afe2ebec-0310-4b2f-ace4-fb293a1e4837": {
+    "name": "Idyllic Beachfront",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "ca2c611c-3a6f-44b0-9daa-837a465845e0": {
+    "name": "Idyllic Grange",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "902e260d-71ba-4342-9794-fefe2b531c00": {
+    "name": "Ifnir Deadlands",
+    "produced_mana": [
+      "B",
+      "C"
+    ],
+    "usd": 0.26
+  },
+  "71597acf-1ce6-46a8-b6c0-88755c8a377c": {
+    "name": "Illegitimate Business",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.18
+  },
+  "12ed97de-736d-43d8-977b-308ac54f88f4": {
+    "name": "Immersturm Skullcairn",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.17
+  },
+  "67d046e2-649d-4ef3-8040-4e2fa7e530a3": {
+    "name": "Indatha Triome",
+    "produced_mana": [
+      "B",
+      "G",
+      "W"
+    ],
+    "usd": null
+  },
+  "0aec35cb-aaa8-4952-b421-a8b6c26d5e74": {
+    "name": "Inkmoth Nexus",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 52.87
+  },
+  "07fca511-a65c-4779-82c0-9215b0dcd068": {
+    "name": "Insomnia, Crown City",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.19
+  },
+  "8b71132c-306a-4e37-a34a-777f1028e4a1": {
+    "name": "Inspiring Vantage",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 20.13
+  },
+  "bc1bed72-2440-4364-a69f-a9d7c4fe3fea": {
+    "name": "Interplanar Beacon",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "06b24278-4d20-4d74-8be8-c8078e0a1873": {
+    "name": "Inventors' Fair",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 15.25
+  },
+  "cfd1cfb0-c147-434b-8c81-9510d7a4be02": {
+    "name": "Ipnu Rivulet",
+    "produced_mana": [
+      "C",
+      "U"
+    ],
+    "usd": 0.33
+  },
+  "c030a6d9-4283-4ae4-8c8b-1790c3b6f0a8": {
+    "name": "Irrigated Farmland",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 1.81
+  },
+  "977f1b44-166c-4faf-8a7b-d431707e90ce": {
+    "name": "Irrigation Ditch",
+    "produced_mana": [
+      "G",
+      "U",
+      "W"
+    ],
+    "usd": 0.2
+  },
+  "068bc755-9d3d-430b-abc5-c775a5415bf9": {
+    "name": "Ishgard, the Holy See // Faith & Grief",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 2.0
+  },
+  "212e84a3-e028-42a6-a639-f42b64ab7015": {
+    "name": "Island",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 5.28
+  },
+  "17f4a1aa-395f-423c-b70c-00cf178bb84d": {
+    "name": "Island of Wak-Wak",
+    "produced_mana": [],
+    "usd": null
+  },
+  "78814c92-b52c-462a-866f-3e7da9db9f70": {
+    "name": "Isolated Chapel",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "6e9d3aef-9c9d-4317-a6ea-6777a5e087c5": {
+    "name": "Isolated Watchtower",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 7.43
+  },
+  "bdd4b490-d68a-4e9f-a2d9-6b85948239ff": {
+    "name": "Izzet Boilerworks",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.24
+  },
+  "6f4aee4c-5b0a-4ccf-9b1d-8be5e1a9d76c": {
+    "name": "Izzet Guildgate",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": null
+  },
+  "5d809f5b-d965-4cb1-a9f8-2048f8534373": {
+    "name": "Jagged Barrens",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.43
+  },
+  "4487d299-1571-4d44-81bb-9bf54fb33fbc": {
+    "name": "Jasmine Dragon Tea Shop",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 1.89
+  },
+  "3f8f6f02-ca8e-457c-be21-26da4c812588": {
+    "name": "Jetmir's Garden",
+    "produced_mana": [
+      "G",
+      "R",
+      "W"
+    ],
+    "usd": 18.83
+  },
+  "50aa744e-61e8-44c9-817c-0dc6086d736f": {
+    "name": "Jidoor, Aristocratic Capital // Overture",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 8.83
+  },
+  "dbfd926b-041b-404d-bd2d-2e4298076e3f": {
+    "name": "Journey to Eternity // Atzal, Cave of Eternity",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 6.75
+  },
+  "50d8346a-e0b5-41eb-be89-7d1eb0e84f28": {
+    "name": "Jund Panorama",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.44
+  },
+  "d4929e39-fccc-450b-bb18-f5ad56a397bd": {
+    "name": "Jungle Basin",
+    "produced_mana": [
+      "C",
+      "G"
+    ],
+    "usd": 0.6
+  },
+  "ea13440b-3f7b-4182-9541-27c1fa3121e5": {
+    "name": "Jungle Hollow",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.23
+  },
+  "0b1a84b6-4202-4413-80ed-4142c51e619a": {
+    "name": "Jungle Shrine",
+    "produced_mana": [
+      "G",
+      "R",
+      "W"
+    ],
+    "usd": 0.27
+  },
+  "3b7d23ba-2e8f-46ef-805e-b00405417760": {
+    "name": "Junktown",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.17
+  },
+  "58da70cf-4e85-425c-9439-a15e6719718c": {
+    "name": "Jwar Isle Refuge",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.18
+  },
+  "7dd4f363-c231-49e6-a9e3-e7d9e0e662da": {
+    "name": "Jwari Disruption // Jwari Ruins",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": null
+  },
+  "7a78246d-4cbd-4b6c-bc3a-277f96db900b": {
+    "name": "Kabira Crossroads",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.34
+  },
+  "deeb3dc0-49c4-4699-9125-00520235d370": {
+    "name": "Kabira Takedown // Kabira Plateau",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": null
+  },
+  "22017ec2-3552-4865-af76-dba042b141f5": {
+    "name": "Karn's Bastion",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.17
+  },
+  "16dfb04a-e65d-483e-a4fb-f810b36ede9d": {
+    "name": "Karoo",
+    "produced_mana": [
+      "C",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "67198b97-bac2-480f-aea8-12841e8884de": {
+    "name": "Karplusan Forest",
+    "produced_mana": [
+      "C",
+      "G",
+      "R"
+    ],
+    "usd": 0.44
+  },
+  "0f03d025-3ec8-4ae4-93e3-0fb96e105b7f": {
+    "name": "Kavaron, Memorial World",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 1.84
+  },
+  "34f21f6c-bc69-4375-a079-7148d249e2cb": {
+    "name": "Kazandu Mammoth // Kazandu Valley",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": null
+  },
+  "304b4d37-53e1-44a3-a892-627439edaf6f": {
+    "name": "Kazandu Refuge",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.18
+  },
+  "75240bbc-adc7-48ff-9523-c79776d710d3": {
+    "name": "Kazuul's Fury // Kazuul's Cliffs",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.61
+  },
+  "da7c4600-1dc3-4a9d-a112-1b70abcb8951": {
+    "name": "Keldon Megaliths",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.41
+  },
+  "8d168f4d-e8f1-459f-a507-93730ddd20a4": {
+    "name": "Keldon Necropolis",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "32da0d6c-64dd-4aec-b63e-953e96164603": {
+    "name": "Kessig Wolf Run",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.32
+  },
+  "e5b1b1dc-523c-4fce-baea-6f13971cc03b": {
+    "name": "Ketria Triome",
+    "produced_mana": [
+      "G",
+      "R",
+      "U"
+    ],
+    "usd": 18.04
+  },
+  "ecc4939e-2541-49db-b84f-f902fe9e2524": {
+    "name": "Khalni Ambush // Khalni Territory",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": null
+  },
+  "ec359d58-72af-4de7-b62a-69c48a914a68": {
+    "name": "Khalni Garden",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.96
+  },
+  "15cfec15-95b5-47d6-9714-ff920ce97932": {
+    "name": "Kher Keep",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.34
+  },
+  "0bdb0021-0035-49dc-b9f0-0d9926b9de24": {
+    "name": "Kishla Village",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 1.59
+  },
+  "4388ae8f-a2c4-4e0d-a6a1-0204ff3f469b": {
+    "name": "Kitchen",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.4
+  },
+  "77211807-63f5-486d-8677-c146ab9bb783": {
+    "name": "Kjeldoran Outpost",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": null
+  },
+  "61f13afc-a10d-4c17-8bcc-434778ff34ab": {
+    "name": "Kor Haven",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "395fe900-ed19-438e-a658-ed7cf85818e5": {
+    "name": "Koskun Keep",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R"
+    ],
+    "usd": 0.21
+  },
+  "19fc5bec-f877-430c-8e83-e6c5fe97f3c4": {
+    "name": "Krosan Verge",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.33
+  },
+  "8d5f3008-2af8-4e81-8847-1c91f524e747": {
+    "name": "Kyoshi Village",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "388169df-4cce-452d-9215-e3f814ff4fdf": {
+    "name": "Labyrinth of Skophos",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.31
+  },
+  "51aabe5e-161b-4c8a-bdb2-983f402a29ef": {
+    "name": "Lair of the Hydra",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.33
+  },
+  "79ec038d-84bf-4174-aa39-0358bab85bcb": {
+    "name": "Lake of the Dead",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": null
+  },
+  "a9367acd-393a-4966-ba60-af2ecd4e7596": {
+    "name": "Lakeside Shack",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.16
+  },
+  "c4806c02-7a4d-42e3-affd-0338084bd3ab": {
+    "name": "Land Cap",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 1.0
+  },
+  "484a7675-787f-49be-9b44-edd0a7d73812": {
+    "name": "Lantern-Lit Graveyard",
+    "produced_mana": [
+      "B",
+      "C",
+      "R"
+    ],
+    "usd": 0.2
+  },
+  "1f12466f-7474-48ca-b4d1-3463a34f9b00": {
+    "name": "Lava Tubes",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 1.79
+  },
+  "5766b7ed-eb92-4c53-a5ad-577b5466ff6f": {
+    "name": "Lavaclaw Reaches",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.43
+  },
+  "656ddd43-c70c-4927-9a02-fef5732708da": {
+    "name": "Lazotep Quarry",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 4.83
+  },
+  "a07a0e31-ace6-40ad-8700-2d58135b5320": {
+    "name": "Leechridden Swamp",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.53
+  },
+  "7676abd9-0a3d-4721-b17b-778d2e3c2e25": {
+    "name": "Legion Leadership // Legion Stronghold",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.44
+  },
+  "14a41e7e-9f68-4449-9e2c-4c862036bce5": {
+    "name": "Legion's Landing // Adanto, the First Fort",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 4.51
+  },
+  "442cf173-8042-40fa-98d6-6ca93caa3e03": {
+    "name": "Library",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.4
+  },
+  "7e95a7cc-ed77-4ca4-80db-61c0fc68bf50": {
+    "name": "Lilypad Village",
+    "produced_mana": [
+      "C",
+      "U"
+    ],
+    "usd": 0.3
+  },
+  "0b85e76c-6da8-46bc-b9ac-c89b72b5db00": {
+    "name": "Lindblum, Industrial Regency // Mage Siege",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 7.65
+  },
+  "cf1f38de-44b3-42fa-9288-d7c1832ff75f": {
+    "name": "Littjara Mirrorlake",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.26
+  },
+  "284e165e-9ab6-47fc-9685-0fb03de237df": {
+    "name": "Llanowar Reborn",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.29
+  },
+  "266316d3-3bbc-4283-aab8-69629855909f": {
+    "name": "Llanowar Wastes",
+    "produced_mana": [
+      "B",
+      "C",
+      "G"
+    ],
+    "usd": 0.46
+  },
+  "4b778b63-e5fc-4d63-a93b-4372f32cade2": {
+    "name": "Lonely Arroyo",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.27
+  },
+  "001908da-70cc-4a53-9372-eb75c0721442": {
+    "name": "Lonely Sandbar",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.4
+  },
+  "b88177a2-de41-417d-a8f1-07edf005b453": {
+    "name": "Looming Spires",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.1
+  },
+  "b6ad08da-c9e8-4061-a4a6-032d6957a403": {
+    "name": "Lorehold Campus",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "ee5ac47c-e8b6-400e-b91e-a7cd0f952cf1": {
+    "name": "Lotus Field",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 2.67
+  },
+  "2e5cd12a-2a07-44a8-8eac-de00d26fe9e3": {
+    "name": "Lotus Vale",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 40.49
+  },
+  "4b197079-488d-47c6-a494-8baf36c48667": {
+    "name": "Lounge",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.24
+  },
+  "6cb11668-a672-4c12-a15f-96930cc3bd3b": {
+    "name": "Lumbering Falls",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 3.42
+  },
+  "8ab9d56f-9178-4ec9-a5f6-b934f50d8d9d": {
+    "name": "Lupinflower Village",
+    "produced_mana": [
+      "C",
+      "W"
+    ],
+    "usd": 0.29
+  },
+  "ba0932e2-30da-478d-b295-40db01556eb0": {
+    "name": "Lush Oasis",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.25
+  },
+  "ab42ae1a-0c46-4364-b5f1-7688037e9acc": {
+    "name": "Lush Portico",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 9.11
+  },
+  "35f76198-f04c-433b-823f-e99ea54c01ee": {
+    "name": "Luxury Suite",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 33.34
+  },
+  "513adae2-6436-4284-9f23-87ef627e81b7": {
+    "name": "Madblind Mountain",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.5
+  },
+  "48b89e6d-da58-465e-a9b1-69629da159f6": {
+    "name": "Maelstrom of the Spirit Dragon",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 2.52
+  },
+  "d4087ba6-8227-4ec3-a989-0833ad6c8788": {
+    "name": "Maestros Theater",
+    "produced_mana": [],
+    "usd": 0.31
+  },
+  "f060ea2b-717a-47ae-a4d6-b0594e838459": {
+    "name": "Mage-Ring Network",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.37
+  },
+  "3c84cf70-4164-47ea-8da1-c0ca1ac132e1": {
+    "name": "Magosi, the Waterveil",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 1.1
+  },
+  "ada9a974-8f1f-4148-bd61-200fc14714b2": {
+    "name": "Makindi Stampede // Makindi Mesas",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.22
+  },
+  "609d3ecf-f88d-4268-a8d3-4bf2bcf5df60": {
+    "name": "Malakir Rebirth // Malakir Mire",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 13.67
+  },
+  "263aac65-b18b-45ed-80c1-12428dfc5a4c": {
+    "name": "Mana Confluence",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 297.27
+  },
+  "08a1a78c-f715-4d92-a428-bcc409bdbd79": {
+    "name": "Manor Gate",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.51
+  },
+  "2724c630-5638-4b6a-8f1e-0f764b11c8d8": {
+    "name": "Mariposa Military Base",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.87
+  },
+  "2cae1d08-5bda-4eeb-8134-bdb62ad6f44e": {
+    "name": "Marsh Flats",
+    "produced_mana": [],
+    "usd": 49.91
+  },
+  "5e03b08d-f0f1-40e8-af48-1622430bab38": {
+    "name": "Matzalantli, the Great Door // The Core",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 3.23
+  },
+  "5889fde1-730d-43d0-aaa4-499784a80530": {
+    "name": "Maze of Ith",
+    "produced_mana": [],
+    "usd": 10.72
+  },
+  "db3ea047-d18c-4f2a-913e-17469d3bd14c": {
+    "name": "Maze of Shadows",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "56457cc2-4fdb-4399-a233-0c1a954de026": {
+    "name": "Maze's End",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "01c4f4c9-4f3d-4b4a-86e3-1d4c49da2de8": {
+    "name": "Meandering River",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.14
+  },
+  "c093984d-38cd-4b49-b179-1e289ab442d1": {
+    "name": "Mech Hangar",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.42
+  },
+  "cc078fc6-4470-473f-9e24-d2c470e09141": {
+    "name": "Meditation Pools",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.28
+  },
+  "2c5c070e-91d3-4613-8a46-0323ee425027": {
+    "name": "Memorial to Folly",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.29
+  },
+  "29c999f7-caed-4d24-9881-d5b07c5cd579": {
+    "name": "Memorial to Genius",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.16
+  },
+  "edad3735-0cf3-471d-9731-8118aa4dce68": {
+    "name": "Memorial to Glory",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "994d903b-0d54-4af4-898f-213e716e9ed4": {
+    "name": "Memorial to Unity",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.12
+  },
+  "c3fe9351-82ad-47b0-b30c-208effbb9f3d": {
+    "name": "Memorial to War",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.2
+  },
+  "6f787cb6-78cb-4baa-a9cf-cee8b7d8d6b1": {
+    "name": "Mercadian Bazaar",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.56
+  },
+  "4069927a-1d3b-4ded-a012-eec8e7674ba6": {
+    "name": "Meteor Crater",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 3.03
+  },
+  "170701a7-2c29-401e-a0be-178c9f469076": {
+    "name": "Meticulous Archive",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 18.35
+  },
+  "8a837256-6bb4-4a60-962d-d2793548d26c": {
+    "name": "Midgar, City of Mako // Reactor Raid",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 2.4
+  },
+  "d80eb098-5433-4b1e-aad5-0fd31bf598dd": {
+    "name": "Mikokoro, Center of the Sea",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 5.78
+  },
+  "798c0faf-0de2-4397-8f03-2120d2a35351": {
+    "name": "Minamo, School at Water's Edge",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 57.22
+  },
+  "50f76652-15e7-4190-842e-db6db6d66e91": {
+    "name": "Minas Morgul, Dark Fortress",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 19.15
+  },
+  "44224705-1673-4d2d-9077-e87b58dbb035": {
+    "name": "Minas Tirith",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 24.9
+  },
+  "20f9c167-8593-486f-8e68-bf5a452c48bf": {
+    "name": "Mines of Moria",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 5.35
+  },
+  "c3d2e816-c06d-4c5d-98fe-c350d8cfab27": {
+    "name": "Mirage Mesa",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.22
+  },
+  "4a64e504-e87c-4b15-b637-057c30ca9f60": {
+    "name": "Miren, the Moaning Well",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 112.54
+  },
+  "2b7a760f-c9fb-454c-bedd-46a675daf02e": {
+    "name": "Mirrex",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.85
+  },
+  "c0a9fbb3-9fe4-4ec6-82f0-3bb101524e1e": {
+    "name": "Mirrodin's Core",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.22
+  },
+  "490b5da5-99c3-4e16-85b8-49c52ff947d7": {
+    "name": "Mirrorpool",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 32.35
+  },
+  "6e9fec20-a52c-42c0-9928-c572d9e1b21f": {
+    "name": "Mishra's Factory",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.19
+  },
+  "55cb1a68-8259-4698-82af-348d6e5625fc": {
+    "name": "Mishra's Foundry",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "e9d6c1c3-1745-4da0-9a8c-7a2e4147d039": {
+    "name": "Mishra's Workshop",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "52f7e36c-87fb-4145-a5ca-6df7f55b3f1e": {
+    "name": "Mistrise Village",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 8.1
+  },
+  "7ad684fb-cfb0-48b2-802f-bda96afafdc3": {
+    "name": "Mistvault Bridge",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 1.25
+  },
+  "c53028dd-efb5-486c-a7d3-45f2f6050c1d": {
+    "name": "Mistveil Plains",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.29
+  },
+  "7cc29ddb-8f44-4493-985d-2fac35f9f34d": {
+    "name": "Misty Palms Oasis",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.21
+  },
+  "25eb3f16-d2af-4d06-aae4-474a3005e42f": {
+    "name": "Misty Rainforest",
+    "produced_mana": [],
+    "usd": 486.02
+  },
+  "c7921b97-083b-480a-a7df-f2ab82e6f8fb": {
+    "name": "Mobilized District",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.25
+  },
+  "ee7f2031-1a91-4f9d-aae9-e4b1b3206211": {
+    "name": "Mogg Hollows",
+    "produced_mana": [
+      "C",
+      "G",
+      "R"
+    ],
+    "usd": null
+  },
+  "881f92f8-ba27-49a3-a753-b082612f9acf": {
+    "name": "Molten Slagheap",
+    "produced_mana": [
+      "B",
+      "C",
+      "R"
+    ],
+    "usd": 0.12
+  },
+  "9c6d0f64-b8e1-41bc-ab86-bd6783daf72a": {
+    "name": "Molten Tributary",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.27
+  },
+  "62907e7b-e531-4f51-9a69-7e60ae525775": {
+    "name": "Monumental Henge",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.46
+  },
+  "64b36993-666c-40d0-b61a-1d162bd06dcc": {
+    "name": "Moonring Island",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.45
+  },
+  "df8bbd04-981e-45ec-a835-7237350630cf": {
+    "name": "Moorland Haunt",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.16
+  },
+  "48e40927-dd87-42ed-b805-0ae8ba81f5fb": {
+    "name": "Morphic Pool",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 30.79
+  },
+  "31b7472f-48f5-4ab5-8896-3eee29d13d59": {
+    "name": "Mortuary Mire",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.38
+  },
+  "de5279fc-2532-4e66-bc44-ca395e106ab0": {
+    "name": "Mossfire Valley",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.26
+  },
+  "1490c0dc-06d6-45ee-af3c-2935b0ab1233": {
+    "name": "Mosswort Bridge",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.31
+  },
+  "6ad857f8-3c78-4333-b6c9-ac57b6b70888": {
+    "name": "Mount Doom",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 129.7
+  },
+  "2a7b2779-92dd-455d-920f-684276608244": {
+    "name": "Mountain",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 5.38
+  },
+  "314fd1d7-4bd8-4d95-b7c2-1aa6660ab88a": {
+    "name": "Mountain Stronghold",
+    "produced_mana": [],
+    "usd": 7.17
+  },
+  "3094800e-9994-47c3-9ebc-536bf5de13cd": {
+    "name": "Mountain Valley",
+    "produced_mana": [],
+    "usd": 0.29
+  },
+  "98ae549f-8a92-4e70-b2d1-9dfe52e6b9bd": {
+    "name": "Mouth of Ronom",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.73
+  },
+  "53ec4ad3-9cf0-4f1b-a9db-d63feee594ab": {
+    "name": "Mudflat Village",
+    "produced_mana": [
+      "B",
+      "C"
+    ],
+    "usd": 0.38
+  },
+  "940a4490-638e-450a-a25f-eaaa35548361": {
+    "name": "Multiversal Passage",
+    "produced_mana": [],
+    "usd": 17.06
+  },
+  "22da18e4-c4b3-417e-8b58-c2fee7093fcd": {
+    "name": "Muraganda Raceway",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.87
+  },
+  "6098d8be-4e3f-455d-8799-91435bf45a1c": {
+    "name": "Murky Sewer",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.2
+  },
+  "87d11136-c8d6-402d-8cb4-cc0117fe2f1a": {
+    "name": "Murmuring Bosk",
+    "produced_mana": [
+      "B",
+      "G",
+      "W"
+    ],
+    "usd": 0.48
+  },
+  "c6eac43d-08b6-45a4-803b-10a321a241d7": {
+    "name": "Mutant Town",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.12
+  },
+  "2ac4ada1-1b60-49ec-b187-0b2844d5704f": {
+    "name": "Mutavault",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 25.29
+  },
+  "a0e2098f-1d94-491a-a7e9-a45a9f69e3a8": {
+    "name": "Myriad Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.34
+  },
+  "f43e51f2-5d54-47ec-b573-cc1759681e9a": {
+    "name": "Mystic Gate",
+    "produced_mana": [
+      "C",
+      "U",
+      "W"
+    ],
+    "usd": 2.89
+  },
+  "9fd41ad5-6b36-482e-8305-bbc709668470": {
+    "name": "Mystic Monastery",
+    "produced_mana": [
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.27
+  },
+  "4cd86997-d7b9-4b5b-9488-11f5c679e4d3": {
+    "name": "Mystic Sanctuary",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.88
+  },
+  "2520c11e-5751-493e-bdae-defe2e05e448": {
+    "name": "Mystifying Maze",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.45
+  },
+  "4188a561-46e3-4ddd-8797-f33c37e9adb2": {
+    "name": "Nantuko Monastery",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.14
+  },
+  "6a546a28-8df5-4080-9f50-af86d84a066f": {
+    "name": "Naya Panorama",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.37
+  },
+  "4355ba23-de6a-4f18-baf4-82ae47cc2965": {
+    "name": "Necroblossom Snarl",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.44
+  },
+  "08fb8639-a0bb-4ad7-86b0-46116a078556": {
+    "name": "Needle Spires",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.43
+  },
+  "9102e1aa-7123-4c16-a810-d65b4505e147": {
+    "name": "Needleverge Pathway // Pillarverge Pathway",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 7.27
+  },
+  "11cf1531-8a3c-4e28-a114-d3a342b33bb6": {
+    "name": "Neglected Manor",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.16
+  },
+  "a8ff0fe0-3191-4f0d-a5e9-038bccb6e2cb": {
+    "name": "Nephalia Academy",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.27
+  },
+  "fe2e25b7-f950-482b-9e35-266b1278a71a": {
+    "name": "Nephalia Drownyard",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.31
+  },
+  "c25ad164-4076-496d-833c-d607391b1ac8": {
+    "name": "Nesting Grounds",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.33
+  },
+  "315e4c91-5b2a-45e8-b6b1-baf08ae6e2fc": {
+    "name": "New Benalia",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "a8c1dce3-6136-4294-9d2b-5ef8527d733b": {
+    "name": "Night Market",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.14
+  },
+  "711dbdb1-7ec3-4fb4-8364-d34f5e143fd1": {
+    "name": "Nimbus Maze",
+    "produced_mana": [
+      "C",
+      "U",
+      "W"
+    ],
+    "usd": 6.39
+  },
+  "06d829a9-7403-41e6-b676-cc0997aac33d": {
+    "name": "Nivix, Aerie of the Firemind",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.2
+  },
+  "790d5244-5042-4b84-b16d-be0f87d11fad": {
+    "name": "Nomad Outpost",
+    "produced_mana": [
+      "B",
+      "R",
+      "W"
+    ],
+    "usd": 0.26
+  },
+  "64300b71-050f-47a3-83be-f24480bdc01d": {
+    "name": "Nomad Stadium",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.47
+  },
+  "bcf7b9da-d35d-4338-b4d9-83e47dc058ee": {
+    "name": "North Pole Gates",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "dbca168e-095f-4fbc-88f8-3048d83caf94": {
+    "name": "Northampton Farm",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.28
+  },
+  "9a1e15e7-4ba6-41ad-b27b-aee2d037b6a7": {
+    "name": "Novijen, Heart of Progress",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.38
+  },
+  "ab4b80c5-fe04-4e5e-9637-b745c2c8956b": {
+    "name": "Nurturing Peatland",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 7.82
+  },
+  "920bbc28-1a57-4dc3-86e9-6a491a4afa1e": {
+    "name": "Nykthos, Shrine to Nyx",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "0d49b016-b02b-459f-85e9-c04f6bdcb94e": {
+    "name": "Oakhollow Village",
+    "produced_mana": [
+      "C",
+      "G"
+    ],
+    "usd": 0.35
+  },
+  "4949330d-9f12-459a-8a64-bd304fc53954": {
+    "name": "Oasis",
+    "produced_mana": [],
+    "usd": null
+  },
+  "22b7f560-ef32-496e-ac22-e1b725d08a08": {
+    "name": "Oboro, Palace in the Clouds",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 16.22
+  },
+  "d8eaf8d2-8029-49d9-a94b-a72dc31fc81f": {
+    "name": "Obscura Storefront",
+    "produced_mana": [],
+    "usd": 0.31
+  },
+  "50f8e2b6-98c7-4f28-bb39-e1fbe841f1ee": {
+    "name": "Ojer Axonil, Deepest Might // Temple of Power",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 27.5
+  },
+  "0cbc43a3-8cba-4988-9de1-c89aedd79ada": {
+    "name": "Ojer Kaslem, Deepest Growth // Temple of Cultivation",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 6.9
+  },
+  "a1fbfb8f-600e-4b29-98c5-7c6714d35347": {
+    "name": "Ojer Pakpatiq, Deepest Epoch // Temple of Cyclical Time",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 3.76
+  },
+  "1ca79dd4-67fc-496c-96fc-489b039c4932": {
+    "name": "Ojer Taq, Deepest Foundation // Temple of Civilization",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 30.56
+  },
+  "d2b833dd-64d9-48df-b24e-475811e5037c": {
+    "name": "Okina, Temple to the Grandfathers",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 5.1
+  },
+  "c21e413b-96ed-4ded-b567-f1647074ce5f": {
+    "name": "Omashu City",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.28
+  },
+  "4329f94a-9110-4f07-b4a6-f1ccae97ccc9": {
+    "name": "Ominous Asylum",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.2
+  },
+  "2e843c57-fae3-4127-94e7-cad8c8bb9486": {
+    "name": "Ominous Cemetery",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.32
+  },
+  "f9f102e4-0196-49ab-923e-579a1595b160": {
+    "name": "Ondu Inversion // Ondu Skyruins",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": null
+  },
+  "912553e7-1e67-4045-84fd-0a791754cf6c": {
+    "name": "Opal Palace",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.27
+  },
+  "f0001153-dbcb-44e5-99be-2c186c9b10b0": {
+    "name": "Opulent Palace",
+    "produced_mana": [
+      "B",
+      "G",
+      "U"
+    ],
+    "usd": 0.32
+  },
+  "d46d3ef7-b81f-42f4-9c1b-fa53f11eae65": {
+    "name": "Oran-Rief, the Vastwood",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.27
+  },
+  "cc8f8ede-9620-4f7f-8326-a75031ef6ec1": {
+    "name": "Orzhov Basilica",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.33
+  },
+  "1f691b4a-4096-4488-adf7-02f8f9ac512b": {
+    "name": "Orzhov Guildgate",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": null
+  },
+  "970aa2e7-f8e4-42b3-b531-b98c54c42965": {
+    "name": "Orzhova, the Church of Deals",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.18
+  },
+  "1e609d6e-9e37-45d2-87de-8c76675f7cec": {
+    "name": "Oscorp Industries",
+    "produced_mana": [
+      "B",
+      "R",
+      "U"
+    ],
+    "usd": 0.67
+  },
+  "635a633d-27c4-4dbe-97e4-9371d2b42571": {
+    "name": "Otawara, Soaring City",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": null
+  },
+  "6357d665-2b28-4747-ab43-b90176d78d42": {
+    "name": "Overflowing Basin",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.25
+  },
+  "644fb0ed-f434-4cc4-b7e9-a60db5ece2b7": {
+    "name": "Overgrown Farmland",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 2.48
+  },
+  "45b92924-baa1-4c9b-9932-9a5eda8f3446": {
+    "name": "Overgrown Tomb",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 9.98
+  },
+  "6ba13d72-be1b-4421-be62-62c2b35defe8": {
+    "name": "Painted Bluffs",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.13
+  },
+  "eac8649b-b892-4854-8422-fd117ccac39a": {
+    "name": "Paliano, the High City",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.37
+  },
+  "dbc3447e-1329-4ea1-b4ca-b321b0ffec8f": {
+    "name": "Paradox Gardens",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.16
+  },
+  "9335e773-4b45-4b91-8140-5159fe7e0395": {
+    "name": "Path of Ancestry",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.21
+  },
+  "66d9d524-3611-48d9-86c9-48e509e8ae70": {
+    "name": "Path of Mettle // Metzali, Tower of Triumph",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.36
+  },
+  "289344f8-9e1b-4f5f-ab10-451aabb9570a": {
+    "name": "Peat Bog",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 1.17
+  },
+  "3a6e40c0-e70e-4353-a920-9851cfac71dd": {
+    "name": "Peculiar Lighthouse",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.2
+  },
+  "93523623-24ee-43a6-b5b2-fb864567124e": {
+    "name": "Pelakka Predation // Pelakka Caverns",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": null
+  },
+  "acf85879-4d14-4d86-978c-b155c47b7dcd": {
+    "name": "Pendelhaven",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 2.53
+  },
+  "61fc78e0-d0db-4ecb-a29a-f1a437d7987c": {
+    "name": "Perilous Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.23
+  },
+  "0e386ba8-3621-4e55-9326-e239341142ef": {
+    "name": "Petrified Field",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 7.02
+  },
+  "355dd460-b0e9-41f2-a058-b7f7e39ac387": {
+    "name": "Petrified Hamlet",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.46
+  },
+  "8d8df09f-d22f-4f29-b920-358433f81b76": {
+    "name": "Phyrexia's Core",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.36
+  },
+  "0b47f6d2-9f65-47a4-bfc4-15619befe53d": {
+    "name": "Phyrexian Tower",
+    "produced_mana": [
+      "B",
+      "C"
+    ],
+    "usd": 27.86
+  },
+  "3629730d-4a68-426d-a7e4-6e3873028fab": {
+    "name": "Pillar of the Paruns",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "b0f794f0-3588-4fe2-8792-64a58482ff8b": {
+    "name": "Pine Barrens",
+    "produced_mana": [
+      "B",
+      "C",
+      "G"
+    ],
+    "usd": null
+  },
+  "7900552f-6147-49ec-8c02-f253e4896c4d": {
+    "name": "Pinecrest Ridge",
+    "produced_mana": [
+      "C",
+      "G",
+      "R"
+    ],
+    "usd": 0.2
+  },
+  "24d4f26e-7f96-4b38-867e-4fac819b2679": {
+    "name": "Pinnacle Monk // Mystic Peak",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 1.56
+  },
+  "9332ac39-1a34-42e2-9c84-645cbf1721cf": {
+    "name": "Piranha Marsh",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.27
+  },
+  "bc7d3957-b483-4a1f-a244-293c90032f5e": {
+    "name": "Pit of Offerings",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.32
+  },
+  "6089330b-dc26-4c35-ba58-522d5bfb963a": {
+    "name": "Plains",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 9.47
+  },
+  "28603c1c-f9b4-4001-bc56-d1453d5cacf5": {
+    "name": "Planar Nexus",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 10.21
+  },
+  "1e955934-b174-4bcf-8e30-424bb370747a": {
+    "name": "Plateau",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 285.99
+  },
+  "8ac4f15f-6191-4d23-939a-9d3f3c751395": {
+    "name": "Plaza of Harmony",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.55
+  },
+  "5a5e0599-62b0-4063-9872-33d5add06754": {
+    "name": "Plaza of Heroes",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 47.18
+  },
+  "12ecf069-25bf-484e-a92e-a46a41a86536": {
+    "name": "Polluted Delta",
+    "produced_mana": [],
+    "usd": 26.97
+  },
+  "bb724bec-3509-4f5f-84c0-b1b54063d06f": {
+    "name": "Polluted Mire",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.3
+  },
+  "f1ac3b7f-a1db-49df-ba02-fc80cb2f70af": {
+    "name": "Port Town",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "c1377ca1-aa54-4fed-b289-45309eb2f6b6": {
+    "name": "Port of Karfell",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.28
+  },
+  "6215a662-b8bc-441d-89ef-3a2eb47582aa": {
+    "name": "Power Depot",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 11.27
+  },
+  "2a315f63-96ad-4a5f-8eb4-d81361797348": {
+    "name": "Prahv, Spires of Order",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.29
+  },
+  "ce3a0ad9-6b7a-470c-8e49-4121fea72c89": {
+    "name": "Prairie Stream",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "9235dfc1-19bf-4923-84f7-721018514866": {
+    "name": "Primal Amulet // Primal Wellspring",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 15.58
+  },
+  "cf01949c-1aa3-4ce6-aabf-00c6d0498f5c": {
+    "name": "Primal Beyond",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.21
+  },
+  "7c464dee-dd89-4955-ae40-8bb74e9ff42a": {
+    "name": "Prismari Campus",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.23
+  },
+  "bac5d6f2-e7f9-4d94-b4e7-b480c7e04460": {
+    "name": "Prismatic Vista",
+    "produced_mana": [],
+    "usd": null
+  },
+  "1d94ff37-f04e-48ee-8253-d62ab07f0632": {
+    "name": "Profane Procession // Tomb of the Dusk Rose",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.44
+  },
+  "e9681a54-6413-4ff4-b6b1-ee4decb25bfa": {
+    "name": "Promising Vein",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.3
+  },
+  "1f8b915f-3e82-4b05-b963-01ebff7a8f7b": {
+    "name": "Public Thoroughfare",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.26
+  },
+  "ce75bbae-99ff-4822-9835-5372ebaedb07": {
+    "name": "Quandrix Campus",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.23
+  },
+  "3d6c14d5-762e-4e78-bed0-4406d3d9c9c9": {
+    "name": "Quicksand",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.19
+  },
+  "c44c9bbe-f4c6-41cf-b3c3-b943f4011bc1": {
+    "name": "Rabanastre, Royal City",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.16
+  },
+  "2a11bdb2-a269-4038-85f3-69fbd02982e9": {
+    "name": "Racers' Ring",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.13
+  },
+  "7ee5e77f-ca43-480d-ac37-48336d3bf044": {
+    "name": "Radiant Fountain",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.77
+  },
+  "977bf5a1-81f2-4c5b-a227-347bf8e19554": {
+    "name": "Radiant Grove",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "5ca0311f-6218-4c1c-ac5f-23b9708446f1": {
+    "name": "Radiant Summit",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 1.02
+  },
+  "c53b2eb0-60e0-40e5-8a07-1a2eafbd615a": {
+    "name": "Raffine's Tower",
+    "produced_mana": [
+      "B",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "3964c3a5-3ce7-4b73-89ec-ed1b9799aef8": {
+    "name": "Raging Ravine",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.23
+  },
+  "3f967dee-1c2e-423a-823b-9fc74e8053bc": {
+    "name": "Rain-Slicked Copse",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.29
+  },
+  "51f8b918-ac13-4538-a39d-6553580bf39b": {
+    "name": "Rainbow Vale",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "20c799a9-ab94-46e6-9111-00505e071c41": {
+    "name": "Rakdos Carnarium",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.33
+  },
+  "1a6c5f93-2185-4cdb-bf6e-b32c23441faa": {
+    "name": "Rakdos Guildgate",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": null
+  },
+  "39269bfc-9cc9-4ad2-add1-663ae47eb883": {
+    "name": "Ramunap Ruins",
+    "produced_mana": [
+      "C",
+      "R"
+    ],
+    "usd": 0.33
+  },
+  "42681dce-5c63-4e56-955e-39f085ea6ae9": {
+    "name": "Rath's Edge",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.81
+  },
+  "3604a211-9bf7-474e-bd78-32a862f4259c": {
+    "name": "Raucous Carnival",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.22
+  },
+  "2faf0337-c7a3-45a0-bb14-c431526da2cd": {
+    "name": "Raucous Theater",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 15.96
+  },
+  "a5ca06b6-6692-44f3-904d-4eca12d4d3ec": {
+    "name": "Raugrin Triome",
+    "produced_mana": [
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "bb60ffc9-4919-40f2-bdd6-07eee6abf37c": {
+    "name": "Ravaged Highlands",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.23
+  },
+  "57065dca-f90e-4184-bbc4-95d726a4160b": {
+    "name": "Razorgrass Ambush // Razorgrass Field",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "0bbd24cd-48f7-40d7-9741-f30108f04b84": {
+    "name": "Razortide Bridge",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.29
+  },
+  "98d0d067-b52d-47ec-ba7b-8cfcd716c0e5": {
+    "name": "Razortrap Gorge",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.25
+  },
+  "62c38e0a-7113-4023-9f18-c01fd5abc827": {
+    "name": "Razorverge Thicket",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.74
+  },
+  "061ac694-610c-479f-b038-a4ef5270d5d7": {
+    "name": "Realm of Koh",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.41
+  },
+  "73a8171a-2629-4356-ae86-b4d03aa14bd3": {
+    "name": "Reef Roads",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.11
+  },
+  "1d503baa-c041-46b6-8589-5369b49dd3a3": {
+    "name": "Reflecting Pool",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 82.94
+  },
+  "054a392e-ea3b-4de2-beeb-72772a546070": {
+    "name": "Rejuvenating Springs",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 12.34
+  },
+  "e2a27742-08c1-4153-af7f-25a7a98f585e": {
+    "name": "Reliquary Tower",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.91
+  },
+  "115cab84-60d7-4bf2-9beb-b4ed7b5ceaf4": {
+    "name": "Remote Farm",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.86
+  },
+  "13bcbf2a-bc17-426b-8177-15c6eac1b66d": {
+    "name": "Remote Isle",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.29
+  },
+  "0fc7725d-eb04-4778-8f5e-4c1239ed08b8": {
+    "name": "Restless Anchorage",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 1.32
+  },
+  "05f5c618-5634-4952-a531-dced60582ae8": {
+    "name": "Restless Bivouac",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 1.11
+  },
+  "0dcb97ff-9356-4be7-8991-091f950c0b63": {
+    "name": "Restless Cottage",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 1.09
+  },
+  "57ddce10-6bf7-4854-ac1c-28f550e5bb20": {
+    "name": "Restless Fortress",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 1.34
+  },
+  "7802788a-8a40-40e7-9d33-58191d1d678a": {
+    "name": "Restless Prairie",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.45
+  },
+  "299efc48-d6c0-4dce-88c9-b98901e15aea": {
+    "name": "Restless Reef",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 2.24
+  },
+  "1554b3cd-6b8c-4184-a1b0-1541f8ca982f": {
+    "name": "Restless Ridgeline",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.88
+  },
+  "fbf4552a-643a-4dc7-a2ae-8e3af5c1ceef": {
+    "name": "Restless Spire",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.23
+  },
+  "2c479450-ec56-4575-b6fb-373d0049abfc": {
+    "name": "Restless Vents",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.92
+  },
+  "3d2dcb8d-8d28-4795-aed7-63d238ba9846": {
+    "name": "Restless Vinestalk",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.95
+  },
+  "03522b6b-31ec-4126-8885-5dbb2248688b": {
+    "name": "Revitalizing Repast // Old-Growth Grove",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.96
+  },
+  "4ae74463-4426-4ad4-b7a2-324694854245": {
+    "name": "Rhystic Cave",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.34
+  },
+  "92ece630-e484-4221-911f-e32048894f23": {
+    "name": "Riftstone Portal",
+    "produced_mana": [
+      "C",
+      "G",
+      "W"
+    ],
+    "usd": 2.68
+  },
+  "da1db084-f235-4e26-8867-5f0835a0d283": {
+    "name": "Rimewood Falls",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.5
+  },
+  "25a9cb87-e572-4885-8561-1d4b158ec7e4": {
+    "name": "Riptide Laboratory",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.48
+  },
+  "125de79a-2b28-45ac-a066-92a9b73c3cb8": {
+    "name": "Rishadan Port",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 11.48
+  },
+  "8a605ce4-ede6-44dd-a2ea-e953902be6bd": {
+    "name": "Rith's Grove",
+    "produced_mana": [
+      "G",
+      "R",
+      "W"
+    ],
+    "usd": 0.34
+  },
+  "b1332d69-d597-4ac6-8d60-574b50293612": {
+    "name": "Rivendell",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 10.97
+  },
+  "ea335fc0-0591-4acd-9ae8-7858222770da": {
+    "name": "River Delta",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 1.01
+  },
+  "67b626cc-1c12-4059-afa5-e5a1221ea1ba": {
+    "name": "River of Tears",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.32
+  },
+  "13595b5d-5b78-4d63-89ae-02837693ba46": {
+    "name": "Riverglide Pathway // Lavaglide Pathway",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 11.74
+  },
+  "11d844a8-1497-4830-af57-400487dca001": {
+    "name": "Riverpyre Verge",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 21.54
+  },
+  "65ce9590-87c0-4057-bddb-fadc0de552f6": {
+    "name": "Riveteers Overlook",
+    "produced_mana": [],
+    "usd": 0.32
+  },
+  "132a1e96-6df9-45d7-9dcc-6447a34c6eca": {
+    "name": "Rix Maadi, Dungeon Palace",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.25
+  },
+  "deca57c8-ac90-4fce-83b5-74adf45622e5": {
+    "name": "Roadside Reliquary",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.3
+  },
+  "62799d24-39a6-4e66-8ac3-7cafa99e6e6d": {
+    "name": "Rockface Village",
+    "produced_mana": [
+      "C",
+      "R"
+    ],
+    "usd": 0.34
+  },
+  "dcdea659-ecaf-4abe-be0f-64e105abb104": {
+    "name": "Rockfall Vale",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 2.11
+  },
+  "6f0d4e8a-aab5-458e-bc0e-2b6b0054646a": {
+    "name": "Rocky Roads",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.22
+  },
+  "2aa1f7c6-f888-4384-9626-f106571e164c": {
+    "name": "Rocky Tar Pit",
+    "produced_mana": [],
+    "usd": 0.3
+  },
+  "ada81bdf-340d-44f2-8c48-64af2f179bab": {
+    "name": "Rogue's Passage",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 3.45
+  },
+  "f01bb3fd-14c6-47cb-aba3-e3069da56c9f": {
+    "name": "Rootbound Crag",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.34
+  },
+  "b4a23762-85c9-4d1a-8e0c-254daed38e68": {
+    "name": "Rootwater Depths",
+    "produced_mana": [
+      "B",
+      "C",
+      "U"
+    ],
+    "usd": 0.13
+  },
+  "31261eca-28ad-407c-84ef-0c124d0d7451": {
+    "name": "Rugged Highlands",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.18
+  },
+  "6bd21c9e-de16-4ee9-ae16-6e82b490109d": {
+    "name": "Rugged Prairie",
+    "produced_mana": [
+      "C",
+      "R",
+      "W"
+    ],
+    "usd": 0.29
+  },
+  "dd563d94-787d-4098-8b38-b462640c4216": {
+    "name": "Ruins of Oran-Rief",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.26
+  },
+  "525b4319-461a-499f-9986-857cba8f2e27": {
+    "name": "Ruins of Trokair",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": null
+  },
+  "3f5d2c38-663c-4f64-8cfc-c102462e82ef": {
+    "name": "Rumble Arena",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.31
+  },
+  "8340aa81-7c7f-4b0b-8d98-d3414cac331c": {
+    "name": "Rupture Spire",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.14
+  },
+  "70a25a3a-c12a-49d3-8a91-a108dfa9d3c5": {
+    "name": "Rush of Inspiration // Crackling Falls",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.31
+  },
+  "c315c72c-3e2f-4aff-b7d7-2f709ccec332": {
+    "name": "Rushwood Grove",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.56
+  },
+  "f50160e9-0b25-4e81-814d-cdcda2fb325d": {
+    "name": "Rustic Clachan",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "da54e458-1d4f-45f0-a225-99eb9c4049fb": {
+    "name": "Rustvale Bridge",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.27
+  },
+  "15e9f2fe-7703-42bf-a6f7-c4db6e62621f": {
+    "name": "Sacred Foundry",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 26.48
+  },
+  "ee2d6798-b19d-4628-bb57-05663ab4af68": {
+    "name": "Sacred Peaks",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "d130205f-53e3-4c04-967c-4808d7945880": {
+    "name": "Safe Haven",
+    "produced_mana": [],
+    "usd": 0.56
+  },
+  "93e98e1f-5a51-41b4-b636-86a58e712849": {
+    "name": "Salt Flats",
+    "produced_mana": [
+      "B",
+      "C",
+      "W"
+    ],
+    "usd": null
+  },
+  "a25b7167-468e-4515-8dbf-52a9a4d11287": {
+    "name": "Salt Marsh",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.15
+  },
+  "f4d757f1-9398-494f-9a24-b01c5c8c6db5": {
+    "name": "Saltcrusted Steppe",
+    "produced_mana": [
+      "C",
+      "G",
+      "W"
+    ],
+    "usd": 0.34
+  },
+  "a680cc6d-9c31-4f5d-808f-dace92bf4346": {
+    "name": "Sanctum of Eternity",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 7.05
+  },
+  "87d6accb-d885-4e9a-842d-b31a48805f43": {
+    "name": "Sanctum of Ugin",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "6769de45-903f-4269-a100-9ceca1df26ac": {
+    "name": "Sand Silos",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 1.42
+  },
+  "e7482def-e87e-4a7f-9c18-7859483b2a66": {
+    "name": "Sandsteppe Citadel",
+    "produced_mana": [
+      "B",
+      "G",
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "ffb3d37e-5118-405a-906d-529ec1d90dce": {
+    "name": "Sandstone Bridge",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.15
+  },
+  "82bc7c6b-2e3d-42d1-b2bb-b37b6f34d33b": {
+    "name": "Sandstone Needle",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 4.87
+  },
+  "3ab4e0a4-2faf-456b-99e3-ee06c008538c": {
+    "name": "Sandstorm Verge",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.32
+  },
+  "52a69122-19c0-47ec-8bea-478511ba88e6": {
+    "name": "Saprazzan Cove",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.82
+  },
+  "6f21feef-341c-4e1d-89c0-c3282a98bd31": {
+    "name": "Saprazzan Skerry",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.64
+  },
+  "81d3099d-4f22-425c-8955-903b6cfb88d3": {
+    "name": "Sapseep Forest",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.45
+  },
+  "55187461-2ff3-424b-85d5-2ca09567d44e": {
+    "name": "Savage Lands",
+    "produced_mana": [
+      "B",
+      "G",
+      "R"
+    ],
+    "usd": 0.31
+  },
+  "855f59a5-17a8-4aca-8a4d-f98111eba14c": {
+    "name": "Savage Mansion",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.14
+  },
+  "8d18d906-1bb7-409f-b572-bba09db1742d": {
+    "name": "Savai Triome",
+    "produced_mana": [
+      "B",
+      "R",
+      "W"
+    ],
+    "usd": null
+  },
+  "3af5afd0-1b5b-4055-9d90-87356090911f": {
+    "name": "Savannah",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 187.99
+  },
+  "40642193-712a-495e-9349-6fc8e54a66f4": {
+    "name": "Scabland",
+    "produced_mana": [
+      "C",
+      "R",
+      "W"
+    ],
+    "usd": null
+  },
+  "49515199-f53c-4595-94ba-3a3e46b86372": {
+    "name": "Scalding Tarn",
+    "produced_mana": [],
+    "usd": 73.23
+  },
+  "0d9b8502-0bcf-4310-95a3-a9f3320b6439": {
+    "name": "Scattered Groves",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 2.2
+  },
+  "01539181-c6ee-49b3-9136-249712e30ef7": {
+    "name": "Scavenger Grounds",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 8.57
+  },
+  "de039992-631b-4feb-a522-acdb0a6d1f26": {
+    "name": "Scene of the Crime",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.38
+  },
+  "1438606d-556d-4b96-9662-fcac051af045": {
+    "name": "School of the Unseen",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.22
+  },
+  "5648788e-af46-4e95-9295-62c0fc2e5105": {
+    "name": "Scorched Geyser",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 2.81
+  },
+  "75a4e843-937c-47fb-8768-0f42c5cb4e4f": {
+    "name": "Scorched Ruins",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 64.35
+  },
+  "b4b47b80-69ed-44b0-afa0-ca90206dc16d": {
+    "name": "Scoured Barrens",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.19
+  },
+  "2fe01ec8-55fe-462c-8a28-a8b3908aa6f5": {
+    "name": "Scrubland",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": null
+  },
+  "f9919224-b1a4-4af8-a47b-e75ab6a8c5c1": {
+    "name": "Scrying Sheets",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 3.86
+  },
+  "dfc51143-c2cb-4cb6-836e-662bc1b15afb": {
+    "name": "Sea Gate",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 1.87
+  },
+  "72c31715-76d5-464d-a4fb-bf2db4821d4b": {
+    "name": "Sea Gate Restoration // Sea Gate, Reborn",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": null
+  },
+  "1c137634-7531-4573-9bfa-623d8edf839c": {
+    "name": "Sea Gate Wreckage",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.38
+  },
+  "da77a3e1-9f6f-4494-9430-40c7071fa767": {
+    "name": "Sea of Clouds",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 19.59
+  },
+  "88ec4d3b-f1f1-489c-b41e-0206e5e59fbd": {
+    "name": "Seachrome Coast",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.34
+  },
+  "66641d88-b3f0-4bcd-8d2d-29aa2de69e30": {
+    "name": "Seafarer's Quay",
+    "produced_mana": [],
+    "usd": 9.18
+  },
+  "6fb5977c-5009-4d97-82c8-c150a0d41bc3": {
+    "name": "Seafloor Debris",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "6168edd9-0e1b-4ff9-b1c4-18d56866858a": {
+    "name": "Search for Azcanta // Azcanta, the Sunken Ruin",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 10.07
+  },
+  "b681599f-aa7a-4b3a-a36a-dc6d70fd6a11": {
+    "name": "Seaside Citadel",
+    "produced_mana": [
+      "G",
+      "U",
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "9c940a6b-3c5e-4ce2-92b6-63e2cb575c15": {
+    "name": "Seaside Haven",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.67
+  },
+  "57a194b3-2899-4dee-977a-c77df0b94dfe": {
+    "name": "Seat of the Synod",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.71
+  },
+  "98563d19-fa5d-4395-ba6c-2bd724d9c410": {
+    "name": "Secluded Courtyard",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "ef35566b-79cb-4462-9711-7f5322b3a528": {
+    "name": "Secluded Glen",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 1.38
+  },
+  "492a1bc6-6f4b-400c-959f-1bfef03a68c8": {
+    "name": "Secluded Starforge",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 29.8
+  },
+  "aaa5bee9-3f6a-45b0-a282-6b23222e948f": {
+    "name": "Secluded Steppe",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "6b35ede8-e882-46fd-9eda-9d6f64c73ea1": {
+    "name": "Secret Passage",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.4
+  },
+  "2d39a0e1-6484-409c-ab05-5b276925a949": {
+    "name": "Secret Tunnel",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 3.08
+  },
+  "661fc907-7003-45c6-820c-9616e9a71c30": {
+    "name": "Seething Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.21
+  },
+  "fa5affde-a4ce-4adb-97aa-8f0b14087523": {
+    "name": "Sejiri Refuge",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.11
+  },
+  "84b8c3a4-6826-4c64-b4c2-a4e10601eaba": {
+    "name": "Sejiri Shelter // Sejiri Glacier",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": null
+  },
+  "d45b0ed8-8692-4fa7-b32c-30d29028da3d": {
+    "name": "Sejiri Steppe",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.33
+  },
+  "72c75557-640e-449c-a545-546e98f4231c": {
+    "name": "Selesnya Guildgate",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": null
+  },
+  "fdc53c6a-8e28-4314-9bcf-b31b6c6f56d7": {
+    "name": "Selesnya Sanctuary",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "86a17084-bb96-4e81-bff0-005bd44a1fbd": {
+    "name": "Sequestered Stash",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.16
+  },
+  "8ff49618-4612-4a44-a0b7-9d710a7cd60b": {
+    "name": "Seraph Sanctuary",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "ad87bff5-9b8c-44e4-a6d3-8cc71be9640a": {
+    "name": "Serpent's Pass",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.27
+  },
+  "f7a18130-dbaa-4657-a885-3a96a985935a": {
+    "name": "Serra's Sanctum",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 479.71
+  },
+  "4d02658c-bbe8-4673-8b44-0b24e0155a85": {
+    "name": "Shadowblood Ridge",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.33
+  },
+  "27eae4ce-e0b3-482b-9136-6fc17333877e": {
+    "name": "Shadowy Backstreet",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 16.53
+  },
+  "2fd26d73-0aa4-4169-9a6a-522a5a9519c7": {
+    "name": "Shambling Vent",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 6.19
+  },
+  "7a745b5e-cdb8-4d05-ac5c-87be69536da6": {
+    "name": "Sharlayan, Nation of Scholars",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.19
+  },
+  "f8373e5a-94bb-4aa0-bd09-13a01e0cb02a": {
+    "name": "Shattered Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.23
+  },
+  "5aa0c810-3b7d-4661-979e-e84fb327742d": {
+    "name": "Shattered Sanctum",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 1.59
+  },
+  "b5696255-dd2d-4aa9-9716-b7bd3ad2b0c4": {
+    "name": "Shatterskull Smashing // Shatterskull, the Hammer Pass",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": null
+  },
+  "c9b0a526-73b0-4501-80a3-f16dbef9cdfd": {
+    "name": "Shefet Dunes",
+    "produced_mana": [
+      "C",
+      "W"
+    ],
+    "usd": 0.33
+  },
+  "99759bb9-089d-4ffc-a285-fa96e656ad36": {
+    "name": "Shelldock Isle",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": null
+  },
+  "8d2f3838-26b8-41ad-af75-75c269f79a2c": {
+    "name": "Sheltered Thicket",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 2.01
+  },
+  "049d7a08-1605-4ce2-b8c5-634ce2a261e0": {
+    "name": "Sheltered Valley",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.68
+  },
+  "0fe070f4-8877-4280-b8fd-869f3ac34ab6": {
+    "name": "Sheltering Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.24
+  },
+  "059164e1-894d-4586-9800-e60d6fbd6eb6": {
+    "name": "Shifting Woodland",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 4.21
+  },
+  "a673adea-8454-4382-8413-fc1fa823f747": {
+    "name": "Shimmerdrift Vale",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.14
+  },
+  "e03f2594-c6e8-4758-86b4-885d1dba3a91": {
+    "name": "Shimmering Grotto",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "7a198106-4d31-4e10-884a-bdf2316f8088": {
+    "name": "Shineshadow Snarl",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "856c3adc-9fdf-4dd2-85a0-28da47f320fb": {
+    "name": "Shinka, the Bloodsoaked Keep",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": null
+  },
+  "156df6eb-1ac9-4954-bf93-b1668096b8bd": {
+    "name": "Shipwreck Marsh",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 7.14
+  },
+  "c5966350-652d-4677-b245-319608e062b9": {
+    "name": "Shire Terrace",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.74
+  },
+  "c1752b65-dace-4c87-b102-23df276b2e41": {
+    "name": "Shivan Gorge",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.81
+  },
+  "815fd52c-852a-4eac-8f7c-879f3af5548e": {
+    "name": "Shivan Oasis",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.14
+  },
+  "e13d0982-2542-4770-8e93-637478a0f84a": {
+    "name": "Shivan Reef",
+    "produced_mana": [
+      "C",
+      "R",
+      "U"
+    ],
+    "usd": 0.33
+  },
+  "099352e2-38c8-4fb4-a25f-6d928aa20f9e": {
+    "name": "Shizo, Death's Storehouse",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 39.59
+  },
+  "dde7ad4e-a38b-4981-8c9f-78a9e9ea2c36": {
+    "name": "Shrine of the Forsaken Gods",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.32
+  },
+  "bdb5452e-d97f-409b-91d0-2664f39b09b8": {
+    "name": "Sidequest: Catch a Fish // Cooking Campsite",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "0de40ccf-5db9-4e4f-b61b-8fc4454209ae": {
+    "name": "Silent Clearing",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 6.76
+  },
+  "e577d944-a0df-4ae1-8cef-9ab4c0144845": {
+    "name": "Silundi Vision // Silundi Isle",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": null
+  },
+  "8f14540a-479f-4a3c-8e5b-f482caf48451": {
+    "name": "Silverbluff Bridge",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.28
+  },
+  "354efff0-aea5-4274-94d6-9fce02430255": {
+    "name": "Silverquill Campus",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "212d97c5-c144-483b-b42e-00623477e928": {
+    "name": "Simic Growth Chamber",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.3
+  },
+  "e85670f5-b84e-4b82-b033-da46c9e4cffc": {
+    "name": "Simic Guildgate",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": null
+  },
+  "23190d7e-5165-49bd-b307-bf81877d228d": {
+    "name": "Sinister Hideout",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.16
+  },
+  "5358b87a-1a29-426d-b165-40c97da2c14d": {
+    "name": "Sink into Stupor // Soporific Springs",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 7.43
+  },
+  "a753ddca-78e0-4e58-a8be-abec6c1183f9": {
+    "name": "Skarrg, the Rage Pits",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.48
+  },
+  "82c2a0f7-0f53-4627-8be8-227fde331a69": {
+    "name": "Skemfar Elderhall",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.22
+  },
+  "09ec5587-6e41-4707-8266-5587b9dcb57f": {
+    "name": "Skybridge Towers",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.11
+  },
+  "014027c4-7f9d-4096-b308-ea4be574c0d4": {
+    "name": "Skyclave Cleric // Skyclave Basilica",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.27
+  },
+  "03f8c846-d80c-49a4-a562-e817cd0c6096": {
+    "name": "Skycloud Expanse",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.2
+  },
+  "6747657b-5ce4-4dbd-b924-ca1f7119faf7": {
+    "name": "Skycoach Waypoint",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.25
+  },
+  "29b0027d-c232-4cdd-89c4-75947687aa71": {
+    "name": "Skyline Cascade",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.09
+  },
+  "ba561609-406d-47c8-9d5b-1fb20ecac916": {
+    "name": "Skyshroud Forest",
+    "produced_mana": [
+      "C",
+      "G",
+      "U"
+    ],
+    "usd": null
+  },
+  "39a60957-eaee-4154-824f-148dba07161a": {
+    "name": "Slagwoods Bridge",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.31
+  },
+  "30d0754a-f7bb-4c13-b7e3-28046db48cc1": {
+    "name": "Slayers' Stronghold",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.28
+  },
+  "c41073e8-01cc-4d19-acb5-caaf2861bc6a": {
+    "name": "Slippery Karst",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.32
+  },
+  "1445b61c-a105-4d4c-be42-5cbf7cd43f89": {
+    "name": "Sliver Hive",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 9.69
+  },
+  "ddcfaaed-c139-4787-946f-59800bde71e4": {
+    "name": "Smoldering Crater",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.28
+  },
+  "a4746e54-974a-4743-ab9b-a9e49034b16d": {
+    "name": "Smoldering Marsh",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.37
+  },
+  "e6741f53-f02e-4f1b-9620-e49ad00e7e1d": {
+    "name": "Smoldering Spires",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.32
+  },
+  "ce561d66-bdfd-408f-bf5b-49b4a53d3807": {
+    "name": "Snow-Covered Forest",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 2.7
+  },
+  "16eb4c0a-962a-4df9-8101-a6baabfa80db": {
+    "name": "Snow-Covered Island",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 3.35
+  },
+  "c55fd65e-7701-447f-a42b-942eadccae3d": {
+    "name": "Snow-Covered Mountain",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 1.84
+  },
+  "8f6a631b-e3e7-4647-825e-c0b6aeff76df": {
+    "name": "Snow-Covered Plains",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 2.46
+  },
+  "632e2c82-0122-4f87-bb83-88064fbb91ab": {
+    "name": "Snow-Covered Swamp",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 1.73
+  },
+  "3bce79b7-f964-4442-b3db-3ecffbba8d92": {
+    "name": "Snow-Covered Wastes",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.08
+  },
+  "3c6e17f2-b1e4-4189-a02f-92fa4b13a1ed": {
+    "name": "Snowfield Sinkhole",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.4
+  },
+  "651a1a4f-bdaa-44d6-ac45-050894788063": {
+    "name": "Soaring Seacliff",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.29
+  },
+  "4fe29050-54cd-44d7-90a9-b34cfff8ef93": {
+    "name": "Sodden Verdure",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.47
+  },
+  "7f2b6fff-adf9-4529-ba48-1055a775e423": {
+    "name": "Sokenzan, Crucible of Defiance",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": null
+  },
+  "4678132d-85bc-49cc-b3be-62cf709de42b": {
+    "name": "Soldevi Excavations",
+    "produced_mana": [
+      "C",
+      "U"
+    ],
+    "usd": null
+  },
+  "782ca27f-9f18-476c-b582-89c06fb2e322": {
+    "name": "Song-Mad Treachery // Song-Mad Ruins",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.23
+  },
+  "61f78b87-c861-4cd4-9b0a-a09396d51e6c": {
+    "name": "Sorrow's Path",
+    "produced_mana": [],
+    "usd": null
+  },
+  "4620f95e-fc95-4643-ba11-7f9116176253": {
+    "name": "Soulstone Sanctuary",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.32
+  },
+  "67daa31c-d9c4-4c22-b29c-1b8a17d577e5": {
+    "name": "Soured Springs",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.29
+  },
+  "3f8e22fd-3ff1-47f7-b2e5-c00c9dcb19a3": {
+    "name": "Spara's Headquarters",
+    "produced_mana": [
+      "G",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "2c1059b9-99da-47ce-a013-84ad755fda11": {
+    "name": "Spawning Bed",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "495bec8c-20d1-4133-92eb-a1e405026e4f": {
+    "name": "Spawning Pool",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 2.72
+  },
+  "a0a66f7b-eab4-45da-8895-c2c2c7eb05f8": {
+    "name": "Spectacle Summit",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.18
+  },
+  "2ad21db5-5189-4d57-b399-0d1c415c0922": {
+    "name": "Spectator Seating",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": null
+  },
+  "a69541db-3f4e-412f-aa8e-dec1e74f74dc": {
+    "name": "Spikefield Hazard // Spikefield Cave",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.39
+  },
+  "11e4ba4b-62d1-43ed-82e8-cd45d7a62c65": {
+    "name": "Spinerock Knoll",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 1.36
+  },
+  "48444c3e-2068-4961-a9cd-9398052e5bd6": {
+    "name": "Spire Garden",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 5.18
+  },
+  "35e9ec06-a848-4230-84a2-19cb8034e0f0": {
+    "name": "Spire of Industry",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "3981a660-5174-4334-801e-90fc0e1a7bdb": {
+    "name": "Spirebluff Canal",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 4.74
+  },
+  "035438b1-f794-41e5-9e2b-bc5136766cd5": {
+    "name": "Springjack Pasture",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.87
+  },
+  "33535dbf-203b-44c9-be20-67fafa0927ee": {
+    "name": "Spymaster's Vault",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 1.76
+  },
+  "c9c34c85-a4ab-4510-9ec2-a8214a4f4414": {
+    "name": "Stalking Stones",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.18
+  },
+  "f5774836-0140-420a-9a0f-8ba291cc5ca8": {
+    "name": "Starlit Sanctum",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.31
+  },
+  "7cf8d52a-d503-4285-a909-380c3c619f91": {
+    "name": "Starting Town",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 49.0
+  },
+  "4254f9a9-b07f-47fa-85cf-2df86b078df0": {
+    "name": "Steam Vents",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 11.4
+  },
+  "4c936ea7-8802-4ae7-9d85-4b873cbd56ce": {
+    "name": "Stensia Bloodhall",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.26
+  },
+  "02c54350-36ad-4d09-9e01-a5ffc7fef54c": {
+    "name": "Stirring Wildwood",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 5.02
+  },
+  "3ba7e782-3c6a-4f3b-b00d-cf982ad31376": {
+    "name": "Stomping Ground",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 22.88
+  },
+  "16e66e29-ef63-4faa-b60f-8a128800e093": {
+    "name": "Stone Quarry",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "853c8df2-75b2-403e-87a4-5e5aa43a31b8": {
+    "name": "Storm the Vault // Vault of Catlacan",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 15.74
+  },
+  "36f6c636-3539-494f-abf9-62ea00fcedfd": {
+    "name": "Stormcarved Coast",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 3.02
+  },
+  "c1ce9250-bdbe-4c77-9243-6db9ffffe69b": {
+    "name": "Strangled Cemetery",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.22
+  },
+  "a7143aa7-b16d-4e63-910c-6ceec55483f3": {
+    "name": "Strength of the Harvest // Haven of the Harvest",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.37
+  },
+  "320287cb-b612-469c-a9e8-ac0cb2d93676": {
+    "name": "Strip Mine",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 110.99
+  },
+  "c694bc39-3eae-4b40-8f85-34785f9e75f1": {
+    "name": "Study",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.41
+  },
+  "93f812bc-7663-4504-b566-79e2c0a0f845": {
+    "name": "Study Hall",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.22
+  },
+  "49974246-0a3b-4ec9-b5ea-2a89df9bb0b5": {
+    "name": "Stump Stomp // Burnwillow Clearing",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.36
+  },
+  "78f04f32-f672-443a-86c0-63f5f4747c67": {
+    "name": "Submerged Boneyard",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.19
+  },
+  "edc199d1-970b-489f-b713-8285151f16ae": {
+    "name": "Subterranean Hangar",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.44
+  },
+  "467df77a-a99c-4cfd-9af4-502eaa2eb2e3": {
+    "name": "Suburban Sanctuary",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.16
+  },
+  "56a6df05-f4e4-40d9-a701-6d5adb7ce9fd": {
+    "name": "Sulfur Falls",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.35
+  },
+  "22c66ed6-55fb-4c65-aac4-26d9cc3053b8": {
+    "name": "Sulfur Vent",
+    "produced_mana": [
+      "B",
+      "R",
+      "U"
+    ],
+    "usd": 0.28
+  },
+  "35ebe245-ebb5-493c-b9c1-56fbfda9bd66": {
+    "name": "Sulfurous Mire",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.33
+  },
+  "eedb9df2-20d3-4cfd-8aed-336edc37d5a9": {
+    "name": "Sulfurous Springs",
+    "produced_mana": [
+      "B",
+      "C",
+      "R"
+    ],
+    "usd": 0.96
+  },
+  "ae04c862-095f-41d2-8aef-21036d5a0cdc": {
+    "name": "Sun-Blessed Peak",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.26
+  },
+  "e9e69236-3a67-449f-8591-094ef78da6e7": {
+    "name": "Sunbaked Canyon",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 3.18
+  },
+  "94ed132f-b818-4dbf-9b4a-e5acb067e0a4": {
+    "name": "Sunbillow Verge",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 10.63
+  },
+  "50686ac7-346c-43d1-bdaa-28d46a12ad93": {
+    "name": "Sundering Eruption // Volcanic Fissure",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 1.02
+  },
+  "ac70c9ae-5115-46db-9ef8-05c475c88154": {
+    "name": "Sundown Pass",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 2.6
+  },
+  "81e28e36-893f-4b34-aef7-5f2c15dc231c": {
+    "name": "Sungrass Prairie",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.33
+  },
+  "4ebb97da-e4d5-41ba-9a70-2a1de91f513c": {
+    "name": "Sunhome, Fortress of the Legion",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.37
+  },
+  "16d147fe-1411-4c46-9afd-6e2b7612c0a5": {
+    "name": "Sunken Citadel",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 4.83
+  },
+  "7ab0a5f2-5260-403d-9522-954efc91e96d": {
+    "name": "Sunken Hollow",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.38
+  },
+  "2614a5f6-f8b2-499d-bca2-677b980d3a97": {
+    "name": "Sunken Palace",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.35
+  },
+  "2dbd21b1-d6cf-4d10-8a31-aa52208c95d7": {
+    "name": "Sunken Ruins",
+    "produced_mana": [
+      "B",
+      "C",
+      "U"
+    ],
+    "usd": 3.38
+  },
+  "fa447616-db24-4729-bf66-7f72aba0272d": {
+    "name": "Sunlit Marsh",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.21
+  },
+  "f565f893-a59d-4246-995e-6bf65ab438d8": {
+    "name": "Sunpetal Grove",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": null
+  },
+  "38ba5598-ca5c-42da-83d7-b22243c8704e": {
+    "name": "Sunscorched Desert",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "eae999f9-9c58-4609-8ade-aca0acf07519": {
+    "name": "Sunscorched Divide",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.29
+  },
+  "0cccd328-457a-48ab-97fb-4bc319db2e60": {
+    "name": "Suppression Ray // Orderly Plaza",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "0b02149a-4a8f-4be9-9944-3d216248b549": {
+    "name": "Surtland Frostpyre",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.16
+  },
+  "7120095d-8c94-4e22-9602-678bce38c997": {
+    "name": "Survivors' Encampment",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.34
+  },
+  "1fd62e02-fb02-4ee9-b76f-5d191fd0654a": {
+    "name": "Susur Secundi, Void Altar",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 8.73
+  },
+  "ffe08b0f-bb53-40b9-8057-10b60070459b": {
+    "name": "Svogthos, the Restless Tomb",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.37
+  },
+  "82fc6856-c964-4336-b3bd-b802bb4572fe": {
+    "name": "Svyelunite Temple",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.75
+  },
+  "e9ca6518-aa90-4614-86aa-b972f60cce49": {
+    "name": "Swamp",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 5.5
+  },
+  "2b4ee0e7-7528-4fdc-a768-055d2c097f05": {
+    "name": "Swarmyard",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.91
+  },
+  "ca53fb19-b8ca-485b-af1a-5117ae54bfe3": {
+    "name": "Swiftwater Cliffs",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.12
+  },
+  "8817a1d6-ef39-4e7c-8277-74aea012803b": {
+    "name": "TCRI Building",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.14
+  },
+  "6c44f71f-4125-4ad8-8342-b848c9115cdf": {
+    "name": "Taiga",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 225.76
+  },
+  "c6eeab6f-a738-4005-91c2-a5f81df5c569": {
+    "name": "Tainted Field",
+    "produced_mana": [
+      "B",
+      "C",
+      "W"
+    ],
+    "usd": 0.36
+  },
+  "70e8e7e2-e9ea-4358-805e-c5110c8d8443": {
+    "name": "Tainted Isle",
+    "produced_mana": [
+      "B",
+      "C",
+      "U"
+    ],
+    "usd": 0.84
+  },
+  "7e6f1a55-0fec-4b94-9640-9110ca8d0212": {
+    "name": "Tainted Peak",
+    "produced_mana": [
+      "B",
+      "C",
+      "R"
+    ],
+    "usd": 0.53
+  },
+  "3da7ab6b-b10a-4786-b1eb-92de7e66690e": {
+    "name": "Tainted Wood",
+    "produced_mana": [
+      "B",
+      "C",
+      "G"
+    ],
+    "usd": 0.3
+  },
+  "332413fc-3f32-4741-8c6d-c26290be491f": {
+    "name": "Takenuma, Abandoned Mire",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": null
+  },
+  "c565f8fe-acf7-40dd-8100-8f692d1e232c": {
+    "name": "Talon Gates of Madara",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 18.25
+  },
+  "235d1ffc-72aa-40a2-95dc-3f6a8d495061": {
+    "name": "Tangled Florahedron // Tangled Vale",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.39
+  },
+  "bb1920f1-aab3-4066-8be9-029102886d03": {
+    "name": "Tangled Islet",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.27
+  },
+  "2adf277c-945e-49b4-88d7-ac720863d0d6": {
+    "name": "Tanglepool Bridge",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.31
+  },
+  "b6ef413a-467a-4f54-a2c7-06baecd5f310": {
+    "name": "Tarnation Vista",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.61
+  },
+  "dd632fa3-3a44-43ca-8810-d4e31c3a3774": {
+    "name": "Tarnished Citadel",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 5.44
+  },
+  "3577ac1a-7c14-4463-a8c0-530f37f3d935": {
+    "name": "Tarrian's Journal // The Tomb of Aclazotz",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.62
+  },
+  "02174040-f292-468b-9aa6-4bd468b38cf9": {
+    "name": "Tectonic Edge",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.35
+  },
+  "cff92ab6-97bc-451b-a509-a1202fdcc5cc": {
+    "name": "Teetering Peaks",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": null
+  },
+  "b6ed7ca8-fd91-46e3-9149-a3de23c7078e": {
+    "name": "Teferi's Isle",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 11.56
+  },
+  "6cdd2a74-63b3-4ff2-9c5a-a85dee63c3c9": {
+    "name": "Temple Garden",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 8.02
+  },
+  "d2ce0759-6b24-41a6-8a24-16cf44dfc162": {
+    "name": "Temple of Abandon",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.29
+  },
+  "ca93efca-93a0-4307-b004-ec74ad9841fc": {
+    "name": "Temple of Deceit",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.36
+  },
+  "dd139d4d-3a40-4015-93de-c838c64156c6": {
+    "name": "Temple of Enlightenment",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.29
+  },
+  "cc63cd97-de9e-4d31-babb-aaad1277169e": {
+    "name": "Temple of Epiphany",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.26
+  },
+  "1ca36218-db87-4e44-8606-2a516504ed20": {
+    "name": "Temple of Malady",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.3
+  },
+  "d78eccc4-1500-43f1-94f5-b39c160b6381": {
+    "name": "Temple of Malice",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.26
+  },
+  "258077cf-edef-40fe-ab46-03c965ebe990": {
+    "name": "Temple of Mystery",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.24
+  },
+  "04dc78e1-50d8-493a-9c1f-9c1d95343fff": {
+    "name": "Temple of Plenty",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "f7d3770f-cde6-4e29-8cbf-fe841634a5d7": {
+    "name": "Temple of Silence",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.23
+  },
+  "d0e763f7-25b8-444f-8722-614297d0663f": {
+    "name": "Temple of Triumph",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.23
+  },
+  "91658f56-12c9-4173-94ad-dfd186b1dbae": {
+    "name": "Temple of the Dragon Queen",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.27
+  },
+  "1024f555-e0d7-48ac-b86e-c87290eac832": {
+    "name": "Temple of the False God",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.28
+  },
+  "929961bf-c866-4ed8-a552-b261ecd5f2fb": {
+    "name": "Tendo Ice Bridge",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.34
+  },
+  "9029f22b-f153-4f9a-a60f-ba2d0b6e0a1d": {
+    "name": "Terminal Moraine",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.17
+  },
+  "4bdd6634-6de1-4938-9038-317c15c8bfc7": {
+    "name": "Terrain Generator",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 8.52
+  },
+  "9a4c5629-fadd-42b9-850f-9f8586a2ca50": {
+    "name": "Terramorphic Expanse",
+    "produced_mana": [],
+    "usd": 0.22
+  },
+  "8522c51f-9126-41eb-84b5-f8489c7ad7ff": {
+    "name": "Thalakos Lowlands",
+    "produced_mana": [
+      "C",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "9e60b262-f8cb-4f6b-95e4-acff4ee15df3": {
+    "name": "Thaumatic Compass // Spires of Orazca",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.72
+  },
+  "397facec-f473-45a5-a4ce-02cb56e7bfab": {
+    "name": "Thawing Glaciers",
+    "produced_mana": [],
+    "usd": null
+  },
+  "c16f96f5-a2a6-4ac4-bdae-326cee92bf2e": {
+    "name": "The Autonomous Furnace",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 0.15
+  },
+  "6b82a139-c7e1-43dd-8815-aaf25c8743ff": {
+    "name": "The Biblioplex",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "e9c5dce8-b67f-41cd-b96c-67e49833a96f": {
+    "name": "The Black Gate",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 21.69
+  },
+  "19d469f1-2219-4466-9f8a-769ee43e28db": {
+    "name": "The Dross Pits",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.2
+  },
+  "581327f5-6e79-4720-9695-198b287a92bb": {
+    "name": "The Everflowing Well // The Myriad Pools",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.56
+  },
+  "01d6ba55-7bc0-41c6-84be-8cd528e46a05": {
+    "name": "The Fair Basilica",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "5363c881-443d-43df-afd8-f81e1a1741a2": {
+    "name": "The Gold Saucer",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.32
+  },
+  "c49ed25a-5832-41df-a4f0-f43ad75da73f": {
+    "name": "The Grey Havens",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.48
+  },
+  "6389c242-2139-4f12-af30-2b080a1c5e83": {
+    "name": "The Hunter Maze",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.14
+  },
+  "1469fe76-f7e9-48a2-85de-d4d02856cd00": {
+    "name": "The Monumental Facade",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.22
+  },
+  "0a6f0408-6758-495f-9d6c-7686a1542fbd": {
+    "name": "The Mycosynth Gardens",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.34
+  },
+  "186e2807-3e17-49dc-9b8e-ff6c9699183e": {
+    "name": "The Seedcore",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.75
+  },
+  "090198e8-6323-4d14-9efb-f27188e96c36": {
+    "name": "The Shire",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 4.16
+  },
+  "acb6a9c1-fdc5-4148-9798-c48f7fa8bdd7": {
+    "name": "The Surgical Bay",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.41
+  },
+  "68c7531b-d205-4ae2-ab82-b038dfb00c4e": {
+    "name": "The Tabernacle at Pendrell Vale",
+    "produced_mana": [],
+    "usd": null
+  },
+  "3cb15155-9bd8-4062-aa81-de275748faf2": {
+    "name": "The World Tree",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 29.96
+  },
+  "f55d8c6a-210a-4c89-91e7-e02679544c62": {
+    "name": "Thespian's Stage",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 5.12
+  },
+  "13e96e38-22e3-4e85-a323-4d0ce45ed5b9": {
+    "name": "Thornglint Bridge",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "7e1cdc03-6faa-4138-9a52-caafbe34fb59": {
+    "name": "Thornspire Verge",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 5.42
+  },
+  "ebb502c2-5fd0-46a9-b77d-010f4a942056": {
+    "name": "Thornwood Falls",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.15
+  },
+  "4a6bec46-1acd-4726-b8d9-3045ac6a2ea2": {
+    "name": "Thousand Moons Smithy // Barracks of the Thousand",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 2.37
+  },
+  "726c8110-9294-4a77-b1cd-6488e098dc5b": {
+    "name": "Thran Portal",
+    "produced_mana": [],
+    "usd": null
+  },
+  "3f6b5c22-d084-4df7-8c04-cc32116394f6": {
+    "name": "Thran Quarry",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 3.14
+  },
+  "06008bcb-ce6b-482c-9253-f5b9b5e0718e": {
+    "name": "Three Tree City",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 40.64
+  },
+  "8a6d17e6-c7f3-4433-a3f2-82076fb10031": {
+    "name": "Thriving Bluff",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.28
+  },
+  "26cb32c5-83b8-4288-ae2d-788cdc4e6445": {
+    "name": "Thriving Grove",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.19
+  },
+  "13348735-d12e-4858-989f-a74c031ed518": {
+    "name": "Thriving Heath",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.2
+  },
+  "90bf15bd-4167-4a66-8729-73af5c65692a": {
+    "name": "Thriving Isle",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.31
+  },
+  "b7c7d0c0-ada6-4c89-b47b-977e35e67b39": {
+    "name": "Thriving Moor",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.24
+  },
+  "983f9661-9c08-400a-a30e-ef84d603ccd1": {
+    "name": "Throne of Makindi",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "fdf6eb1d-aea4-4705-acbe-b428ad8616aa": {
+    "name": "Throne of the High City",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.3
+  },
+  "17260fff-b239-4af4-9306-3236ae3fa5a5": {
+    "name": "Thundering Falls",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 16.09
+  },
+  "dd47ccf1-500c-4553-9f25-d8a192a65c4e": {
+    "name": "Timber Gorge",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.18
+  },
+  "dd2e8770-c72b-439c-8f79-3aa24646cdd5": {
+    "name": "Timberland Ruins",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.19
+  },
+  "87cc2fc9-0a24-4ac1-afcc-9317b90c7178": {
+    "name": "Timberline Ridge",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.99
+  },
+  "989b5901-aeb0-4a48-8c53-3b0ec0e0deba": {
+    "name": "Tinder Farm",
+    "produced_mana": [
+      "G",
+      "R",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "a9ab41c8-3ee2-4676-9b8b-20c34d9f5f21": {
+    "name": "Titan's Grave",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.17
+  },
+  "bbb5d40b-f0e1-4e98-b4d3-1ee2cfa5b579": {
+    "name": "Tocasia's Dig Site",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.27
+  },
+  "d43c01b7-443d-4061-a934-6863d230c9b8": {
+    "name": "Tolaria",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 7.07
+  },
+  "42dfc4d1-7043-4859-b177-8ad4027ef835": {
+    "name": "Tolaria West",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.42
+  },
+  "5ffd1a43-5613-4058-9e51-fd3cc1585651": {
+    "name": "Tomb Fortress",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 4.82
+  },
+  "90fedf90-825c-4814-8f0d-170f537db44c": {
+    "name": "Tomb of Urami",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 4.04
+  },
+  "c5c2da3e-5e82-4236-b866-93bec88d86b0": {
+    "name": "Tomb of the Spirit Dragon",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.65
+  },
+  "cd438d51-a778-4b38-8b4b-a6a9cd9b4b22": {
+    "name": "Tournament Grounds",
+    "produced_mana": [
+      "B",
+      "C",
+      "R",
+      "W"
+    ],
+    "usd": 0.31
+  },
+  "0743db09-bf73-4d56-8c0c-7834cb535055": {
+    "name": "Tower of the Magistrate",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.78
+  },
+  "12e601d1-cf31-4077-b3ad-e13dfce4dac3": {
+    "name": "Training Center",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 22.25
+  },
+  "688c5428-0ec0-4778-801b-a5ea83c88691": {
+    "name": "Tramway Station",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.15
+  },
+  "1c4efa6c-4f29-41cd-a728-bf0e479ace05": {
+    "name": "Tranquil Cove",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.15
+  },
+  "7fcf94e9-d370-458f-8bc4-66609f8b6b91": {
+    "name": "Tranquil Expanse",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.1
+  },
+  "112b6577-fbd6-46dd-b77d-37df0abe9845": {
+    "name": "Tranquil Garden",
+    "produced_mana": [
+      "C",
+      "G",
+      "W"
+    ],
+    "usd": 0.2
+  },
+  "113f48b9-a972-4e2c-af95-05ab078e01f2": {
+    "name": "Tranquil Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.26
+  },
+  "7aed7d9d-d796-493e-98fd-c5b1a26621ed": {
+    "name": "Tranquil Thicket",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.26
+  },
+  "a0baaa39-7fce-4feb-9118-b1d6bc24f548": {
+    "name": "Transguild Promenade",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.37
+  },
+  "2018a8e6-7699-440f-94d5-91cf6ac3edb5": {
+    "name": "Treasure Map // Treasure Cove",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.53
+  },
+  "f183b2d3-961a-499a-aa04-595793f01edc": {
+    "name": "Treasure Vault",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.93
+  },
+  "d6428f62-7242-4ed2-ac43-6dd2f8d974e1": {
+    "name": "Tree of Tales",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": null
+  },
+  "bf5bc68e-8416-431d-8a5a-f9ebca24721a": {
+    "name": "Treetop Village",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.56
+  },
+  "4afcabf8-8f84-489d-8496-5bec55b351bd": {
+    "name": "Trenchpost",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.45
+  },
+  "f6285535-bc44-4274-a886-b14d7c7aaba8": {
+    "name": "Treno, Dark City",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.21
+  },
+  "0d0b3429-e42f-4eb7-acd5-8fddf100f0c4": {
+    "name": "Trenzalore Clocktower",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 2.36
+  },
+  "4bd8fe2c-2297-4e19-8a87-01eb99b8c6dc": {
+    "name": "Tresserhorn Sinks",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.52
+  },
+  "4f39366c-00df-4528-a324-6a89d0c53f0a": {
+    "name": "Treva's Ruins",
+    "produced_mana": [
+      "G",
+      "U",
+      "W"
+    ],
+    "usd": 0.3
+  },
+  "2d9d4f2e-5a41-410d-b1c3-47e4aca07177": {
+    "name": "Tropical Island",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 312.5
+  },
+  "05ab141b-ba27-4127-a973-ff0cd72d2c64": {
+    "name": "Tundra",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 542.37
+  },
+  "9737159b-256c-4004-ba5f-0417c35e1b30": {
+    "name": "Turbulent Fen",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 7.54
+  },
+  "7e96f1dd-71e7-48c0-80aa-c7f49588af9c": {
+    "name": "Turbulent Moor",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 7.87
+  },
+  "526d3add-b87f-42ba-957b-879fb8fea792": {
+    "name": "Turbulent Springs",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 5.3
+  },
+  "a138b2e9-9665-4544-866a-8672ddab79fc": {
+    "name": "Turbulent Steppe",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 6.17
+  },
+  "aa9c37ec-7f03-44b7-b973-9ae5edff3149": {
+    "name": "Turbulent Wilderness",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 7.73
+  },
+  "d0c5c07b-df81-4941-ae7e-2d38e317059d": {
+    "name": "Turntimber Grove",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.17
+  },
+  "4da2428b-bc93-4612-a59e-eb0f8ac9f080": {
+    "name": "Turntimber Symbiosis // Turntimber, Serpentine Wood",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": null
+  },
+  "c50c4580-979b-4863-86b9-16e258198972": {
+    "name": "Turtle Lair",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.23
+  },
+  "3cc8186b-b46f-46c0-8dfb-9e423e430048": {
+    "name": "Twilight Mire",
+    "produced_mana": [
+      "B",
+      "C",
+      "G"
+    ],
+    "usd": 0.39
+  },
+  "0d647d67-f963-43b4-ade8-6c90e91f65ac": {
+    "name": "Twisted Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.74
+  },
+  "3cdf691e-96a5-45c7-9b94-6f04af81c8e4": {
+    "name": "Twists and Turns // Mycoid Maze",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.24
+  },
+  "27906645-7d43-4c18-a20b-8d683069351e": {
+    "name": "Tyrite Sanctum",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.98
+  },
+  "6579cb87-70fe-43ff-8a1a-f7fb89da6aaa": {
+    "name": "Ugin's Labyrinth",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 12.24
+  },
+  "890eee8d-a339-4143-adfa-1b17ec10c099": {
+    "name": "Umara Wizard // Umara Skyfalls",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 0.21
+  },
+  "15848965-01a8-48bf-aa61-8a753339c761": {
+    "name": "Umbral Expanse",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 0.52
+  },
+  "172cd5b7-98fc-4add-b858-a0b3dfb75c19": {
+    "name": "Uncharted Haven",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.13
+  },
+  "7f5ad03d-77ae-4e06-96f2-4f03bdfbb226": {
+    "name": "Unclaimed Territory",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.37
+  },
+  "19545db3-8be5-41e5-8d13-dec4f96fe624": {
+    "name": "Undercity Sewers",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 10.73
+  },
+  "980b1d7c-305c-4096-b289-3b49911e618a": {
+    "name": "Underdark Rift",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.12
+  },
+  "0d8938e4-bfa5-47e1-8c71-9c6583346300": {
+    "name": "Underground Mortuary",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 22.93
+  },
+  "c219a41a-d5f4-42f3-841c-2518be583198": {
+    "name": "Underground River",
+    "produced_mana": [
+      "B",
+      "C",
+      "U"
+    ],
+    "usd": 1.53
+  },
+  "28dee88a-8961-4bf7-8eb2-3d9ae2dab5de": {
+    "name": "Underground Sea",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": null
+  },
+  "f25aa8aa-e2f7-4634-8a96-2082e76c6503": {
+    "name": "Undergrowth Stadium",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 5.66
+  },
+  "22031e8d-3e9d-4b63-bc6d-f03e316a4e0a": {
+    "name": "Undiscovered Paradise",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": null
+  },
+  "9de534ff-fb48-4692-bd0f-dd237ca28502": {
+    "name": "Unholy Citadel",
+    "produced_mana": [],
+    "usd": 5.63
+  },
+  "e29031f5-19c7-49d7-bd05-01d151592f4a": {
+    "name": "Unholy Grotto",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.84
+  },
+  "2752f21c-f535-4772-a8b3-e97e1339e9c9": {
+    "name": "University Campus",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.16
+  },
+  "492181e4-5825-45d4-b8a1-37f29c32a845": {
+    "name": "Unknown Shores",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.07
+  },
+  "4b182723-afb3-4e17-ae55-89be1b9208c9": {
+    "name": "Unstable Frontier",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.14
+  },
+  "3c571f66-7a00-4cb0-9da9-8271083f49d3": {
+    "name": "Untaidake, the Cloud Keeper",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 5.66
+  },
+  "2581f320-8238-413d-ab04-d5535da55630": {
+    "name": "Urban Retreat",
+    "produced_mana": [
+      "G",
+      "U",
+      "W"
+    ],
+    "usd": 0.55
+  },
+  "0de4df3c-ac5a-4cff-9fbc-9269991224f9": {
+    "name": "Urborg",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 17.42
+  },
+  "24f9ca82-296a-458c-8707-2e4681c69bf9": {
+    "name": "Urborg Volcano",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.18
+  },
+  "69c0ade8-3bdc-4cc6-868b-1a5cf9de70ee": {
+    "name": "Urborg, Tomb of Yawgmoth",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": null
+  },
+  "926916ed-2f22-4ba9-9427-194886ad6c1e": {
+    "name": "Urza's Cave",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.01
+  },
+  "73d9f428-8ce0-4a73-ac38-2dcbdcf12584": {
+    "name": "Urza's Factory",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.35
+  },
+  "32dbc719-d8aa-47ff-b7ea-20adadc99ec7": {
+    "name": "Urza's Mine",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.62
+  },
+  "5e5786d5-355d-454c-b09b-e307a7a324d4": {
+    "name": "Urza's Power Plant",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.5
+  },
+  "3ec5d76d-58c0-4525-be90-b37f4a97e14c": {
+    "name": "Urza's Saga",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 461.37
+  },
+  "7693a698-65be-4d85-8b9d-c02c1596b99d": {
+    "name": "Urza's Tower",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.49
+  },
+  "9a780ffe-7876-44b1-b888-29debc92683d": {
+    "name": "Urza's Workshop",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "11da39d6-cfa6-498d-91b1-11454cc7e5a3": {
+    "name": "Uthros, Titanic Godcore",
+    "produced_mana": [
+      "U"
+    ],
+    "usd": 10.01
+  },
+  "d30207c9-a067-43e1-af73-105369498e4c": {
+    "name": "Valakut Awakening // Valakut Stoneforge",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": null
+  },
+  "d95cd0be-5a70-4402-8e53-04151d6652e1": {
+    "name": "Valakut, the Molten Pinnacle",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 11.32
+  },
+  "34c56d64-45a7-4385-a754-5e0793889c9d": {
+    "name": "Valgavoth's Lair",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 2.16
+  },
+  "b96daf2a-9065-484b-a078-c6ee5a0281ed": {
+    "name": "Vance's Blasting Cannons // Spitfire Bastion",
+    "produced_mana": [
+      "R"
+    ],
+    "usd": 2.71
+  },
+  "3a7fd24e-84d8-405d-86e4-0571a9e23cc2": {
+    "name": "Vastwood Fortification // Vastwood Thicket",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.22
+  },
+  "0be7c23e-312d-4b20-9bb7-0344a73acac9": {
+    "name": "Vault of Champions",
+    "produced_mana": [
+      "B",
+      "W"
+    ],
+    "usd": 17.54
+  },
+  "62d35729-de2c-44d8-b274-3eb2394563f3": {
+    "name": "Vault of Whispers",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 4.66
+  },
+  "8f203f04-bd73-4d88-bb5e-aab63507dbd1": {
+    "name": "Vault of the Archangel",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.5
+  },
+  "17579dbd-e8dd-49f0-83df-25dd78691c4a": {
+    "name": "Vec Townships",
+    "produced_mana": [
+      "C",
+      "G",
+      "W"
+    ],
+    "usd": null
+  },
+  "10e5648e-4884-41e3-95f8-c76f6bca01e2": {
+    "name": "Vector, Imperial Capital",
+    "produced_mana": [
+      "B",
+      "R"
+    ],
+    "usd": 0.21
+  },
+  "987534fb-74a9-46a3-805f-fe2fe2df4a90": {
+    "name": "Veldt",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 1.2
+  },
+  "b856e2f2-444b-45a0-ae76-9011960193a1": {
+    "name": "Verdant Catacombs",
+    "produced_mana": [],
+    "usd": 296.12
+  },
+  "0466cf57-bb3e-4359-8fe8-d6cc1288fdc6": {
+    "name": "Vernal Fen",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.46
+  },
+  "2671eaa1-e6d5-4b70-a36c-3c7765695f1b": {
+    "name": "Vesuva",
+    "produced_mana": [],
+    "usd": 4.56
+  },
+  "b5e7cdb4-7b4d-4c6c-b016-d6cd3f9a04f2": {
+    "name": "Vibrant Cityscape",
+    "produced_mana": [],
+    "usd": 0.32
+  },
+  "445bd162-b523-45f4-83d0-ffc702fc1fac": {
+    "name": "Vineglimmer Snarl",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.24
+  },
+  "54d852fc-0f3a-4791-a147-b21ca6964763": {
+    "name": "Viridescent Bog",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.34
+  },
+  "5630193b-4956-4f64-9dae-7aa7452d8989": {
+    "name": "Vitu-Ghazi, the City-Tree",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.33
+  },
+  "da397243-2193-4e5d-8dee-df37b70677e7": {
+    "name": "Vivid Crag",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.64
+  },
+  "c9082527-aa88-42f7-b2f2-de21878cb179": {
+    "name": "Vivid Creek",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.35
+  },
+  "12ccc686-bbaa-4c34-a7b8-a1e763fe0ad0": {
+    "name": "Vivid Grove",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.38
+  },
+  "b71b3df3-e188-45bb-8dc8-53fd4d527735": {
+    "name": "Vivid Marsh",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.46
+  },
+  "625a42b4-d88c-48e0-96b1-77388ca48810": {
+    "name": "Vivid Meadow",
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.4
+  },
+  "d9a42082-615c-4387-a77c-97ee94153c57": {
+    "name": "Volatile Fault",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.33
+  },
+  "f2392fbb-d9c4-4688-b99c-4e7614c60c12": {
+    "name": "Volatile Fjord",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 0.97
+  },
+  "99838769-ada3-48ff-9acd-09b44cf188b3": {
+    "name": "Volcanic Island",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": null
+  },
+  "dd0ee2f1-d5be-4f60-a128-7011eef71f11": {
+    "name": "Voldaren Estate",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 1.85
+  },
+  "f465ae5f-61f0-42c4-978f-841ba1226f56": {
+    "name": "Volrath's Stronghold",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "42defc87-d1b2-4d7d-bf41-2d9b8f73364b": {
+    "name": "Wandering Fumarole",
+    "produced_mana": [
+      "R",
+      "U"
+    ],
+    "usd": 5.3
+  },
+  "934bd7eb-4f35-470b-92e9-245ad22b8cef": {
+    "name": "Wanderwine Hub",
+    "produced_mana": [
+      "U",
+      "W"
+    ],
+    "usd": 0.67
+  },
+  "0775b4be-881c-4832-8954-d961064315b6": {
+    "name": "War Room",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 2.37
+  },
+  "2a212bd9-657d-4a43-a276-80805314b938": {
+    "name": "Warped Landscape",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.29
+  },
+  "96ad119e-d609-466b-8c2b-d540c3c11984": {
+    "name": "Wasteland",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 44.17
+  },
+  "baf8f4f2-9f25-4cd2-8d78-1041e134aeac": {
+    "name": "Wastes",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.58
+  },
+  "0001b4a6-10bf-4bdd-a9da-fe78d9d39a82": {
+    "name": "Wastewood Verge",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 8.66
+  },
+  "aa8e3add-48d4-4330-9a5c-28f3f4defaf8": {
+    "name": "Waterfront District",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.13
+  },
+  "6631b9b3-57fb-45d0-94fc-7d07556c8f7f": {
+    "name": "Waterlogged Grove",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 4.14
+  },
+  "060f9675-4921-4cbb-bae2-54c85c679fd4": {
+    "name": "Waterlogged Teachings // Inundated Archive",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 0.43
+  },
+  "405805e0-07f6-420f-86f9-5bde822caa5c": {
+    "name": "Waterveil Cavern",
+    "produced_mana": [
+      "B",
+      "C",
+      "U"
+    ],
+    "usd": 0.21
+  },
+  "5b8170dc-6a90-46fc-9989-7575f3d402b5": {
+    "name": "Watery Grave",
+    "produced_mana": [
+      "B",
+      "U"
+    ],
+    "usd": 10.9
+  },
+  "6d84e2d4-38bf-4d46-99a6-37c2dda66b16": {
+    "name": "Welcome to . . . // Jurassic Park",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 28.42
+  },
+  "5fbc6091-a161-45b0-9932-543b569caaee": {
+    "name": "Westvale Abbey // Ormendahl, Profane Prince",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 3.29
+  },
+  "24d1e22c-0d99-4ed5-94f0-fd055fd8e2be": {
+    "name": "White Lotus Hideout",
+    "produced_mana": [
+      "B",
+      "C",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "usd": 0.25
+  },
+  "4d3d48d1-a98e-40af-b04c-c40b9d52e9ee": {
+    "name": "Wild Roads",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 0.1
+  },
+  "38218d0f-4b70-45eb-a753-cdb44f94271c": {
+    "name": "Willowrush Verge",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 8.45
+  },
+  "4912e4d0-b16a-4aa6-a583-3430d26bd591": {
+    "name": "Wind-Scarred Crag",
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "usd": 0.16
+  },
+  "df441bae-3b9c-46a9-8287-870c00d58a64": {
+    "name": "Windbrisk Heights",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 0.29
+  },
+  "f26672a8-f4ff-4c64-bb3e-f5072bbc9e3e": {
+    "name": "Winding Canyons",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 31.64
+  },
+  "2227b1ba-78be-47ab-8dad-13233f4d4dfc": {
+    "name": "Windswept Heath",
+    "produced_mana": [],
+    "usd": 20.57
+  },
+  "c74024bd-b383-468d-9cf5-d112a29f6457": {
+    "name": "Windurst, Federation Center",
+    "produced_mana": [
+      "G",
+      "W"
+    ],
+    "usd": 0.18
+  },
+  "f07144a6-6e47-4315-8353-f8958f014f41": {
+    "name": "Wintermoon Mesa",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.46
+  },
+  "cf3f4954-ab60-44a9-b2d6-a4be598e8ce6": {
+    "name": "Wirewood Lodge",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 10.12
+  },
+  "62061e7c-cf19-4f03-b8fa-2bdba62d6b0b": {
+    "name": "Witch Enchanter // Witch-Blessed Meadow",
+    "produced_mana": [
+      "W"
+    ],
+    "usd": 3.1
+  },
+  "d2422e3e-a923-4516-b87c-cac748354dca": {
+    "name": "Witch's Clinic",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 13.43
+  },
+  "b87891cd-b457-4dff-8d18-a7eaf6748fc6": {
+    "name": "Witch's Cottage",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.89
+  },
+  "e5af06c8-86ab-4731-aa4a-2eec2c664488": {
+    "name": "Witherbloom Campus",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.27
+  },
+  "b30d026a-4bb4-4dd8-9786-e60ff8f02e3b": {
+    "name": "Wizards' School",
+    "produced_mana": [
+      "B",
+      "C",
+      "U",
+      "W"
+    ],
+    "usd": 1.99
+  },
+  "4040f465-9220-4e5d-98ff-7a13cec2dba2": {
+    "name": "Wooded Bastion",
+    "produced_mana": [
+      "C",
+      "G",
+      "W"
+    ],
+    "usd": 13.07
+  },
+  "3164be2f-28c9-4a33-bd70-d5089396538c": {
+    "name": "Wooded Foothills",
+    "produced_mana": [],
+    "usd": 29.79
+  },
+  "672b6ef0-a21a-4bf0-9058-58d9a353ed57": {
+    "name": "Wooded Ridgeline",
+    "produced_mana": [
+      "G",
+      "R"
+    ],
+    "usd": 0.25
+  },
+  "4d6f6c96-f813-4864-b4e1-b2a0aa8be1e8": {
+    "name": "Woodland Cemetery",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.39
+  },
+  "b2dd0b71-5a60-418c-82fc-f13d1b5075d0": {
+    "name": "Woodland Chasm",
+    "produced_mana": [
+      "B",
+      "G"
+    ],
+    "usd": 0.6
+  },
+  "679c4e48-5046-41cc-8cca-8d7dd4019f7b": {
+    "name": "Woodland Stream",
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "usd": 0.24
+  },
+  "6220c52f-870f-4b4f-bca9-b96887da850f": {
+    "name": "Xander's Lounge",
+    "produced_mana": [
+      "B",
+      "R",
+      "U"
+    ],
+    "usd": null
+  },
+  "f4c1500b-1f4c-4d33-810c-25e3bb0a4666": {
+    "name": "Yavimaya Coast",
+    "produced_mana": [
+      "C",
+      "G",
+      "U"
+    ],
+    "usd": 0.3
+  },
+  "d9fdbc02-7ab7-4f77-8a89-5a9e01eb32f5": {
+    "name": "Yavimaya Hollow",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": null
+  },
+  "14669860-96c6-4080-bc92-c5205f0b817a": {
+    "name": "Yavimaya, Cradle of Growth",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": null
+  },
+  "59c73f6c-3af6-4702-affd-6f2f2cd78091": {
+    "name": "Zagoth Triome",
+    "produced_mana": [
+      "B",
+      "G",
+      "U"
+    ],
+    "usd": null
+  },
+  "42788e7f-6db5-4a62-882d-0f8f74a94e32": {
+    "name": "Zanarkand, Ancient Metropolis // Lasting Fayth",
+    "produced_mana": [
+      "G"
+    ],
+    "usd": 5.62
+  },
+  "e653a3ff-d421-403b-9142-27fa02eabf31": {
+    "name": "Zhalfirin Void",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 1.58
+  },
+  "a2d06097-4b72-4351-a61f-bb57683bfbb7": {
+    "name": "Ziatora's Proving Ground",
+    "produced_mana": [
+      "B",
+      "G",
+      "R"
+    ],
+    "usd": null
+  },
+  "37f10035-bf05-460d-9390-433caa2570f4": {
+    "name": "Zoetic Cavern",
+    "produced_mana": [
+      "C"
+    ],
+    "usd": 0.29
+  },
+  "98496d5b-1519-4f0c-8b46-0a43be643dfb": {
+    "name": "Zof Consumption // Zof Bloodbog",
+    "produced_mana": [
+      "B"
+    ],
+    "usd": 0.16
+  }
+}
