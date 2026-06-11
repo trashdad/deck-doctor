@@ -28,7 +28,27 @@ export const useDeck = create<DeckState>((set) => ({
   add: (card) =>
     set((s) => {
       if (s.cards[card.id]) return s;
-      return { cards: { ...s.cards, [card.id]: { card, zone: autoZone(card) } } };
+      const zone = autoZone(card);
+      const cards = { ...s.cards, [card.id]: { card, zone } };
+
+      // Selecting a commander enforces Commander color-identity: any card whose
+      // color identity isn't a subset of the commander(s)' becomes illegal and is
+      // dropped. (Union of all Commanders-zone cards handles partner pairs.)
+      if (zone === "Commanders") {
+        const ci = new Set<string>();
+        for (const dc of Object.values(cards)) {
+          if (dc.zone === "Commanders") (dc.card.color_identity ?? []).forEach((c) => ci.add(c));
+        }
+        const legal = (c: Card) => (c.color_identity ?? []).every((col) => ci.has(col));
+        const prunedCards = Object.fromEntries(
+          Object.entries(cards).filter(([, dc]) => dc.zone === "Commanders" || legal(dc.card)),
+        );
+        const prunedBasics = Object.fromEntries(
+          Object.entries(s.basics).filter(([, be]) => legal(be.card)),
+        );
+        return { cards: prunedCards, basics: prunedBasics };
+      }
+      return { cards };
     }),
   remove: (id) =>
     set((s) => {

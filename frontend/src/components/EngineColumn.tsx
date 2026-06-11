@@ -1,5 +1,6 @@
 "use client";
 
+import type { ThemeInfo } from "@/lib/types";
 import type { Zone } from "@/lib/zones";
 import type { PileEntry } from "./CardPile";
 import { FieldSection } from "./FieldSection";
@@ -13,8 +14,12 @@ interface Props {
   engineKey: EngineKey;
   /** Display name for the engine (e.g. "Engine 1", "Neutral", or "" for single-column). */
   label?: string;
-  /** Theme label, e.g. "Aristocrats". Shown next to the engine name. */
+  /** Static theme label (e.g. "no engine" for the neutral column). */
   themeLabel?: string;
+  /** When provided, renders a theme picker in the header (used by e1/e2). */
+  themeValue?: string;
+  themeOptions?: ThemeInfo[];
+  onThemeChange?: (id: string) => void;
   sections: ColumnSections;
   onRemove?: (cardId: string) => void;
 }
@@ -50,7 +55,16 @@ const ENGINE_STYLES: Record<EngineKey, { border: string; bg: string; tint: strin
  * One engine column (red / blue / neutral / single).
  * Renders only the non-empty FieldSections from `sections`.
  */
-export function EngineColumn({ engineKey, label, themeLabel, sections, onRemove }: Props) {
+export function EngineColumn({
+  engineKey,
+  label,
+  themeLabel,
+  themeValue,
+  themeOptions,
+  onThemeChange,
+  sections,
+  onRemove,
+}: Props) {
   const style = ENGINE_STYLES[engineKey];
 
   // Only render non-empty sections (progressive reveal)
@@ -72,17 +86,37 @@ export function EngineColumn({ engineKey, label, themeLabel, sections, onRemove 
       style={{ background: style.bg }}
       data-testid={`engine-col-${engineKey}`}
     >
-      {/* Column header (only for composite / engine columns) */}
-      {label && (
-        <div className="mb-1 flex items-baseline gap-2 border-b border-white/[0.06] pb-2">
-          <span
-            className="font-display text-sm font-semibold tracking-wide"
-            style={{ color: style.headColor }}
-          >
-            {label}
-          </span>
-          {themeLabel && (
-            <span className="text-xs text-zinc-500">{themeLabel}</span>
+      {/* Column header (composite / engine columns) */}
+      {(label || onThemeChange) && (
+        <div className="mb-1 flex flex-col gap-1.5 border-b border-white/[0.06] pb-2">
+          <div className="flex items-baseline gap-2">
+            {label && (
+              <span
+                className="font-display text-sm font-semibold tracking-wide"
+                style={{ color: style.headColor }}
+              >
+                {label}
+              </span>
+            )}
+            {themeLabel && !onThemeChange && (
+              <span className="text-xs text-zinc-500">{themeLabel}</span>
+            )}
+          </div>
+          {onThemeChange && themeOptions && (
+            <select
+              value={themeValue ?? ""}
+              onChange={(e) => onThemeChange(e.target.value)}
+              data-testid={`engine-theme-${engineKey}`}
+              className="w-full rounded border border-white/10 bg-black/40 px-1.5 py-1 text-xs
+                         text-zinc-200 outline-none focus:border-accent/60"
+            >
+              <option value="">— pick a theme —</option>
+              {themeOptions.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
           )}
         </div>
       )}

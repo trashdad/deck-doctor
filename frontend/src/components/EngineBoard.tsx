@@ -38,6 +38,8 @@ export function EngineBoard() {
   const selectedId = useTemplateStore((s) => s.selectedId);
   const composite = useTemplateStore((s) => s.composite);
   const themes = useTemplateStore((s) => s.themes);
+  const setThemeA = useTemplateStore((s) => s.setThemeA);
+  const setThemeB = useTemplateStore((s) => s.setThemeB);
 
   const isComposite = selectedId === COMPOSITE_TEMPLATE_ID;
 
@@ -51,15 +53,6 @@ export function EngineBoard() {
     if (!isComposite || !composite.themeB) return [];
     return themes.find((t) => t.id === composite.themeB)?.tags ?? [];
   }, [isComposite, composite.themeB, themes]);
-
-  const themeALabel = useMemo(
-    () => (composite.themeA ? themes.find((t) => t.id === composite.themeA)?.label ?? "" : ""),
-    [composite.themeA, themes],
-  );
-  const themeBLabel = useMemo(
-    () => (composite.themeB ? themes.find((t) => t.id === composite.themeB)?.label ?? "" : ""),
-    [composite.themeB, themes],
-  );
 
   // Commander (used in the render). The rest of the deck is derived inside the
   // placement memo below so the deps are the stable store references.
@@ -119,7 +112,6 @@ export function EngineBoard() {
   // move is handled by the DndContext in page.tsx (same as ZoneColumn).
 
   const hasNeutral = Object.values(neutralSections).some((arr) => arr && arr.length > 0);
-  const hasThemes = themeATags.length > 0 || themeBTags.length > 0;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 scrollbar-thin">
@@ -129,20 +121,26 @@ export function EngineBoard() {
         onRemove={commander ? () => remove(commander.id) : undefined}
       />
 
-      {isComposite && hasThemes ? (
-        /* ── COMPOSITE w/ themes: engine columns side by side (red | blue | neutral) ── */
+      {isComposite ? (
+        /* ── COMPOSITE: engine columns always visible (red | blue | neutral) ──
+           Each engine carries its own theme dropdown so you can set it up front;
+           cards flow in as soon as a theme is picked. */
         <div className="flex items-start gap-3">
           <EngineColumn
             engineKey="e1"
             label="Engine 1"
-            themeLabel={themeALabel || undefined}
+            themeValue={composite.themeA}
+            themeOptions={themes}
+            onThemeChange={setThemeA}
             sections={e1Sections}
             onRemove={remove}
           />
           <EngineColumn
             engineKey="e2"
             label="Engine 2"
-            themeLabel={themeBLabel || undefined}
+            themeValue={composite.themeB}
+            themeOptions={themes}
+            onThemeChange={setThemeB}
             sections={e2Sections}
             onRemove={remove}
           />
@@ -156,15 +154,6 @@ export function EngineBoard() {
               onRemove={remove}
             />
           )}
-        </div>
-      ) : isComposite ? (
-        /* ── COMPOSITE, no themes chosen yet: one clean column + a prompt ── */
-        <div className="flex flex-col gap-2">
-          <p className="text-[11px] text-zinc-500">
-            Pick two themes in the <span className="text-accent">Simmander Composite</span> panel to
-            split these into red / blue engines.
-          </p>
-          <EngineColumn engineKey="single" sections={neutralSections} onRemove={remove} />
         </div>
       ) : (
         /* ── SINGLE-COLUMN MODE: function fields stacked ── */

@@ -28,48 +28,80 @@ import { analyzeDeck, getTemplates } from "@/lib/api";
 import type { DeckEntry } from "@/lib/types";
 
 function TemplateMenu() {
-  const { templates, selectedId, select } = useTemplateStore();
+  const { templates, selectedId, select, openPanel } = useTemplateStore();
   const [open, setOpen] = useState(false);
   const current = templates.find((t) => t.id === selectedId);
+  // Select a template AND jump straight into its options (skips the dropdown).
+  const openOptions = (id: string) => {
+    select(id);
+    openPanel();
+    setOpen(false);
+  };
   return (
-    <div className="relative">
+    <div className="relative flex items-center gap-1">
       <button
         onClick={() => setOpen((o) => !o)}
         data-testid="template-menu"
-        title="Composition template (sets the Deck Doctor quotas)"
+        title="Switch composition template"
         className="rounded-lg border border-accent/50 px-3 py-1.5 text-xs font-semibold tracking-wide
                    text-accent transition hover:bg-accent/10"
       >
         ⚜ {current?.name ?? "Template"} ▾
       </button>
+      {/* Direct options opener for the current template — no dropdown needed. */}
+      <button
+        onClick={() => openPanel()}
+        data-testid="template-options"
+        title="Edit this template's options"
+        className="rounded-lg border border-accent/50 bg-accent/10 px-2 py-1.5 text-xs font-bold
+                   text-accent transition hover:bg-accent/25"
+      >
+        ▸
+      </button>
       {open && (
         <>
           <div className="fixed inset-0 z-[130]" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 z-[131] mt-1 w-64 rounded-lg border border-edge bg-panel p-1 shadow-2xl">
+          <div className="absolute right-0 top-full z-[131] mt-1 w-72 rounded-lg border border-edge bg-panel p-1 shadow-2xl">
             {templates.map((t) => (
-              <button
+              <div
                 key={t.id}
-                data-testid={`template-opt-${t.id}`}
-                onClick={() => {
-                  select(t.id);
-                  setOpen(false);
-                }}
                 className={[
-                  "flex w-full flex-col rounded-md px-3 py-2 text-left transition",
+                  "flex items-stretch rounded-md transition",
                   t.id === selectedId ? "bg-accent/15" : "hover:bg-white/5",
                 ].join(" ")}
               >
-                <span className="flex items-center justify-between gap-2 text-xs font-semibold text-zinc-200">
-                  {t.name}
-                  <span className="shrink-0 text-[8px] uppercase tracking-widest text-zinc-500">
-                    {t.source}
+                <button
+                  data-testid={`template-opt-${t.id}`}
+                  onClick={() => {
+                    select(t.id);
+                    setOpen(false);
+                  }}
+                  className="flex min-w-0 flex-1 flex-col rounded-l-md px-3 py-2 text-left"
+                >
+                  <span className="flex items-center justify-between gap-2 text-xs font-semibold text-zinc-200">
+                    {t.name}
+                    <span className="shrink-0 text-[8px] uppercase tracking-widest text-zinc-500">
+                      {t.source}
+                    </span>
                   </span>
-                </span>
-                <span className="text-[10px] tracking-wide text-zinc-500">
-                  {t.counts.land}/{t.counts.ramp}/{t.counts.card_draw}/
-                  {t.counts.removal}/{t.counts.board_wipe} · land/ramp/draw/rmv/wipe
-                </span>
-              </button>
+                  <span className="text-[10px] tracking-wide text-zinc-500">
+                    {t.counts.land}/{t.counts.ramp}/{t.counts.card_draw}/
+                    {t.counts.removal}/{t.counts.board_wipe} · land/ramp/draw/rmv/wipe
+                  </span>
+                </button>
+                {/* Yellow arrow → open this template's options directly. */}
+                <button
+                  data-testid={`template-options-${t.id}`}
+                  onClick={() => openOptions(t.id)}
+                  title={`Open ${t.name} options`}
+                  aria-label={`Open ${t.name} options`}
+                  className="flex w-9 shrink-0 items-center justify-center rounded-r-md border-l
+                             border-accent/30 bg-accent/10 text-sm font-bold text-accent
+                             transition hover:bg-accent/30"
+                >
+                  ▸
+                </button>
+              </div>
             ))}
           </div>
         </>
