@@ -36,8 +36,13 @@ The app reads `data/cards.json` (committed, ~21 MB) and **Postgres** for everyth
 else. The analytical tables are loaded into Postgres from the offline SQLite build
 artifacts (gitignored, regenerable). Two ways to populate the DB:
 
-- **Ship a dump (fastest, dev→prod):** on a machine that already built + loaded the
-  data, `pg_dump` it; restore on the box:
+> ⚠️ The VPS runs **Postgres 14**; a local **Postgres 16** dump will NOT restore onto
+> it (pg_restore can't read a newer-version dump). Until the versions match, use the
+> rsync-artifacts + `load_to_postgres` path below (what the live deploy used). The
+> pg_dump/restore path is for same-major-version dev→prod.
+
+- **Ship a dump (fastest, same PG major):** on a machine that already built + loaded
+  the data, `pg_dump` it; restore on the box:
   ```bash
   # on dev:
   pg_dump --no-owner --no-acl -Fc deckdoctor > deckdoctor.dump
