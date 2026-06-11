@@ -17,6 +17,7 @@ import { DeckDoctorPanel } from "@/components/DeckDoctorPanel";
 import { SynergyGraph } from "@/components/SynergyGraph";
 import { TemplatePanel } from "@/components/TemplatePanel";
 import { ExportPanel } from "@/components/ExportPanel";
+import { HowWeCalcModal } from "@/components/HowWeCalcModal";
 import { UserMenu } from "@/components/UserMenu";
 import { useDeck } from "@/store/deck";
 import { useDecksStore } from "@/store/decks";
@@ -142,6 +143,7 @@ export default function Page() {
   const [doctorOpen, setDoctorOpen] = useState(false);
   const [graphOpen, setGraphOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
+  const [howOpen, setHowOpen] = useState(false);
 
   const { currentId, saveCurrent } = useDecksStore();
 
@@ -319,6 +321,7 @@ export default function Page() {
         }}
       />
       <ImportExportDialog isOpen={importOpen} onClose={() => setImportOpen(false)} />
+      <HowWeCalcModal isOpen={howOpen} onClose={() => setHowOpen(false)} />
       <ExportPanel
         isOpen={exportOpen}
         onClose={() => setExportOpen(false)}
@@ -378,6 +381,13 @@ export default function Page() {
             onClick={() => setExportOpen(true)}
           >
             📤 Export
+          </HeaderButton>
+          <HeaderButton
+            testid="open-how-we-calc"
+            title="How we rate cards and make recommendations"
+            onClick={() => setHowOpen(true)}
+          >
+            ❓ How We Calc
           </HeaderButton>
           <div className="ml-1 text-xs text-zinc-500">{totalCards} cards · simmander.app/deck-doctor</div>
         </div>
