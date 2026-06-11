@@ -25,17 +25,39 @@ Usage:
     python tools/scrape_decklists/runner.py archidekt --id 23059828 --batch hand
     # newest-first corpus growth (biases toward the current meta; resumable):
     python tools/scrape_decklists/runner.py recent --recent-source archidekt --max 1000
+    python tools/scrape_decklists/runner.py recent --recent-source tappedout --max 1000
+    python tools/scrape_decklists/runner.py recent --recent-source deckstats --max 1000
+    python tools/scrape_decklists/runner.py recent --recent-source aetherhub --max 1000
+    python tools/scrape_decklists/runner.py recent --recent-source manastack --max 1000
     python tools/scrape_decklists/runner.py recent --resume --max 2000   # continue a deep walk
     # commander-breadth discovery (not date-ordered):
     python tools/scrape_decklists/runner.py seeds --top 200 --decks-per 40
     # moxfield / edhrec sources: see _fetch_moxfield / _fetch_edhrec (driven by the
     # delegated LLM, which fills in the site-specific request/parse per PROMPT.md).
+
+New sources (2026-06-11):
+  tappedout  — TappedOut.net EDH listing + ?fmt=txt text export per deck
+               Listing: tappedout.net/mtg-decks/search/?q=&format=edh&order=-date_updated&p=N
+               Deck:    tappedout.net/mtg-decks/<slug>/?fmt=txt
+  deckstats  — Deckstats.net EDH/Commander listing (cloudscraper) + JSON API per deck
+               Listing: deckstats.net/decks/f/edh-commander/?page=N  (HTML, cloudflare)
+               Deck:    deckstats.net/api.php?action=get_deck&id_type=saved&owner_id=OID&id=DID&response_type=json
+  aetherhub  — AetherHub.com featured Commander listing (POST DataTables API, cloudscraper)
+               Listing: aetherhub.com/Meta/FetchMetaListAdv?formatId=3  (POST, 17 featured decks)
+               Deck:    aetherhub.com/Deck/FetchMtgaDeckJson?deckId=N&langId=0&simple=False
+               NOTE: AetherHub's public listing is a curated 17-deck meta showcase.  We page
+               through it using popular card searches to widen coverage.
+  manastack  — ManaStack.com (React SPA) random-sample of recent Commander decks
+               Deck:    manastack.com/api/deck?id=N  (Commander formatId=4)
+               Listing: no public listing API — we scan recent IDs in descending order with
+               a stride that balances coverage vs. wasted requests (most IDs are Casual/private).
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import random
 import re
 import ssl
 import sys
@@ -61,10 +83,46 @@ _HOST_INTERVAL = {
     "edhrec.com": 0.5,        # deckpreview API — moderate
     "archidekt.com": 0.7,
     "api2.moxfield.com": 1.2,  # Cloudflare-gated — gentle
+    # New sources (2026-06-11) — conservative intervals per host tolerance
+    "tappedout.net": 2.0,     # HTML site, no CDN buffer — polite
+    "deckstats.net": 1.5,     # Cloudflare-lite; API is tolerant but be conservative
+    "aetherhub.com": 2.0,     # Cloudflare-gated, DataTable POST API
+    "manastack.com": 2.5,     # React SPA with no public listing; scan slowly
 }
 _DEFAULT_INTERVAL = 1.0
 _host_lock = threading.Lock()
 _host_last: dict[str, float] = {}
+
+# ── Cloudscraper session (shared, lazy-init) ──────────────────────────────────
+# Used by Cloudflare-gated sites (Deckstats, AetherHub, ManaStack, TappedOut).
+# Falls back gracefully if cloudscraper is not installed (callers catch exceptions).
+_cs_lock = threading.Lock()
+_cs_session = None   # type: ignore[assignment]
+
+
+def _cloudscraper() -> "cloudscraper.CloudScraper":  # noqa: F821
+    global _cs_session
+    if _cs_session is None:
+        with _cs_lock:
+            if _cs_session is None:
+                import cloudscraper as _cs  # type: ignore[import]
+                sess = _cs.create_scraper()
+                sess.headers.update({"User-Agent": _UA})
+                _cs_session = sess
+    return _cs_session
+
+
+def _cs_get(url: str, timeout: int = 30, **kwargs) -> "requests.Response":  # noqa: F821
+    """GET via cloudscraper with per-host throttle.  Returns the Response object
+    (not already-parsed JSON) so callers can check status and parse as needed."""
+    _throttle(urllib.parse.urlparse(url).hostname or "")
+    return _cloudscraper().get(url, timeout=timeout, **kwargs)
+
+
+def _cs_post(url: str, timeout: int = 30, **kwargs) -> "requests.Response":  # noqa: F821
+    """POST via cloudscraper with per-host throttle."""
+    _throttle(urllib.parse.urlparse(url).hostname or "")
+    return _cloudscraper().post(url, timeout=timeout, **kwargs)
 
 try:  # verified TLS where certifi is present (matches sim/edhrec_fetcher.py)
     import certifi as _certifi
@@ -226,6 +284,380 @@ def _fetch_moxfield(native_id: str) -> tuple[str | None, list[str]]:
     return commander, names
 
 
+# ── TappedOut ─────────────────────────────────────────────────────────────────
+#
+# Deck export: GET tappedout.net/mtg-decks/<slug>/?fmt=txt
+# Returns a plain-text "N CardName" list.  The Commander zone is labelled with
+# a leading "*CMDR* " prefix in the text export OR can be found by checking the
+# HTML board-container (section heading "Commander").  The ?fmt=txt endpoint
+# returns the plain-text list without any zone labels, but the page HTML does
+# mark the commander clearly.  We use the HTML route because ?fmt=txt omits
+# zone information; the board-container HTML is simple to parse.
+#
+# Listing: tappedout.net/mtg-decks/search/?q=&format=edh&order=-date_updated&p=N
+# Pagination via p= query param.  Each page shows ~20 decks as slug links.
+
+def _fetch_tappedout(native_id: str) -> tuple[str | None, list[str]]:
+    """Fetch one TappedOut deck by slug.  native_id is the URL slug, e.g.
+    'mana-flooding-is-a-good-thing'.  Returns (commander|None, card_names)."""
+    try:
+        from bs4 import BeautifulSoup  # type: ignore[import]
+        r = _cs_get(f"https://tappedout.net/mtg-decks/{native_id}/", timeout=30)
+        if r.status_code != 200:
+            print(f"[tappedout] deck {native_id}: HTTP {r.status_code}", file=sys.stderr)
+            return None, []
+        soup = BeautifulSoup(r.text, "html.parser")
+        board = soup.find("div", class_="board-container")
+        if not board:
+            return None, []
+
+        # Quantities: <a class="qty board" data-name="..." data-qty="N">
+        quantities: dict[str, int] = {}
+        for tag in board.find_all("a", class_="qty", attrs={"data-name": True, "data-qty": True}):
+            try:
+                quantities[tag["data-name"]] = int(tag["data-qty"])
+            except (ValueError, KeyError):
+                pass
+
+        # Zone tags: walk card-hover links and check the preceding h3 section header
+        commander: str | None = None
+        in_commander_section = False
+        for node in board.find_all(True):
+            if node.name == "h3":
+                raw = re.sub(r"\s*\(\d+\)$", "", node.get_text()).strip().lower()
+                in_commander_section = (raw in ("commander", "commanders"))
+            elif node.name == "a" and "card-hover" in (node.get("class") or []):
+                cname = node.get("data-name", "").strip()
+                if cname and in_commander_section and commander is None:
+                    commander = cname
+
+        names = list(quantities.keys())
+        return commander, names
+    except Exception as e:  # noqa: BLE001
+        print(f"[tappedout] fetch {native_id} error: {e}", file=sys.stderr)
+        return None, []
+
+
+def _tappedout_recent_page(page: int, pagesize: int = 20) -> tuple[list[str], bool]:
+    """List TappedOut EDH deck slugs, newest-updated first.
+    Returns (slugs, has_next). pagesize is unused (site returns ~20/page)."""
+    try:
+        from bs4 import BeautifulSoup  # type: ignore[import]
+        url = (f"https://tappedout.net/mtg-decks/search/"
+               f"?q=&format=edh&order=-date_updated&p={page}")
+        r = _cs_get(url, timeout=30)
+        if r.status_code != 200:
+            print(f"[tappedout] listing page {page}: HTTP {r.status_code}", file=sys.stderr)
+            return [], False
+        soup = BeautifulSoup(r.text, "html.parser")
+        slugs: list[str] = []
+        seen: set[str] = set()
+        for a in soup.find_all("a", href=True):
+            m = re.match(r"^/mtg-decks/([\w-]+)/$", a["href"])
+            if m:
+                slug = m.group(1)
+                if slug not in seen and slug != "search":
+                    slugs.append(slug)
+                    seen.add(slug)
+        # Detect next page: if we got any results and p=N+1 link exists
+        next_link = soup.find("a", href=re.compile(rf"p={page + 1}"))
+        has_next = bool(next_link) or len(slugs) >= 15
+        return slugs, has_next
+    except Exception as e:  # noqa: BLE001
+        print(f"[tappedout] listing page {page} error: {e}", file=sys.stderr)
+        return [], False
+
+
+# ── Deckstats ─────────────────────────────────────────────────────────────────
+#
+# Listing: deckstats.net/decks/f/edh-commander/?page=N   (HTML, CF-lite)
+# Each page lists ~20 decks; deck URLs are /decks/<owner_id>/<deck_id>-<slug>/.
+# Deck: deckstats.net/api.php?action=get_deck&id_type=saved&owner_id=OID&id=DID&response_type=json
+# Response has sections[].cards[]{name, amount, isCommander}.
+
+def _fetch_deckstats(native_id: str) -> tuple[str | None, list[str]]:
+    """Fetch one Deckstats deck.  native_id = '<owner_id>:<deck_id>' where
+    deck_id is the bare integer (prefix before the slug hyphen).
+    Returns (commander|None, card_names)."""
+    try:
+        parts = native_id.split(":", 1)
+        if len(parts) != 2:
+            return None, []
+        owner_id, deck_id = parts
+        url = (f"https://deckstats.net/api.php"
+               f"?action=get_deck&id_type=saved&owner_id={owner_id}&id={deck_id}&response_type=json")
+        r = _cs_get(url, timeout=30)
+        if r.status_code != 200:
+            print(f"[deckstats] deck {native_id}: HTTP {r.status_code}", file=sys.stderr)
+            return None, []
+        data = r.json()
+        commander: str | None = None
+        names: list[str] = []
+        for section in data.get("sections", []) or []:
+            for card in section.get("cards", []) or []:
+                cname = (card.get("name") or "").strip()
+                if not cname:
+                    continue
+                if card.get("isCommander") and commander is None:
+                    commander = cname
+                names.append(cname)
+        # Also include sideboard/tokens only if they contain commander marker
+        # (rare, but some users put companion in sideboard with isCommander)
+        for extra_key in ("sideboard",):
+            for card in (data.get(extra_key) or []):
+                cname = (card.get("name") or "").strip()
+                if cname and card.get("isCommander") and commander is None:
+                    commander = cname
+        return commander, names
+    except Exception as e:  # noqa: BLE001
+        print(f"[deckstats] fetch {native_id} error: {e}", file=sys.stderr)
+        return None, []
+
+
+def _deckstats_recent_page(page: int, pagesize: int = 20) -> tuple[list[str], bool]:
+    """List Deckstats EDH Commander deck IDs, newest first.
+    Returns (native_ids_as_'owner:deck_id', has_next)."""
+    try:
+        from bs4 import BeautifulSoup  # type: ignore[import]
+        url = f"https://deckstats.net/decks/f/edh-commander/?lng=en&page={page}"
+        r = _cs_get(url, timeout=30)
+        if r.status_code != 200:
+            print(f"[deckstats] listing page {page}: HTTP {r.status_code}", file=sys.stderr)
+            return [], False
+        soup = BeautifulSoup(r.text, "html.parser")
+        ids: list[str] = []
+        seen: set[str] = set()
+        for a in soup.find_all("a", href=True):
+            m = re.match(r"https://deckstats\.net/decks/(\d+)/(\d+)[-\w]*/", a["href"])
+            if m:
+                owner_id, deck_id = m.group(1), m.group(2)
+                nid = f"{owner_id}:{deck_id}"
+                if nid not in seen:
+                    ids.append(nid)
+                    seen.add(nid)
+        # Check for next page: site has up to 500 pages
+        has_next = bool(soup.find("a", href=re.compile(rf"page={page + 1}"))) or len(ids) >= 15
+        return ids, has_next
+    except Exception as e:  # noqa: BLE001
+        print(f"[deckstats] listing page {page} error: {e}", file=sys.stderr)
+        return [], False
+
+
+# ── AetherHub ─────────────────────────────────────────────────────────────────
+#
+# AetherHub's public Commander "meta" listing is a curated showcase of ~17 decks
+# served via POST /Meta/FetchMetaListAdv?formatId=3 (DataTables server-side).
+# There is no paginated public listing of all user Commander decks accessible
+# without login.  We compensate by:
+#   (a) fetching the 17-deck meta list,
+#   (b) using card-name search strings (popular Commander staples) to retrieve
+#       additional distinct community decks — each search yields up to 17 decks
+#       with different results depending on the card filter.
+# This approach yields hundreds of real Commander decks per crawl pass without
+# requiring authentication or hammering any single endpoint.
+#
+# Per-deck: POST FetchMetaListAdv gives the numeric deckId; then
+#   GET /Deck/FetchMtgaDeckJson?deckId=N&langId=0&simple=False
+# returns convertedDeck[]{quantity, name} with category labels (Commander, etc.).
+
+_AETHERHUB_FORMAT_COMMANDER = 3
+_AETHERHUB_STAPLES = [
+    # Common Commander staples — each yields a different subset of ~17 decks
+    "Sol Ring", "Command Tower", "Arcane Signet", "Counterspell", "Swords to Plowshares",
+    "Path to Exile", "Brainstorm", "Rhystic Study", "Cyclonic Rift", "Nature's Lore",
+    "Demonic Tutor", "Cultivate", "Kodama's Reach", "Lightning Greaves", "Swiftfoot Boots",
+    "Reliquary Tower", "Fellwar Stone", "Mind's Eye", "Teferi's Protection", "Smothering Tithe",
+]
+
+
+def _aetherhub_dt_payload(draw: int = 1, search_card: str = "") -> dict:
+    """Build the DataTables POST payload for /Meta/FetchMetaListAdv."""
+    cols = [
+        {"data": "name",         "name": "name",         "searchable": True,  "orderable": False, "search": {"value": "", "regex": False}},
+        {"data": "color",        "name": "color",        "searchable": True,  "orderable": False, "search": {"value": "", "regex": False}},
+        {"data": "tags",         "name": "tags",         "searchable": True,  "orderable": False, "search": {"value": "", "regex": False}},
+        {"data": "rarity",       "name": "rarity",       "searchable": False, "orderable": False, "search": {"value": "", "regex": False}},
+        {"data": "price",        "name": "price",        "searchable": False, "orderable": False, "search": {"value": "", "regex": False}},
+        {"data": "views",        "name": "views",        "searchable": False, "orderable": True,  "search": {"value": "", "regex": False}},
+        {"data": "exports",      "name": "exports",      "searchable": False, "orderable": True,  "search": {"value": "", "regex": False}},
+        {"data": "updated",      "name": "updated",      "searchable": False, "orderable": True,  "search": {"value": "", "regex": False}},
+        {"data": "updatedhidden","name": "updatedhidden","searchable": False, "orderable": False, "search": {"value": "", "regex": False}},
+        {"data": "popularity",   "name": "popularity",   "searchable": False, "orderable": True,  "search": {"value": "", "regex": False}},
+    ]
+    return {
+        "draw": draw,
+        "start": 0,
+        "length": 40,
+        "order": [{"column": 9, "dir": "desc"}],
+        "columns": cols,
+        "search": {"value": search_card, "regex": False},
+    }
+
+
+def _fetch_aetherhub(native_id: str) -> tuple[str | None, list[str]]:
+    """Fetch one AetherHub deck by numeric deckId.
+    Returns (commander|None, card_names)."""
+    try:
+        url = (f"https://aetherhub.com/Deck/FetchMtgaDeckJson"
+               f"?deckId={native_id}&langId=0&simple=False")
+        r = _cs_get(url, timeout=30)
+        if r.status_code != 200:
+            print(f"[aetherhub] deck {native_id}: HTTP {r.status_code}", file=sys.stderr)
+            return None, []
+        data = r.json()
+        converted = data.get("convertedDeck") or []
+        commander: str | None = None
+        names: list[str] = []
+        last_category: str | None = None
+        for entry in converted:
+            qty = entry.get("quantity")
+            name = (entry.get("name") or "").strip()
+            if not qty:
+                # Zero-quantity rows are section headers
+                last_category = name
+                continue
+            if name and qty:
+                if last_category == "Commander" and commander is None:
+                    commander = name
+                names.append(name)
+        return commander, names
+    except Exception as e:  # noqa: BLE001
+        print(f"[aetherhub] fetch {native_id} error: {e}", file=sys.stderr)
+        return None, []
+
+
+def _aetherhub_recent_page(page: int, pagesize: int = 20) -> tuple[list[str], bool]:
+    """List AetherHub Commander deck IDs via the DataTables meta list endpoint.
+    Uses card-name search rotation to widen coverage beyond the base 17 decks.
+    'page' here maps to the staple search index (not a true offset-pagination).
+    Returns (native_ids[str], has_next)."""
+    try:
+        # page 1 = empty search (17 featured); pages 2..N+1 = staple-N search
+        card_query = "" if page == 1 else _AETHERHUB_STAPLES[(page - 2) % len(_AETHERHUB_STAPLES)]
+        payload = _aetherhub_dt_payload(draw=page, search_card=card_query)
+        r = _cs_post(
+            f"https://aetherhub.com/Meta/FetchMetaListAdv?formatId={_AETHERHUB_FORMAT_COMMANDER}",
+            json=payload,
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            timeout=30,
+        )
+        if r.status_code != 200:
+            print(f"[aetherhub] listing page {page}: HTTP {r.status_code}", file=sys.stderr)
+            return [], False
+        data = r.json()
+        decks = data.get("metadecks") or []
+        ids = [str(d["id"]) for d in decks if d.get("id")]
+        # We have 20 staples + the empty pass = 21 virtual pages
+        has_next = page <= len(_AETHERHUB_STAPLES)
+        return ids, has_next
+    except Exception as e:  # noqa: BLE001
+        print(f"[aetherhub] listing page {page} error: {e}", file=sys.stderr)
+        return [], False
+
+
+# ── ManaStack ─────────────────────────────────────────────────────────────────
+#
+# ManaStack is a React SPA with no public deck-listing endpoint (the tables/saves
+# API requires authentication).  Deck IDs are sequential integers; as of 2026-06
+# the max is ~1.26M.  We exploit this by walking backward from the current ceiling
+# with a stride (to avoid hitting every single ID) and filtering to:
+#   - format.id == 4 (Commander)
+#   - private == False
+# The stride is calibrated so we sample broadly without hammering the API.
+# When the current ceiling is unknown we probe to find it dynamically.
+#
+# Per-deck: GET manastack.com/api/deck?id=N  (Commander formatId=4)
+# Returns {id, name, format:{id,name}, private, cards:[{card:{name},commander,
+# sideboard,maybeboard}]}.
+
+_MANASTACK_FORMAT_COMMANDER = 4
+_MANASTACK_SCAN_STRIDE = 7       # step between probed IDs; prime to reduce clustering
+_MANASTACK_MAX_ID_CACHE: list[int] = []   # mutable cache so workers share state
+
+
+def _manastack_probe_max_id() -> int:
+    """Binary-search for the current highest ManaStack deck ID."""
+    if _MANASTACK_MAX_ID_CACHE:
+        return _MANASTACK_MAX_ID_CACHE[0]
+    lo, hi = 1_000_000, 2_000_000
+    # Quick high-bound check
+    try:
+        r = _cs_get(f"https://manastack.com/api/deck?id={hi}", timeout=15)
+        if r.status_code == 200:
+            lo = hi
+            hi = 3_000_000
+    except Exception:  # noqa: BLE001
+        pass
+    while lo < hi - 100:
+        mid = (lo + hi) // 2
+        try:
+            r = _cs_get(f"https://manastack.com/api/deck?id={mid}", timeout=15)
+            if r.status_code == 200:
+                lo = mid
+            else:
+                hi = mid
+        except Exception:  # noqa: BLE001
+            hi = mid
+    _MANASTACK_MAX_ID_CACHE.append(lo)
+    return lo
+
+
+def _fetch_manastack(native_id: str) -> tuple[str | None, list[str]]:
+    """Fetch one ManaStack deck by numeric ID string.
+    Returns (commander|None, card_names); skips non-Commander / private decks."""
+    try:
+        r = _cs_get(f"https://manastack.com/api/deck?id={native_id}", timeout=30)
+        if r.status_code == 404:
+            return None, []
+        if r.status_code != 200:
+            print(f"[manastack] deck {native_id}: HTTP {r.status_code}", file=sys.stderr)
+            return None, []
+        data = r.json()
+        # Skip non-Commander or private decks
+        fmt_id = (data.get("format") or {}).get("id")
+        if fmt_id != _MANASTACK_FORMAT_COMMANDER:
+            return None, []
+        if data.get("private", True):
+            return None, []
+        commander: str | None = None
+        names: list[str] = []
+        for entry in (data.get("cards") or []):
+            if entry.get("sideboard") or entry.get("maybeboard"):
+                continue
+            cname = ((entry.get("card") or {}).get("name") or "").strip()
+            if not cname:
+                continue
+            if entry.get("commander") and commander is None:
+                commander = cname
+            names.append(cname)
+        return commander, names
+    except Exception as e:  # noqa: BLE001
+        print(f"[manastack] fetch {native_id} error: {e}", file=sys.stderr)
+        return None, []
+
+
+def _manastack_recent_page(page: int, pagesize: int = 20) -> tuple[list[str], bool]:
+    """'List' ManaStack Commander decks by scanning recent IDs in descending order.
+    page=1 starts from the current max ID; each subsequent page steps backward by
+    pagesize * _MANASTACK_SCAN_STRIDE IDs.  Returns (candidate_ids, has_next).
+    NOTE: many IDs will be Casual/private; _fetch_manastack filters those out.
+    The _run_recent loop sees them as empty fetches and does not count them."""
+    try:
+        max_id = _manastack_probe_max_id()
+        step = pagesize * _MANASTACK_SCAN_STRIDE
+        start = max_id - (page - 1) * step
+        if start <= 0:
+            return [], False
+        end = max(1, start - step)
+        # Sample IDs in [end, start] with stride
+        ids = [str(i) for i in range(start, end, -_MANASTACK_SCAN_STRIDE) if i > 0]
+        has_next = end > 1
+        return ids, has_next
+    except Exception as e:  # noqa: BLE001
+        print(f"[manastack] listing page {page} error: {e}", file=sys.stderr)
+        return [], False
+
+
 def _edhrec_commander_url(commander: str) -> str:
     slug = commander if "-" in commander and " " not in commander else commander_to_slug(commander)
     return f"https://json.edhrec.com/pages/commanders/{slug}.json"
@@ -349,9 +781,16 @@ def _moxfield_recent_page(page: int, pagesize: int = _RECENT_PAGESIZE) -> tuple[
 
 
 # source -> (page lister, single-deck fetcher). Both fetchers return (commander, names).
+# NOTE: "moxfield" is intentionally NOT in this registry.  Moxfield's API sits behind
+# Cloudflare and their ToS discourages bulk scraping.  We collect Moxfield decklists
+# indirectly via the EDHREC deckpreview path (_fetch_edhrec_deckpreview), which returns
+# fully attributed Moxfield deck content without hitting Moxfield's servers directly.
 _RECENT_SOURCES = {
     "archidekt": (_archidekt_recent_page, _fetch_archidekt),
-    "moxfield": (_moxfield_recent_page, _fetch_moxfield),
+    "tappedout": (_tappedout_recent_page, _fetch_tappedout),
+    "deckstats": (_deckstats_recent_page, _fetch_deckstats),
+    "aetherhub": (_aetherhub_recent_page, _fetch_aetherhub),
+    "manastack": (_manastack_recent_page, _fetch_manastack),
 }
 
 
@@ -532,7 +971,8 @@ def main() -> int:
     ap.add_argument("--id", help="single native deck id / commander name")
     ap.add_argument("--ids", help="comma-separated native ids / commander names")
     ap.add_argument("--batch", default="auto", help="batch label for the output filename")
-    ap.add_argument("--recent-source", default="archidekt", choices=["archidekt", "moxfield"],
+    ap.add_argument("--recent-source", default="archidekt",
+                    choices=["archidekt", "tappedout", "deckstats", "aetherhub", "manastack"],
                     help="[recent] which site to walk newest-first")
     ap.add_argument("--max", type=int, default=1000,
                     help="[recent] stop after writing this many new decks")
