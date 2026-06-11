@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { Card } from "@/lib/types";
 import { useSemanticStore } from "@/store/semantic";
 import { useRelationshipStore } from "@/store/relationship";
+import { manapoolCardUrl, tcgplayerCardUrl } from "@/lib/affiliate";
 
 interface CardMenuProps {
   card: Card;
@@ -134,6 +135,33 @@ export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
             REMOVE FROM DECK
           </button>
         )}
+
+        {/* Buy links */}
+        <div className="mx-3 my-1 border-t border-edge" />
+        <div className="flex gap-1 px-3 pb-2 pt-1">
+          <a
+            href={manapoolCardUrl(card.name)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-1 items-center justify-center gap-1 rounded border
+                       border-accent/40 px-2 py-1.5 text-[10px] font-semibold
+                       uppercase tracking-wide text-accent transition
+                       hover:bg-accent/15 hover:border-accent/70"
+          >
+            ManaPool ↗
+          </a>
+          <a
+            href={tcgplayerCardUrl(card.name)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-1 items-center justify-center gap-1 rounded border
+                       border-zinc-600 px-2 py-1.5 text-[10px] font-semibold
+                       uppercase tracking-wide text-zinc-400 transition
+                       hover:border-accent/50 hover:text-accent"
+          >
+            TCGplayer ↗
+          </a>
+        </div>
       </div>
     </div>
   );

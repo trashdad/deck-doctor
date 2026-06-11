@@ -495,6 +495,18 @@ cd frontend && npm install && npm run dev
 python tools/refresh_loop.py --interval 1800
 ```
 
+### Affiliate links
+
+Every card in the app shows **ManaPool ↗** and **TCGplayer ↗** buy links. They work out of the
+box — without config they point to bare product pages. To earn commissions, copy
+`frontend/.env.local.example` to `frontend/.env.local` and fill in your codes:
+
+| Variable | What it does |
+|---|---|
+| `NEXT_PUBLIC_MANAPOOL_REF` | ManaPool TapFiliate ref appended to every card URL and the deck-cart handoff |
+| `NEXT_PUBLIC_MANAPOOL_PARTNER` | ManaPool partner tag for the `/add-deck` cart URL |
+| `NEXT_PUBLIC_TCGPLAYER_IMPACT` | Impact path `ACCOUNT/CAMPAIGN/AD` — wraps TCGplayer links via `tcgplayer.pxf.io` |
+
 ### Rebuild the data from scratch
 
 ```bash
