@@ -38,7 +38,7 @@ function TemplateMenu() {
     setOpen(false);
   };
   return (
-    <div className="relative flex items-center gap-1">
+    <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
         data-testid="template-menu"
@@ -47,16 +47,6 @@ function TemplateMenu() {
                    text-accent transition hover:bg-accent/10"
       >
         ⚜ {current?.name ?? "Template"} ▾
-      </button>
-      {/* Direct options opener for the current template — no dropdown needed. */}
-      <button
-        onClick={() => openPanel()}
-        data-testid="template-options"
-        title="Edit this template's options"
-        className="rounded-lg border border-accent/50 bg-accent/10 px-2 py-1.5 text-xs font-bold
-                   text-accent transition hover:bg-accent/25"
-      >
-        ▸
       </button>
       {open && (
         <>
@@ -143,6 +133,7 @@ function HeaderButton({
 
 export default function Page() {
   const { cards, basics, add, remove, move } = useDeck();
+  const openTemplatePanel = useTemplateStore((s) => s.openPanel);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [decksOpen, setDecksOpen] = useState(false);
@@ -397,6 +388,20 @@ export default function Page() {
           <SearchPanel onAdd={add} />
 
           <EngineBoard />
+
+          {/* Long options handle on the right margin of the board — opens the
+              current template's options without touching the dropdown. */}
+          <button
+            onClick={openTemplatePanel}
+            data-testid="template-options"
+            title="Template options"
+            className="flex w-8 shrink-0 items-center justify-center border-l border-accent/40
+                       bg-accent/10 text-accent transition hover:bg-accent/25"
+          >
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] [writing-mode:vertical-rl]">
+              ⚙ Template Options
+            </span>
+          </button>
 
           <StatsSidebar analysis={analysis ?? null} />
         </div>

@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { searchCards, getCommanders } from "@/lib/api";
 import type { Card, CommanderSort } from "@/lib/types";
+import { useDeck, commanderIdentity, withinIdentity } from "@/store/deck";
 import { CardTile } from "./CardTile";
 import { CardMenu } from "./CardMenu";
 
@@ -35,6 +36,10 @@ function CardWithMenu({
   onAdd: (card: Card) => void;
 }) {
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const deckCards = useDeck((s) => s.cards);
+  // Once a commander is set, off-color cards are illegal and can't be added.
+  const ci = commanderIdentity(deckCards);
+  const offColor = ci.size > 0 && !withinIdentity(ci, card);
 
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -52,17 +57,28 @@ function CardWithMenu({
   return (
     <>
       {/* Click the tile for the tag/similar menu; the overlay button adds to the deck. */}
-      <div className="group relative" onClick={handleClick}>
+      <div className={`group relative ${offColor ? "opacity-45 grayscale" : ""}`} onClick={handleClick}>
         <CardTile card={card} compact />
-        <button
-          onClick={handleAdd}
-          title={`Add ${card.name} to deck`}
-          className="absolute inset-x-1 bottom-1 z-10 rounded-md bg-accent/90 py-1
-                     text-[10px] font-bold uppercase tracking-widest text-ink opacity-0
-                     shadow-lg transition hover:bg-accent group-hover:opacity-100"
-        >
-          ＋ Add to deck
-        </button>
+        {offColor ? (
+          <div
+            title="Outside your commander's color identity"
+            className="absolute inset-x-1 bottom-1 z-10 rounded-md bg-red-900/85 py-1 text-center
+                       text-[10px] font-bold uppercase tracking-widest text-red-200 opacity-0
+                       shadow-lg transition group-hover:opacity-100"
+          >
+            ⊘ Off-color
+          </div>
+        ) : (
+          <button
+            onClick={handleAdd}
+            title={`Add ${card.name} to deck`}
+            className="absolute inset-x-1 bottom-1 z-10 rounded-md bg-accent/90 py-1
+                       text-[10px] font-bold uppercase tracking-widest text-ink opacity-0
+                       shadow-lg transition hover:bg-accent group-hover:opacity-100"
+          >
+            ＋ Add to deck
+          </button>
+        )}
       </div>
       {menu && (
         <CardMenu
