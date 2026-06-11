@@ -16,6 +16,7 @@ from . import config
 from .analysis import analyze
 from .decks import get_userdecks
 from .doctor import TEMPLATE as DOCTOR_TEMPLATE, complete_deck, suggest_cuts
+from .manabase import fill_lands
 from .graph import deck_graph
 from .importer import parse_decklist
 from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCombos,
@@ -466,6 +467,34 @@ def deck_complete(req: DeckRequest, explain: bool = False) -> dict:
         added.append({"card": card, "zone": a["zone"], "quantity": a["quantity"],
                       "reason": a["reason"]})
     return {"added": added, "final_size": result["final_size"]}
+
+
+@app.post("/deck/lands", response_model=CompleteResponse)
+def deck_lands(req: DeckRequest, max_price: float = Query(0.0, ge=0)) -> dict:
+    """Fill the deck's manabase to the template's land quota.
+
+    Only adds lands (nonbasic fixers + basics); never removes existing lands.
+    Returns the same CompleteResponse shape as /deck/complete.
+
+    max_price=0 or omitted → no price cap.
+    max_price=10 → skip lands with USD price > $10 (null-priced lands always pass).
+    """
+    store = get_store()
+    if not req.commander_id or not is_commander(store.get(req.commander_id)):
+        raise HTTPException(400, "commander_id must be a legendary creature or planeswalker")
+    deck_ids = [e.id for e in req.cards if e.id != req.commander_id]
+    template = {**DOCTOR_TEMPLATE, **(req.template or {})}
+    result = fill_lands(store, req.commander_id, deck_ids, template=template,
+                        max_price=max_price)
+    added = []
+    for a in result:
+        card = store.get(a["card_id"])
+        if card is None:
+            continue
+        added.append({"card": card, "zone": a["zone"], "quantity": a["quantity"],
+                      "reason": a["reason"]})
+    final_size = 1 + len(deck_ids) + sum(a["quantity"] for a in result)
+    return {"added": added, "final_size": final_size}
 
 
 @app.post("/deck/cuts", response_model=CutsResponse)

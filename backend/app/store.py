@@ -82,6 +82,7 @@ class Store:
         self._load_staples()
         self._load_spellbook()
         self._load_commander_decks()
+        self._load_land_meta(cards_path)
 
     def _load_cards(self, path: Path) -> None:
         if not path.exists():
@@ -283,6 +284,23 @@ class Store:
 
     def commander_deck_count(self, card_id: str) -> int:
         return self._commander_decks.get(card_id, 0)
+
+    # ---- SP12: land meta (prices + produced_mana) -------------------------
+    def _load_land_meta(self, cards_path: Path) -> None:
+        """Load backend/data/land_meta.json into memory.
+
+        Maps card id -> {"name": str, "produced_mana": list[str], "usd": float|None}.
+        Missing file ⇒ empty dict (engine degrades gracefully — lands are still
+        recommended, just without price filtering).
+        """
+        self.land_meta: dict[str, dict] = {}
+        # land_meta.json lives in backend/data/ (same dir as this package's parent)
+        meta_path = Path(__file__).resolve().parents[1] / "data" / "land_meta.json"
+        if not meta_path.exists():
+            return
+        with meta_path.open(encoding="utf-8") as fh:
+            self.land_meta = json.load(fh)
+        print(f"land_meta: {len(self.land_meta)} entries loaded")
 
     def commanders(self, q: str = "", colors: str = "", sort: str = "popularity",
                    limit: int = 0) -> list[dict]:
