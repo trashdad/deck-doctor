@@ -43,6 +43,8 @@ export function CardTile({
     <>
       <div
         className="mtg-card group cursor-pointer select-none"
+        // Native tooltip with name + type line (cheap, useful on dense grids).
+        title={card.type_line ? `${card.name} — ${card.type_line}` : card.name}
         onClick={onClick}
         // The outer wrapper covers the whole card; entering it from outside
         // starts the "preview" zone.  Leaving the whole card clears state.

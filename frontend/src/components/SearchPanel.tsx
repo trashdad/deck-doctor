@@ -48,6 +48,14 @@ function CardWithMenu({
     setMenu({ x: e.clientX, y: e.clientY });
   }, []);
 
+  // Right-click also opens the same menu (Archidekt-style); suppress the
+  // browser's native context menu.
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setMenu({ x: e.clientX, y: e.clientY });
+  }, []);
+
   const handleAdd = useCallback(() => {
     onAdd(card);
   }, [onAdd, card]);
@@ -64,6 +72,7 @@ function CardWithMenu({
       <div
         className={`relative ${offColor ? "opacity-45 grayscale" : ""}`}
         onClick={handleClick}
+        onContextMenu={handleContextMenu}
       >
         {offColor ? (
           // Off-color: no add action, just a visual warning on hover.
@@ -208,6 +217,17 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              onKeyDown={(e) => {
+                // Enter adds the FIRST search result to the deck (Moxfield-style
+                // quick-add), then clears the box for the next search. Guarded
+                // against an empty result set.
+                if (e.key !== "Enter") return;
+                const first = searchQuery.data?.[0];
+                if (!first) return;
+                e.preventDefault();
+                onAdd(first);
+                setQ("");
+              }}
               placeholder={
                 searchField === "name" ? "Search by card name…" : "Search oracle text… (e.g. \"draw a card\")"
               }

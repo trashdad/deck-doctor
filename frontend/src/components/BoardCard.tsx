@@ -88,6 +88,12 @@ export function BoardCard({
           e.stopPropagation();
           setMenuPos({ x: e.clientX, y: e.clientY });
         }}
+        onContextMenu={(e) => {
+          // Right-click opens the same menu (Archidekt-style).
+          e.preventDefault();
+          e.stopPropagation();
+          setMenuPos({ x: e.clientX, y: e.clientY });
+        }}
         {...(variant === "solid" ? { ...listeners, ...attributes } : {})}
         data-card-hover="1"
       >

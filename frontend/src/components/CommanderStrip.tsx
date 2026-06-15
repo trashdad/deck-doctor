@@ -39,6 +39,12 @@ function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void })
             e.stopPropagation();
             setMenuPos({ x: e.clientX, y: e.clientY });
           }}
+          onContextMenu={(e) => {
+            // Right-click opens the same menu (Archidekt-style).
+            e.preventDefault();
+            e.stopPropagation();
+            setMenuPos({ x: e.clientX, y: e.clientY });
+          }}
           data-card-hover="1"
         >
           <div className="mtg-card w-[72px] shadow-[0_0_0_1px_rgba(201,162,39,0.5),_0_8px_24px_rgba(0,0,0,0.6)]">

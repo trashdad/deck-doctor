@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { useQuery } from "@tanstack/react-query";
 import { SearchPanel } from "@/components/SearchPanel";
@@ -23,7 +23,11 @@ import { UserMenu } from "@/components/UserMenu";
 import { useDeck } from "@/store/deck";
 import { useDecksStore } from "@/store/decks";
 import { useTemplateStore } from "@/store/template";
+import { useUI } from "@/store/ui";
+import { useRelationshipStore } from "@/store/relationship";
+import { useSemanticStore } from "@/store/semantic";
 import { useAuth } from "@/store/auth";
+import { useBackToClose } from "@/lib/useBackToClose";
 import { ZONES, type Zone } from "@/lib/zones";
 import type { EngineKey } from "@/components/EngineColumn";
 import { analyzeDeck, getTemplates } from "@/lib/api";
@@ -145,6 +149,62 @@ export default function Page() {
   const [graphOpen, setGraphOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [howOpen, setHowOpen] = useState(false);
+
+  // Store-backed overlays (for Back-to-close + the close-all dispatcher).
+  const relationshipOpen = useRelationshipStore((s) => s.isOpen);
+  const closeRelationship = useRelationshipStore((s) => s.close);
+  const semanticOpen = useSemanticStore((s) => s.isOpen);
+  const closeSemantic = useSemanticStore((s) => s.close);
+  const engineStaplesOpen = useUI((s) => s.engineStaples != null);
+  const closeEngineStaples = useUI((s) => s.closeEngineStaples);
+  const winconHelperOpen = useUI((s) => s.winconHelperOpen);
+  const closeWinconHelper = useUI((s) => s.closeWinconHelper);
+  const templatePanelOpen = useTemplateStore((s) => s.panelOpen);
+  const closeTemplatePanel = useTemplateStore((s) => s.closePanel);
+
+  // OR of every major overlay. When true, the browser Back button dismisses the
+  // topmost overlay (see useBackToClose) instead of leaving /deck-doctor.
+  const anyOverlayOpen =
+    suggestOpen ||
+    decksOpen ||
+    importOpen ||
+    combosOpen ||
+    doctorOpen ||
+    graphOpen ||
+    exportOpen ||
+    howOpen ||
+    relationshipOpen ||
+    semanticOpen ||
+    engineStaplesOpen ||
+    winconHelperOpen ||
+    templatePanelOpen;
+
+  // Close every page + store overlay at once (Back-button handler target). The
+  // per-card CardMenu is local to each card and closes itself on Escape, so it's
+  // intentionally not covered here.
+  const closeAllOverlays = useCallback(() => {
+    setSuggestOpen(false);
+    setDecksOpen(false);
+    setImportOpen(false);
+    setCombosOpen(false);
+    setDoctorOpen(false);
+    setGraphOpen(false);
+    setExportOpen(false);
+    setHowOpen(false);
+    closeRelationship();
+    closeSemantic();
+    closeEngineStaples();
+    closeWinconHelper();
+    closeTemplatePanel();
+  }, [
+    closeRelationship,
+    closeSemantic,
+    closeEngineStaples,
+    closeWinconHelper,
+    closeTemplatePanel,
+  ]);
+
+  useBackToClose(anyOverlayOpen, closeAllOverlays);
 
   const { currentId, saveCurrent } = useDecksStore();
 
