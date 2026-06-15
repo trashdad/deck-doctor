@@ -81,6 +81,18 @@ export function CardTile({
           </div>
         </div>
 
+        {/* Win-con chip (top-left) — flags cards that can close the game. Kept
+            opposite the IER pill so the two never overlap. */}
+        {card.wincon && (
+          <span
+            className="absolute left-1 top-1 z-10 cursor-default rounded bg-amber-500/90 px-1
+                       text-[9px] font-bold uppercase tracking-wide text-black shadow"
+            title="Win condition — can close the game"
+          >
+            ⚔
+          </span>
+        )}
+
         {/* IER pill — hovering it switches to "ier" zone, suppressing the big preview */}
         {pill && (
           <span

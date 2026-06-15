@@ -12,6 +12,8 @@ import type { ColumnSections, EngineKey } from "./EngineColumn";
 import { CommanderStrip } from "./CommanderStrip";
 import { EngineColumn } from "./EngineColumn";
 import { EngineStaplesPanel } from "./EngineStaplesPanel";
+import { FieldSection } from "./FieldSection";
+import { WinconHelperPanel } from "./WinconHelperPanel";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -49,6 +51,7 @@ export function EngineBoard({
   const setThemeB = useTemplateStore((s) => s.setThemeB);
   const setThemeC = useTemplateStore((s) => s.setThemeC);
   const openEngineStaples = useUI((s) => s.openEngineStaples);
+  const openWinconHelper = useUI((s) => s.openWinconHelper);
 
   const isComposite = selectedId === COMPOSITE_TEMPLATE_ID;
 
@@ -79,14 +82,24 @@ export function EngineBoard({
   // ---------------------------------------------------------------------------
   // Placement algorithm
   // ---------------------------------------------------------------------------
-  const { e1Sections, e2Sections, e3Sections, neutralSections, singleSections } = useMemo(() => {
+  const { e1Sections, e2Sections, e3Sections, neutralSections, singleSections, winconEntries } = useMemo(() => {
     const e1: Partial<Record<Zone, PileEntry[]>> = {};
     const e2: Partial<Record<Zone, PileEntry[]>> = {};
     const e3: Partial<Record<Zone, PileEntry[]>> = {};
     const neutral: Partial<Record<Zone, PileEntry[]>> = {};
     const single: Partial<Record<Zone, PileEntry[]>> = {};
+    const wincons: PileEntry[] = [];
 
-    const nonCommanderCards = Object.values(cards).filter((dc) => dc.zone !== "Commanders");
+    // Win Conditions live in their own strip — collect them as solid entries and
+    // exclude them from the engine-column placement below.
+    const winconCards = Object.values(cards).filter((dc) => dc.zone === "Win Conditions");
+    for (const dc of winconCards) {
+      wincons.push({ card: dc.card, variant: "solid" });
+    }
+
+    const nonCommanderCards = Object.values(cards).filter(
+      (dc) => dc.zone !== "Commanders" && dc.zone !== "Win Conditions",
+    );
     const basicEntries = Object.values(basics);
 
     // Basics → Lands (solid). Neutral in composite (lands rarely match a theme).
@@ -155,6 +168,7 @@ export function EngineBoard({
       e3Sections: e3,
       neutralSections: neutral,
       singleSections: single,
+      winconEntries: wincons,
     };
   }, [cards, basics, isComposite, themeATags, themeBTags, themeCTags]);
 
@@ -177,6 +191,53 @@ export function EngineBoard({
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 scrollbar-thin">
       {/* Commander strip — always present */}
       <CommanderStrip commanders={commanders} onRemove={remove} controls={commanderControls} />
+
+      {/* Win Conditions strip — between the commander pane and the engines. It is
+          a drop target (FieldSection, zone "Win Conditions") and stays visible
+          even when empty. Gold/amber tint to distinguish it from the engines. */}
+      <div
+        className="mb-3 rounded-xl border border-amber-500/50 px-3 py-2"
+        style={{ background: "linear-gradient(180deg, rgba(245,158,11,0.12), rgba(245,158,11,0.03))" }}
+        data-testid="wincon-strip"
+      >
+        <div className="mb-1.5 flex items-center justify-between">
+          <span className="font-display text-sm font-semibold tracking-wide text-amber-400">
+            ⚔ Win Conditions
+          </span>
+          {winconEntries.length > 0 && (
+            <button
+              onClick={openWinconHelper}
+              data-testid="wincon-build-around"
+              title="Find cards that support these win conditions"
+              className="rounded-md border border-amber-500/60 px-2 py-1 text-[11px] font-semibold
+                         tracking-wide text-amber-300 transition hover:bg-amber-500/15"
+            >
+              ✦ Build around these
+            </button>
+          )}
+        </div>
+        {winconEntries.length === 0 ? (
+          <FieldSection
+            zone="Win Conditions"
+            dropId="Win Conditions"
+            entries={[]}
+            tint="rgba(245,158,11,0.10)"
+          />
+        ) : (
+          <FieldSection
+            zone="Win Conditions"
+            dropId="Win Conditions"
+            entries={winconEntries}
+            onRemove={remove}
+            tint="rgba(245,158,11,0.10)"
+          />
+        )}
+        {winconEntries.length === 0 && (
+          <p className="mt-1 px-1 text-[11px] italic text-amber-200/60">
+            Drag your win conditions here — the cards that actually close the game.
+          </p>
+        )}
+      </div>
 
       {isComposite ? (
         /* ── COMPOSITE: engine columns always visible (red | blue | green | neutral) ──
@@ -235,6 +296,9 @@ export function EngineBoard({
 
       {/* Engine Staples panel — self-hides when engineStaples store is null */}
       <EngineStaplesPanel />
+
+      {/* Win Conditions helper panel — self-hides when winconHelperOpen is false */}
+      <WinconHelperPanel />
     </div>
   );
 }

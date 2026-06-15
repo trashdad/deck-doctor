@@ -4,6 +4,7 @@ import { matchingZones } from "./functions";
 // The designated category "zones" of the builder board.
 export const ZONES = [
   "Commanders",
+  "Win Conditions",
   "Lands",
   "Ramp",
   "Card Draw",
@@ -24,6 +25,7 @@ export type Zone = (typeof ZONES)[number];
 // Board use the same priority list and can never drift.
 export function autoZone(card: Card): Zone {
   if (card.type_line.includes("Legendary Creature")) return "Commanders";
+  if (card.wincon) return "Win Conditions";
   return matchingZones(card)[0];
 }
 

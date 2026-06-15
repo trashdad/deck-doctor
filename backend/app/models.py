@@ -31,6 +31,8 @@ class Card(BaseModel):
     # the template themes are defined in, so the Engine Board can match a card to a
     # theme/engine. Distinct from mechanic_tags (coarse zone classes).
     semantic_tags: list[str] = []
+    # True if this card can reasonably end the game on its own (a win condition).
+    wincon: bool = False
     # Commander popularity = number of corpus decks led by this card (commanders only).
     deck_count: int | None = None
 

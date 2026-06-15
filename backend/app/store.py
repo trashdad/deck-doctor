@@ -12,6 +12,31 @@ import math
 from functools import lru_cache
 from pathlib import Path
 
+
+def is_wincon(card: dict) -> bool:
+    """Heuristic: can this card reasonably END the game on its own?
+
+    Catches alternate win/lose conditions, mass drain/damage finishers, and
+    overrun-style team pumps with trample. Intentionally a transparent oracle-text
+    heuristic — false positives lean toward "win-adjacent" engine payoffs, which is
+    fine for surfacing what belongs in the Win Conditions zone.
+    """
+    o = (card.get("oracle_text") or "").lower()
+    mana = (card.get("mana_cost") or "").lower()
+    # Alternate win / lose-the-game conditions.
+    if "win the game" in o or "wins the game" in o or "loses the game" in o:
+        return True
+    # Mass life drain — each opponent loses life.
+    if "each opponent loses" in o and "life" in o:
+        return True
+    # Scalable damage to every opponent (finishers, not 1-damage pingers).
+    if "damage to each opponent" in o and ("equal to" in o or "{x}" in mana):
+        return True
+    # Overrun-style: pump the whole team and give it trample / evasion.
+    if ("creatures you control get +" in o or "creatures you control gain" in o) and "trample" in o:
+        return True
+    return False
+
 # Complement pairs: (producer_tag, consumer_tag).
 # If card A has producer_tag and card B has consumer_tag, they synergize.
 # Scored bidirectionally — if the target has the consumer, find producers.
@@ -109,6 +134,7 @@ class Store:
         enriched["ier"] = self._ier.get(card_id)
         enriched["mechanic_tags"] = self._tags.get(card_id, [])
         enriched["semantic_tags"] = self._flat_tags_sem.get(card_id, [])
+        enriched["wincon"] = is_wincon(card)
         return enriched
 
     def search(self, q: str = "", colors: str = "", type_q: str = "",

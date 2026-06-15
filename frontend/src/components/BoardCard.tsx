@@ -103,6 +103,18 @@ export function BoardCard({
           </div>
         )}
 
+        {/* Win-con chip — flags win conditions on the board (top-left, clear of
+            the top-right remove handle). */}
+        {variant === "solid" && card.wincon && (
+          <span
+            className="pointer-events-none absolute left-0.5 top-0.5 z-10 rounded bg-amber-500/90
+                       px-0.5 text-[7px] font-bold text-black shadow"
+            title="Win condition"
+          >
+            ⚔
+          </span>
+        )}
+
         {/* Ghost overlay label */}
         {variant === "ghost" && ghostKind && (
           <div

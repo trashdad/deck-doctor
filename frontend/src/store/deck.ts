@@ -64,7 +64,9 @@ export const useDeck = create<DeckState>((set) => ({
       // Adding from search NEVER sets the commander (that's setCommander's job via
       // the Commanders tab). Legendary creatures land in their function zone, not
       // the Commander zone — so a second legendary creature goes to Ramp/Utility/etc.
-      const zone = matchingZones(card)[0];
+      // Detected win conditions drop into the dedicated Win Conditions strip;
+      // everything else flows to its function zone.
+      const zone = card.wincon ? "Win Conditions" : matchingZones(card)[0];
 
       // Color-identity gate: once a commander is set, off-color cards can't be added.
       const ci = commanderIdentity(s.cards);

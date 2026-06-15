@@ -26,6 +26,8 @@ export interface Card {
   /** Fine-grained semantic tags (e:gain_life, k:lifelink, …) — the same vocabulary
    * template themes use, so the Engine Board can match a card to an engine. */
   semantic_tags?: string[];
+  /** True if this card can reasonably end the game on its own (a win condition). */
+  wincon?: boolean;
   /** Commander popularity = corpus decks led by this card (commanders only). */
   deck_count?: number | null;
 }

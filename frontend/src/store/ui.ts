@@ -24,6 +24,10 @@ interface UIState {
   engineStaples: EngineStaplesTarget | null;
   openEngineStaples: (target: EngineStaplesTarget) => void;
   closeEngineStaples: () => void;
+  /** True while the Win Conditions helper ("Build around these") panel is open. */
+  winconHelperOpen: boolean;
+  openWinconHelper: () => void;
+  closeWinconHelper: () => void;
 }
 
 export const useUI = create<UIState>((set) => ({
@@ -36,4 +40,7 @@ export const useUI = create<UIState>((set) => ({
   engineStaples: null,
   openEngineStaples: (target) => set({ engineStaples: target }),
   closeEngineStaples: () => set({ engineStaples: null }),
+  winconHelperOpen: false,
+  openWinconHelper: () => set({ winconHelperOpen: true }),
+  closeWinconHelper: () => set({ winconHelperOpen: false }),
 }));
