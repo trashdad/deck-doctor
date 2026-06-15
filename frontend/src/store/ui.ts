@@ -1,6 +1,13 @@
 import { create } from "zustand";
+import type { EngineKey } from "@/components/EngineColumn";
 
 export type SearchTab = "search" | "commanders";
+
+export interface EngineStaplesTarget {
+  engineKey: EngineKey;
+  themeId: string;
+  themeLabel: string;
+}
 
 interface UIState {
   /** Which tab the left search panel shows. Defaults to the commander list. */
@@ -13,6 +20,10 @@ interface UIState {
    * blow-up so it never covers the menu (the menu can open from any zone). */
   cardMenuOpen: boolean;
   setCardMenuOpen: (v: boolean) => void;
+  /** Non-null while the Engine Staples panel is open. */
+  engineStaples: EngineStaplesTarget | null;
+  openEngineStaples: (target: EngineStaplesTarget) => void;
+  closeEngineStaples: () => void;
 }
 
 export const useUI = create<UIState>((set) => ({
@@ -22,4 +33,7 @@ export const useUI = create<UIState>((set) => ({
   setPartnerPick: (v) => set({ partnerPick: v }),
   cardMenuOpen: false,
   setCardMenuOpen: (v) => set({ cardMenuOpen: v }),
+  engineStaples: null,
+  openEngineStaples: (target) => set({ engineStaples: target }),
+  closeEngineStaples: () => set({ engineStaples: null }),
 }));

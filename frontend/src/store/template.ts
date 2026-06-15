@@ -16,6 +16,7 @@ export interface CompositeState {
   counts: Record<string, number>;
   themeA: string; // theme id, or "" for none
   themeB: string;
+  themeC: string;
   freeText: string;
 }
 
@@ -32,6 +33,7 @@ interface TemplateStore {
   setCount: (cat: string, n: number) => void;
   setThemeA: (id: string) => void;
   setThemeB: (id: string) => void;
+  setThemeC: (id: string) => void;
   setFreeText: (text: string) => void;
   openPanel: () => void;
   closePanel: () => void;
@@ -50,6 +52,7 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
     counts: { ...DEFAULT_COMPOSITE_COUNTS },
     themeA: "",
     themeB: "",
+    themeC: "",
     freeText: "",
   },
   panelOpen: false,
@@ -82,6 +85,7 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
 
   setThemeA: (id) => set((s) => ({ composite: { ...s.composite, themeA: id } })),
   setThemeB: (id) => set((s) => ({ composite: { ...s.composite, themeB: id } })),
+  setThemeC: (id) => set((s) => ({ composite: { ...s.composite, themeC: id } })),
   setFreeText: (text) =>
     set((s) => ({ composite: { ...s.composite, freeText: text } })),
 

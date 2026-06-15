@@ -57,23 +57,32 @@ export function cardFunctions(card: Card): CardFunctions {
 export interface CardEngines {
   e1: boolean;
   e2: boolean;
+  e3: boolean;
 }
 
 /**
  * Determine which engine(s) a card belongs to.
  *
- * @param card       The deck card.
- * @param themeATags mechanic_tags from the theme chosen for Engine 1 (may be empty).
- * @param themeBTags mechanic_tags from the theme chosen for Engine 2 (may be empty).
+ * @param card        The deck card.
+ * @param themeATags  mechanic_tags from the theme chosen for Engine 1 (may be empty).
+ * @param themeBTags  mechanic_tags from the theme chosen for Engine 2 (may be empty).
+ * @param themeCTags  mechanic_tags from the theme chosen for Engine 3 (may be empty).
  *
  * e1 = the card's SEMANTIC tags intersect themeATags.
  * e2 = the card's SEMANTIC tags intersect themeBTags.
- * Neither → neutral. (Themes are defined in the semantic-tag vocabulary —
+ * e3 = the card's SEMANTIC tags intersect themeCTags.
+ * None → neutral. (Themes are defined in the semantic-tag vocabulary —
  * e:gain_life, k:lifelink, … — NOT the coarse mechanic_tags used for zones.)
  */
-export function cardEngines(card: Card, themeATags: string[], themeBTags: string[]): CardEngines {
+export function cardEngines(
+  card: Card,
+  themeATags: string[],
+  themeBTags: string[],
+  themeCTags: string[] = [],
+): CardEngines {
   const tags = card.semantic_tags || [];
   const e1 = themeATags.length > 0 && tags.some((t) => themeATags.includes(t));
   const e2 = themeBTags.length > 0 && tags.some((t) => themeBTags.includes(t));
-  return { e1, e2 };
+  const e3 = themeCTags.length > 0 && tags.some((t) => themeCTags.includes(t));
+  return { e1, e2, e3 };
 }

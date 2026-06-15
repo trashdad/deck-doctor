@@ -5,7 +5,7 @@ import type { Zone } from "@/lib/zones";
 import type { PileEntry } from "./CardPile";
 import { FieldSection } from "./FieldSection";
 
-export type EngineKey = "e1" | "e2" | "neutral" | "single";
+export type EngineKey = "e1" | "e2" | "e3" | "neutral" | "single";
 
 /** Sections to be rendered inside one engine column, keyed by Zone. */
 export type ColumnSections = Partial<Record<Zone, PileEntry[]>>;
@@ -16,10 +16,12 @@ interface Props {
   label?: string;
   /** Static theme label (e.g. "no engine" for the neutral column). */
   themeLabel?: string;
-  /** When provided, renders a theme picker in the header (used by e1/e2). */
+  /** When provided, renders a theme picker in the header (used by e1/e2/e3). */
   themeValue?: string;
   themeOptions?: ThemeInfo[];
   onThemeChange?: (id: string) => void;
+  /** When provided, renders a Staples button in the header (only if a theme is selected). */
+  onStaples?: () => void;
   sections: ColumnSections;
   onRemove?: (cardId: string) => void;
 }
@@ -36,6 +38,12 @@ const ENGINE_STYLES: Record<EngineKey, { border: string; bg: string; tint: strin
     bg: "linear-gradient(180deg, rgba(59,132,246,0.13), rgba(59,132,246,0.04))",
     tint: "rgba(59,132,246,0.08)",
     headColor: "#8ab6ef",
+  },
+  e3: {
+    border: "border-emerald-500/30",
+    bg: "linear-gradient(180deg, rgba(16,185,129,0.13), rgba(16,185,129,0.04))",
+    tint: "rgba(16,185,129,0.08)",
+    headColor: "#6ee7b7",
   },
   neutral: {
     border: "border-zinc-500/20",
@@ -62,6 +70,7 @@ export function EngineColumn({
   themeValue,
   themeOptions,
   onThemeChange,
+  onStaples,
   sections,
   onRemove,
 }: Props) {
@@ -72,7 +81,7 @@ export function EngineColumn({
     ([, entries]) => entries.length > 0,
   );
 
-  if (nonEmptySections.length === 0 && engineKey !== "e1" && engineKey !== "e2") {
+  if (nonEmptySections.length === 0 && engineKey !== "e1" && engineKey !== "e2" && engineKey !== "e3") {
     return null;
   }
 
@@ -89,17 +98,30 @@ export function EngineColumn({
       {/* Column header (composite / engine columns) */}
       {(label || onThemeChange) && (
         <div className="mb-1 flex flex-col gap-1.5 border-b border-white/[0.06] pb-2">
-          <div className="flex items-baseline gap-2">
-            {label && (
-              <span
-                className="font-display text-sm font-semibold tracking-wide"
-                style={{ color: style.headColor }}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-baseline gap-2">
+              {label && (
+                <span
+                  className="font-display text-sm font-semibold tracking-wide"
+                  style={{ color: style.headColor }}
+                >
+                  {label}
+                </span>
+              )}
+              {themeLabel && !onThemeChange && (
+                <span className="text-xs text-zinc-500">{themeLabel}</span>
+              )}
+            </div>
+            {onStaples && themeValue && (
+              <button
+                title="Engine Staples — top cards for this theme"
+                data-testid={`staples-btn-${engineKey}`}
+                onClick={onStaples}
+                className="shrink-0 rounded border border-amber-500/40 px-1.5 py-0.5 text-[10px]
+                           font-semibold text-amber-400 transition hover:bg-amber-500/15"
               >
-                {label}
-              </span>
-            )}
-            {themeLabel && !onThemeChange && (
-              <span className="text-xs text-zinc-500">{themeLabel}</span>
+                ⭐ Staples
+              </button>
             )}
           </div>
           {onThemeChange && themeOptions && (
