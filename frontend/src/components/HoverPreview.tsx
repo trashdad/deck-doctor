@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Card } from "@/lib/types";
+import { useUI } from "@/store/ui";
 
 interface Props {
   card: Card;
@@ -32,6 +33,7 @@ if (typeof window !== "undefined") {
  */
 export function HoverPreview({ card, active }: Props) {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const cardMenuOpen = useUI((s) => s.cardMenuOpen);
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -66,7 +68,7 @@ export function HoverPreview({ card, active }: Props) {
     };
   }, [active]);
 
-  if (!active || !pos || typeof document === "undefined") return null;
+  if (!active || !pos || cardMenuOpen || typeof document === "undefined") return null;
 
   const art = card.image_uris?.normal;
 

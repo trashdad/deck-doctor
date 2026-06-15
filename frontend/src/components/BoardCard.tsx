@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import type { Card } from "@/lib/types";
 import { HoverPreview } from "./HoverPreview";
+import { CardMenu } from "./CardMenu";
 
 export type BoardCardVariant = "solid" | "ghost";
 export type GhostKind = "additional" | "bridge";
@@ -30,6 +31,7 @@ export function BoardCard({
   stackIndex,
 }: Props) {
   const [hovering, setHovering] = useState(false);
+  const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
 
   // Use a separator unlikely to appear in Scryfall UUIDs when constructing the
   // drag id, so we can reliably strip the suffix back to the card id on drop.
@@ -80,6 +82,12 @@ export function BoardCard({
           .join(" ")}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={(e) => {
+          // A genuine click (dnd-kit suppresses this after a drag) opens the
+          // card menu — same interaction available in every zone.
+          e.stopPropagation();
+          setMenuPos({ x: e.clientX, y: e.clientY });
+        }}
         {...(variant === "solid" ? { ...listeners, ...attributes } : {})}
         data-card-hover="1"
       >
@@ -123,8 +131,17 @@ export function BoardCard({
         )}
       </div>
 
-      {/* 250% cursor-following hover preview */}
+      {/* Cursor-following hover blow-up (suppressed while the menu is open) */}
       <HoverPreview card={card} active={hovering} />
+
+      {menuPos && (
+        <CardMenu
+          card={card}
+          anchor={menuPos}
+          onRemove={onRemove}
+          onClose={() => setMenuPos(null)}
+        />
+      )}
     </>
   );
 }

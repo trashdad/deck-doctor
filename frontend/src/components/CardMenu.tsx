@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { Card } from "@/lib/types";
 import { useSemanticStore } from "@/store/semantic";
 import { useRelationshipStore } from "@/store/relationship";
+import { useUI } from "@/store/ui";
 import { amazonCardUrl, manapoolCardUrl, tcgplayerCardUrl } from "@/lib/affiliate";
 
 interface CardMenuProps {
@@ -16,7 +17,14 @@ interface CardMenuProps {
 export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
   const openCard = useSemanticStore((s) => s.openCard);
   const openExplorer = useRelationshipStore((s) => s.open);
+  const setCardMenuOpen = useUI((s) => s.setCardMenuOpen);
   const ref = useRef<HTMLDivElement>(null);
+
+  // Flag the open menu so card hover blow-ups suppress (never cover the menu).
+  useEffect(() => {
+    setCardMenuOpen(true);
+    return () => setCardMenuOpen(false);
+  }, [setCardMenuOpen]);
 
   useEffect(() => {
     const down = (e: MouseEvent) => {

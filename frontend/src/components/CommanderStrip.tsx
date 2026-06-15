@@ -5,6 +5,7 @@ import type { Card } from "@/lib/types";
 import { canHavePartner } from "@/lib/partners";
 import { useUI } from "@/store/ui";
 import { HoverPreview } from "./HoverPreview";
+import { CardMenu } from "./CardMenu";
 
 interface Props {
   /** All cards currently in the Commanders zone (1 = commander, 2 = partner pair). */
@@ -24,6 +25,7 @@ const PIP_BG: Record<string, string> = {
 
 function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void }) {
   const [hovering, setHovering] = useState(false);
+  const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
   const art = card.image_uris?.normal;
 
   return (
@@ -33,6 +35,10 @@ function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void })
           className="group relative flex-none cursor-pointer"
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuPos({ x: e.clientX, y: e.clientY });
+          }}
           data-card-hover="1"
         >
           <div className="mtg-card w-[72px] shadow-[0_0_0_1px_rgba(201,162,39,0.5),_0_8px_24px_rgba(0,0,0,0.6)]">
@@ -81,6 +87,14 @@ function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void })
         </div>
       </div>
       <HoverPreview card={card} active={hovering} />
+      {menuPos && (
+        <CardMenu
+          card={card}
+          anchor={menuPos}
+          onRemove={onRemove}
+          onClose={() => setMenuPos(null)}
+        />
+      )}
     </>
   );
 }
