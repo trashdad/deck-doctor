@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import type { DeckCard, BasicEntry } from "@/store/deck";
 import { useDeck } from "@/store/deck";
 import { useTemplateStore, COMPOSITE_TEMPLATE_ID } from "@/store/template";
@@ -33,7 +33,12 @@ function addToSection(
  * Reads deck state + template store, runs the placement algorithm, renders
  * CommanderStrip + engine columns (or single column for non-composite).
  */
-export function EngineBoard() {
+export function EngineBoard({
+  commanderControls,
+}: {
+  /** Deck-action controls rendered in the right of the commander pane. */
+  commanderControls?: ReactNode;
+}) {
   const { cards, basics, remove } = useDeck();
   const selectedId = useTemplateStore((s) => s.selectedId);
   const composite = useTemplateStore((s) => s.composite);
@@ -117,7 +122,7 @@ export function EngineBoard() {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 scrollbar-thin">
       {/* Commander strip — always present */}
-      <CommanderStrip commanders={commanders} onRemove={remove} />
+      <CommanderStrip commanders={commanders} onRemove={remove} controls={commanderControls} />
 
       {isComposite ? (
         /* ── COMPOSITE: engine columns always visible (red | blue | neutral) ──

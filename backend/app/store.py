@@ -112,11 +112,19 @@ class Store:
         return enriched
 
     def search(self, q: str = "", colors: str = "", type_q: str = "",
-               max_cmc: float | None = None, limit: int = 60) -> list[dict]:
+               max_cmc: float | None = None, limit: int = 60,
+               commander_id: str | None = None) -> list[dict]:
+        """Filtered card search, ranked MOST-POPULAR first.
+
+        Ranking: when a `commander_id` is given, by that commander's EDHREC
+        inclusion rate (the cards its decks actually run), then global corpus
+        deck-frequency; otherwise by global deck-frequency. So the empty-query
+        default surfaces the most-played cards, contextualised to the commander.
+        """
         q = q.lower().strip()
         color_set = {c.upper() for c in colors if c.strip()}
         type_q = type_q.lower().strip()
-        out: list[dict] = []
+        matches: list[str] = []
         for cid, card in self._cards.items():
             if q and q not in card.get("name", "").lower():
                 continue
@@ -126,10 +134,19 @@ class Store:
                 continue
             if color_set and not color_set.issubset(set(card.get("color_identity") or [])):
                 continue
-            out.append(self.get(cid))  # type: ignore[arg-type]
-            if len(out) >= limit:
-                break
-        return out
+            matches.append(cid)
+
+        edh = self.edhrec_for(commander_id) if commander_id else {}
+        if edh:
+            matches.sort(key=lambda cid: (
+                -edh.get(cid, (0.0, 0.0))[1],          # commander inclusion rate
+                -self._deck_freq.get(cid, 0),           # global popularity
+                self._cards[cid].get("name", "")))
+        else:
+            matches.sort(key=lambda cid: (
+                -self._deck_freq.get(cid, 0),
+                self._cards[cid].get("name", "")))
+        return [self.get(cid) for cid in matches[:limit]]  # type: ignore[misc]
 
     def ier(self, card_id: str) -> float | None:
         return self._ier.get(card_id)

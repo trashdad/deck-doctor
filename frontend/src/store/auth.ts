@@ -38,7 +38,10 @@ export const useAuth = create<AuthState>((set) => ({
       localStorage.removeItem(USER_KEY);
     }
     const username = cached && cached.id === session.id ? cached.username : "";
-    set({ user: { id: session.id, username }, ready: true });
+    set({
+      user: { id: session.id, username, is_admin: session.is_admin, tier: session.tier },
+      ready: true,
+    });
   },
   login: async (username, password) => {
     const user = await trackerLogin(username, password);

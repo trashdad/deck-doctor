@@ -1,12 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/store/auth";
 import { LoginModal } from "./LoginModal";
+
+// TODO(product): replace with the real Patreon URL once it exists.
+const PATREON_URL = "https://www.patreon.com/simmander";
 
 export function UserMenu() {
   const { user, logout } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onEsc);
+    return () => document.removeEventListener("keydown", onEsc);
+  }, []);
 
   if (!user) {
     return (
@@ -23,18 +33,67 @@ export function UserMenu() {
     );
   }
 
+  const displayName = user.is_admin ? "Admin" : user.username || `Player #${user.id}`;
+  const isMythic = user.tier === "mythic";
+
   return (
-    <div className="flex items-center gap-2 text-xs">
-      <span className="text-zinc-400" data-testid="user-name">
-        {user.username || `user #${user.id}`}
-      </span>
+    <div className="relative">
       <button
-        onClick={() => void logout()}
-        data-testid="logout"
-        className="rounded-lg border border-edge px-2.5 py-1.5 font-semibold text-zinc-400 transition hover:border-accent hover:text-accent"
+        onClick={() => setOpen((o) => !o)}
+        data-testid="user-name"
+        title="Account options"
+        className="flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/5 px-3 py-1.5
+                   text-xs font-semibold text-accent transition hover:bg-accent/15"
       >
-        Log out
+        <span>👤 {displayName}</span>
+        {isMythic && (
+          <span className="rounded bg-accent px-1 text-[8px] font-bold uppercase tracking-wider text-ink">
+            Mythic
+          </span>
+        )}
+        <span className="text-[9px] text-accent/70">▾</span>
       </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-[130]" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-full z-[131] mt-1 w-56 overflow-hidden rounded-lg border border-edge bg-panel shadow-2xl">
+            <div className="border-b border-edge px-3 py-2">
+              <p className="text-sm font-semibold text-zinc-100">{displayName}</p>
+              <p className="text-[10px] uppercase tracking-widest text-zinc-500">
+                {isMythic ? "Mythic tier" : "Free tier"}
+              </p>
+            </div>
+            <a
+              href="https://simmander.app/"
+              className="block px-3 py-2 text-xs text-zinc-300 transition hover:bg-white/5"
+            >
+              ⚜ Manage account on Simmander.app
+            </a>
+            {!isMythic && (
+              <a
+                href={PATREON_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="user-patreon"
+                className="block px-3 py-2 text-xs font-semibold text-accent transition hover:bg-accent/10"
+              >
+                ★ Go Mythic on Patreon
+              </a>
+            )}
+            <button
+              onClick={() => {
+                setOpen(false);
+                void logout();
+              }}
+              data-testid="logout"
+              className="block w-full border-t border-edge px-3 py-2 text-left text-xs text-zinc-400 transition hover:bg-white/5 hover:text-zinc-200"
+            >
+              Log out
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

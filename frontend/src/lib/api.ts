@@ -55,8 +55,12 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 export async function authMe(): Promise<User | null> {
   const res = await fetch(`${BASE}/auth/me`, { credentials: "include" });
   if (!res.ok) return null;
-  const data = (await res.json()) as { user: { id: number } | null };
-  return data.user ? { id: data.user.id, username: "" } : null;
+  const data = (await res.json()) as {
+    user: { id: number; is_admin?: boolean } | null;
+  };
+  if (!data.user) return null;
+  const isAdmin = !!data.user.is_admin;
+  return { id: data.user.id, username: "", is_admin: isAdmin, tier: isAdmin ? "mythic" : "free" };
 }
 
 /** Log in via the tracker's shared endpoint (form-encoded). Sets the shared cookie. */
@@ -84,12 +88,14 @@ export function searchCards(params: {
   colors?: string;
   type?: string;
   max_cmc?: number;
+  commander_id?: string | null;
 }): Promise<Card[]> {
   const qs = new URLSearchParams();
   if (params.q) qs.set("q", params.q);
   if (params.colors) qs.set("colors", params.colors);
   if (params.type) qs.set("type", params.type);
   if (params.max_cmc != null) qs.set("max_cmc", String(params.max_cmc));
+  if (params.commander_id) qs.set("commander_id", params.commander_id);
   return get<Card[]>(`/cards?${qs.toString()}`);
 }
 

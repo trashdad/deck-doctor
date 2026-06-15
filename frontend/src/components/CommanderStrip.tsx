@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { Card } from "@/lib/types";
 import { canHavePartner } from "@/lib/partners";
 import { useUI } from "@/store/ui";
@@ -10,6 +10,8 @@ interface Props {
   /** All cards currently in the Commanders zone (1 = commander, 2 = partner pair). */
   commanders: Card[];
   onRemove: (id: string) => void;
+  /** Deck-action controls stacked on the right of the pane (template/doctor/etc). */
+  controls?: ReactNode;
 }
 
 const PIP_BG: Record<string, string> = {
@@ -87,7 +89,7 @@ function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void })
  * The gilded strip above the board showing the commander(s).
  * Always rendered; supports a partner pair and a clear remove + add-partner.
  */
-export function CommanderStrip({ commanders, onRemove }: Props) {
+export function CommanderStrip({ commanders, onRemove, controls }: Props) {
   const setSearchTab = useUI((s) => s.setSearchTab);
   const setPartnerPick = useUI((s) => s.setPartnerPick);
   // Only offer a partner when the lone commander actually has a partner ability.
@@ -134,6 +136,8 @@ export function CommanderStrip({ commanders, onRemove }: Props) {
           )}
         </>
       )}
+
+      {controls && <div className="ml-auto flex-none">{controls}</div>}
     </div>
   );
 }

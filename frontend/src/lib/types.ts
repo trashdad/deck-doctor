@@ -3,6 +3,10 @@
 export interface User {
   id: number;
   username: string;
+  is_admin?: boolean;
+  /** Subscription tier. "mythic" unlocks the IER algorithm reveal. Placeholder
+   * until a real tier/Patreon system exists — admins are treated as mythic. */
+  tier?: "free" | "mythic";
 }
 
 export interface Card {

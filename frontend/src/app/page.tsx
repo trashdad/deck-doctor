@@ -263,6 +263,42 @@ export default function Page() {
 
   const totalCards = deckCards.length + basicCount;
 
+  // Deck-action controls that live in the right of the commander pane (vertical).
+  const paneBtn =
+    "rounded-md border px-2 py-1 text-left text-[11px] font-semibold tracking-wide transition";
+  const commanderControls = (
+    <div className="flex w-40 flex-col gap-1">
+      <TemplateMenu />
+      <button
+        data-testid="open-combos"
+        title={deckCards.length ? "Combos in / near your deck" : "Add cards first"}
+        disabled={deckCards.length === 0}
+        onClick={() => setCombosOpen(true)}
+        className={`${paneBtn} ${deckCards.length === 0 ? "cursor-not-allowed border-zinc-700 text-zinc-600" : "border-accent/50 text-accent hover:bg-accent/10"}`}
+      >
+        ♾ Combos
+      </button>
+      <button
+        data-testid="open-doctor"
+        title={commander ? "Deck Doctor" : "Add a commander first"}
+        disabled={!commander}
+        onClick={() => setDoctorOpen(true)}
+        className={`${paneBtn} ${!commander ? "cursor-not-allowed border-zinc-700 text-zinc-600" : "border-accent/50 text-accent hover:bg-accent/10"}`}
+      >
+        🩺 Doctor
+      </button>
+      <button
+        data-testid="open-suggestions"
+        title={commander ? `Suggestions for ${commander.name}` : "Add a commander first"}
+        disabled={!commander}
+        onClick={() => setSuggestOpen(true)}
+        className={`${paneBtn} ${!commander ? "cursor-not-allowed border-zinc-700 text-zinc-600" : "border-accent/50 text-accent hover:bg-accent/10"}`}
+      >
+        ⚡ Suggestions
+      </button>
+    </div>
+  );
+
   return (
     <div className="flex h-screen flex-col">
       {migratePrompt && (
@@ -340,25 +376,8 @@ export default function Page() {
         </div>
         <div className="flex items-center gap-2">
           <UserMenu />
-          <TemplateMenu />
           <HeaderButton testid="open-decks" title="Saved decks" onClick={() => setDecksOpen(true)}>
             🗂 Decks
-          </HeaderButton>
-          <HeaderButton
-            testid="open-combos"
-            title={deckCards.length ? "Combos in / near your deck" : "Add cards first"}
-            disabled={deckCards.length === 0}
-            onClick={() => setCombosOpen(true)}
-          >
-            ♾ Combos
-          </HeaderButton>
-          <HeaderButton
-            testid="open-doctor"
-            title={commander ? "Deck Doctor" : "Add a commander first"}
-            disabled={!commander}
-            onClick={() => setDoctorOpen(true)}
-          >
-            🩺 Doctor
           </HeaderButton>
           <HeaderButton
             testid="open-graph"
@@ -367,14 +386,6 @@ export default function Page() {
             onClick={() => setGraphOpen(true)}
           >
             🕸 Graph
-          </HeaderButton>
-          <HeaderButton
-            testid="open-suggestions"
-            title={commander ? `Suggestions for ${commander.name}` : "Add a commander first"}
-            disabled={!commander}
-            onClick={() => setSuggestOpen(true)}
-          >
-            ⚡ Suggestions
           </HeaderButton>
           <HeaderButton
             testid="open-import"
@@ -406,7 +417,7 @@ export default function Page() {
         <div className="flex min-h-0 flex-1">
           <SearchPanel onAdd={add} />
 
-          <EngineBoard />
+          <EngineBoard commanderControls={commanderControls} />
 
           {/* Long options handle on the right margin of the board — opens the
               current template's options without touching the dropdown. */}

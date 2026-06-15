@@ -118,12 +118,13 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
   const [type, setType] = useState("");
   const [cmdQ, setCmdQ] = useState("");
   const [cmdColors, setCmdColors] = useState<string[]>([]);
-  // Default the commander list to efficiency (IER), highest first.
-  const [cmdSort, setCmdSort] = useState<CommanderSort>("ier");
+  // Default the commander list to the most-popular commanders, highest first.
+  const [cmdSort, setCmdSort] = useState<CommanderSort>("popularity");
 
   const searchQuery = useQuery({
-    queryKey: ["cards", q, colors, type],
-    queryFn: () => searchCards({ q, colors: colors.join(""), type }),
+    queryKey: ["cards", q, colors, type, existingCommander?.id ?? ""],
+    queryFn: () =>
+      searchCards({ q, colors: colors.join(""), type, commander_id: existingCommander?.id }),
     enabled: tab === "search",
   });
 
