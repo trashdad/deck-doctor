@@ -117,6 +117,8 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
     } else {
       setCommander(card, false);
     }
+    // Jump to the card search (now ranked for this commander) to build the 99.
+    setTab("search");
   };
   const [q, setQ] = useState("");
   const [colors, setColors] = useState<string[]>([]);
