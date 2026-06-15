@@ -427,12 +427,14 @@ export default function Page() {
         commanderId={commanderId}
       />
 
-      <header className="flex items-center justify-between border-b border-edge bg-panel px-5 py-3">
+      <header className="flex items-center justify-between border-b border-accent/30 bg-[#0a0420]/70 px-5 py-3 backdrop-blur-md">
         <div className="flex items-baseline gap-3">
-          <h1 className="font-display text-xl tracking-wide text-accent">
-            Deck Doctor
+          <h1 className="arcade-bevel text-sm tracking-wide md:text-base">
+            DECK DOCTOR
           </h1>
-          <span className="text-sm text-zinc-500">EDH deckbuilder · Simmander</span>
+          <span className="text-xs uppercase tracking-[0.22em] text-cyan/70">
+            EDH deckbuilder · Simmander
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <UserMenu />

@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --font-display: "Cinzel", "Georgia", serif;
+  --font-display: "Press Start 2P", monospace; /* wordmark + headers ONLY */
+  --font-ui: "Rajdhani", system-ui, sans-serif; /* body / UI */
 }
 
 html,
@@ -13,9 +14,105 @@ body {
 
 body {
   @apply bg-ink text-zinc-200;
+  font-family: var(--font-ui);
+  /* Violet synthwave base. */
+  background:
+    linear-gradient(180deg, #0a0420 0%, #1a0b3e 45%, #2b0f54 100%) fixed;
+}
+
+/* ===== Fixed synthwave × Golden Axe backdrop ===== */
+.arcade-scene {
+  position: fixed;
+  inset: 0;
+  z-index: -1; /* behind all app content, above the body gradient */
+  overflow: hidden;
+  pointer-events: none;
+}
+/* sunset sun, top-center */
+.arcade-sun {
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  width: 620px;
+  height: 620px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #ff7ad9 0 30%, #ffd24a 30% 55%, rgba(255, 122, 217, 0) 70%);
+  opacity: 0.28;
+  filter: blur(2px);
+}
+/* neon perspective grid along the bottom */
+.arcade-grid {
+  position: absolute;
+  left: -25%;
+  right: -25%;
+  bottom: 0;
+  height: 42vh;
   background-image:
-    radial-gradient(1200px 600px at 80% -10%, rgba(124, 92, 255, 0.12), transparent),
-    radial-gradient(900px 500px at -10% 110%, rgba(201, 162, 39, 0.08), transparent);
+    repeating-linear-gradient(90deg, rgba(255, 43, 214, 0.35) 0 1px, transparent 1px 7%),
+    repeating-linear-gradient(0deg, rgba(0, 238, 255, 0.32) 0 1px, transparent 1px 9%);
+  transform: perspective(420px) rotateX(70deg) scale(1.8);
+  transform-origin: bottom center;
+  opacity: 0.5;
+  mask-image: linear-gradient(transparent, #000 60%);
+  -webkit-mask-image: linear-gradient(transparent, #000 60%);
+}
+/* one big 16-bit golden axe, slowly rotating dead-center */
+.arcade-axe {
+  position: absolute;
+  top: clamp(20px, 14vh, 160px);
+  left: 50%;
+  width: min(560px, 60vw);
+  aspect-ratio: 1;
+  translate: -50% 0;
+  background-image: url("/deck-doctor/golden-axe.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  image-rendering: pixelated;
+  opacity: 0.16;
+  filter: drop-shadow(0 0 40px rgba(255, 174, 0, 0.5)) drop-shadow(0 0 16px rgba(255, 210, 74, 0.4));
+  animation: axespin 60s linear infinite, axebob 9s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes axespin {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes axebob {
+  0%, 100% {
+    translate: -50% 0;
+  }
+  50% {
+    translate: -50% -22px;
+  }
+}
+/* faint CRT scanlines over the whole scene */
+.arcade-scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 3px);
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arcade-axe {
+    animation: none;
+  }
+}
+
+/* ===== Golden-Axe gold-bevel arcade text (wordmark + headers) ===== */
+.arcade-bevel {
+  font-family: var(--font-display);
+  color: #ffd24a;
+  text-shadow:
+    1px 1px 0 #fff6c2,
+    -1px -1px 0 #a8690f,
+    2px 2px 0 #8a5410,
+    3px 3px 0 #5e3510,
+    0 0 14px rgba(255, 43, 214, 0.55),
+    0 0 22px rgba(0, 238, 255, 0.3);
+  letter-spacing: 0.02em;
 }
 
 /* Real-card frame: correct MTG aspect ratio + corner rounding. */
@@ -30,7 +127,8 @@ body {
 }
 .mtg-card:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.5), 0 12px 32px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 1px rgba(255, 210, 74, 0.6), 0 0 18px rgba(255, 43, 214, 0.45),
+    0 12px 32px rgba(0, 0, 0, 0.6);
   z-index: 20;
 }
 .mtg-card img {
