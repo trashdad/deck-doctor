@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { Card } from "@/lib/types";
 import { type Zone } from "@/lib/zones";
 import { matchingZones } from "@/lib/functions";
@@ -55,7 +56,9 @@ interface DeckState {
   ) => void;
 }
 
-export const useDeck = create<DeckState>((set) => ({
+export const useDeck = create<DeckState>()(
+  persist(
+    (set) => ({
   cards: {},
   basics: {},
   add: (card) =>
@@ -141,4 +144,12 @@ export const useDeck = create<DeckState>((set) => ({
 
       return { cards: nextCards, basics: nextBasics };
     }),
-}));
+    }),
+    {
+      // Persist the working deck (cards + basics, including the Card objects) so it
+      // survives a reload / browser Back — no progress lost. Methods aren't stored.
+      name: "simmander.deck",
+      partialize: (s) => ({ cards: s.cards, basics: s.basics }),
+    },
+  ),
+);
