@@ -87,11 +87,13 @@ export function searchCards(params: {
   q?: string;
   colors?: string;
   type?: string;
+  oracle?: string;
   max_cmc?: number;
   commander_id?: string | null;
 }): Promise<Card[]> {
   const qs = new URLSearchParams();
   if (params.q) qs.set("q", params.q);
+  if (params.oracle) qs.set("oracle", params.oracle);
   if (params.colors) qs.set("colors", params.colors);
   if (params.type) qs.set("type", params.type);
   if (params.max_cmc != null) qs.set("max_cmc", String(params.max_cmc));

@@ -121,6 +121,8 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
     setTab("search");
   };
   const [q, setQ] = useState("");
+  // Scryfall-style: search the card NAME or its ORACLE TEXT.
+  const [searchField, setSearchField] = useState<"name" | "oracle">("name");
   const [colors, setColors] = useState<string[]>([]);
   const [type, setType] = useState("");
   const [cmdQ, setCmdQ] = useState("");
@@ -129,9 +131,15 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
   const [cmdSort, setCmdSort] = useState<CommanderSort>("popularity");
 
   const searchQuery = useQuery({
-    queryKey: ["cards", q, colors, type, existingCommander?.id ?? ""],
+    queryKey: ["cards", q, searchField, colors, type, existingCommander?.id ?? ""],
     queryFn: () =>
-      searchCards({ q, colors: colors.join(""), type, commander_id: existingCommander?.id }),
+      searchCards({
+        q: searchField === "name" ? q : "",
+        oracle: searchField === "oracle" ? q : "",
+        colors: colors.join(""),
+        type,
+        commander_id: existingCommander?.id,
+      }),
     enabled: tab === "search",
   });
 
@@ -180,10 +188,29 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
       {tab === "search" ? (
         <>
           <div className="space-y-2 border-b border-edge p-3">
+            {/* Scryfall-style field toggle: search by card name or by oracle text. */}
+            <div className="flex overflow-hidden rounded-md border border-edge text-[10px] font-bold uppercase tracking-wider">
+              {(["name", "oracle"] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setSearchField(f)}
+                  data-testid={`search-field-${f}`}
+                  className={`flex-1 py-1.5 transition ${
+                    searchField === f
+                      ? "bg-accent/20 text-accent"
+                      : "text-zinc-500 hover:text-zinc-300"
+                  }`}
+                >
+                  {f === "name" ? "Card name" : "Oracle text"}
+                </button>
+              ))}
+            </div>
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search cards…"
+              placeholder={
+                searchField === "name" ? "Search by card name…" : "Search oracle text… (e.g. \"draw a card\")"
+              }
               className="w-full rounded-md border border-edge bg-ink px-3 py-2 text-sm
                          outline-none focus:border-accent"
             />

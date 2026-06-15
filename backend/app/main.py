@@ -109,14 +109,16 @@ def search_cards(
     q: str = "",
     colors: str = "",
     type: str = "",
+    oracle: str = "",
     max_cmc: float | None = None,
     commander_id: str | None = None,
     limit: int = Query(60, le=200),
 ) -> list[dict]:
-    """Card search, most-popular first. Pass `commander_id` to rank by that
-    commander's EDHREC inclusion (the empty-query default = top cards for them)."""
+    """Card search, most-popular first. `q` = name substring, `oracle` = oracle-text
+    substring (Scryfall-style); both compose with `colors`. Pass `commander_id` to
+    rank by that commander's EDHREC inclusion (empty query = top cards for them)."""
     return get_store().search(
-        q=q, colors=colors, type_q=type, max_cmc=max_cmc,
+        q=q, colors=colors, type_q=type, oracle=oracle, max_cmc=max_cmc,
         commander_id=commander_id, limit=limit)
 
 

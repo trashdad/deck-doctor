@@ -113,7 +113,7 @@ class Store:
 
     def search(self, q: str = "", colors: str = "", type_q: str = "",
                max_cmc: float | None = None, limit: int = 60,
-               commander_id: str | None = None) -> list[dict]:
+               commander_id: str | None = None, oracle: str = "") -> list[dict]:
         """Filtered card search, ranked MOST-POPULAR first.
 
         Ranking: when a `commander_id` is given, by that commander's EDHREC
@@ -122,11 +122,14 @@ class Store:
         default surfaces the most-played cards, contextualised to the commander.
         """
         q = q.lower().strip()
+        oracle = oracle.lower().strip()
         color_set = {c.upper() for c in colors if c.strip()}
         type_q = type_q.lower().strip()
         matches: list[str] = []
         for cid, card in self._cards.items():
             if q and q not in card.get("name", "").lower():
+                continue
+            if oracle and oracle not in (card.get("oracle_text", "") or "").lower():
                 continue
             if type_q and type_q not in card.get("type_line", "").lower():
                 continue

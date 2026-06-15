@@ -7,11 +7,36 @@ import { CardTile } from "./CardTile";
 import type { Card, PairScoreFull } from "@/lib/types";
 
 const AXES: { key: ExplorerAxis; label: string; gloss: string }[] = [
-  { key: "similar", label: "Similar", gloss: "does the same job (SP1 similarity)" },
-  { key: "synergy", label: "Synergizes", gloss: "enables / is enabled by (SP1 synergy)" },
-  { key: "cooccurrence", label: "Played with", gloss: "empirically run together (deck lift)" },
-  { key: "combos", label: "Combos", gloss: "asserted combos & candidate engines" },
-  { key: "tags", label: "Tag-sim", gloss: "semantic tag overlap (legacy TF-IDF)" },
+  {
+    key: "similar",
+    label: "Similar",
+    gloss:
+      "Cards that do the SAME job as this one — your swaps and redundancy. Use this to find a replacement, a budget version, or a second copy of an effect.",
+  },
+  {
+    key: "synergy",
+    label: "Synergizes",
+    gloss:
+      "Cards that make this one BETTER, or that this one powers up. Use this to build around the card and find pieces that amplify it.",
+  },
+  {
+    key: "cooccurrence",
+    label: "Played with",
+    gloss:
+      "Cards real decks actually RUN ALONGSIDE this one, learned from thousands of real lists. Use this for safe, proven includes the community already pairs it with.",
+  },
+  {
+    key: "combos",
+    label: "Combos",
+    gloss:
+      "Known two-card COMBOS and engines this card is part of. Use this to find win conditions and loops you're a piece away from.",
+  },
+  {
+    key: "tags",
+    label: "Tag-sim",
+    gloss:
+      "Cards that share this one's MECHANICS / THEME by tag overlap (e.g. both make tokens, both gain life). Use this to find thematically-matching cards.",
+  },
 ];
 
 function metricBadge(axis: ExplorerAxis, metric: number): string {
@@ -227,8 +252,8 @@ export function RelationshipExplorer() {
             </button>
           ))}
         </div>
-        <p className="border-b border-edge px-4 py-1.5 text-[9px] text-zinc-600">
-          {activeAxis.gloss}
+        <p className="border-b border-edge bg-accent/[0.04] px-4 py-2 text-[11px] leading-snug text-zinc-300">
+          <span className="font-semibold text-accent">{activeAxis.label}:</span> {activeAxis.gloss}
         </p>
 
         {/* Body */}
