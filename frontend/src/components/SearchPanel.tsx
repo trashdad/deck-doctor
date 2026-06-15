@@ -48,38 +48,43 @@ function CardWithMenu({
     setMenu({ x: e.clientX, y: e.clientY });
   }, []);
 
-  const handleAdd = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation(); // don't open the menu
-      onAdd(card);
-    },
-    [onAdd, card],
-  );
+  const handleAdd = useCallback(() => {
+    onAdd(card);
+  }, [onAdd, card]);
 
   return (
     <>
-      {/* Click the tile for the tag/similar menu; the overlay button adds to the deck. */}
-      <div className={`group relative ${offColor ? "opacity-45 grayscale" : ""}`} onClick={handleClick}>
-        <CardTile card={card} compact />
+      {/*
+        Click the tile art/name for the tag/similar menu.
+        The `onAdd` prop is passed into CardTile's built-in action bar so
+        the button lives INSIDE the card element — no cross-element hover gap
+        that caused the flicker. For off-color cards we pass no onAdd so the
+        action bar is absent; we show an off-color badge instead via a wrapper.
+      */}
+      <div
+        className={`relative ${offColor ? "opacity-45 grayscale" : ""}`}
+        onClick={handleClick}
+      >
         {offColor ? (
-          <div
-            title="Outside your commander's color identity"
-            className="absolute inset-x-1 bottom-1 z-10 rounded-md bg-red-900/85 py-1 text-center
-                       text-[10px] font-bold uppercase tracking-widest text-red-200 opacity-0
-                       shadow-lg transition group-hover:opacity-100"
-          >
-            ⊘ Off-color
+          // Off-color: no add action, just a visual warning on hover.
+          <div className="group">
+            <CardTile card={card} compact />
+            <div
+              title="Outside your commander's color identity"
+              className="pointer-events-none absolute inset-x-1 bottom-1 z-20 rounded-md bg-red-900/85 py-1
+                         text-center text-[10px] font-bold uppercase tracking-widest text-red-200
+                         opacity-0 shadow-lg transition group-hover:opacity-100"
+            >
+              ⊘ Off-color
+            </div>
           </div>
         ) : (
-          <button
-            onClick={handleAdd}
-            title={`Add ${card.name} to deck`}
-            className="absolute inset-x-1 bottom-1 z-10 rounded-md bg-accent/90 py-1
-                       text-[10px] font-bold uppercase tracking-widest text-ink opacity-0
-                       shadow-lg transition hover:bg-accent group-hover:opacity-100"
-          >
-            ＋ Add to deck
-          </button>
+          // Normal: the CardTile action bar contains the ＋ button — no flicker.
+          <CardTile
+            card={card}
+            compact
+            onAdd={handleAdd}
+          />
         )}
       </div>
       {menu && (

@@ -10,7 +10,7 @@ interface Props {
   active: boolean;
 }
 
-const PREVIEW_W = 440; // px — 2× the previous 220 (≈500% of the 70px board card)
+const PREVIEW_W = 488; // px — ~3× a normal 160px card tile (≈500% of the 70px board card)
 
 // Track the cursor globally so the preview can position itself the instant a card
 // is hovered (without waiting for the next mousemove).

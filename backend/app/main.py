@@ -31,6 +31,7 @@ from .store import get_store
 from .suggest import is_commander, recommend
 from .templates import TEMPLATES, THEMES, theme_suggest
 from .export import ExportRow, to_archidekt_csv, to_manapool, to_moxfield_csv, to_text
+from .ier import ier_breakdown
 
 
 def _deck_detail(deck: dict) -> dict:
@@ -182,6 +183,29 @@ def combo_cards(card_id: str, limit: int = Query(20, le=60)) -> list[dict]:
     if not store.get(card_id):
         raise HTTPException(404, "card not found")
     return store.combo_cards(card_id, limit=limit)
+
+
+@app.get("/cards/{card_id}/ier")
+def card_ier(card_id: str, request: Request) -> dict:
+    """IER factor breakdown for a single card.
+
+    Tier gate: admins are "Mythic" and receive the full factor breakdown.
+    Free/anonymous users get only {locked: true, ier: <val>} — factors are
+    never sent to non-Mythic users.
+    """
+    store = get_store()
+    card = store.get(card_id)
+    if not card:
+        raise HTTPException(404, "card not found")
+    ier_val = card.get("ier")
+    if ier_val is None:
+        raise HTTPException(404, "no IER score for this card")
+    user = current_user(request)
+    is_mythic = user is not None and bool(user.get("is_admin"))
+    if not is_mythic:
+        return {"locked": True, "ier": ier_val}
+    breakdown = ier_breakdown(card)
+    return {"locked": False, "ier": ier_val, "factors": breakdown["factors"]}
 
 
 @app.get("/cards/{card_id}", response_model=Card)

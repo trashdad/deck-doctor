@@ -344,6 +344,23 @@ export function parseImport(text: string): Promise<ParseImportResult> {
   return post<ParseImportResult>("/deck/parse-import", { text });
 }
 
+// ---- IER breakdown (tiered — Mythic only gets factors) ----
+export interface IerFactor {
+  label: string;
+  detail: string;
+  value: number;
+}
+
+export interface IerBreakdownResponse {
+  locked: boolean;
+  ier: number;
+  factors?: IerFactor[];
+}
+
+export function ierBreakdown(cardId: string): Promise<IerBreakdownResponse> {
+  return get<IerBreakdownResponse>(`/cards/${encodeURIComponent(cardId)}/ier`);
+}
+
 // ---- SP9: synergy graph ----
 export function postDeckGraph(
   cards: DeckEntry[],
