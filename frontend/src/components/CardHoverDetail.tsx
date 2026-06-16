@@ -46,15 +46,15 @@ export function CardHoverDetail() {
   return (
     <div
       ref={ref}
-      className="pointer-events-auto fixed z-[200] flex flex-col gap-1 rounded-lg border border-edge
-                 bg-panel/98 p-3 shadow-2xl backdrop-blur-sm"
+      className="pointer-events-auto fixed z-[200] flex flex-col gap-1 rounded-lg border border-accent/30
+                 bg-ink/90 p-3 shadow-neon backdrop-blur-md"
       style={{ width: W, left, top }}
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
-        <span className="text-xs font-semibold leading-tight text-zinc-100">{card.name}</span>
+        <span className="text-xs font-semibold leading-tight text-white">{card.name}</span>
         {card.ier != null && (
-          <span className="shrink-0 rounded bg-accent/20 px-1 text-[10px] text-accent">
+          <span className="shrink-0 rounded border border-cyan/50 bg-cyan/10 px-1 text-[10px] text-cyan">
             IER {card.ier}
           </span>
         )}

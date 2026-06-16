@@ -18,21 +18,21 @@ function BasicsRow({
   const entries = Object.entries(basics);
   if (entries.length === 0) return null;
   return (
-    <div className="col-span-full mt-1 space-y-1 border-t border-edge pt-2">
+    <div className="col-span-full mt-1 space-y-1 border-t border-accent/15 pt-2">
       {entries.map(([id, b]) => (
         <div key={id} className="flex items-center justify-between gap-2 text-xs">
-          <span className="truncate text-zinc-300">{b.card.name}</span>
+          <span className="truncate text-[#c8b6ff]">{b.card.name}</span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => onSetBasic(id, b.quantity - 1)}
-              className="h-5 w-5 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+              className="h-5 w-5 rounded border border-accent/30 bg-accent/5 text-accent hover:bg-accent/15"
             >
               −
             </button>
             <span className="w-6 text-center font-semibold text-accent">×{b.quantity}</span>
             <button
               onClick={() => onSetBasic(id, b.quantity + 1, b.card)}
-              className="h-5 w-5 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+              className="h-5 w-5 rounded border border-accent/30 bg-accent/5 text-accent hover:bg-accent/15"
             >
               +
             </button>
@@ -118,18 +118,18 @@ export function ZoneColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`flex min-h-[140px] flex-col rounded-lg border p-2 transition-colors ${
-        isOver ? "border-accent bg-panel2" : "border-edge bg-panel"
+      className={`flex min-h-[140px] flex-col rounded-lg border p-2 backdrop-blur-sm transition-colors ${
+        isOver ? "border-accent/60 bg-panel2/80 shadow-neon" : "border-accent/20 bg-panel/80"
       }`}
     >
       <div className="mb-2 flex items-center justify-between px-1">
-        <h3 className="font-display text-sm font-semibold tracking-wide text-zinc-100">
+        <h3 className="arcade-bevel text-sm tracking-wide">
           {zone}
         </h3>
-        <span className="text-xs text-zinc-500">
+        <span className="text-xs text-[#9fd0ff]/70">
           {cards.length + basicCount}
           {subtotalIer > 0 && (
-            <span className="ml-2 text-accent">Σ{subtotalIer.toFixed(0)}</span>
+            <span className="ml-2 text-cyan">Σ{subtotalIer.toFixed(0)}</span>
           )}
         </span>
       </div>
@@ -142,7 +142,7 @@ export function ZoneColumn({
           />
         ))}
         {cards.length === 0 && basicCount === 0 && (
-          <p className="col-span-full py-3 text-center text-xs text-zinc-600">
+          <p className="col-span-full py-3 text-center text-xs text-[#9fd0ff]/50">
             drag cards here
           </p>
         )}

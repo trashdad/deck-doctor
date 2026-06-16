@@ -47,8 +47,8 @@ export function UserMenu() {
       >
         <span>👤 {displayName}</span>
         {isMythic && (
-          <span className="rounded bg-accent px-1 text-[8px] font-bold uppercase tracking-wider text-ink">
-            Mythic
+          <span className="rounded border border-accent/60 bg-accent px-1 text-[8px] font-bold uppercase tracking-wider text-[#1a0033] shadow-glow">
+            ◆ Mythic
           </span>
         )}
         <span className="text-[9px] text-accent/70">▾</span>
@@ -57,16 +57,16 @@ export function UserMenu() {
       {open && (
         <>
           <div className="fixed inset-0 z-[130]" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full z-[131] mt-1 w-56 overflow-hidden rounded-lg border border-edge bg-panel shadow-2xl">
-            <div className="border-b border-edge px-3 py-2">
+          <div className="absolute right-0 top-full z-[131] mt-1 w-56 overflow-hidden rounded-lg border border-accent/30 bg-ink/90 shadow-neon backdrop-blur-md">
+            <div className="border-b border-accent/30 px-3 py-2">
               <p className="text-sm font-semibold text-zinc-100">{displayName}</p>
-              <p className="text-[10px] uppercase tracking-widest text-zinc-500">
+              <p className="text-[10px] uppercase tracking-widest text-accent">
                 {isMythic ? "Mythic tier" : "Free tier"}
               </p>
             </div>
             <a
               href="https://simmander.app/"
-              className="block px-3 py-2 text-xs text-zinc-300 transition hover:bg-white/5"
+              className="block px-3 py-2 text-xs text-zinc-300 transition hover:bg-accent/10"
             >
               ⚜ Manage account on Simmander.app
             </a>
@@ -87,7 +87,7 @@ export function UserMenu() {
                 void logout();
               }}
               data-testid="logout"
-              className="block w-full border-t border-edge px-3 py-2 text-left text-xs text-zinc-400 transition hover:bg-white/5 hover:text-zinc-200"
+              className="block w-full border-t border-accent/30 px-3 py-2 text-left text-xs text-zinc-400 transition hover:bg-accent/10 hover:text-accent"
             >
               Log out
             </button>

@@ -48,19 +48,19 @@ export function OraclePhrasePanel() {
       {/* Drawer */}
       <aside
         className="fixed right-0 top-0 z-[100] flex h-screen w-96 flex-col
-                   border-l border-edge bg-panel/98 shadow-2xl backdrop-blur-sm"
+                   border-l border-accent/30 bg-ink/90 shadow-neon backdrop-blur-md"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-edge px-4 py-3">
+        <div className="flex items-center justify-between border-b border-accent/30 px-4 py-3">
           <div>
-            <h2 className="text-sm font-semibold text-accent">Find similar cards</h2>
+            <h2 className="arcade-bevel text-sm">Find similar cards</h2>
             <p className="text-[10px] text-zinc-500">Select a phrase pattern below</p>
           </div>
           <button
             onClick={closePhrase}
             className="flex h-7 w-7 items-center justify-center rounded text-zinc-400
-                       transition hover:bg-white/10 hover:text-zinc-100"
+                       transition hover:bg-accent/10 hover:text-accent"
             aria-label="Close"
           >
             ✕
@@ -68,7 +68,7 @@ export function OraclePhrasePanel() {
         </div>
 
         {/* Phrase options */}
-        <div className="border-b border-edge p-3">
+        <div className="border-b border-accent/30 p-3">
           <div className="space-y-1">
             {phraseVariants.map((v, i) => (
               <button
@@ -78,7 +78,7 @@ export function OraclePhrasePanel() {
                   "w-full rounded px-3 py-2 text-left text-xs leading-snug transition-colors",
                   selectedPattern === v.pattern
                     ? "bg-accent/20 text-accent ring-1 ring-accent/40"
-                    : "text-zinc-300 hover:bg-white/5",
+                    : "text-zinc-300 hover:bg-accent/10",
                 ].join(" ")}
               >
                 {v.label}

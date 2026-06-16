@@ -61,28 +61,37 @@ export function EngineStaplesPanel() {
       {/* Panel */}
       <div
         className="fixed right-0 top-0 z-[125] flex h-screen w-[460px] flex-col
-                   border-l border-edge bg-panel shadow-2xl"
+                   border-l border-accent/40 bg-ink/90 shadow-neon backdrop-blur-md"
         data-testid="engine-staples-panel"
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-edge px-4 py-3">
+        <div className="flex items-start justify-between border-b border-accent/25 px-4 py-3">
           <div className="min-w-0">
-            <p className="text-[9px] uppercase tracking-widest text-zinc-500">
+            <p className="flex items-center gap-2 font-display text-[9px] uppercase tracking-wider text-accent">
+              <span
+                className="inline-block bg-contain bg-no-repeat [image-rendering:pixelated]"
+                style={{
+                  backgroundImage: "url(/deck-doctor/golden-axe.svg)",
+                  width: 13,
+                  height: 13,
+                  filter: "drop-shadow(0 0 3px rgba(255,174,0,.8))",
+                }}
+              />
               {engineLabel} Staples
             </p>
-            <p className="truncate text-sm font-semibold text-amber-400">
+            <p className="mt-1 truncate text-sm font-semibold text-white [text-shadow:0_0_12px_rgba(255,43,214,0.4)]">
               {target.themeLabel}
             </p>
-            <p className="mt-0.5 text-[10px] text-zinc-500">
+            <p className="mt-0.5 text-[10px] text-[#c8b6ff]">
               The most-played{" "}
-              <span className="text-zinc-300">{target.themeLabel}</span> cards
+              <span className="text-cyan">{target.themeLabel}</span> cards
               in your colors — tap ＋ to add.
             </p>
           </div>
           <button
             onClick={closeEngineStaples}
             data-testid="engine-staples-close"
-            className="ml-2 mt-0.5 rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+            className="ml-2 mt-0.5 rounded p-1 text-[#9fd0ff] transition hover:bg-accent/15 hover:text-accent"
           >
             ✕
           </button>
@@ -91,14 +100,14 @@ export function EngineStaplesPanel() {
         {/* Body */}
         <div className="flex-1 overflow-y-auto scrollbar-thin">
           {!commanderId && (
-            <p className="px-4 py-10 text-center text-xs text-zinc-500">
+            <p className="px-4 py-10 text-center text-xs text-[#9fd0ff]/70">
               Pick a commander first to see staples for your colors.
             </p>
           )}
 
           {commanderId && isFetching && !data && (
             <div className="flex items-center justify-center py-12">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent border-t-transparent" />
             </div>
           )}
 
@@ -109,7 +118,7 @@ export function EngineStaplesPanel() {
           )}
 
           {commanderId && data && visible.length === 0 && !isFetching && (
-            <p className="px-4 py-10 text-center text-xs text-zinc-500">
+            <p className="px-4 py-10 text-center text-xs text-[#9fd0ff]/70">
               No staples found — all top cards for this theme are already in your deck!
             </p>
           )}
@@ -126,7 +135,7 @@ export function EngineStaplesPanel() {
                     onAdd={() => add(s.card)}
                   />
                   <p
-                    className="truncate text-center text-[9px] text-zinc-400"
+                    className="truncate text-center text-[9px] text-[#c8b6ff]"
                     title={s.card.name}
                   >
                     {s.card.name}
@@ -139,7 +148,7 @@ export function EngineStaplesPanel() {
 
         {/* Footer */}
         {data && (
-          <div className="border-t border-edge px-4 py-2 text-[10px] text-zinc-500">
+          <div className="border-t border-accent/20 px-4 py-2 text-[10px] text-[#9fd0ff]/80">
             {visible.length} staples shown · theme: {target.themeLabel}
           </div>
         )}

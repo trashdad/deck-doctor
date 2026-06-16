@@ -30,7 +30,7 @@ import { useAuth } from "@/store/auth";
 import { useBackToClose } from "@/lib/useBackToClose";
 import { ZONES, type Zone } from "@/lib/zones";
 import type { EngineKey } from "@/components/EngineColumn";
-import { analyzeDeck, getTemplates } from "@/lib/api";
+import { analyzeDeck, getTemplates, useDiagnosis } from "@/lib/api";
 import type { DeckEntry } from "@/lib/types";
 
 function TemplateMenu() {
@@ -279,6 +279,9 @@ export default function Page() {
     enabled: entries.length > 0,
   });
 
+  // The headline "Deck Doctor Diagnosis" 0–100 score + vitals (Phase 4).
+  const { data: diagnosis, isFetching: diagnosisLoading } = useDiagnosis(entries, commanderId);
+
   // Autosave: debounce 2s when a deck is loaded; snapshot to localStorage always.
   const sig = entries.map((e) => `${e.id}:${e.quantity}`).sort().join(",");
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -495,7 +498,11 @@ export default function Page() {
             </span>
           </button>
 
-          <StatsSidebar analysis={analysis ?? null} />
+          <StatsSidebar
+            analysis={analysis ?? null}
+            diagnosis={diagnosis ?? null}
+            diagnosisLoading={diagnosisLoading}
+          />
         </div>
       </DndContext>
     </div>

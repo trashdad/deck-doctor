@@ -103,26 +103,35 @@ export function WinconHelperPanel() {
       {/* Panel */}
       <div
         className="fixed right-0 top-0 z-[125] flex h-screen w-[460px] flex-col
-                   border-l border-amber-500/40 bg-panel shadow-2xl"
+                   border-l border-accent/40 bg-ink/90 shadow-neon backdrop-blur-md"
         data-testid="wincon-helper-panel"
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-edge px-4 py-3">
+        <div className="flex items-start justify-between border-b border-accent/25 px-4 py-3">
           <div className="min-w-0">
-            <p className="text-[9px] uppercase tracking-widest text-zinc-500">Win Conditions</p>
-            <p className="truncate text-sm font-semibold text-amber-400">
-              ⚔ Build around these
+            <p className="font-display text-[9px] uppercase tracking-wider text-accent">Win Conditions</p>
+            <p className="mt-1 flex items-center gap-2">
+              <span
+                className="inline-block bg-contain bg-no-repeat [image-rendering:pixelated]"
+                style={{
+                  backgroundImage: "url(/deck-doctor/golden-axe.svg)",
+                  width: 16,
+                  height: 16,
+                  filter: "drop-shadow(0 0 6px rgba(255,174,0,.7))",
+                }}
+              />
+              <span className="arcade-bevel truncate text-sm tracking-wide">Build around these</span>
             </p>
-            <p className="mt-0.5 text-[10px] text-zinc-500">
+            <p className="mt-0.5 text-[10px] text-[#c8b6ff]">
               Recommendations seeded from the{" "}
-              <span className="text-zinc-300">{winconSeeds.length}</span> win condition
+              <span className="text-cyan">{winconSeeds.length}</span> win condition
               {winconSeeds.length === 1 ? "" : "s"} in your deck.
             </p>
           </div>
           <button
             onClick={close}
             data-testid="wincon-helper-close"
-            className="ml-2 mt-0.5 rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+            className="ml-2 mt-0.5 rounded p-1 text-[#9fd0ff] transition hover:bg-accent/15 hover:text-accent"
           >
             ✕
           </button>
@@ -167,16 +176,16 @@ function Section({
   onAdd: (card: Card) => void;
 }) {
   return (
-    <div className="border-b border-edge/60 px-3 py-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-amber-400">{title}</p>
-      <p className="mb-2 mt-0.5 text-[10px] text-zinc-500">{blurb}</p>
+    <div className="border-b border-accent/15 px-3 py-3">
+      <p className="font-display text-[9px] uppercase tracking-wider text-accent">{title}</p>
+      <p className="mb-2 mt-1 text-[10px] text-[#c8b6ff]">{blurb}</p>
 
       {fetching ? (
         <div className="flex items-center justify-center py-8">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent border-t-transparent" />
         </div>
       ) : items.length === 0 ? (
-        <p className="py-6 text-center text-xs text-zinc-500">No data yet.</p>
+        <p className="py-6 text-center text-xs text-[#9fd0ff]/70">No data yet.</p>
       ) : (
         <div className="grid grid-cols-3 gap-2">
           {items.map((a) => (
@@ -187,7 +196,7 @@ function Section({
                 badge={a.metric > 0 ? a.metric.toFixed(2) : undefined}
                 onAdd={() => onAdd(a.card)}
               />
-              <p className="truncate text-center text-[9px] text-zinc-400" title={a.card.name}>
+              <p className="truncate text-center text-[9px] text-[#c8b6ff]" title={a.card.name}>
                 {a.card.name}
               </p>
             </div>

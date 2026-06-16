@@ -24,8 +24,8 @@ export function OracleTextRenderer({ text }: { text: string }) {
             className={[
               "cursor-pointer rounded px-1.5 py-0.5 text-[11px] leading-snug transition-colors",
               triggered
-                ? "text-amber-200/90 hover:bg-amber-400/10 hover:ring-1 hover:ring-amber-400/25"
-                : "text-zinc-300/80 hover:bg-white/5 hover:ring-1 hover:ring-white/10",
+                ? "text-accent/90 hover:bg-accent/10 hover:ring-1 hover:ring-accent/30"
+                : "text-zinc-300/80 hover:bg-cyan/10 hover:ring-1 hover:ring-cyan/20",
             ].join(" ")}
           >
             {ability}

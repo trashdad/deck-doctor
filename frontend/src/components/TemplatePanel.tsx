@@ -95,8 +95,8 @@ function ThemePage({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         data-testid={`theme-select-${side.toLowerCase()}`}
-        className="w-full rounded-md border border-edge bg-ink px-2 py-2 text-xs text-zinc-200
-                   outline-none focus:border-accent"
+        className="w-full rounded-md border border-accent/40 bg-ink/70 px-2 py-2 text-xs text-zinc-200
+                   outline-none focus:border-accent focus:shadow-neon"
       >
         <option value="">— choose a theme —</option>
         {themes.map((t) => (
@@ -189,21 +189,21 @@ export function TemplatePanel() {
     <>
       <div className="fixed inset-0 z-[120] bg-black/50" onClick={closePanel} />
       <div
-        className="fixed right-0 top-0 z-[125] flex h-screen w-[560px] flex-col border-l border-edge
-                   bg-panel shadow-2xl"
+        className="fixed right-0 top-0 z-[125] flex h-screen w-[560px] flex-col border-l border-accent/30
+                   bg-ink/90 shadow-neon backdrop-blur-md"
         data-testid="template-panel"
         style={{
           backgroundImage:
-            "radial-gradient(620px 300px at 100% -10%, rgba(201,162,39,0.10), transparent)",
+            "radial-gradient(620px 300px at 100% -10%, rgba(255,210,74,0.10), transparent)",
         }}
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-edge px-4 py-3">
+        <div className="flex items-start justify-between border-b border-accent/30 px-4 py-3">
           <div className="min-w-0">
-            <p className="text-[9px] uppercase tracking-[0.25em] text-zinc-600">
+            <p className="font-display text-[9px] uppercase tracking-wider text-accent">
               ⚜ Template
             </p>
-            <p className="truncate font-display text-base tracking-wide text-accent">
+            <p className="arcade-bevel mt-0.5 truncate text-sm">
               {selected?.name ?? "Simmander Composite"}
             </p>
             {selected && (
@@ -212,7 +212,7 @@ export function TemplatePanel() {
           </div>
           <button
             onClick={closePanel}
-            className="ml-2 rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+            className="ml-2 rounded p-1 text-zinc-500 transition hover:bg-accent/10 hover:text-accent"
           >
             ✕
           </button>
@@ -220,9 +220,9 @@ export function TemplatePanel() {
 
         <div className="flex-1 overflow-y-auto scrollbar-thin">
           {/* Composition targets */}
-          <section className="border-b border-edge px-4 py-3">
+          <section className="border-b border-accent/30 px-4 py-3">
             <div className="mb-2 flex items-baseline justify-between">
-              <p className="font-display text-[11px] uppercase tracking-[0.2em] text-zinc-400">
+              <p className="font-display text-[11px] uppercase tracking-[0.2em] text-accent">
                 Composition
               </p>
               <p className="text-[10px] text-zinc-500">
@@ -245,7 +245,7 @@ export function TemplatePanel() {
 
           {/* Dual-theme: two facing spell pages with a gilded divider */}
           <section className="px-4 py-3">
-            <p className="mb-2 font-display text-[11px] uppercase tracking-[0.2em] text-zinc-400">
+            <p className="mb-2 font-display text-[11px] uppercase tracking-[0.2em] text-accent">
               Dual Theme
             </p>
             <div className="flex items-stretch gap-3">
@@ -260,7 +260,7 @@ export function TemplatePanel() {
                 className="w-px shrink-0 self-stretch"
                 style={{
                   background:
-                    "linear-gradient(to bottom, transparent, rgba(201,162,39,0.6), transparent)",
+                    "linear-gradient(to bottom, transparent, rgba(255,210,74,0.6), transparent)",
                 }}
               />
               <ThemePage
@@ -275,8 +275,8 @@ export function TemplatePanel() {
               onChange={(e) => setFreeText(e.target.value)}
               placeholder="Refine with free text — e.g. “lifegain tokens”"
               data-testid="theme-freetext"
-              className="mt-2 w-full rounded-md border border-edge bg-ink px-3 py-2 text-xs
-                         outline-none focus:border-accent"
+              className="mt-2 w-full rounded-md border border-accent/40 bg-ink/70 px-3 py-2 text-xs
+                         outline-none focus:border-accent focus:shadow-neon"
             />
 
             {/* Theme card grid */}

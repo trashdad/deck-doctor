@@ -61,17 +61,17 @@ export function DeckManagerPanel({
       <div className="fixed inset-0 z-[110] bg-black/40" onClick={onClose} />
       <div
         className="fixed right-0 top-0 z-[115] flex h-screen w-[460px] flex-col
-                   border-l border-edge bg-panel shadow-2xl"
+                   border-l border-accent/30 bg-ink/90 shadow-neon backdrop-blur-md"
         data-testid="deck-manager-panel"
       >
-        <div className="flex items-start justify-between border-b border-edge px-4 py-3">
+        <div className="flex items-start justify-between border-b border-accent/30 px-4 py-3">
           <div>
-            <p className="text-[9px] uppercase tracking-widest text-zinc-600">My Decks</p>
-            <p className="text-sm font-semibold text-accent">Saved decks</p>
+            <p className="font-display text-[9px] uppercase tracking-wider text-accent">My Decks</p>
+            <p className="text-sm font-semibold text-zinc-100">Saved decks</p>
           </div>
           <button
             onClick={onClose}
-            className="rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+            className="rounded p-1 text-zinc-500 transition hover:bg-accent/10 hover:text-accent"
           >
             ✕
           </button>
@@ -86,13 +86,13 @@ export function DeckManagerPanel({
         ) : (
           <>
             {/* Save row */}
-            <div className="flex items-center gap-2 border-b border-edge px-4 py-3">
+            <div className="flex items-center gap-2 border-b border-accent/30 px-4 py-3">
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Deck name"
-                className="flex-1 rounded border border-edge bg-zinc-900 px-2 py-1.5 text-xs text-zinc-200
-                           outline-none focus:border-accent"
+                className="flex-1 rounded border border-accent/40 bg-ink/70 px-2 py-1.5 text-xs text-zinc-200
+                           outline-none focus:border-accent focus:shadow-neon"
               />
               <button
                 data-testid="deck-save"
@@ -111,13 +111,13 @@ export function DeckManagerPanel({
                   No saved decks yet. Build a deck and hit Save.
                 </p>
               )}
-              <ul className="divide-y divide-white/5">
+              <ul className="divide-y divide-accent/10">
                 {deckList.map((d) => (
                   <li
                     key={d.id}
                     data-testid="deck-row"
                     className={[
-                      "flex items-center gap-2 px-4 py-2.5 transition hover:bg-white/[0.03]",
+                      "flex items-center gap-2 px-4 py-2.5 transition hover:bg-accent/[0.06] hover:shadow-neon",
                       d.id === currentId ? "border-l-2 border-accent bg-accent/5" : "",
                     ].join(" ")}
                   >
@@ -150,11 +150,11 @@ export function DeckManagerPanel({
         )}
 
         {/* Footer actions */}
-        <div className="flex gap-2 border-t border-edge px-4 py-3">
+        <div className="flex gap-2 border-t border-accent/30 px-4 py-3">
           <button
             onClick={onOpenImport}
-            className="flex-1 rounded-lg border border-edge px-3 py-2 text-xs font-semibold
-                       text-zinc-300 transition hover:border-accent hover:text-accent"
+            className="flex-1 rounded-lg border border-accent/50 px-3 py-2 text-xs font-semibold
+                       text-accent transition hover:bg-accent/10"
           >
             Import…
           </button>
@@ -164,7 +164,7 @@ export function DeckManagerPanel({
             className={[
               "flex-1 rounded-lg border px-3 py-2 text-xs font-semibold transition",
               currentId
-                ? "border-edge text-zinc-300 hover:border-accent hover:text-accent"
+                ? "border-accent/50 text-accent hover:bg-accent/10"
                 : "cursor-not-allowed border-zinc-800 text-zinc-700",
             ].join(" ")}
           >

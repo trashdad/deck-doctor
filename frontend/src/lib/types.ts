@@ -242,6 +242,17 @@ export const TEMPLATE_CATEGORIES = [
 ] as const;
 export type TemplateCategory = (typeof TEMPLATE_CATEGORIES)[number];
 
+export interface Vital {
+  label: string;
+  score: number; // 0–100
+}
+
+export interface DeckDiagnosis {
+  score: number; // 0–100 overall
+  verdict: string; // CRITICAL | UNSTABLE | FAIR | STABLE | OPTIMAL | "—"
+  vitals: Vital[];
+}
+
 export interface DeckAnalysis {
   card_count: number;
   mana_curve: { cmc: number; count: number }[];

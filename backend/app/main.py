@@ -14,13 +14,14 @@ from typing import Literal
 
 from . import config
 from .analysis import analyze
+from .diagnosis import diagnose
 from .decks import get_userdecks
 from .doctor import TEMPLATE as DOCTOR_TEMPLATE, complete_deck, suggest_cuts
 from .manabase import fill_lands
 from .graph import deck_graph
 from .importer import parse_decklist, parse_decklist_rich
 from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCombos,
-                     DeckDetail, DeckRequest, DeckSave, DeckSummary, EngineGroup,
+                     DeckDetail, DeckDiagnosis, DeckRequest, DeckSave, DeckSummary, EngineGroup,
                      GraphResponse, ImportRequest, ImportResult, PairScore,
                      ParseImportRequest, ParseImportResult,
                      RelationshipNeighbor, SpellbookCombo, SuggestionResponse,
@@ -337,6 +338,14 @@ def deck_engines(req: DeckRequest) -> dict:
 def deck_analyze(req: DeckRequest) -> dict:
     store = get_store()
     return analyze(store, [e.model_dump() for e in req.cards], req.commander_id)
+
+
+@app.post("/deck/diagnose", response_model=DeckDiagnosis)
+def deck_diagnose(req: DeckRequest) -> dict:
+    """Deck Doctor Diagnosis — 0–100 score + verdict + 5 vitals. Same body as
+    /deck/analyze. Empty deck → score 0, verdict "—", all vitals 0."""
+    store = get_store()
+    return diagnose(store, [e.model_dump() for e in req.cards], req.commander_id)
 
 
 @app.post("/deck/recommend", response_model=SuggestionResponse)

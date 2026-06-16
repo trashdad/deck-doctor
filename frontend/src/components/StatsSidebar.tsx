@@ -1,8 +1,9 @@
 "use client";
 
-import type { DeckAnalysis } from "@/lib/types";
+import type { DeckAnalysis, DeckDiagnosis } from "@/lib/types";
 import { MANA_COLORS } from "@/lib/zones";
 import { Gauge } from "./Gauge";
+import DiagnosisGauge from "./DiagnosisGauge";
 
 function ManaCurve({ curve }: { curve: { cmc: number; count: number }[] }) {
   const max = Math.max(1, ...curve.map((b) => b.count));
@@ -48,19 +49,31 @@ function ColorPips({ pips }: { pips: Record<string, number> }) {
   );
 }
 
-export function StatsSidebar({ analysis }: { analysis: DeckAnalysis | null }) {
+export function StatsSidebar({
+  analysis,
+  diagnosis,
+  diagnosisLoading,
+}: {
+  analysis: DeckAnalysis | null;
+  diagnosis?: DeckDiagnosis | null;
+  diagnosisLoading?: boolean;
+}) {
   if (!analysis) {
     return (
-      <aside className="w-80 shrink-0 space-y-4 border-l border-edge bg-panel/60 p-4">
+      <aside className="w-80 shrink-0 space-y-4 border-l border-accent/30 bg-panel/80 p-4 backdrop-blur-sm">
+        <DiagnosisGauge diagnosis={diagnosis ?? null} loading={diagnosisLoading} />
         <p className="text-sm text-zinc-500">Add cards to see the deck engine.</p>
       </aside>
     );
   }
   return (
-    <aside className="w-80 shrink-0 space-y-5 overflow-y-auto border-l border-edge bg-panel/60 p-4 scrollbar-thin">
+    <aside className="w-80 shrink-0 space-y-5 overflow-y-auto border-l border-accent/30 bg-panel/80 p-4 backdrop-blur-sm scrollbar-thin">
+      {/* The headline Deck Doctor Diagnosis (0–100) sits above the engine stats. */}
+      <DiagnosisGauge diagnosis={diagnosis ?? null} loading={diagnosisLoading} />
+      <div className="h-px bg-accent/20" />
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-lg text-zinc-100">Deck Engine</h2>
-        <span className="rounded-full border border-accent/50 bg-accent/10 px-3 py-1 text-xs text-accent">
+        <h2 className="arcade-bevel text-sm">Deck Engine</h2>
+        <span className="rounded-full border border-cyan/50 bg-cyan/10 px-3 py-1 text-xs text-cyan">
           Bracket {analysis.bracket}
         </span>
       </div>
@@ -69,19 +82,19 @@ export function StatsSidebar({ analysis }: { analysis: DeckAnalysis | null }) {
         <Gauge label="Efficiency" value={analysis.efficiency} max={10} />
         <Gauge label="Impact" value={analysis.impact} max={10} />
       </div>
-      <div className="flex items-center justify-between rounded-lg border border-edge bg-panel2 px-3 py-2">
-        <span className="text-xs uppercase tracking-wide text-zinc-400">Score</span>
+      <div className="flex items-center justify-between rounded-lg border border-accent/30 bg-panel2/70 px-3 py-2">
+        <span className="font-display text-[9px] uppercase tracking-wider text-accent">Score</span>
         <span className="text-2xl font-bold text-accent">{analysis.score}</span>
         <span className="text-xs text-zinc-500">/ 1000</span>
       </div>
 
       <section>
-        <h3 className="mb-2 text-xs uppercase tracking-wide text-zinc-400">Mana Curve</h3>
+        <h3 className="mb-2 font-display text-[9px] uppercase tracking-wider text-accent">Mana Curve</h3>
         <ManaCurve curve={analysis.mana_curve} />
       </section>
 
       <section>
-        <h3 className="mb-2 text-xs uppercase tracking-wide text-zinc-400">Color Identity</h3>
+        <h3 className="mb-2 font-display text-[9px] uppercase tracking-wider text-accent">Color Identity</h3>
         <ColorPips pips={analysis.color_pips} />
       </section>
 
@@ -98,14 +111,14 @@ export function StatsSidebar({ analysis }: { analysis: DeckAnalysis | null }) {
 
       {analysis.top_synergies.length > 0 && (
         <section>
-          <h3 className="mb-2 text-xs uppercase tracking-wide text-zinc-400">
+          <h3 className="mb-2 font-display text-[9px] uppercase tracking-wider text-accent">
             Top Synergies (DER)
           </h3>
           <ul className="space-y-1 text-xs">
             {analysis.top_synergies.slice(0, 6).map((e) => (
               <li
                 key={`${e.card_a}-${e.card_b}`}
-                className="flex items-center justify-between rounded bg-panel2 px-2 py-1"
+                className="flex items-center justify-between rounded border border-edge bg-panel2/70 px-2 py-1"
               >
                 <span className="truncate text-zinc-300">
                   {e.card_a} + {e.card_b}
@@ -122,7 +135,7 @@ export function StatsSidebar({ analysis }: { analysis: DeckAnalysis | null }) {
 
       {analysis.bracket_reasons.length > 0 && (
         <section>
-          <h3 className="mb-1 text-xs uppercase tracking-wide text-zinc-400">
+          <h3 className="mb-1 font-display text-[9px] uppercase tracking-wider text-accent">
             Bracket Flags
           </h3>
           <div className="flex flex-wrap gap-1">

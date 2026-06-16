@@ -59,11 +59,11 @@ export function ImportExportDialog({
       data-testid="import-dialog"
     >
       <div
-        className="w-full max-w-xl rounded-xl border border-edge bg-panel p-4 shadow-2xl"
+        className="w-full max-w-xl rounded-xl border border-accent/50 bg-ink/90 p-4 shadow-neon backdrop-blur-md"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="text-sm font-semibold text-accent">Import decklist</h2>
+          <h2 className="arcade-bevel text-sm">Import decklist</h2>
           <span className="text-[10px] text-zinc-500">
             Moxfield / Archidekt / MTGO / Arena formats
           </span>
@@ -72,32 +72,32 @@ export function ImportExportDialog({
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mb-2 w-full rounded border border-edge bg-zinc-900 px-2 py-1.5 text-xs text-zinc-200
-                     outline-none focus:border-accent"
+          className="mb-2 w-full rounded border border-accent/40 bg-ink/70 px-2 py-1.5 text-xs text-zinc-200
+                     outline-none focus:border-accent focus:shadow-neon"
         />
         <textarea
           data-testid="import-text"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={PLACEHOLDER}
-          className="h-64 w-full resize-none rounded border border-edge bg-zinc-900 p-2 font-mono
-                     text-xs text-zinc-200 outline-none focus:border-accent scrollbar-thin"
+          className="h-64 w-full resize-none rounded border border-accent/40 bg-ink/70 p-2 font-mono
+                     text-xs text-zinc-200 outline-none focus:border-accent focus:shadow-neon scrollbar-thin"
         />
 
         {unresolved && (
-          <div className="mt-2 rounded border border-amber-500/40 bg-amber-500/10 p-2">
-            <p className="text-[11px] font-semibold text-amber-300">
+          <div className="mt-2 rounded border border-accent/40 bg-accent/10 p-2">
+            <p className="text-[11px] font-semibold text-accent">
               {unresolved.length} line{unresolved.length === 1 ? "" : "s"} didn&apos;t resolve
               (deck still imported):
             </p>
-            <ul className="mt-1 max-h-24 overflow-y-auto text-[10px] text-amber-200/80 scrollbar-thin">
+            <ul className="mt-1 max-h-24 overflow-y-auto text-[10px] text-accent/80 scrollbar-thin">
               {unresolved.map((l, i) => (
                 <li key={i}>{l}</li>
               ))}
             </ul>
             <button
               onClick={onClose}
-              className="mt-2 rounded border border-amber-500/40 px-2 py-1 text-[10px] text-amber-200"
+              className="mt-2 rounded border border-accent/40 px-2 py-1 text-[10px] text-accent hover:bg-accent/10"
             >
               Done
             </button>
@@ -109,7 +109,7 @@ export function ImportExportDialog({
         <div className="mt-3 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="rounded-lg border border-edge px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200"
+            className="rounded-lg border border-accent/50 px-3 py-1.5 text-xs text-accent hover:bg-accent/10"
           >
             Cancel
           </button>

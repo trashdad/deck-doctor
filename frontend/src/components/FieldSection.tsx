@@ -33,8 +33,8 @@ export function FieldSection({ zone, dropId, entries, onRemove, tint }: Props) {
         // Reveal animation — parent stagger is handled by CSS animation-delay
         "animate-[tmplReveal_0.32s_ease_both]",
         isOver
-          ? "border-accent/60 bg-accent/10"
-          : "border-white/[0.07]",
+          ? "border-accent/60 bg-accent/10 shadow-neon"
+          : "border-accent/10",
       ].join(" ")}
       style={{
         background: isOver
@@ -46,10 +46,10 @@ export function FieldSection({ zone, dropId, entries, onRemove, tint }: Props) {
     >
       {/* Header */}
       <div className="mb-1.5 flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.09em] text-zinc-400">
+        <span className="font-display text-[9px] uppercase tracking-wider text-accent">
           {zone}
         </span>
-        <span className="text-[10px] text-zinc-600">{solidCount}</span>
+        <span className="text-[10px] text-[#9fd0ff]/70">{solidCount}</span>
       </div>
 
       {/* Card pile */}

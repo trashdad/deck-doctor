@@ -100,7 +100,7 @@ export function IerTooltip({
   return createPortal(
     <div
       className="pointer-events-none fixed z-[400] w-[280px] rounded-lg border border-accent/40
-                 bg-[#1a1628] shadow-[0_8px_32px_rgba(0,0,0,0.8)] text-xs"
+                 bg-ink/90 shadow-neon backdrop-blur-md text-xs"
       style={{ left: pos.x, top: pos.y }}
     >
       {/* Header */}

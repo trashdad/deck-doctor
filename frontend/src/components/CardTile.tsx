@@ -76,7 +76,7 @@ export function CardTile({
           <div className="flex items-center justify-between text-zinc-400">
             <span>{card.color_identity.join("") || "C"}</span>
             {card.ier != null && (
-              <span className="rounded bg-accent/20 px-1 text-accent">
+              <span className="rounded border border-cyan/50 bg-cyan/10 px-1 text-cyan">
                 IER {card.ier}
               </span>
             )}
@@ -87,18 +87,21 @@ export function CardTile({
             opposite the IER pill so the two never overlap. */}
         {card.wincon && (
           <span
-            className="absolute left-1 top-1 z-10 cursor-default rounded bg-amber-500/90 px-1
-                       text-[9px] font-bold uppercase tracking-wide text-black shadow"
+            className="absolute left-1 top-1 z-10 inline-block cursor-default bg-contain bg-no-repeat [image-rendering:pixelated]"
+            style={{
+              backgroundImage: "url(/deck-doctor/golden-axe.svg)",
+              width: 18,
+              height: 18,
+              filter: "drop-shadow(0 0 5px rgba(255,174,0,.85))",
+            }}
             title="Win condition — can close the game"
-          >
-            ⚔
-          </span>
+          />
         )}
 
         {/* IER pill — hovering it switches to "ier" zone, suppressing the big preview */}
         {pill && (
           <span
-            className="absolute right-1 top-1 z-10 cursor-default rounded bg-black/75 px-1 text-[10px] font-semibold text-accent"
+            className="absolute right-1 top-1 z-10 cursor-default rounded border border-cyan/50 bg-ink/80 px-1 text-[10px] font-semibold text-cyan"
             onMouseEnter={(e) => {
               e.stopPropagation();
               setHoverZone("ier");
@@ -119,7 +122,7 @@ export function CardTile({
         {hasActions && (
           <div
             className="absolute inset-x-0 bottom-0 z-10 flex items-stretch justify-center gap-px
-                       bg-black/80 opacity-0 transition-opacity group-hover:opacity-100"
+                       bg-ink/85 opacity-0 transition-opacity group-hover:opacity-100"
             onMouseEnter={(e) => {
               e.stopPropagation();
               setHoverZone("actions");
@@ -148,7 +151,7 @@ export function CardTile({
                   e.stopPropagation();
                   onFocus();
                 }}
-                className="flex-1 py-1.5 text-[11px] font-bold text-sky-300 hover:bg-sky-400/20"
+                className="flex-1 py-1.5 text-[11px] font-bold text-cyan hover:bg-cyan/20"
               >
                 ◎
               </button>
@@ -160,7 +163,7 @@ export function CardTile({
                   e.stopPropagation();
                   onInspect();
                 }}
-                className="flex-1 py-1.5 text-[11px] font-bold text-zinc-300 hover:bg-white/15"
+                className="flex-1 py-1.5 text-[11px] font-bold text-[#c8b6ff] hover:bg-magenta/20"
               >
                 ⓘ
               </button>

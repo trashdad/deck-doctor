@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import type {
   Card,
   CommanderSort,
@@ -5,6 +6,7 @@ import type {
   CutsResponse,
   DeckCombos,
   DeckDetail,
+  DeckDiagnosis,
   DeckEntry,
   DeckSummary,
   DeckAnalysis,
@@ -155,6 +157,31 @@ export function analyzeDeck(
   commander_id: string | null,
 ): Promise<DeckAnalysis> {
   return post<DeckAnalysis>("/deck/analyze", { cards, commander_id });
+}
+
+export function diagnoseDeck(
+  cards: DeckEntry[],
+  commander_id: string | null,
+): Promise<DeckDiagnosis> {
+  return post<DeckDiagnosis>("/deck/diagnose", { cards, commander_id });
+}
+
+/**
+ * React Query hook for the Deck Doctor Diagnosis scorecard. Mount one-liner —
+ * pass the working deck entries + commander id and feed `data` to
+ * <DiagnosisGauge diagnosis={data ?? null} loading={isFetching} />.
+ */
+export function useDiagnosis(entries: DeckEntry[], commanderId: string | null) {
+  const sig = entries
+    .map((e) => `${e.id}:${e.quantity}`)
+    .sort()
+    .join(",");
+  return useQuery({
+    queryKey: ["diagnose", commanderId, sig],
+    queryFn: () => diagnoseDeck(entries, commanderId),
+    enabled: entries.length > 0,
+    staleTime: 30_000,
+  });
 }
 
 export function recommendCards(

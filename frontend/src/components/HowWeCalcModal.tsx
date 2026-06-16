@@ -30,20 +30,20 @@ export function HowWeCalcModal({
       data-testid="how-we-calc"
     >
       <div
-        className="flex max-h-[88vh] w-full max-w-3xl flex-col rounded-2xl border border-accent/50 bg-panel shadow-2xl"
+        className="flex max-h-[88vh] w-full max-w-3xl flex-col rounded-2xl border border-accent/50 bg-ink/90 shadow-neon backdrop-blur-md"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-accent/30 px-6 py-4">
           <div>
-            <p className="font-display text-lg font-bold tracking-wide text-accent">How We Calc</p>
+            <p className="arcade-bevel text-sm">How We Calc</p>
             <p className="text-[11px] uppercase tracking-widest text-zinc-500">
               What&apos;s actually behind the numbers
             </p>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+            className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-accent/10 hover:text-accent"
             aria-label="Close"
           >
             ✕
@@ -207,7 +207,7 @@ export function HowWeCalcModal({
             </p>
           </div>
 
-          <div className="rounded-lg border border-edge bg-zinc-900/40 p-4">
+          <div className="rounded-lg border border-cyan/30 bg-cyan/5 p-4">
             <h3 className="mb-1.5 font-display text-base font-semibold text-accent">One honest note</h3>
             <p>
               This is a strong starting point and a good second opinion. It&apos;s read more decklists than

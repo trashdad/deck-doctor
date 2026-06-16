@@ -175,18 +175,18 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
   }
 
   return (
-    <section className="flex w-80 shrink-0 flex-col border-r border-edge bg-panel/60">
+    <section className="flex w-80 shrink-0 flex-col border-r border-accent/30 bg-panel/80 backdrop-blur-sm">
       {/* Tabs */}
-      <div className="flex border-b border-edge">
+      <div className="flex border-b border-accent/30">
         {(["search", "commanders"] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={[
-              "flex-1 py-2 text-[10px] font-bold uppercase tracking-widest transition",
+              "flex-1 py-2 font-display text-[9px] uppercase tracking-wider transition",
               tab === t
                 ? "border-b-2 border-accent text-accent"
-                : "text-zinc-500 hover:text-zinc-300",
+                : "text-[#9fd0ff] hover:text-cyan",
             ].join(" ")}
           >
             {t === "search" ? "Search" : "Commanders"}
@@ -196,9 +196,9 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
 
       {tab === "search" ? (
         <>
-          <div className="space-y-2 border-b border-edge p-3">
+          <div className="space-y-2 border-b border-accent/30 p-3">
             {/* Scryfall-style field toggle: search by card name or by oracle text. */}
-            <div className="flex overflow-hidden rounded-md border border-edge text-[10px] font-bold uppercase tracking-wider">
+            <div className="flex overflow-hidden rounded-md border border-accent/40 text-[10px] font-bold uppercase tracking-wider">
               {(["name", "oracle"] as const).map((f) => (
                 <button
                   key={f}
@@ -206,8 +206,8 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
                   data-testid={`search-field-${f}`}
                   className={`flex-1 py-1.5 transition ${
                     searchField === f
-                      ? "bg-accent/20 text-accent"
-                      : "text-zinc-500 hover:text-zinc-300"
+                      ? "bg-gradient-to-r from-magenta to-accent text-[#1a0033]"
+                      : "text-[#9fd0ff] hover:text-cyan"
                   }`}
                 >
                   {f === "name" ? "Card name" : "Oracle text"}
@@ -231,8 +231,8 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
               placeholder={
                 searchField === "name" ? "Search by card name…" : "Search oracle text… (e.g. \"draw a card\")"
               }
-              className="w-full rounded-md border border-edge bg-ink px-3 py-2 text-sm
-                         outline-none focus:border-accent"
+              className="w-full rounded-md border border-accent/40 bg-ink/70 px-3 py-2 text-sm
+                         outline-none focus:border-accent focus:shadow-neon"
             />
             <div className="flex items-center gap-1">
               {COLORS.map((c) => (
@@ -246,7 +246,7 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
                   className={`h-7 w-7 rounded-full border text-xs font-bold transition ${
                     colors.includes(c)
                       ? "border-accent text-ink"
-                      : "border-edge text-zinc-400"
+                      : "border-accent/40 text-[#c8b6ff] hover:border-accent/70"
                   }`}
                   style={{
                     background: colors.includes(c)
@@ -269,8 +269,8 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
                 value={type}
                 onChange={(e) => setType(e.target.value)}
                 placeholder="type…"
-                className="ml-1 w-20 flex-1 rounded-md border border-edge bg-ink px-2 py-1
-                           text-xs outline-none focus:border-accent"
+                className="ml-1 w-20 flex-1 rounded-md border border-accent/40 bg-ink/70 px-2 py-1
+                           text-xs outline-none focus:border-accent focus:shadow-neon"
               />
             </div>
           </div>
@@ -294,13 +294,13 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
         </>
       ) : (
         <>
-          <div className="space-y-2 border-b border-edge p-3">
+          <div className="space-y-2 border-b border-accent/30 p-3">
             <input
               value={cmdQ}
               onChange={(e) => setCmdQ(e.target.value)}
               placeholder="Search commanders…"
-              className="w-full rounded-md border border-edge bg-ink px-3 py-2 text-sm
-                         outline-none focus:border-accent"
+              className="w-full rounded-md border border-accent/40 bg-ink/70 px-3 py-2 text-sm
+                         outline-none focus:border-accent focus:shadow-neon"
             />
             <div className="flex items-center gap-1">
               {COLORS.map((c) => (
@@ -314,7 +314,7 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
                   className={`h-7 w-7 rounded-full border text-xs font-bold transition ${
                     cmdColors.includes(c)
                       ? "border-accent text-ink"
-                      : "border-edge text-zinc-400"
+                      : "border-accent/40 text-[#c8b6ff] hover:border-accent/70"
                   }`}
                   style={{
                     background: cmdColors.includes(c) ? COLOR_BG[c] : "transparent",
@@ -326,8 +326,8 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
               <select
                 value={cmdSort}
                 onChange={(e) => setCmdSort(e.target.value as CommanderSort)}
-                className="ml-auto rounded-md border border-edge bg-ink px-2 py-1.5 text-[11px]
-                           text-zinc-300 outline-none focus:border-accent"
+                className="ml-auto rounded-md border border-accent/40 bg-ink/70 px-2 py-1.5 text-[11px]
+                           text-zinc-300 outline-none focus:border-accent focus:shadow-neon"
                 title="Sort commanders"
               >
                 {(Object.keys(SORT_LABELS) as CommanderSort[]).map((s) => (
@@ -353,8 +353,8 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
               </span>
               <button
                 onClick={() => setPartnerPick(false)}
-                className="shrink-0 rounded border border-edge px-1.5 py-0.5 text-[10px] text-zinc-400
-                           transition hover:text-zinc-200"
+                className="shrink-0 rounded border border-accent/50 px-1.5 py-0.5 text-[10px] text-accent
+                           transition hover:bg-accent/10"
               >
                 Cancel
               </button>

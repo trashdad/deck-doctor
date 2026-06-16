@@ -26,36 +26,51 @@ interface Props {
   onRemove?: (cardId: string) => void;
 }
 
-const ENGINE_STYLES: Record<EngineKey, { border: string; bg: string; tint: string; headColor: string }> = {
+// Per-engine accent hues (Arcade Diagnosis): crimson e1 / sapphire e2 / emerald e3.
+// `accent` = the engine's neon edge colour, used for the top rule + glow + number chip.
+const ENGINE_STYLES: Record<
+  EngineKey,
+  { border: string; bg: string; tint: string; headColor: string; accent: string; glow: string }
+> = {
   e1: {
-    border: "border-red-500/30",
-    bg: "linear-gradient(180deg, rgba(239,68,68,0.13), rgba(239,68,68,0.04))",
-    tint: "rgba(239,68,68,0.08)",
-    headColor: "#ef8a8a",
+    border: "border-[#ff3b6b]/40",
+    bg: "linear-gradient(180deg, rgba(255,59,107,0.13), rgba(18,9,46,0.6))",
+    tint: "rgba(255,59,107,0.10)",
+    headColor: "#ffe9a0",
+    accent: "#ff3b6b",
+    glow: "0 0 30px -8px #ff3b6b, inset 0 0 0 1px rgba(255,246,194,.03)",
   },
   e2: {
-    border: "border-blue-500/30",
-    bg: "linear-gradient(180deg, rgba(59,132,246,0.13), rgba(59,132,246,0.04))",
-    tint: "rgba(59,132,246,0.08)",
-    headColor: "#8ab6ef",
+    border: "border-[#3b7cff]/40",
+    bg: "linear-gradient(180deg, rgba(59,124,255,0.13), rgba(18,9,46,0.6))",
+    tint: "rgba(59,124,255,0.10)",
+    headColor: "#ffe9a0",
+    accent: "#3b7cff",
+    glow: "0 0 30px -8px #3b7cff, inset 0 0 0 1px rgba(255,246,194,.03)",
   },
   e3: {
-    border: "border-emerald-500/30",
-    bg: "linear-gradient(180deg, rgba(16,185,129,0.13), rgba(16,185,129,0.04))",
-    tint: "rgba(16,185,129,0.08)",
-    headColor: "#6ee7b7",
+    border: "border-[#21ff9e]/40",
+    bg: "linear-gradient(180deg, rgba(33,255,158,0.12), rgba(18,9,46,0.6))",
+    tint: "rgba(33,255,158,0.10)",
+    headColor: "#ffe9a0",
+    accent: "#21ff9e",
+    glow: "0 0 30px -8px #21ff9e, inset 0 0 0 1px rgba(255,246,194,.03)",
   },
   neutral: {
-    border: "border-zinc-500/20",
+    border: "border-edge",
     bg: "linear-gradient(180deg, rgba(120,120,140,0.08), rgba(0,0,0,0))",
     tint: "rgba(100,100,120,0.06)",
-    headColor: "#9a94b0",
+    headColor: "#c8b6ff",
+    accent: "#9a4bff",
+    glow: "inset 0 0 0 1px rgba(255,246,194,.03)",
   },
   single: {
-    border: "border-edge",
-    bg: "transparent",
+    border: "border-accent/30",
+    bg: "linear-gradient(180deg, rgba(43,15,84,0.5), rgba(18,9,46,0.5))",
     tint: "rgba(0,0,0,0)",
-    headColor: "#c9a227",
+    headColor: "#ffd24a",
+    accent: "#ffd24a",
+    glow: "inset 0 0 0 1px rgba(255,246,194,.03)",
   },
 };
 
@@ -89,27 +104,48 @@ export function EngineColumn({
   // routes drops to the right section. In composite mode we prefix the engine.
   const dropPrefix = engineKey === "single" ? "" : `${engineKey}-`;
 
+  const isEngine = engineKey === "e1" || engineKey === "e2" || engineKey === "e3";
+
   return (
     <div
-      className={`flex flex-1 flex-col gap-2 rounded-xl border p-3 ${style.border}`}
-      style={{ background: style.bg }}
+      className={`flex flex-1 flex-col gap-2 rounded-xl border p-3 backdrop-blur-sm ${style.border}`}
+      style={{
+        background: style.bg,
+        boxShadow: style.glow,
+        // Per-engine neon top rule.
+        borderTop: isEngine ? `3px solid ${style.accent}` : undefined,
+      }}
       data-testid={`engine-col-${engineKey}`}
     >
       {/* Column header (composite / engine columns) */}
       {(label || onThemeChange) && (
-        <div className="mb-1 flex flex-col gap-1.5 border-b border-white/[0.06] pb-2">
+        <div className="mb-1 flex flex-col gap-1.5 border-b border-accent/15 pb-2">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-baseline gap-2">
+            <div className="flex items-center gap-2">
               {label && (
-                <span
-                  className="font-display text-sm font-semibold tracking-wide"
-                  style={{ color: style.headColor }}
-                >
-                  {label}
+                <span className="flex items-center gap-2">
+                  {/* Golden-axe bullet on engine headers. */}
+                  {isEngine && (
+                    <span
+                      className="inline-block bg-contain bg-no-repeat [image-rendering:pixelated]"
+                      style={{
+                        backgroundImage: "url(/deck-doctor/golden-axe.svg)",
+                        width: 16,
+                        height: 16,
+                        filter: "drop-shadow(0 0 6px rgba(255,174,0,.7))",
+                      }}
+                    />
+                  )}
+                  <span
+                    className="arcade-bevel text-sm tracking-wide"
+                    style={{ textShadow: `1px 1px 0 #5e3510, 0 0 10px ${style.accent}` }}
+                  >
+                    {label}
+                  </span>
                 </span>
               )}
               {themeLabel && !onThemeChange && (
-                <span className="text-xs text-zinc-500">{themeLabel}</span>
+                <span className="text-xs text-[#9fd0ff]">{themeLabel}</span>
               )}
             </div>
             {onStaples && themeValue && (
@@ -117,10 +153,20 @@ export function EngineColumn({
                 title="Engine Staples — top cards for this theme"
                 data-testid={`staples-btn-${engineKey}`}
                 onClick={onStaples}
-                className="shrink-0 rounded border border-amber-500/40 px-1.5 py-0.5 text-[10px]
-                           font-semibold text-amber-400 transition hover:bg-amber-500/15"
+                className="flex shrink-0 items-center gap-1 rounded border border-accent/45 bg-accent/5 px-1.5 py-0.5
+                           text-[10px] font-semibold uppercase tracking-wide text-accent transition
+                           hover:bg-accent/15 hover:shadow-neon"
               >
-                ⭐ Staples
+                <span
+                  className="inline-block bg-contain bg-no-repeat [image-rendering:pixelated]"
+                  style={{
+                    backgroundImage: "url(/deck-doctor/golden-axe.svg)",
+                    width: 13,
+                    height: 13,
+                    filter: "drop-shadow(0 0 3px rgba(255,174,0,.8))",
+                  }}
+                />
+                Staples
               </button>
             )}
           </div>
@@ -129,8 +175,8 @@ export function EngineColumn({
               value={themeValue ?? ""}
               onChange={(e) => onThemeChange(e.target.value)}
               data-testid={`engine-theme-${engineKey}`}
-              className="w-full rounded border border-white/10 bg-black/40 px-1.5 py-1 text-xs
-                         text-zinc-200 outline-none focus:border-accent/60"
+              className="w-full rounded border border-accent/25 bg-black/40 px-1.5 py-1 text-xs
+                         text-zinc-200 outline-none focus:border-accent/60 focus:shadow-neon"
             >
               <option value="">— pick a theme —</option>
               {themeOptions.map((t) => (
@@ -145,7 +191,7 @@ export function EngineColumn({
 
       {/* Field subsections — only non-empty */}
       {nonEmptySections.length === 0 ? (
-        <p className="py-4 text-center text-xs italic text-zinc-700">
+        <p className="py-4 text-center text-xs italic text-[#9fd0ff]/50">
           No cards match this engine yet
         </p>
       ) : (

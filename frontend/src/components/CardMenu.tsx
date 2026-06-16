@@ -50,16 +50,16 @@ export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
   return (
     <div
       ref={ref}
-      className="fixed z-[150] overflow-hidden rounded-lg border border-edge bg-panel
-                 shadow-2xl backdrop-blur-sm"
+      className="fixed z-[150] overflow-hidden rounded-lg border border-accent/40 bg-ink/90
+                 shadow-neon backdrop-blur-md"
       style={{ width: W, left, top }}
     >
-      <div className="border-b border-edge px-3 py-2">
+      <div className="border-b border-accent/25 px-3 py-2">
         <p className="truncate text-[10px] font-semibold uppercase tracking-widest text-accent">
           {card.name}
         </p>
         {card.ier != null && (
-          <p className="text-[9px] text-zinc-500">IER {card.ier}</p>
+          <p className="text-[9px] text-[#9fd0ff]">IER {card.ier}</p>
         )}
       </div>
 
@@ -145,7 +145,7 @@ export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
         )}
 
         {/* Buy links */}
-        <div className="mx-3 my-1 border-t border-edge" />
+        <div className="mx-3 my-1 border-t border-accent/20" />
         <div className="flex gap-1 px-3 pb-2 pt-1">
           <a
             href={manapoolCardUrl(card.name)}

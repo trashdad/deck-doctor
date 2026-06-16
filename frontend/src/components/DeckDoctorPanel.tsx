@@ -137,25 +137,25 @@ export function DeckDoctorPanel({
       <div className="fixed inset-0 z-[120] bg-black/40" onClick={onClose} />
       <div
         className="fixed right-0 top-0 z-[125] flex h-screen w-[460px] flex-col
-                   border-l border-edge bg-panel shadow-2xl"
+                   border-l border-accent/30 bg-ink/90 shadow-neon backdrop-blur-md"
         data-testid="doctor-panel"
       >
-        <div className="flex items-start justify-between border-b border-edge px-4 py-3">
+        <div className="flex items-start justify-between border-b border-accent/30 px-4 py-3">
           <div>
-            <p className="text-[9px] uppercase tracking-widest text-zinc-600">Deck Doctor</p>
-            <p className="truncate text-sm font-semibold text-accent">
+            <p className="font-display text-[9px] uppercase tracking-wider text-accent">Deck Doctor</p>
+            <p className="truncate text-sm font-semibold text-zinc-100">
               {commander ? commander.name : "no commander"}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+            className="rounded p-1 text-zinc-500 transition hover:bg-accent/10 hover:text-accent"
           >
             ✕
           </button>
         </div>
 
-        <div className="flex border-b border-edge bg-zinc-900/50">
+        <div className="flex border-b border-accent/30 bg-ink/50">
           {(["complete", "lands", "cuts"] as Tab[]).map((t) => (
             <button
               key={t}
@@ -164,7 +164,7 @@ export function DeckDoctorPanel({
                 "flex-1 px-2 py-2 text-[11px] font-semibold uppercase tracking-wide transition",
                 tab === t
                   ? "border-b-2 border-accent text-accent"
-                  : "border-b-2 border-transparent text-zinc-500 hover:text-zinc-300",
+                  : "border-b-2 border-transparent text-[#9fd0ff] hover:text-cyan",
               ].join(" ")}
             >
               {t === "complete" ? "Complete" : t === "lands" ? "Lands" : "Cuts"}
@@ -179,8 +179,8 @@ export function DeckDoctorPanel({
                 data-testid="doctor-complete"
                 onClick={runComplete}
                 disabled={busy}
-                className="mb-3 w-full rounded-lg border border-accent/50 py-2 text-xs font-semibold
-                           text-accent transition hover:bg-accent/10 disabled:opacity-50"
+                className="mb-3 w-full rounded-lg bg-gradient-to-r from-magenta to-accent py-2 text-xs font-semibold
+                           text-[#1a0033] shadow-neon transition hover:brightness-110 disabled:opacity-50"
               >
                 {busy ? "Building…" : added ? "Complete again" : "Complete my deck"}
               </button>
@@ -201,7 +201,7 @@ export function DeckDoctorPanel({
                   </div>
                   {Object.entries(grouped).map(([zone, items]) => (
                     <div key={zone} className="mb-2">
-                      <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600">
+                      <p className="font-display text-[9px] uppercase tracking-wider text-accent">
                         {zone}
                       </p>
                       {items.map((a) => (
@@ -229,7 +229,7 @@ export function DeckDoctorPanel({
             <>
               {/* Price cap selector */}
               <div className="mb-3 flex items-center gap-2">
-                <span className="shrink-0 text-[10px] uppercase tracking-widest text-zinc-500">
+                <span className="shrink-0 font-display text-[9px] uppercase tracking-wider text-accent">
                   Price cap
                 </span>
                 <div className="flex flex-wrap gap-1">
@@ -240,8 +240,8 @@ export function DeckDoctorPanel({
                       className={[
                         "rounded border px-2 py-0.5 text-[10px] font-semibold transition",
                         landPriceCap === opt.value
-                          ? "border-amber-500/70 bg-amber-500/20 text-amber-300"
-                          : "border-zinc-700 text-zinc-500 hover:border-zinc-500 hover:text-zinc-300",
+                          ? "border-accent/70 bg-accent/20 text-accent"
+                          : "border-zinc-700 text-zinc-500 hover:border-accent/40 hover:text-accent",
                       ].join(" ")}
                     >
                       {opt.label}
@@ -254,9 +254,9 @@ export function DeckDoctorPanel({
                 data-testid="doctor-fill-lands"
                 onClick={runFillLands}
                 disabled={busy || !commander}
-                className="mb-3 w-full rounded-lg border border-amber-500/50 bg-amber-500/5 py-2
-                           text-xs font-semibold text-amber-300 transition
-                           hover:bg-amber-500/15 disabled:opacity-50"
+                className="mb-3 w-full rounded-lg border border-accent/50 bg-accent/5 py-2
+                           text-xs font-semibold text-accent transition
+                           hover:bg-accent/15 disabled:opacity-50"
               >
                 {busy ? "Filling lands…" : landsAdded ? "Fill lands again" : "Fill in my lands for me"}
               </button>
@@ -264,7 +264,7 @@ export function DeckDoctorPanel({
               {landsAdded && (
                 <>
                   <div className="mb-2 flex items-center justify-between gap-2">
-                    <p className="text-[11px] text-amber-300">
+                    <p className="text-[11px] text-accent">
                       ✓ Added {landsAdded.reduce((s, a) => s + a.quantity, 0)} lands → {landsFinalSize} total
                     </p>
                     <button
@@ -289,7 +289,7 @@ export function DeckDoctorPanel({
                       <>
                         {nonbasics.length > 0 && (
                           <div className="mb-2">
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600">
+                            <p className="font-display text-[9px] uppercase tracking-wider text-accent">
                               Nonbasic Lands
                             </p>
                             {nonbasics.map((a) => (
@@ -302,7 +302,7 @@ export function DeckDoctorPanel({
                         )}
                         {basics.length > 0 && (
                           <div className="mb-2">
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600">
+                            <p className="font-display text-[9px] uppercase tracking-wider text-accent">
                               Basic Lands
                             </p>
                             {basics.map((a) => (
@@ -310,7 +310,7 @@ export function DeckDoctorPanel({
                                 <span className="truncate text-zinc-300">
                                   {a.card.name}
                                   {a.quantity > 1 && (
-                                    <span className="ml-1 text-amber-300">×{a.quantity}</span>
+                                    <span className="ml-1 text-accent">×{a.quantity}</span>
                                   )}
                                 </span>
                                 <span className="shrink-0 text-[9px] text-zinc-600">{a.reason}</span>
@@ -352,13 +352,13 @@ export function DeckDoctorPanel({
                 {(cuts ?? []).map((c) => (
                   <li
                     key={c.card.id}
-                    className="flex items-center gap-2 rounded-lg border border-edge bg-zinc-900/40 p-2"
+                    className="flex items-center gap-2 rounded-lg border border-accent/20 bg-ink/50 p-2"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-xs font-semibold text-zinc-200">
                         {c.card.name}
                       </p>
-                      <div className="mt-0.5 h-1 w-full overflow-hidden rounded bg-white/5">
+                      <div className="mt-0.5 h-1 w-full overflow-hidden rounded bg-panel2/60">
                         <div
                           className="h-full rounded bg-red-500/60"
                           style={{ width: `${(c.contribution / maxContrib) * 100}%` }}

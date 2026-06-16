@@ -75,7 +75,7 @@ export function HoverPreview({ card, active }: Props) {
   return createPortal(
     <div
       className="pointer-events-none fixed z-[300] overflow-hidden rounded-[4.75%/3.4%]
-                 shadow-[0_0_0_1px_rgba(201,162,39,0.6),_0_16px_48px_rgba(0,0,0,0.8)]"
+                 shadow-[0_0_0_1px_rgba(255,210,74,0.6),_0_0_28px_rgba(255,43,214,0.45),_0_16px_48px_rgba(0,0,0,0.8)]"
       style={{ left: pos.x, top: pos.y, width: PREVIEW_W }}
     >
       {art ? (

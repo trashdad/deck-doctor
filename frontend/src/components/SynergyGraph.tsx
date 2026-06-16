@@ -24,12 +24,12 @@ const CATEGORY_COLOR: Record<string, string> = {
   counters: "#a78bfa",
   tokens: "#facc15",
   synergy: "#e5e7eb",
-  commander: "#c9a227",
+  commander: "#ffd24a",
 };
 const EDGE_COLOR: Record<string, string> = {
-  combo: "#e879f9",
-  synergy: "#c9a227",
-  cooccurrence: "#38bdf8",
+  combo: "#ff2bd6",
+  synergy: "#ffd24a",
+  cooccurrence: "#00eeff",
 };
 
 interface SimNode extends SimulationNodeDatum, GraphNode {}
@@ -268,21 +268,21 @@ export function SynergyGraph({
 
       <button
         onClick={onClose}
-        className="absolute right-4 top-4 z-10 rounded-lg border border-edge bg-panel px-3 py-1.5
-                   text-sm text-zinc-300 transition hover:text-accent"
+        className="absolute right-4 top-4 z-10 rounded-lg border border-accent/50 bg-ink/80 px-3 py-1.5
+                   text-sm text-accent backdrop-blur-sm transition hover:bg-accent/10"
       >
         ✕ Close
       </button>
 
       {/* Legend */}
-      <div className="absolute bottom-4 left-4 z-10 rounded-lg border border-edge bg-panel/90 p-3 text-[10px]">
-        <p className="mb-1 font-semibold uppercase tracking-widest text-zinc-500">Edges</p>
+      <div className="absolute bottom-4 left-4 z-10 rounded-lg border border-accent/30 bg-ink/80 p-3 text-[10px] backdrop-blur-sm">
+        <p className="mb-1 font-display text-[9px] uppercase tracking-wider text-accent">Edges</p>
         <div className="mb-2 flex flex-col gap-0.5">
           <span style={{ color: EDGE_COLOR.combo }}>━ combo</span>
           <span style={{ color: EDGE_COLOR.synergy }}>━ synergy</span>
           <span style={{ color: EDGE_COLOR.cooccurrence }}>━ played together</span>
         </div>
-        <p className="mb-1 font-semibold uppercase tracking-widest text-zinc-500">Roles</p>
+        <p className="mb-1 font-display text-[9px] uppercase tracking-wider text-accent">Roles</p>
         <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
           {Object.entries(CATEGORY_COLOR).map(([cat, col]) => (
             <span key={cat} style={{ color: col }}>
@@ -294,7 +294,7 @@ export function SynergyGraph({
 
       {/* Footer count */}
       {data && (
-        <div className="absolute bottom-4 right-4 z-10 rounded-lg border border-edge bg-panel/90 px-3 py-1.5 text-[10px] text-zinc-400">
+        <div className="absolute bottom-4 right-4 z-10 rounded-lg border border-accent/30 bg-ink/80 px-3 py-1.5 text-[10px] text-zinc-400 backdrop-blur-sm">
           {data.nodes.length} cards · {data.edges.length} edges · drag to rearrange · click to explore
         </div>
       )}
@@ -302,7 +302,7 @@ export function SynergyGraph({
       {/* Tooltip */}
       {tooltip && (
         <div
-          className="pointer-events-none absolute z-20 rounded border border-edge bg-panel px-2 py-1 text-[10px] text-zinc-200 shadow-lg"
+          className="pointer-events-none absolute z-20 rounded border border-accent/40 bg-ink/90 px-2 py-1 text-[10px] text-zinc-200 shadow-neon backdrop-blur-sm"
           style={{ left: tooltip.x + 12, top: tooltip.y + 12 }}
         >
           <p className="font-semibold text-accent">{tooltip.node.name}</p>

@@ -74,7 +74,7 @@ export function BoardCard({
           "mtg-card group flex-none cursor-pointer select-none",
           "w-[70px]", // fixed width inside pile
           variant === "ghost"
-            ? "border border-dashed border-amber-500/70"
+            ? "border border-dashed border-cyan/70"
             : "",
           variant === "solid" ? "cursor-grab active:cursor-grabbing" : "cursor-default",
         ]
@@ -113,21 +113,24 @@ export function BoardCard({
             the top-right remove handle). */}
         {variant === "solid" && card.wincon && (
           <span
-            className="pointer-events-none absolute left-0.5 top-0.5 z-10 rounded bg-amber-500/90
-                       px-0.5 text-[7px] font-bold text-black shadow"
+            className="pointer-events-none absolute left-0.5 top-0.5 z-10 inline-block bg-contain bg-no-repeat [image-rendering:pixelated]"
+            style={{
+              backgroundImage: "url(/deck-doctor/golden-axe.svg)",
+              width: 14,
+              height: 14,
+              filter: "drop-shadow(0 0 4px rgba(255,174,0,.85))",
+            }}
             title="Win condition"
-          >
-            ⚔
-          </span>
+          />
         )}
 
         {/* Ghost overlay label */}
         {variant === "ghost" && ghostKind && (
           <div
             className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-center
-                       bg-gradient-to-t from-black/70 to-transparent pb-1"
+                       bg-gradient-to-t from-ink/80 to-transparent pb-1"
           >
-            <span className="text-[7px] font-bold uppercase tracking-wider text-amber-300">
+            <span className="text-[7px] font-bold uppercase tracking-wider text-cyan">
               {ghostKind}
             </span>
           </div>

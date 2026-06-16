@@ -164,18 +164,18 @@ export function ExportPanel({ isOpen, onClose, entries, commanderId }: ExportPan
       {/* Panel */}
       <div
         className="fixed right-0 top-0 z-[125] flex h-screen w-[400px] flex-col
-                   border-l border-edge bg-panel shadow-2xl"
+                   border-l border-accent/30 bg-ink/90 shadow-neon backdrop-blur-md"
         data-testid="export-panel"
       >
         {/* ── Header ───────────────────────────────────────────── */}
-        <div className="flex items-start justify-between border-b border-edge px-4 py-3">
+        <div className="flex items-start justify-between border-b border-accent/30 px-4 py-3">
           <div>
-            <p className="text-[9px] uppercase tracking-widest text-zinc-600">Export</p>
-            <p className="text-sm font-semibold text-accent">Download or share your deck</p>
+            <p className="font-display text-[9px] uppercase tracking-wider text-accent">Export</p>
+            <p className="text-sm font-semibold text-zinc-100">Download or share your deck</p>
           </div>
           <button
             onClick={onClose}
-            className="ml-2 mt-0.5 rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+            className="ml-2 mt-0.5 rounded p-1 text-zinc-500 transition hover:bg-accent/10 hover:text-accent"
             aria-label="Close export panel"
           >
             ✕
@@ -204,7 +204,7 @@ export function ExportPanel({ isOpen, onClose, entries, commanderId }: ExportPan
             return (
               <div
                 key={spec.id}
-                className="rounded-lg border border-edge bg-ink p-3 space-y-2"
+                className="rounded-lg border border-accent/25 bg-ink/60 p-3 space-y-2"
               >
                 <div>
                   <p className="text-xs font-semibold text-zinc-200">{spec.label}</p>
@@ -249,7 +249,7 @@ export function ExportPanel({ isOpen, onClose, entries, commanderId }: ExportPan
                           ? "border-accent bg-accent/20 text-accent"
                           : isBusy
                             ? "cursor-not-allowed border-zinc-700 text-zinc-600"
-                            : "border-zinc-600 text-zinc-400 hover:border-accent/50 hover:text-accent",
+                            : "border-cyan/40 text-cyan hover:border-cyan/70 hover:bg-cyan/10",
                       ].join(" ")}
                     >
                       {isCopied ? "✓ Copied" : "Copy"}
@@ -262,7 +262,7 @@ export function ExportPanel({ isOpen, onClose, entries, commanderId }: ExportPan
         </div>
 
         {/* ── Footer ───────────────────────────────────────────── */}
-        <div className="border-t border-edge px-4 py-2 text-[10px] text-zinc-500">
+        <div className="border-t border-accent/30 px-4 py-2 text-[10px] text-zinc-500">
           {entries.length} card{entries.length !== 1 ? "s" : ""} · formats: text, Moxfield CSV, Archidekt CSV, ManaPool
         </div>
       </div>

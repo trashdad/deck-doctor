@@ -75,8 +75,10 @@ function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void })
           </button>
         </div>
         <div className="flex min-w-0 flex-col gap-0.5">
-          <span className="truncate text-sm font-semibold text-zinc-100">{card.name}</span>
-          <span className="truncate text-xs italic text-zinc-500">{card.type_line}</span>
+          <span className="truncate text-sm font-semibold text-white [text-shadow:0_0_14px_rgba(255,43,214,0.45)]">
+            {card.name}
+          </span>
+          <span className="truncate text-xs italic text-[#c8b6ff]">{card.type_line}</span>
           {card.color_identity.length > 0 && (
             <div className="flex gap-0.5 pt-0.5">
               {card.color_identity.map((c) => (
@@ -117,16 +119,16 @@ export function CommanderStrip({ commanders, onRemove, controls }: Props) {
 
   return (
     <div
-      className="mb-3 flex flex-wrap items-center gap-4 rounded-xl border border-accent/50 px-4 py-3"
-      style={{ background: "linear-gradient(180deg, rgba(201,162,39,0.10), rgba(201,162,39,0.03))" }}
+      className="mb-3 flex flex-wrap items-center gap-4 rounded-xl border border-accent px-4 py-3 shadow-neon backdrop-blur-sm"
+      style={{ background: "linear-gradient(110deg, rgba(255,43,214,0.12), rgba(255,170,0,0.10))" }}
       data-testid="commander-strip"
     >
-      <span className="font-display shrink-0 text-sm font-semibold tracking-wide text-accent">
+      <span className="arcade-bevel shrink-0 text-sm tracking-wide">
         Commander{commanders.length > 1 ? "s" : ""}
       </span>
 
       {commanders.length === 0 ? (
-        <p className="text-sm italic text-zinc-600">
+        <p className="text-sm italic text-[#c8b6ff]/70">
           Pick a Legendary Creature from the commander list to set your commander
         </p>
       ) : (
@@ -145,8 +147,8 @@ export function CommanderStrip({ commanders, onRemove, controls }: Props) {
               data-testid="add-partner"
               title="Add a valid partner commander"
               className="flex h-[88px] w-[72px] flex-none flex-col items-center justify-center gap-1
-                         rounded-md border border-dashed border-accent/50 text-accent/80
-                         transition hover:border-accent hover:bg-accent/10"
+                         rounded-md border border-dashed border-cyan/60 text-cyan
+                         transition hover:bg-cyan/15 hover:shadow-neon"
             >
               <span className="text-xl leading-none">＋</span>
               <span className="px-1 text-center text-[9px] font-semibold uppercase tracking-wider">

@@ -23,7 +23,7 @@ interface Props {
 export function CardPile({ entries, onRemove }: Props) {
   if (entries.length === 0) {
     return (
-      <p className="py-2 text-xs italic text-zinc-600">no cards</p>
+      <p className="py-2 text-xs italic text-[#9fd0ff]/50">no cards</p>
     );
   }
 

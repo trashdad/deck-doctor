@@ -16,7 +16,7 @@ function ChainIcon({ active }: { active: boolean }) {
       height="12"
       viewBox="0 0 24 24"
       fill="none"
-      stroke={active ? "#c9a227" : "#4b5563"}
+      stroke={active ? "#00eeff" : "#4b5563"}
       strokeWidth="2.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -87,7 +87,7 @@ function GroupSection({
   if (tags.length === 0) return null;
   return (
     <div className="mb-3">
-      <p className="mb-1.5 text-[9px] font-bold uppercase tracking-widest text-zinc-600">
+      <p className="mb-1.5 font-display text-[9px] uppercase tracking-wider text-accent">
         {group}
       </p>
       <div className="flex flex-wrap gap-1.5">
@@ -172,12 +172,12 @@ export function SemanticFinder() {
       <div
         ref={panelRef}
         className="fixed right-0 top-0 z-[95] flex h-full w-[420px] flex-col
-                   border-l border-edge bg-panel shadow-2xl"
+                   border-l border-accent/30 bg-ink/90 shadow-neon backdrop-blur-md"
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-edge px-4 py-3">
+        <div className="flex items-start justify-between border-b border-accent/30 px-4 py-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[9px] uppercase tracking-widest text-zinc-600">
+            <p className="font-display text-[9px] uppercase tracking-wider text-accent">
               Semantic Finder
             </p>
             <p className="truncate text-sm font-semibold text-accent">
@@ -190,14 +190,14 @@ export function SemanticFinder() {
           <button
             onClick={close}
             className="ml-3 shrink-0 rounded-full p-1 text-zinc-500
-                       transition hover:bg-white/10 hover:text-zinc-200"
+                       transition hover:bg-accent/10 hover:text-accent"
           >
             ✕
           </button>
         </div>
 
         {/* Instructions */}
-        <div className="border-b border-edge bg-zinc-900/60 px-4 py-2">
+        <div className="border-b border-accent/30 bg-ink/50 px-4 py-2">
           <p className="text-[10px] leading-relaxed text-zinc-500">
             Click tags to select them. Click{" "}
             <ChainIcon active={true} />
@@ -261,7 +261,7 @@ export function SemanticFinder() {
         </div>
 
         {/* Find button + query summary */}
-        <div className="border-t border-edge px-4 py-3">
+        <div className="border-t border-accent/30 px-4 py-3">
           {hasSelection && (
             <p className="mb-2 text-[10px] leading-snug text-zinc-500">
               {buildQuerySummary()}
@@ -273,7 +273,7 @@ export function SemanticFinder() {
             className={[
               "w-full rounded-lg py-2.5 text-xs font-bold uppercase tracking-widest transition",
               hasSelection
-                ? "bg-accent text-ink hover:bg-accent/80"
+                ? "bg-gradient-to-r from-magenta to-accent text-[#1a0033] shadow-neon hover:brightness-110"
                 : "cursor-not-allowed bg-zinc-800 text-zinc-600",
             ].join(" ")}
           >
@@ -283,7 +283,7 @@ export function SemanticFinder() {
 
         {/* Results */}
         {(results !== null || searching) && (
-          <div className="max-h-[45vh] overflow-y-auto border-t border-edge scrollbar-thin">
+          <div className="max-h-[45vh] overflow-y-auto border-t border-accent/30 scrollbar-thin">
             {searching && (
               <p className="px-4 py-3 text-xs text-zinc-500">Searching…</p>
             )}

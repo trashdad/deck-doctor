@@ -274,6 +274,17 @@ class CurveBucket(BaseModel):
     count: int
 
 
+class Vital(BaseModel):
+    label: str
+    score: int  # 0–100
+
+
+class DeckDiagnosis(BaseModel):
+    score: int          # 0–100 overall Diagnosis
+    verdict: str        # CRITICAL | UNSTABLE | FAIR | STABLE | OPTIMAL | "—"
+    vitals: list[Vital]
+
+
 class DeckAnalysis(BaseModel):
     card_count: int
     mana_curve: list[CurveBucket]

@@ -150,14 +150,14 @@ export function ImportDialog({
       data-testid="import-dialog"
     >
       <div
-        className="flex max-h-[90vh] w-full max-w-xl flex-col rounded-2xl border border-amber-500/40
-                   bg-panel shadow-2xl"
+        className="flex max-h-[90vh] w-full max-w-xl flex-col rounded-2xl border border-accent/50
+                   bg-ink/90 shadow-neon backdrop-blur-md"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-amber-500/20 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-accent/30 px-5 py-4">
           <div>
-            <p className="font-display text-base font-bold tracking-wide text-accent">
+            <p className="arcade-bevel text-sm">
               Import Decklist
             </p>
             <p className="text-[10px] uppercase tracking-widest text-zinc-500">
@@ -166,7 +166,7 @@ export function ImportDialog({
           </div>
           <button
             onClick={handleClose}
-            className="rounded-lg px-2 py-1 text-xs text-zinc-500 hover:text-zinc-200"
+            className="rounded-lg px-2 py-1 text-xs text-zinc-500 hover:text-accent"
             aria-label="Close"
           >
             ✕
@@ -184,8 +184,8 @@ export function ImportDialog({
               if (parsed) setParsed(false);
             }}
             placeholder={PLACEHOLDER}
-            className="h-44 w-full resize-none rounded-lg border border-edge bg-zinc-900/80 p-3
-                       font-mono text-xs text-zinc-200 outline-none focus:border-amber-500/60
+            className="h-44 w-full resize-none rounded-lg border border-accent/40 bg-ink/70 p-3
+                       font-mono text-xs text-zinc-200 outline-none focus:border-accent focus:shadow-neon
                        scrollbar-thin"
           />
 
@@ -199,7 +199,7 @@ export function ImportDialog({
                 "rounded-lg border px-4 py-2 text-xs font-semibold transition",
                 busy || !text.trim()
                   ? "cursor-not-allowed border-zinc-800 text-zinc-600"
-                  : "border-amber-500/50 text-amber-300 hover:bg-amber-500/10",
+                  : "border-accent/50 text-accent hover:bg-accent/10",
               ].join(" ")}
             >
               {busy ? "Parsing…" : "Parse list"}
@@ -214,15 +214,15 @@ export function ImportDialog({
           {/* Results summary */}
           {parsed && (
             <div className="mt-4 space-y-4">
-              <div className="rounded-lg border border-edge bg-zinc-900/60 px-4 py-3">
+              <div className="rounded-lg border border-edge bg-panel2/60 px-4 py-3">
                 <p className="text-xs text-zinc-300">
-                  <span className="font-semibold text-green-400">
+                  <span className="font-semibold text-emerald-400">
                     ✓ {resolved.length} card{resolved.length !== 1 ? "s" : ""} matched
                   </span>
                   {unresolved.length > 0 && (
                     <>
                       {" · "}
-                      <span className="font-semibold text-amber-400">
+                      <span className="font-semibold text-accent">
                         {unresolved.length} need{unresolved.length === 1 ? "s" : ""} your attention
                       </span>
                     </>
@@ -233,7 +233,7 @@ export function ImportDialog({
               {/* Deconfliction list */}
               {unresolved.length > 0 && (
                 <div className="space-y-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-400/80">
+                  <p className="font-display text-[9px] uppercase tracking-wider text-accent">
                     Fix unresolved lines
                   </p>
                   {unresolved.map((entry, i) => (
@@ -252,7 +252,7 @@ export function ImportDialog({
 
         {/* Footer */}
         {parsed && (
-          <div className="flex items-center justify-between border-t border-amber-500/20 px-5 py-3">
+          <div className="flex items-center justify-between border-t border-accent/30 px-5 py-3">
             <p className="text-[11px] text-zinc-400">
               <span className="font-semibold text-zinc-200">{willImport}</span> card
               {willImport !== 1 ? "s" : ""} will import
@@ -260,8 +260,8 @@ export function ImportDialog({
             <div className="flex gap-2">
               <button
                 onClick={handleClose}
-                className="rounded-lg border border-edge px-3 py-1.5 text-xs text-zinc-400
-                           hover:text-zinc-200"
+                className="rounded-lg border border-accent/50 px-3 py-1.5 text-xs text-accent
+                           hover:bg-accent/10"
               >
                 Cancel
               </button>
@@ -274,7 +274,7 @@ export function ImportDialog({
                   "rounded-lg border px-4 py-1.5 text-xs font-semibold transition",
                   !allHandled
                     ? "cursor-not-allowed border-zinc-800 text-zinc-600"
-                    : "border-amber-500/50 text-amber-300 hover:bg-amber-500/10",
+                    : "border-accent/50 text-accent hover:bg-accent/10",
                 ].join(" ")}
               >
                 Import to deck
@@ -301,7 +301,7 @@ function DeconflictRow({
   onChoose: (c: LineChoice) => void;
 }) {
   return (
-    <div className="rounded-lg border border-amber-500/20 bg-zinc-900/50 px-3 py-2.5">
+    <div className="rounded-lg border border-accent/25 bg-panel2/50 px-3 py-2.5">
       {/* Original line */}
       <div className="mb-2 flex items-baseline gap-2">
         <span className="shrink-0 rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px]
@@ -324,8 +324,8 @@ function DeconflictRow({
               className={[
                 "rounded-md border px-2 py-1 text-[11px] font-medium transition",
                 selected
-                  ? "border-amber-500/70 bg-amber-500/20 text-amber-200"
-                  : "border-zinc-700 text-zinc-300 hover:border-amber-500/40 hover:text-amber-200",
+                  ? "border-accent/70 bg-accent/20 text-accent"
+                  : "border-zinc-700 text-zinc-300 hover:border-accent/40 hover:text-accent",
               ].join(" ")}
             >
               {sugg.name}
@@ -347,9 +347,9 @@ function DeconflictRow({
 
       {/* Chosen label */}
       {choice && choice !== "skip" && (
-        <p className="mt-1.5 text-[10px] text-amber-400/70">
+        <p className="mt-1.5 text-[10px] text-accent/70">
           Will import as:{" "}
-          <span className="font-semibold text-amber-300">
+          <span className="font-semibold text-accent">
             {entry.suggestions.find((s) => s.id === choice)?.name}
           </span>
         </p>

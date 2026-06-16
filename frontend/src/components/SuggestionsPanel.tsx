@@ -8,9 +8,9 @@ import { useRelationshipStore } from "@/store/relationship";
 import type { Card, DeckEntry, Reason } from "@/lib/types";
 
 const TIER_STYLE: Record<string, { label: string; cls: string }> = {
-  edhrec: { label: "EDHREC", cls: "bg-accent/20 text-accent" },
-  cooccurrence: { label: "CO-OCCURRENCE", cls: "bg-sky-400/20 text-sky-300" },
-  color_staple: { label: "STAPLES", cls: "bg-zinc-600/30 text-zinc-300" },
+  edhrec: { label: "EDHREC", cls: "border border-accent/50 bg-accent/10 text-accent" },
+  cooccurrence: { label: "CO-OCCURRENCE", cls: "border border-cyan/50 bg-cyan/10 text-cyan" },
+  color_staple: { label: "STAPLES", cls: "border border-edge bg-panel2/60 text-zinc-300" },
 };
 
 const SIGNAL_LABEL: Record<string, string> = {
@@ -30,12 +30,12 @@ export function ReasonChips({ reasons }: { reasons: Reason[] }) {
           key={i}
           title={r.detail}
           className={[
-            "rounded px-1 py-0.5 text-[9px] font-medium",
+            "rounded border px-1 py-0.5 text-[9px] font-medium",
             r.signal === "engine"
-              ? "bg-fuchsia-500/20 text-fuchsia-300"
+              ? "border-magenta/50 bg-magenta/15 text-magenta"
               : r.signal === "edhrec"
-                ? "bg-accent/15 text-accent"
-                : "bg-white/5 text-zinc-400",
+                ? "border-accent/40 bg-accent/10 text-accent"
+                : "border-cyan/40 bg-cyan/10 text-cyan",
           ].join(" ")}
         >
           {SIGNAL_LABEL[r.signal] ?? r.signal} {r.value.toFixed(2)}
@@ -92,13 +92,13 @@ export function SuggestionsPanel({
 
       <div
         className="fixed right-0 top-0 z-[125] flex h-screen w-[460px] flex-col
-                   border-l border-edge bg-panel shadow-2xl"
+                   border-l border-accent/30 bg-ink/90 shadow-neon backdrop-blur-md"
         data-testid="suggestions-panel"
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-edge px-4 py-3">
+        <div className="flex items-start justify-between border-b border-accent/30 px-4 py-3">
           <div className="min-w-0">
-            <p className="text-[9px] uppercase tracking-widest text-zinc-600">
+            <p className="font-display text-[9px] uppercase tracking-wider text-accent">
               Suggestions
             </p>
             <p className="truncate text-sm font-semibold text-accent">
@@ -115,7 +115,7 @@ export function SuggestionsPanel({
           </div>
           <button
             onClick={onClose}
-            className="ml-2 mt-0.5 rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+            className="ml-2 mt-0.5 rounded p-1 text-zinc-500 transition hover:bg-accent/10 hover:text-accent"
           >
             ✕
           </button>
@@ -147,19 +147,19 @@ export function SuggestionsPanel({
             </p>
           )}
 
-          <ul className="divide-y divide-white/5">
+          <ul className="divide-y divide-accent/10">
             {visible.map((s) => {
               const art = s.card.image_uris?.normal;
               return (
                 <li
                   key={s.card.id}
                   data-testid="suggestion-row"
-                  className="flex items-center gap-3 px-3 py-2 transition hover:bg-white/[0.03]"
+                  className="flex items-center gap-3 px-3 py-2 transition hover:bg-accent/[0.06] hover:shadow-neon"
                 >
                   <button
                     title="Explore relationships"
                     onClick={() => openExplorer(s.card, "synergy")}
-                    className="h-14 w-10 shrink-0 overflow-hidden rounded border border-edge bg-zinc-900"
+                    className="h-14 w-10 shrink-0 overflow-hidden rounded border border-accent/30 bg-zinc-900"
                   >
                     {art ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -185,9 +185,9 @@ export function SuggestionsPanel({
                         {s.score.toFixed(2)}
                       </span>
                     </div>
-                    <div className="mt-0.5 h-1 w-full overflow-hidden rounded bg-white/5">
+                    <div className="mt-0.5 h-1 w-full overflow-hidden rounded bg-panel2/60">
                       <div
-                        className="h-full rounded bg-accent/70"
+                        className="h-full rounded bg-gradient-to-r from-cyan to-magenta"
                         style={{ width: `${Math.min(s.score * 100, 100)}%` }}
                       />
                     </div>
@@ -198,8 +198,8 @@ export function SuggestionsPanel({
                     title="Add to deck"
                     data-testid="suggestion-add"
                     onClick={() => add(s.card)}
-                    className="shrink-0 rounded-lg border border-accent/40 px-2.5 py-1.5 text-sm
-                               font-bold text-accent transition hover:bg-accent/15"
+                    className="shrink-0 rounded-full border border-cyan/60 px-2.5 py-1.5 text-sm
+                               font-bold text-cyan transition hover:bg-cyan/15 hover:shadow-neon"
                   >
                     ＋
                   </button>
@@ -211,7 +211,7 @@ export function SuggestionsPanel({
 
         {/* Footer */}
         {data && (
-          <div className="border-t border-edge px-4 py-2 text-[10px] text-zinc-500">
+          <div className="border-t border-accent/30 px-4 py-2 text-[10px] text-zinc-500">
             {visible.length} suggestions · blended from EDHREC, deck co-occurrence,
             structural synergy & combo completion
           </div>

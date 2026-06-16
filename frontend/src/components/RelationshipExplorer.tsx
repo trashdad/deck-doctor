@@ -83,14 +83,14 @@ function PairReadout({
   const rel = pair?.relationship ?? null;
   const co = pair?.cooccurrence ?? null;
   return (
-    <div className="mb-3 rounded-lg border border-accent/40 bg-zinc-900/80 px-3 py-2">
+    <div className="mb-3 rounded-lg border border-accent/40 bg-ink/70 px-3 py-2">
       <div className="mb-1 flex items-center justify-between">
         <p className="truncate text-[10px] font-semibold uppercase tracking-widest text-accent">
           {focal.name} ⟷ {card.name}
         </p>
         <button
           onClick={onClose}
-          className="ml-2 shrink-0 rounded p-0.5 text-zinc-500 hover:bg-white/10 hover:text-zinc-200"
+          className="ml-2 shrink-0 rounded p-0.5 text-zinc-500 hover:bg-accent/10 hover:text-accent"
         >
           ✕
         </button>
@@ -100,7 +100,7 @@ function PairReadout({
         <p className="py-2 text-[10px] text-zinc-500">No edge data for this pair.</p>
       )}
       {!loading && pair && (
-        <div className="divide-y divide-white/5">
+        <div className="divide-y divide-accent/10">
           <EdgeRow
             label="Similarity"
             gloss="same mechanical job"
@@ -196,11 +196,11 @@ export function RelationshipExplorer() {
 
       <div
         className="fixed right-0 top-0 z-[145] flex h-screen w-[460px] flex-col
-                   border-l border-edge bg-panel shadow-2xl"
+                   border-l border-accent/30 bg-ink/90 shadow-neon backdrop-blur-md"
         data-testid="relationship-explorer"
       >
         {/* Header */}
-        <div className="flex items-start gap-2 border-b border-edge px-4 py-3">
+        <div className="flex items-start gap-2 border-b border-accent/30 px-4 py-3">
           {stack.length > 0 && (
             <button
               onClick={back}
@@ -212,7 +212,7 @@ export function RelationshipExplorer() {
             </button>
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-[9px] uppercase tracking-widest text-zinc-600">
+            <p className="font-display text-[9px] uppercase tracking-wider text-accent">
               Relationship Explorer
               {stack.length > 0 && (
                 <span className="ml-1 text-zinc-700">
@@ -228,14 +228,14 @@ export function RelationshipExplorer() {
           </div>
           <button
             onClick={close}
-            className="ml-2 mt-0.5 shrink-0 rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+            className="ml-2 mt-0.5 shrink-0 rounded p-1 text-zinc-500 transition hover:bg-accent/10 hover:text-accent"
           >
             ✕
           </button>
         </div>
 
         {/* Axis tabs */}
-        <div className="flex border-b border-edge bg-zinc-900/50">
+        <div className="flex border-b border-accent/30 bg-ink/50">
           {AXES.map((a) => (
             <button
               key={a.key}
@@ -245,14 +245,14 @@ export function RelationshipExplorer() {
                 "flex-1 px-1 py-2 text-[10px] font-semibold uppercase tracking-wide transition",
                 axis === a.key
                   ? "border-b-2 border-accent text-accent"
-                  : "border-b-2 border-transparent text-zinc-500 hover:text-zinc-300",
+                  : "border-b-2 border-transparent text-[#9fd0ff] hover:text-cyan",
               ].join(" ")}
             >
               {a.label}
             </button>
           ))}
         </div>
-        <p className="border-b border-edge bg-accent/[0.04] px-4 py-2 text-[11px] leading-snug text-zinc-300">
+        <p className="border-b border-accent/30 bg-accent/[0.04] px-4 py-2 text-[11px] leading-snug text-zinc-300">
           <span className="font-semibold text-accent">{activeAxis.label}:</span> {activeAxis.gloss}
         </p>
 
@@ -303,10 +303,10 @@ export function RelationshipExplorer() {
               {spellbook.map((c) => (
                 <div
                   key={c.combo_id}
-                  className="rounded-lg border border-fuchsia-500/40 bg-fuchsia-500/[0.06] p-2"
+                  className="rounded-lg border border-magenta/40 bg-magenta/[0.06] p-2"
                 >
                   <div className="mb-1 flex items-center gap-2">
-                    <span className="rounded bg-fuchsia-500/20 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-fuchsia-300">
+                    <span className="rounded border border-magenta/50 bg-magenta/20 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-magenta">
                       spellbook combo
                     </span>
                     {c.popularity != null && (
@@ -316,7 +316,7 @@ export function RelationshipExplorer() {
                     )}
                   </div>
                   {c.produces.length > 0 && (
-                    <p className="mb-1.5 text-[10px] text-fuchsia-200/90">
+                    <p className="mb-1.5 text-[10px] text-magenta/90">
                       → {c.produces.join(", ")}
                     </p>
                   )}
@@ -344,11 +344,11 @@ export function RelationshipExplorer() {
               {engines.map((g) => (
                 <div
                   key={g.engine_id}
-                  className="rounded-lg border border-edge bg-zinc-900/50 p-2"
+                  className="rounded-lg border border-accent/25 bg-ink/50 p-2"
                 >
                   <div className="mb-1.5 flex items-center gap-2">
                     {g.asserted && <span title="asserted combo">⭐</span>}
-                    <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-accent">
+                    <span className="rounded border border-accent/40 bg-accent/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-accent">
                       {g.asserted ? "combo" : `${g.kind} engine`}
                     </span>
                     {g.candidate && !g.asserted && (
@@ -402,7 +402,7 @@ export function RelationshipExplorer() {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-edge px-4 py-2 text-[10px] text-zinc-500">
+        <div className="border-t border-accent/30 px-4 py-2 text-[10px] text-zinc-500">
           ＋ add · ◎ focus · ⓘ inspect pair
         </div>
       </div>

@@ -75,17 +75,17 @@ export function DeckCombosPanel({
       <div className="fixed inset-0 z-[120] bg-black/40" onClick={onClose} />
       <div
         className="fixed right-0 top-0 z-[125] flex h-screen w-[460px] flex-col
-                   border-l border-edge bg-panel shadow-2xl"
+                   border-l border-accent/30 bg-ink/90 shadow-neon backdrop-blur-md"
         data-testid="deck-combos-panel"
       >
-        <div className="flex items-start justify-between border-b border-edge px-4 py-3">
+        <div className="flex items-start justify-between border-b border-accent/30 px-4 py-3">
           <div>
-            <p className="text-[9px] uppercase tracking-widest text-zinc-600">Combos</p>
-            <p className="text-sm font-semibold text-accent">In &amp; near your deck</p>
+            <p className="font-display text-[9px] uppercase tracking-wider text-accent">Combos</p>
+            <p className="text-sm font-semibold text-zinc-100">In &amp; near your deck</p>
           </div>
           <button
             onClick={onClose}
-            className="rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+            className="rounded p-1 text-zinc-500 transition hover:bg-accent/10 hover:text-accent"
           >
             ✕
           </button>
@@ -99,7 +99,7 @@ export function DeckCombosPanel({
           )}
 
           {/* In your deck */}
-          <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+          <p className="mb-2 font-display text-[9px] uppercase tracking-wider text-accent">
             In your deck ({complete.length})
           </p>
           <div data-testid="combos-complete" className="space-y-2">
@@ -109,7 +109,7 @@ export function DeckCombosPanel({
               </p>
             )}
             {complete.map((c) => (
-              <div key={c.combo_id} className="rounded-lg border border-edge bg-zinc-900/50 p-2">
+              <div key={c.combo_id} className="rounded-lg border border-magenta/40 bg-magenta/[0.06] p-2">
                 <ProducesLine combo={c} />
                 <div className="mt-1 flex flex-wrap gap-1">
                   {c.members.map((m) => (
@@ -121,7 +121,7 @@ export function DeckCombosPanel({
           </div>
 
           {/* One card away — the killer feature */}
-          <p className="mb-2 mt-4 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+          <p className="mb-2 mt-4 font-display text-[9px] uppercase tracking-wider text-accent">
             One card away ({near.length})
           </p>
           <div data-testid="combos-near" className="space-y-2">
@@ -133,7 +133,7 @@ export function DeckCombosPanel({
             {near.map((n) => (
               <div
                 key={n.combo.combo_id}
-                className="rounded-lg border border-amber-500/50 bg-amber-500/[0.06] p-2"
+                className="rounded-lg border border-accent/50 bg-accent/[0.06] p-2"
               >
                 <ProducesLine combo={n.combo} />
                 <div className="mt-1 flex items-center gap-2">
@@ -147,7 +147,7 @@ export function DeckCombosPanel({
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-semibold text-amber-200">
+                    <p className="truncate text-xs font-semibold text-accent">
                       add {n.missing.name}
                     </p>
                     <div className="mt-1 flex flex-wrap gap-1">
@@ -156,7 +156,7 @@ export function DeckCombosPanel({
                         .map((m) => (
                           <span
                             key={m.id}
-                            className="rounded bg-white/5 px-1 py-0.5 text-[9px] text-zinc-400"
+                            className="rounded border border-edge bg-panel2/60 px-1 py-0.5 text-[9px] text-zinc-400"
                           >
                             {m.name}
                           </span>
@@ -169,7 +169,7 @@ export function DeckCombosPanel({
           </div>
         </div>
 
-        <div className="border-t border-edge px-4 py-2 text-[10px] text-zinc-500">
+        <div className="border-t border-accent/30 px-4 py-2 text-[10px] text-zinc-500">
           {complete.length} complete · {near.length} one-away · Commander Spellbook
         </div>
       </div>
