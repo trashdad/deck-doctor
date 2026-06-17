@@ -100,9 +100,16 @@ body {
   animation: axespin 60s linear infinite, axebob 9s ease-in-out infinite;
   will-change: transform;
 }
+/* Spin around the vertical (Y) axis — a coin-flip tumble. The flat 2D sprite
+   foreshortens to nothing edge-on (90°/270°), so it briefly vanishes twice per
+   turn, which is the intended look. perspective() gives it real 3D depth.
+   Driven via `transform` so it composes with the individual `translate` bob. */
 @keyframes axespin {
+  from {
+    transform: perspective(900px) rotateY(0deg);
+  }
   to {
-    rotate: 360deg;
+    transform: perspective(900px) rotateY(360deg);
   }
 }
 @keyframes axebob {
