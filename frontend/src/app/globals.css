@@ -99,6 +99,19 @@ body {
   .arcade-axe {
     animation: none;
   }
+  /* Drop the CRT scanlines and neutralize long transitions/animations for
+     motion-sensitive users (the gauge ring/vital bars settle instantly). */
+  .arcade-scan {
+    display: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ===== Golden-Axe gold-bevel arcade text (wordmark + headers) ===== */

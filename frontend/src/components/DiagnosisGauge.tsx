@@ -82,7 +82,7 @@ export default function DiagnosisGauge({
     >
       <div className="mb-4 flex items-center justify-between">
         <span
-          className="text-[11px] uppercase tracking-[1px] text-amber-100"
+          className="text-[11px] uppercase tracking-[1px] text-[#fff6c2]"
           style={{ textShadow: "1px 1px 0 #5e3510,0 0 12px rgba(255,174,0,.5)" }}
         >
           Deck Doctor Diagnosis
@@ -140,7 +140,7 @@ export default function DiagnosisGauge({
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
             <div
-              className="text-[34px] font-black leading-none text-amber-100"
+              className="text-[34px] font-black leading-none text-[#fff6c2]"
               style={{ textShadow: "0 0 22px rgba(255,174,0,.7)" }}
             >
               {score}

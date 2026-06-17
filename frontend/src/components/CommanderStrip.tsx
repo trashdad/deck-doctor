@@ -47,7 +47,7 @@ function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void })
           }}
           data-card-hover="1"
         >
-          <div className="mtg-card w-[72px] shadow-[0_0_0_1px_rgba(201,162,39,0.5),_0_8px_24px_rgba(0,0,0,0.6)]">
+          <div className="mtg-card w-[72px] shadow-[0_0_0_1px_rgba(255,210,74,0.55),_0_0_18px_rgba(255,43,214,0.4),_0_8px_24px_rgba(0,0,0,0.6)]">
             {art ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={art} alt={card.name} loading="eager" />
