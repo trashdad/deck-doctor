@@ -10,6 +10,10 @@
 html,
 body {
   height: 100%;
+  min-height: 100dvh;
+  width: 100%;
+  margin: 0;
+  overflow-x: hidden;
 }
 
 body {
@@ -40,6 +44,16 @@ body {
   background: radial-gradient(circle, #ff7ad9 0 30%, #ffd24a 30% 55%, rgba(255, 122, 217, 0) 70%);
   opacity: 0.28;
   filter: blur(2px);
+  /* Gentle breathing pulse — opacity only, compositor-cheap. */
+  animation: arcade-sunpulse 7s ease-in-out infinite;
+}
+@keyframes arcade-sunpulse {
+  0%, 100% {
+    opacity: 0.24;
+  }
+  50% {
+    opacity: 0.34;
+  }
 }
 /* neon perspective grid along the bottom */
 .arcade-grid {
@@ -56,6 +70,17 @@ body {
   opacity: 0.5;
   mask-image: linear-gradient(transparent, #000 60%);
   -webkit-mask-image: linear-gradient(transparent, #000 60%);
+  /* Classic synthwave scroll: the cyan horizontal lines drift toward the viewer.
+     Loops seamlessly every 9% (one grid cell). Single fixed layer — light. */
+  animation: arcade-gridscroll 6s linear infinite;
+}
+@keyframes arcade-gridscroll {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 0 0, 0 9%;
+  }
 }
 /* one big 16-bit golden axe, slowly rotating dead-center */
 .arcade-axe {

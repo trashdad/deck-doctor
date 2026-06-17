@@ -28,9 +28,12 @@ interface Props {
 
 // Per-engine accent hues (Arcade Diagnosis): crimson e1 / sapphire e2 / emerald e3.
 // `accent` = the engine's neon edge colour, used for the top rule + glow + number chip.
+// Each engine carries a distinct 16-bit Golden-Axe weapon (sword/hammer/spear/
+// dagger), shown as the header bullet + on its Staples button. Win Conditions keeps
+// the double-bit axe (see EngineBoard).
 const ENGINE_STYLES: Record<
   EngineKey,
-  { border: string; bg: string; tint: string; headColor: string; accent: string; glow: string }
+  { border: string; bg: string; tint: string; headColor: string; accent: string; glow: string; weapon: string }
 > = {
   e1: {
     border: "border-[#ff3b6b]/40",
@@ -39,6 +42,7 @@ const ENGINE_STYLES: Record<
     headColor: "#ffe9a0",
     accent: "#ff3b6b",
     glow: "0 0 30px -8px #ff3b6b, inset 0 0 0 1px rgba(255,246,194,.03)",
+    weapon: "/deck-doctor/weapons/sword.svg",
   },
   e2: {
     border: "border-[#3b7cff]/40",
@@ -47,6 +51,7 @@ const ENGINE_STYLES: Record<
     headColor: "#ffe9a0",
     accent: "#3b7cff",
     glow: "0 0 30px -8px #3b7cff, inset 0 0 0 1px rgba(255,246,194,.03)",
+    weapon: "/deck-doctor/weapons/hammer.svg",
   },
   e3: {
     border: "border-[#21ff9e]/40",
@@ -55,6 +60,7 @@ const ENGINE_STYLES: Record<
     headColor: "#ffe9a0",
     accent: "#21ff9e",
     glow: "0 0 30px -8px #21ff9e, inset 0 0 0 1px rgba(255,246,194,.03)",
+    weapon: "/deck-doctor/weapons/spear.svg",
   },
   neutral: {
     border: "border-edge",
@@ -63,6 +69,7 @@ const ENGINE_STYLES: Record<
     headColor: "#c8b6ff",
     accent: "#9a4bff",
     glow: "inset 0 0 0 1px rgba(255,246,194,.03)",
+    weapon: "/deck-doctor/weapons/dagger.svg",
   },
   single: {
     border: "border-accent/30",
@@ -71,6 +78,7 @@ const ENGINE_STYLES: Record<
     headColor: "#ffd24a",
     accent: "#ffd24a",
     glow: "inset 0 0 0 1px rgba(255,246,194,.03)",
+    weapon: "/deck-doctor/golden-axe.svg",
   },
 };
 
@@ -124,15 +132,15 @@ export function EngineColumn({
             <div className="flex items-center gap-2">
               {label && (
                 <span className="flex items-center gap-2">
-                  {/* Golden-axe bullet on engine headers. */}
-                  {isEngine && (
+                  {/* This engine's distinct weapon as the header bullet. */}
+                  {engineKey !== "single" && (
                     <span
-                      className="inline-block bg-contain bg-no-repeat [image-rendering:pixelated]"
+                      className="inline-block bg-contain bg-no-repeat bg-center [image-rendering:pixelated]"
                       style={{
-                        backgroundImage: "url(/deck-doctor/golden-axe.svg)",
+                        backgroundImage: `url(${style.weapon})`,
                         width: 16,
-                        height: 16,
-                        filter: "drop-shadow(0 0 6px rgba(255,174,0,.7))",
+                        height: 20,
+                        filter: `drop-shadow(0 0 6px ${style.accent})`,
                       }}
                     />
                   )}
@@ -158,11 +166,11 @@ export function EngineColumn({
                            hover:bg-accent/15 hover:shadow-neon"
               >
                 <span
-                  className="inline-block bg-contain bg-no-repeat [image-rendering:pixelated]"
+                  className="inline-block bg-contain bg-no-repeat bg-center [image-rendering:pixelated]"
                   style={{
-                    backgroundImage: "url(/deck-doctor/golden-axe.svg)",
+                    backgroundImage: `url(${style.weapon})`,
                     width: 13,
-                    height: 13,
+                    height: 16,
                     filter: "drop-shadow(0 0 3px rgba(255,174,0,.8))",
                   }}
                 />

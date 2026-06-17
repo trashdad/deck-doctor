@@ -363,7 +363,7 @@ export default function Page() {
   );
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-[100dvh] min-h-[100dvh] w-full flex-col overflow-hidden">
       {migratePrompt && (
         <div className="flex items-center justify-between gap-3 border-b border-accent/40 bg-accent/10 px-5 py-2 text-xs text-accent">
           <span>Save the deck you&apos;re building to your account?</span>
