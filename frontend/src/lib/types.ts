@@ -60,6 +60,20 @@ export interface SuggestionResponse {
   suggestions: Suggestion[];
 }
 
+// ---- Card Upgrade Finder ----
+export interface UpgradeOption {
+  card: Card;
+  score: number;
+  efficiency_gain: number; // candidate IER - target IER (can be negative)
+  similarity: number; // 0..1 functional similarity to the target
+  reasons: Reason[];
+}
+
+export interface UpgradeResponse {
+  target: Card | null;
+  options: UpgradeOption[];
+}
+
 // ---- SP4 relationship explorer ----
 export type RelationshipAxis = "similar" | "synergy" | "cooccurrence";
 

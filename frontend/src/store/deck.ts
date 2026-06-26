@@ -34,6 +34,12 @@ interface DeckState {
   add: (card: Card) => void;
   remove: (id: string) => void;
   move: (id: string, zone: Zone) => void;
+  /**
+   * Replace `oldId` with `newCard`, dropping it into the SAME zone the replaced
+   * card occupied (an upgrade keeps its place in the board). No-op if the
+   * replacement is already in the deck.
+   */
+  swap: (oldId: string, newCard: Card) => void;
   setBasic: (id: string, quantity: number, card?: Card) => void;
   /**
    * Set a commander. `asPartner` false (default) replaces any existing
@@ -88,6 +94,20 @@ export const useDeck = create<DeckState>()(
       const dc = s.cards[id];
       if (!dc) return s;
       return { cards: { ...s.cards, [id]: { ...dc, zone } } };
+    }),
+  swap: (oldId, newCard) =>
+    set((s) => {
+      if (s.cards[newCard.id]) return s; // replacement already present
+      const old = s.cards[oldId];
+      const zone: Zone = old
+        ? old.zone
+        : newCard.wincon
+          ? "Win Conditions"
+          : matchingZones(newCard)[0];
+      const next = { ...s.cards };
+      delete next[oldId];
+      next[newCard.id] = { card: newCard, zone };
+      return { cards: next };
     }),
   setBasic: (id, quantity, card) =>
     set((s) => {

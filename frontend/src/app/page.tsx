@@ -9,6 +9,7 @@ import { StatsSidebar } from "@/components/StatsSidebar";
 import { OraclePhrasePanel } from "@/components/OraclePhrasePanel";
 import { SemanticFinder } from "@/components/SemanticFinder";
 import { RelationshipExplorer } from "@/components/RelationshipExplorer";
+import { CardUpgradePanel } from "@/components/CardUpgradePanel";
 import { SuggestionsPanel } from "@/components/SuggestionsPanel";
 import { DeckManagerPanel } from "@/components/DeckManagerPanel";
 import { ImportExportDialog } from "@/components/ImportExportDialog";
@@ -386,6 +387,7 @@ export default function Page() {
       <OraclePhrasePanel />
       <SemanticFinder />
       <RelationshipExplorer />
+      <CardUpgradePanel />
       <SuggestionsPanel
         isOpen={suggestOpen}
         onClose={() => setSuggestOpen(false)}

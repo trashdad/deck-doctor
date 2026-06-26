@@ -74,6 +74,20 @@ class SuggestionResponse(BaseModel):
     suggestions: list[Suggestion]
 
 
+# ---- Card Upgrade Finder (replace-this-card-with-a-better-one) ----
+class UpgradeOption(BaseModel):
+    card: Card
+    score: float
+    efficiency_gain: float     # candidate IER - target IER (can be negative)
+    similarity: float          # 0..1 functional similarity to the target
+    reasons: list[Reason] = []
+
+
+class UpgradeResponse(BaseModel):
+    target: Card | None
+    options: list[UpgradeOption]
+
+
 class RelationshipNeighbor(BaseModel):
     card: Card
     metric: float

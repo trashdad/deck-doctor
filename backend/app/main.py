@@ -25,11 +25,13 @@ from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCom
                      GraphResponse, ImportRequest, ImportResult, PairScore,
                      ParseImportRequest, ParseImportResult,
                      RelationshipNeighbor, SpellbookCombo, SuggestionResponse,
-                     TemplatesResponse, ThemeSuggestRequest, ThemeSuggestResponse)
+                     TemplatesResponse, ThemeSuggestRequest, ThemeSuggestResponse,
+                     UpgradeResponse)
 from . import db
 from .auth import current_user, require_user
 from .store import get_store
 from .suggest import is_commander, recommend
+from .upgrade import find_upgrades
 from .templates import TEMPLATES, THEMES, theme_suggest
 from .export import ExportRow, to_archidekt_csv, to_manapool, to_moxfield_csv, to_text
 from .ier import ier_breakdown
@@ -358,6 +360,32 @@ def deck_recommend(req: DeckRequest, limit: int = Query(12, le=60),
         raise HTTPException(400, "commander_id must be a legendary creature or planeswalker")
     deck_ids = [e.id for e in req.cards]
     return recommend(store, req.commander_id, deck_ids, limit=limit, explain=explain)
+
+
+@app.post("/deck/card-upgrade", response_model=UpgradeResponse)
+def deck_card_upgrade(
+    req: DeckRequest,
+    target_id: str = Query(..., description="card in the deck to find a replacement for"),
+    efficiency: float = Query(0.5, ge=0.0, le=1.0,
+                              description="0 = closest functional match, 1 = max efficiency"),
+    favor_synergy: bool = False,
+    favor_flexibility: bool = False,
+    limit: int = Query(12, le=40),
+) -> dict:
+    """Find in-identity replacements that do the same job as `target_id` but better.
+
+    The `efficiency` slider trades functional similarity against raw efficiency
+    (IER); `favor_synergy` weights commander EDHREC synergy; `favor_flexibility`
+    weights multimodal upgrades (cards that do the same thing plus more)."""
+    store = get_store()
+    if store.get(target_id) is None:
+        raise HTTPException(404, "card not found")
+    deck_ids = [e.id for e in req.cards]
+    return find_upgrades(
+        store, target_id, req.commander_id, deck_ids,
+        efficiency=efficiency, favor_synergy=favor_synergy,
+        favor_flexibility=favor_flexibility, limit=limit,
+    )
 
 
 @app.get("/cards/{card_id}/relationships", response_model=list[RelationshipNeighbor])
