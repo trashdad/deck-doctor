@@ -20,6 +20,7 @@ import type {
   SuggestionResponse,
   TemplatesResponse,
   ThemeSuggestResponse,
+  UpgradeResponse,
 } from "./types";
 import type { User } from "./types";
 
@@ -193,6 +194,33 @@ export function recommendCards(
   if (opts.limit != null) qs.set("limit", String(opts.limit));
   if (opts.explain) qs.set("explain", "true");
   return post<SuggestionResponse>(`/deck/recommend?${qs.toString()}`, {
+    cards,
+    commander_id,
+  });
+}
+
+/**
+ * Card Upgrade Finder: in-identity replacements for `targetId` that do the same
+ * job but better. `efficiency` is the 0..1 slider (0 = closest functional match,
+ * 1 = max efficiency); the toggles weight commander synergy and multimodal flex.
+ */
+export function findCardUpgrades(
+  cards: DeckEntry[],
+  commander_id: string | null,
+  targetId: string,
+  opts: {
+    efficiency?: number;
+    favorSynergy?: boolean;
+    favorFlexibility?: boolean;
+    limit?: number;
+  } = {},
+): Promise<UpgradeResponse> {
+  const qs = new URLSearchParams({ target_id: targetId });
+  if (opts.efficiency != null) qs.set("efficiency", String(opts.efficiency));
+  if (opts.favorSynergy) qs.set("favor_synergy", "true");
+  if (opts.favorFlexibility) qs.set("favor_flexibility", "true");
+  if (opts.limit != null) qs.set("limit", String(opts.limit));
+  return post<UpgradeResponse>(`/deck/card-upgrade?${qs.toString()}`, {
     cards,
     commander_id,
   });

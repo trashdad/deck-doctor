@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { Card } from "@/lib/types";
 import { useSemanticStore } from "@/store/semantic";
 import { useRelationshipStore } from "@/store/relationship";
+import { useUpgradeStore } from "@/store/upgrade";
 import { useUI } from "@/store/ui";
 import { amazonCardUrl, manapoolCardUrl, tcgplayerCardUrl } from "@/lib/affiliate";
 
@@ -17,6 +18,7 @@ interface CardMenuProps {
 export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
   const openCard = useSemanticStore((s) => s.openCard);
   const openExplorer = useRelationshipStore((s) => s.open);
+  const openUpgrade = useUpgradeStore((s) => s.open);
   const setCardMenuOpen = useUI((s) => s.setCardMenuOpen);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -114,6 +116,19 @@ export function CardMenu({ card, anchor, onRemove, onClose }: CardMenuProps) {
         >
           <span className="text-accent opacity-80">⬡</span>
           COMBOS &amp; ENGINES
+        </button>
+
+        <button
+          onClick={() => {
+            openUpgrade(card);
+            onClose();
+          }}
+          className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs
+                     font-semibold tracking-wide text-cyan transition
+                     hover:bg-cyan/10 hover:text-cyan"
+        >
+          <span className="text-cyan opacity-80">⬆</span>
+          UPGRADE / REPLACE
         </button>
 
         <button
