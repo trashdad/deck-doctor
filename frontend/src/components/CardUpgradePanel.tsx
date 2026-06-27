@@ -9,7 +9,7 @@ import { useRelationshipStore } from "@/store/relationship";
 import type { DeckEntry } from "@/lib/types";
 import { ReasonChips } from "./SuggestionsPanel";
 
-function GainBadge({ gain }: { gain: number }) {
+export function GainBadge({ gain }: { gain: number }) {
   const cls =
     gain > 0.05
       ? "border-green-400/50 bg-green-400/10 text-green-300"
