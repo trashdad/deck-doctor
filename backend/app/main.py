@@ -26,12 +26,12 @@ from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCom
                      ParseImportRequest, ParseImportResult,
                      RelationshipNeighbor, SpellbookCombo, SuggestionResponse,
                      TemplatesResponse, ThemeSuggestRequest, ThemeSuggestResponse,
-                     UpgradeResponse)
+                     UpgradeResponse, UpgradeSweepResponse)
 from . import db
 from .auth import current_user, require_user
 from .store import get_store
 from .suggest import is_commander, recommend
-from .upgrade import find_upgrades
+from .upgrade import find_upgrades, upgrade_sweep
 from .templates import TEMPLATES, THEMES, theme_suggest
 from .export import ExportRow, to_archidekt_csv, to_manapool, to_moxfield_csv, to_text
 from .ier import ier_breakdown
@@ -385,6 +385,30 @@ def deck_card_upgrade(
         store, target_id, req.commander_id, deck_ids,
         efficiency=efficiency, favor_synergy=favor_synergy,
         favor_flexibility=favor_flexibility, limit=limit,
+    )
+
+
+@app.post("/deck/upgrade-sweep", response_model=UpgradeSweepResponse)
+def deck_upgrade_sweep(
+    req: DeckRequest,
+    weak: int = Query(12, le=40, description="how many of the weakest cards to scan"),
+    per_card: int = Query(3, le=10, description="replacement options per weak card"),
+    max_swaps: int = Query(10, le=20),
+    efficiency: float = Query(0.4, ge=0.0, le=1.0),
+    favor_synergy: bool = True,
+    favor_flexibility: bool = False,
+) -> dict:
+    """Deck-wide tune-up: the weakest cards (e.g. precon filler that gets cut) each
+    paired with similar-but-better replacements in the commander's colors."""
+    store = get_store()
+    if not req.commander_id or not is_commander(store.get(req.commander_id)):
+        raise HTTPException(400, "commander_id must be a legendary creature or planeswalker")
+    deck_ids = [e.id for e in req.cards]
+    return upgrade_sweep(
+        store, req.commander_id, deck_ids,
+        weak=weak, per_card=per_card, max_swaps=max_swaps,
+        efficiency=efficiency, favor_synergy=favor_synergy,
+        favor_flexibility=favor_flexibility,
     )
 
 

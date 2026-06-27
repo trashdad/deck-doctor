@@ -225,3 +225,48 @@ def find_upgrades(store, target_id: str, commander_id: str | None,
         favor_flexibility=favor_flexibility, synergy=synergy, limit=limit,
     )
     return {"target": target, "options": options}
+
+
+def upgrade_sweep(store, commander_id: str, deck_ids: list[str], *,
+                  weak: int = 12, per_card: int = 3, max_swaps: int = 10,
+                  efficiency: float = 0.4, favor_synergy: bool = True,
+                  favor_flexibility: bool = False,
+                  _cuts=None, _upgrades=None) -> dict:
+    """Deck-wide "tune-up": the weakest cards in the deck, each with replacements.
+
+    This is the precon-cut idea — load a precon, see which cards the data says are
+    pulling least weight (low EDHREC/structural synergy with the commander, i.e.
+    the cards people typically cut), and for each get a similar-but-better swap.
+
+    Composes two tested pieces: `suggest_cuts` (which cards to cut) and
+    `find_upgrades` (what to put in their place). The `_cuts`/`_upgrades` params are
+    injection seams for unit tests; production uses the real implementations.
+    """
+    if _cuts is None:
+        from .doctor import suggest_cuts as _cuts  # noqa: PLW0642
+    if _upgrades is None:
+        _upgrades = find_upgrades
+
+    cuts = _cuts(store, commander_id, deck_ids, limit=weak)
+    swaps: list[dict] = []
+    for cut in cuts:
+        target = store.get(cut["card_id"])
+        if target is None:
+            continue
+        res = _upgrades(
+            store, cut["card_id"], commander_id, deck_ids,
+            efficiency=efficiency, favor_synergy=favor_synergy,
+            favor_flexibility=favor_flexibility, limit=per_card,
+        )
+        options = res.get("options", [])
+        if not options:
+            continue  # no better replacement exists — leave the card alone
+        swaps.append({
+            "target": target,
+            "weakness": cut.get("contribution", 0.0),
+            "weakness_reasons": cut.get("reasons", []),
+            "options": options,
+        })
+        if len(swaps) >= max_swaps:
+            break
+    return {"swaps": swaps}

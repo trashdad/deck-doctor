@@ -10,7 +10,9 @@ import { OraclePhrasePanel } from "@/components/OraclePhrasePanel";
 import { SemanticFinder } from "@/components/SemanticFinder";
 import { RelationshipExplorer } from "@/components/RelationshipExplorer";
 import { CardUpgradePanel } from "@/components/CardUpgradePanel";
+import { UpgradeSweepPanel } from "@/components/UpgradeSweepPanel";
 import { SuggestionsPanel } from "@/components/SuggestionsPanel";
+import { useSweepStore } from "@/store/sweep";
 import { DeckManagerPanel } from "@/components/DeckManagerPanel";
 import { ImportExportDialog } from "@/components/ImportExportDialog";
 import { ImportDialog } from "@/components/ImportDialog";
@@ -141,6 +143,7 @@ function HeaderButton({
 export default function Page() {
   const { cards, basics, add, remove, move } = useDeck();
   const openTemplatePanel = useTemplateStore((s) => s.openPanel);
+  const openSweep = useSweepStore((s) => s.open);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [decksOpen, setDecksOpen] = useState(false);
@@ -360,6 +363,15 @@ export default function Page() {
       >
         ⚡ Suggestions
       </button>
+      <button
+        data-testid="open-sweep"
+        title={commander ? "Tune-up: swap the weakest cards for better ones" : "Add a commander first"}
+        disabled={!commander}
+        onClick={openSweep}
+        className={`${paneBtn} ${!commander ? "cursor-not-allowed border-zinc-700 text-zinc-600" : "border-cyan/50 text-cyan hover:bg-cyan/10"}`}
+      >
+        ⬆ Tune-up
+      </button>
     </div>
   );
 
@@ -388,6 +400,7 @@ export default function Page() {
       <SemanticFinder />
       <RelationshipExplorer />
       <CardUpgradePanel />
+      <UpgradeSweepPanel />
       <SuggestionsPanel
         isOpen={suggestOpen}
         onClose={() => setSuggestOpen(false)}

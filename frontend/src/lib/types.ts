@@ -74,6 +74,17 @@ export interface UpgradeResponse {
   options: UpgradeOption[];
 }
 
+export interface SweepSwap {
+  target: Card;
+  weakness: number; // cut contribution (lower = weaker)
+  weakness_reasons: Reason[];
+  options: UpgradeOption[];
+}
+
+export interface UpgradeSweepResponse {
+  swaps: SweepSwap[];
+}
+
 // ---- SP4 relationship explorer ----
 export type RelationshipAxis = "similar" | "synergy" | "cooccurrence";
 
