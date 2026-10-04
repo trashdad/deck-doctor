@@ -21,6 +21,7 @@ import type {
   TemplatesResponse,
   ThemeSuggestResponse,
   UpgradeResponse,
+  UpgradeSweepResponse,
 } from "./types";
 import type { User } from "./types";
 
@@ -221,6 +222,25 @@ export function findCardUpgrades(
   if (opts.favorFlexibility) qs.set("favor_flexibility", "true");
   if (opts.limit != null) qs.set("limit", String(opts.limit));
   return post<UpgradeResponse>(`/deck/card-upgrade?${qs.toString()}`, {
+    cards,
+    commander_id,
+  });
+}
+
+/**
+ * Deck-wide tune-up: the weakest cards in the deck (low commander synergy — the
+ * cards typically cut from a precon) each paired with similar-but-better swaps.
+ */
+export function upgradeSweep(
+  cards: DeckEntry[],
+  commander_id: string,
+  opts: { efficiency?: number; favorSynergy?: boolean; weak?: number } = {},
+): Promise<UpgradeSweepResponse> {
+  const qs = new URLSearchParams();
+  if (opts.efficiency != null) qs.set("efficiency", String(opts.efficiency));
+  if (opts.favorSynergy != null) qs.set("favor_synergy", String(opts.favorSynergy));
+  if (opts.weak != null) qs.set("weak", String(opts.weak));
+  return post<UpgradeSweepResponse>(`/deck/upgrade-sweep?${qs.toString()}`, {
     cards,
     commander_id,
   });

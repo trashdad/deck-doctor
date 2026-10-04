@@ -88,6 +88,17 @@ class UpgradeResponse(BaseModel):
     options: list[UpgradeOption]
 
 
+class SweepSwap(BaseModel):
+    target: Card
+    weakness: float                # cut contribution score (lower = weaker)
+    weakness_reasons: list[Reason] = []
+    options: list[UpgradeOption] = []
+
+
+class UpgradeSweepResponse(BaseModel):
+    swaps: list[SweepSwap]
+
+
 class RelationshipNeighbor(BaseModel):
     card: Card
     metric: float
