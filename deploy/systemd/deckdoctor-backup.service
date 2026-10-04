@@ -2,6 +2,8 @@
 Description=Deck Doctor — back up the deckdoctor database (tower + callisto off-site)
 After=network-online.target postgresql.service deckdoctor-api.service
 Wants=network-online.target
+# A failed backup pages the operator (the job failed silently June->October 2026).
+OnFailure=simmander-alert@%n.service
 
 [Service]
 Type=oneshot
@@ -9,8 +11,9 @@ Type=oneshot
 # key is authorized on tower) and to `postgres` for pg_dump (peer auth), and reads
 # the root-only restic env for the callisto copy. See deploy/DEPLOY.md §7.
 WorkingDirectory=/opt/deck-doctor
-# Used by the tower step (tools/backup_db.py). Same DSN as the api unit.
-Environment=DATABASE_URL=postgresql://deckdoctor:CHANGE_ME@127.0.0.1:5432/deckdoctor
+# DATABASE_URL (used by the tower step, tools/backup_db.py) comes from the root-only
+# secrets file shared with the api/refresh units.
+EnvironmentFile=/etc/deck-doctor/secrets.env
 Environment=BACKUP_DEST=root@tower:/mnt/user/backups/deck-doctor
 # restic env for callisto: RESTIC_REPOSITORY=rest:http://<user>:<pw>@callisto:8000/simmander/deck-doctor
 # and RESTIC_PASSWORD_FILE=... (root:root 0400 — never commit it).

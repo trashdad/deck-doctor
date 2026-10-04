@@ -1,6 +1,7 @@
 [Unit]
 Description=Deck Doctor web (Next.js standalone server, basePath=/deck-doctor)
 After=network.target deckdoctor-api.service
+OnFailure=simmander-alert@%n.service
 
 [Service]
 Type=simple
@@ -9,6 +10,7 @@ User=simmander
 # .next/static + public/) under releases/ and flips this symlink, so `next build`
 # never touches the files of the running server and rollback is a symlink flip.
 WorkingDirectory=/opt/deck-doctor/releases/current
+# No secrets: the web server never talks to Postgres.
 # basePath is baked at build time; the server only needs host/port. nginx routes
 # /deck-doctor/api/* straight to the backend, so BACKEND_ORIGIN is only a fallback.
 Environment=PORT=3001

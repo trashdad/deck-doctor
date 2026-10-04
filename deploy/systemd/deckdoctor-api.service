@@ -1,22 +1,21 @@
 [Unit]
 Description=Deck Doctor API (FastAPI/uvicorn)
-After=network.target
+After=network.target postgresql.service
+# Page the operator if the API ends up failed (restarts exhausted). Uses the
+# tracker's generic alerter template (simmander-tracker docs/systemd/simmander-alert@.service).
+OnFailure=simmander-alert@%n.service
 
 [Service]
 Type=simple
-# Adjust paths/user to match the VPS layout (mirrors the tracker's units).
 User=simmander
 WorkingDirectory=/opt/deck-doctor/backend
+# Secrets (DATABASE_URL, SIMMANDER_JWT_SECRET) live in a root-only 0600 file, not
+# in this world-readable unit. See deploy/DEPLOY.md "Secrets".
+EnvironmentFile=/etc/deck-doctor/secrets.env
 # Card metadata is a static JSON asset; everything else lives in Postgres.
 Environment=SIMMANDER_CARDS=/opt/deck-doctor/data/cards.json
-# The deckdoctor database — its OWN database on the shared Postgres 16 server.
-# Use a strong password in prod (this is loopback-only; keep it off the public net).
-Environment=DATABASE_URL=postgresql://deckdoctor:CHANGE_ME@127.0.0.1:5432/deckdoctor
-# Shared login: validate the tracker's simmander_session JWT with the SAME secret
-# the tracker signs with (tracker backend/config.ini [auth].secret_key). Set at
-# deploy time — see DEPLOY.md §4. Anonymous browsing works without it; only
-# saving/loading account decks needs a valid session.
-Environment=SIMMANDER_JWT_SECRET=CHANGE_ME_TO_TRACKER_SECRET
+# Shared login: SIMMANDER_JWT_SECRET (in secrets.env) must equal the tracker's
+# backend/config.ini [auth] secret_key so the simmander_session cookie validates here.
 Environment=SIMMANDER_JWT_ALG=HS256
 # Browser never hits the backend directly; nginx fronts it. Bind to loopback.
 ExecStart=/opt/deck-doctor/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8002

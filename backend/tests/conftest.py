@@ -1,11 +1,16 @@
 """Shared test guards.
 
 Several fixtures mutate the database destructively (TRUNCATE userdecks; rename the
-combo tables aside and back). Those are safe against a local dev database but would
-wipe/disrupt a real one if DATABASE_URL ever pointed at prod. This session-scoped,
-autouse guard aborts the whole run unless the target is clearly a safe destructive
-target: a local host, a database whose name ends in `_test`, or an explicit opt-in
-(DECKDOCTOR_ALLOW_DESTRUCTIVE_TESTS=1).
+combo tables aside and back). This session-scoped, autouse guard aborts the whole run
+unless DATABASE_URL names a database that is clearly a throwaway:
+
+  * its name ends in `_test` (e.g. `deckdoctor_test`), or
+  * DECKDOCTOR_ALLOW_DESTRUCTIVE_TESTS=1 is set explicitly.
+
+"Local host" is NOT a safety signal: on the prod VPS (simtrack) the live database is
+on localhost and named `deckdoctor`. A database named exactly `deckdoctor` is always
+refused without the opt-in. Pure tests never connect, so any `*_test` DSN works for
+them (e.g. DATABASE_URL=postgresql://x@localhost/deckdoctor_test).
 """
 
 import os
@@ -19,24 +24,24 @@ import pytest  # noqa: E402
 
 from app import config  # noqa: E402
 
-_LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1", ""}
+PROD_DB_NAME = "deckdoctor"
+OPT_IN_ENV = "DECKDOCTOR_ALLOW_DESTRUCTIVE_TESTS"
 
 
 def assert_safe_destructive_db() -> None:
     """Raise unless DATABASE_URL is a safe target for destructive test mutation."""
     dsn = urlparse(config.DATABASE_URL)
     host = (dsn.hostname or "").lower()
-    dbname = (dsn.path or "").lstrip("/")
-    if host in _LOCAL_HOSTS:
+    dbname = (dsn.path or "").lstrip("/").split("?")[0]
+    if os.environ.get(OPT_IN_ENV) == "1":
         return
-    if dbname.endswith("_test"):
-        return
-    if os.environ.get("DECKDOCTOR_ALLOW_DESTRUCTIVE_TESTS") == "1":
+    if dbname != PROD_DB_NAME and dbname.endswith("_test"):
         return
     raise RuntimeError(
-        f"Refusing destructive tests against non-local DB '{host}/{dbname}'. "
-        "Point DATABASE_URL at a local or *_test database, or set "
-        "DECKDOCTOR_ALLOW_DESTRUCTIVE_TESTS=1.")
+        f"Refusing destructive tests against DB '{host}/{dbname}': only a *_test database "
+        f"may be mutated (and '{PROD_DB_NAME}' never, without the opt-in). Point "
+        f"DATABASE_URL at e.g. .../deckdoctor_test, or set {OPT_IN_ENV}=1 on a box "
+        "with no production data.")
 
 
 @pytest.fixture(scope="session", autouse=True)

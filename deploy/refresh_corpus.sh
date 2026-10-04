@@ -105,8 +105,11 @@ fi
 
 # ── 3. REBUILD — scoring tables (relationships then co-occurrence) ─────────────
 REL_ARGS=(scoring/build_relationships.py --db data/scores.sqlite)
-[ -n "$COMBO_CATALOG" ] && [ -f "$COMBO_CATALOG" ] && REL_ARGS+=(--catalog "$COMBO_CATALOG")
-[ -n "$KNOWN_COMBOS" ]  && [ -f "$KNOWN_COMBOS" ]  && REL_ARGS+=(--catalog "$KNOWN_COMBOS")
+for cat in "$COMBO_CATALOG" "$KNOWN_COMBOS"; do
+  [ -z "$cat" ] && continue
+  if [ -f "$cat" ]; then REL_ARGS+=(--catalog "$cat")
+  else log "WARNING: combo catalog $cat is configured but missing -> fewer asserted combos"; fi
+done
 log "build_relationships: ${REL_ARGS[*]}"
 if ! "$PY" "${REL_ARGS[@]}"; then
   log "build_relationships FAILED — aborting before push (live tables untouched)"

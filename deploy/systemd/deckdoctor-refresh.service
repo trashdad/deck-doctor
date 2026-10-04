@@ -2,14 +2,20 @@
 Description=Deck Doctor — daily corpus refresh (scrape → load → rebuild → push → reload)
 After=network-online.target deckdoctor-api.service
 Wants=network-online.target
+OnFailure=simmander-alert@%n.service
 
 [Service]
 Type=oneshot
 User=simmander
 WorkingDirectory=/opt/deck-doctor
-# Same DATABASE_URL as the api unit so load_to_postgres writes the live DB.
-# Use the real password in prod (loopback-only; keep it off the public net).
-Environment=DATABASE_URL=postgresql://deckdoctor:CHANGE_ME@127.0.0.1:5432/deckdoctor
+# DATABASE_URL (same DSN as the api unit, so load_to_postgres writes the live DB)
+# comes from the root-only secrets file.
+EnvironmentFile=/etc/deck-doctor/secrets.env
+# Combo catalogs from the simmander repo (data/combo_catalog.json, data/known_combos.json)
+# -> asserted combos in card_relationships/engines. Shared data copied to the box; see
+# deploy/DEPLOY.md "Combo catalogs". Missing files are logged loudly, not fatal.
+Environment=COMBO_CATALOG=/var/lib/deck-doctor/combo-catalogs/combo_catalog.json
+Environment=KNOWN_COMBOS=/var/lib/deck-doctor/combo-catalogs/known_combos.json
 Environment=API=http://localhost:8002
 # Bounded batch sizes — keep one cycle short so the daily timer never piles up.
 Environment=RECENT_MAX=150
