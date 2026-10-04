@@ -1,4 +1,51 @@
-# Simmander Deckbuilder — Session Handoff (2026-06-10, SP6–SP11 COMPLETE)
+# Deck Doctor — Session Handoff (current: 2026-10-04)
+
+> Everything below the line "Historical handoff" is the **June 10** handoff and is stale
+> (it predates the Postgres migration, the VPS deploy, the Arcade theme, Card Upgrade Finder).
+
+## Where things run (owner decision 2026-10-04)
+
+- **Production:** simtrack (tracker VPS). `deckdoctor-api` (uvicorn 127.0.0.1:8002),
+  `deckdoctor-web` (Next standalone :3001), `deckdoctor-refresh.timer` (04:30 UTC, scrape → load →
+  rebuild → reload; corpus 85,598 decks on 2026-10-04), `deckdoctor-backup.timer` (03:30 UTC,
+  pg_dump → tower). nginx blocks live in **simmander-tracker `nginx/nginx.conf`** (auto-applied).
+  SSH: `ssh trashdad@simtrack` (Tailscale SSH). App at `/opt/deck-doctor`, Python 3.10.
+- **Development:** legion (this Windows laptop). Machine roles: `simmander-hub/docs/machine-roles.md`.
+
+## Local dev on legion
+
+```bash
+# Postgres 16 (portable). Password auth; credentials in %APPDATA%\postgresql\pgpass.conf.
+C:/simmander/pg/pgsql/bin/pg_ctl.exe -D C:/simmander/pg/data -l C:/simmander/pg/server.log start
+# Tests (system Python 3.14 has the deps; prod is 3.10)
+cd backend && python -m pytest -q        # 135 passed, 6 skipped (2026-10-04)
+cd scoring && python -m pytest -q        # 92 passed
+cd frontend && npx tsc --noEmit && npm run build
+# Run: backend :8001, frontend :3000 (proxies /api -> :8001)
+cd backend && python -m uvicorn app.main:app --port 8001
+cd frontend && npm run dev
+```
+The local DB is the **June snapshot (~5k decks)**; prod has ~85k. Restore a prod dump before
+judging recommendation quality (dumps: `root@tower:/mnt/user/backups/deck-doctor/`).
+
+## State on 2026-10-04
+
+- **Live build is `3cc4e57` (Jun 17).** `main` adds Card Upgrade Finder (PR #2) and the admin guard
+  (`f8d0c85`); **neither is deployed**. PR #3 Tune-up (`claude/precon-upgrade-sweep`) is open.
+  Upgrade Finder and Tune-up were never checked against real data.
+- **Security fixed:** `POST /admin/reload` was public → nginx 403 (live) + backend
+  `auth.require_local_or_admin` (on main). The refresh calls `localhost:8002` directly and is unaffected.
+- **Known issues:** `frontend/public/*.svg` 404 live (deploy doesn't copy `public/`); mobile unusable;
+  card art defaults to novelty printings; card pool frozen Jun 9 (`data/cards.json`, rebuilt with
+  Windows-only paths in `scoring/prep_cards.py`); `db.query` swallows DB errors; no CI; ESLint not
+  configured; README/deploy docs stale.
+- **Finish plan:** tiers in `simmander-hub/docs/plans/2026-10-04-revival-brief.md` §5. The plan going
+  forward is being designed with Fable; check the hub for the resulting plan before starting.
+
+---
+
+# Historical handoff (2026-06-10)
+
 
 > **⭑ STATUS: SP1–SP11 ALL SHIPPED.** The full product is built, tested, and verified.
 > - SP6 deck persistence/import/export · SP7 Commander Spellbook combos (87,980 loaded) ·
