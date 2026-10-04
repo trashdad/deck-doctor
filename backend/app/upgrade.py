@@ -248,6 +248,11 @@ def upgrade_sweep(store, commander_id: str, deck_ids: list[str], *,
         _upgrades = find_upgrades
 
     cuts = _cuts(store, commander_id, deck_ids, limit=weak)
+    edh = store.edhrec_for(commander_id) if hasattr(store, "edhrec_for") else {}
+
+    def _syn(cid: str) -> float:
+        return max(0.0, min(1.0, (edh.get(cid) or (0.0, 0.0))[0]))
+
     swaps: list[dict] = []
     for cut in cuts:
         target = store.get(cut["card_id"])
@@ -256,9 +261,16 @@ def upgrade_sweep(store, commander_id: str, deck_ids: list[str], *,
         res = _upgrades(
             store, cut["card_id"], commander_id, deck_ids,
             efficiency=efficiency, favor_synergy=favor_synergy,
-            favor_flexibility=favor_flexibility, limit=per_card,
+            favor_flexibility=favor_flexibility, limit=per_card * 4,
         )
-        options = res.get("options", [])
+        # A Tune-up swap must actually beat the card it replaces: more efficient
+        # (IER gain > 0) or more synergistic with the commander. Side-grades and
+        # downgrades are noise here (the Card Upgrade Finder's slider still offers
+        # "closest match" options on purpose). Over-fetch above, trim after filtering.
+        t_syn = _syn(cut["card_id"])
+        options = [o for o in res.get("options", [])
+                   if o.get("efficiency_gain", 0.0) > 0 or _syn(o["card"]["id"]) > t_syn]
+        options = options[:per_card]
         if not options:
             continue  # no better replacement exists — leave the card alone
         swaps.append({

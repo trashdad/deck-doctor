@@ -152,3 +152,61 @@ def test_sweep_respects_max_swaps():
     out = upgrade_sweep(store, "cmd", list(cards), max_swaps=2,
                         _cuts=fake_cuts, _upgrades=fake_upgrades)
     assert len(out["swaps"]) == 2
+
+
+def _opt(cid, gain):
+    return {"card": {"id": cid, "name": cid}, "score": 1.0, "efficiency_gain": gain,
+            "similarity": 1.0, "reasons": []}
+
+
+class _SynStore(_FakeStore):
+    """Fake store that also answers edhrec_for: card -> (synergy, inclusion)."""
+
+    def __init__(self, cards, edh):
+        super().__init__(cards)
+        self._edh = edh
+
+    def edhrec_for(self, _cmd):
+        return self._edh
+
+
+def test_sweep_only_offers_real_upgrades():
+    """Real-data regression: the Tune-up offered Pristine Talisman (−0.9 IER) for
+    Talisman of Dominance. A swap must beat the card it replaces — higher IER, or
+    stronger commander synergy — otherwise it is a side-grade, not an upgrade."""
+    cards = {"weak": {"id": "weak", "name": "Filler"}}
+    store = _SynStore(cards, {"weak": (0.05, 0.1), "syn": (0.40, 0.3), "same": (0.05, 0.2)})
+
+    def fake_cuts(_s, _c, _d, limit):
+        return [{"card_id": "weak", "contribution": 0.0, "reasons": []}]
+
+    def fake_upgrades(_s, tid, _c, _d, **kw):
+        return {"target": cards[tid],
+                "options": [_opt("worse", -0.9), _opt("same", 0.0),
+                            _opt("syn", -0.5), _opt("better", 1.5)]}
+
+    out = upgrade_sweep(store, "cmd", ["weak"], _cuts=fake_cuts, _upgrades=fake_upgrades)
+    assert [o["card"]["id"] for o in out["swaps"][0]["options"]] == ["syn", "better"]
+
+
+def test_sweep_skips_card_with_only_downgrades_and_trims_to_per_card():
+    cards = {"a": {"id": "a", "name": "A"}, "b": {"id": "b", "name": "B"}}
+    store = _SynStore(cards, {})
+    seen_limits = []
+
+    def fake_cuts(_s, _c, _d, limit):
+        return [{"card_id": "a", "contribution": 0.0, "reasons": []},
+                {"card_id": "b", "contribution": 0.1, "reasons": []}]
+
+    def fake_upgrades(_s, tid, _c, _d, **kw):
+        seen_limits.append(kw["limit"])
+        if tid == "a":
+            return {"target": cards[tid], "options": [_opt("a-worse", -1.0)]}
+        return {"target": cards[tid],
+                "options": [_opt("b1", 2.0), _opt("b-worse", -2.0), _opt("b2", 1.0)]}
+
+    out = upgrade_sweep(store, "cmd", ["a", "b"], per_card=1,
+                        _cuts=fake_cuts, _upgrades=fake_upgrades)
+    assert [s["target"]["id"] for s in out["swaps"]] == ["b"]   # a had only downgrades
+    assert [o["card"]["id"] for o in out["swaps"][0]["options"]] == ["b1"]
+    assert all(lim > 1 for lim in seen_limits)   # over-fetch so filtering can't starve

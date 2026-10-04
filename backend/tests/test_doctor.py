@@ -125,3 +125,20 @@ def test_cuts_protects_complete_combos():
     finally:
         restore_spellbook_pg()
         store_module.get_store.cache_clear()
+
+
+def test_cuts_never_lead_with_format_staples():
+    """Real-data regression: the Tune-up told a deck to cut Sol Ring first. Staples
+    have ~0 commander *synergy* (everyone plays them) but very high EDHREC
+    *inclusion*, so they must not rank among the weakest cards."""
+    ur = _id("The Ur-Dragon")
+    sol = _id("Sol Ring")
+    if sol not in store.edhrec_for(ur):
+        pytest.skip("no EDHREC row for Sol Ring under The Ur-Dragon")
+    offplan = [cid for cid, c in store._cards.items()
+               if set(c.get("color_identity") or []) == {"W"}
+               and "Creature" in (c.get("type_line") or "")
+               and category_of(store.get(cid)) == "synergy"][:2]
+    deck = _dragons(10) + offplan + [sol]
+    cut_ids = [c["card_id"] for c in suggest_cuts(store, ur, deck, limit=5)]
+    assert sol not in cut_ids

@@ -71,3 +71,38 @@ def test_spellbook_endpoint_shapes(fx):
     for c in combos:
         assert all("name" in m for m in c["members"])
     assert client.get("/cards/not-a-card/spellbook-combos").status_code == 404
+
+
+def _commander_with_ci(store, ci: set[str]) -> str:
+    from app.suggest import is_commander
+    for cid, card in store._cards.items():
+        if set(card.get("color_identity") or []) == ci and is_commander(card):
+            return cid
+    pytest.skip(f"no commander with identity {sorted(ci)} in the store")
+
+
+def _near_ids(commander_id, deck_ids) -> set[str]:
+    body = {"commander_id": commander_id, "cards": [{"id": c} for c in deck_ids]}
+    r = client.post("/deck/combos", json=body)
+    assert r.status_code == 200
+    return {n["combo"]["combo_id"] for n in r.json()["near"]}
+
+
+def test_deck_combos_near_respects_commander_identity(fx):
+    # Real-data regression: a mono-red Krenko deck was told it was "one card away"
+    # from combos needing Food Chain (G) / Hullbreaker Horror (U).
+    store = fx["store"]
+    b = fx["members"]["b_members"]             # Bolt (R), Counterspell (U), Llanowar Elves (G)
+    deck = b[:2]                               # the missing piece is the green Elves
+    izzet = _commander_with_ci(store, {"U", "R"})
+    assert "fxB" not in _near_ids(izzet, deck)  # can't legally add a green card
+    ur = store._name_to_id["the ur-dragon"]
+    assert "fxB" in _near_ids(ur, deck)        # 5-colour commander: still one away
+
+
+def test_deck_combos_near_skips_banned_missing_piece(fx, monkeypatch):
+    # Real-data regression: Sway of the Stars (banned) was offered as a missing piece.
+    monkeypatch.setattr("app.suggest.BANLIST", frozenset({"Llanowar Elves"}))
+    b = fx["members"]["b_members"]
+    ur = fx["store"]._name_to_id["the ur-dragon"]
+    assert "fxB" not in _near_ids(ur, b[:2])

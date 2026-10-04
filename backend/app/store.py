@@ -429,11 +429,13 @@ class Store:
                                    c["combo_id"]))
         return combos
 
-    def deck_spellbook(self, ids: list[str]) -> dict:
+    def deck_spellbook(self, ids: list[str], near_ok=None) -> dict:
         """{"complete": [combo], "near": [{"combo":…, "missing": card_id}]}.
 
         Union of member-indexed combos; classify by missing-member count
         (0 ⇒ complete, 1 ⇒ near). Each list popularity DESC; near capped at 50.
+        `near_ok(missing_card_id) -> bool` (optional) drops near combos whose missing
+        piece the deck can't legally add (off-identity / banned) BEFORE the cap.
         """
         idset = set(ids)
         seen: set[str] = set()
@@ -448,7 +450,7 @@ class Store:
                 missing = [m for m in combo["members"] if m not in idset]
                 if not missing:
                     complete.append(combo)
-                elif len(missing) == 1:
+                elif len(missing) == 1 and (near_ok is None or near_ok(missing[0])):
                     near.append((combo, missing[0]))
 
         def _pop(c: dict) -> tuple:

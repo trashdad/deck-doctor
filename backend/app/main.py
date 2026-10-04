@@ -31,6 +31,7 @@ from . import db
 from .auth import current_user, require_local_or_admin, require_user
 from .store import get_store
 from .suggest import is_commander, recommend
+from . import suggest as suggest_module
 from .upgrade import find_upgrades, upgrade_sweep
 from .templates import TEMPLATES, THEMES, theme_suggest
 from .export import ExportRow, to_archidekt_csv, to_manapool, to_moxfield_csv, to_text
@@ -551,7 +552,18 @@ def deck_combos(req: DeckRequest) -> dict:
     ids = [e.id for e in req.cards]
     if req.commander_id:
         ids.append(req.commander_id)
-    raw = store.deck_spellbook(ids)
+    # "One card away" is only useful if that card can legally join THIS deck:
+    # inside the commander's colour identity and not banned.
+    cmd = store.get(req.commander_id) if req.commander_id else None
+    ci = set(cmd.get("color_identity") or []) if is_commander(cmd) else None
+
+    def near_ok(missing_id: str) -> bool:
+        card = store.get(missing_id)
+        if card is None or card["name"] in suggest_module.BANLIST:
+            return False
+        return ci is None or set(card.get("color_identity") or []) <= ci
+
+    raw = store.deck_spellbook(ids, near_ok=near_ok)
     complete = [c for c in (_spellbook_combo(store, x) for x in raw["complete"]) if c]
     near = []
     for entry in raw["near"]:
