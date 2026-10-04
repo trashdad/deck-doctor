@@ -50,3 +50,24 @@ def require_user(request: Request) -> dict:
     if user is None:
         raise HTTPException(status_code=401, detail="login required")
     return user
+
+
+_LOOPBACK = {"127.0.0.1", "::1"}
+_PROXY_HEADERS = ("x-real-ip", "x-forwarded-for")
+
+
+def require_local_or_admin(request: Request) -> None:
+    """Gate for /admin/* routes: on-box callers or an admin session, nobody else.
+
+    nginx connects from loopback too, but always adds X-Real-IP/X-Forwarded-For,
+    so a loopback peer WITHOUT those headers is a process on the box itself (the
+    nightly refresh hitting :8002 directly). Anything proxied needs `admin`.
+    """
+    host = request.client.host if request.client else ""
+    proxied = any(h in request.headers for h in _PROXY_HEADERS)
+    if host in _LOOPBACK and not proxied:
+        return
+    user = current_user(request)
+    if user is not None and user["is_admin"]:
+        return
+    raise HTTPException(status_code=403, detail="admin only")

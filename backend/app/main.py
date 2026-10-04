@@ -28,7 +28,7 @@ from .models import (Card, CompleteResponse, CutsResponse, DeckAnalysis, DeckCom
                      TemplatesResponse, ThemeSuggestRequest, ThemeSuggestResponse,
                      UpgradeResponse)
 from . import db
-from .auth import current_user, require_user
+from .auth import current_user, require_local_or_admin, require_user
 from .store import get_store
 from .suggest import is_commander, recommend
 from .upgrade import find_upgrades
@@ -80,7 +80,7 @@ def health() -> dict:
     }
 
 
-@app.post("/admin/reload")
+@app.post("/admin/reload", dependencies=[Depends(require_local_or_admin)])
 def admin_reload() -> dict:
     """Hot-reload the in-memory Store from disk (no restart).
 
