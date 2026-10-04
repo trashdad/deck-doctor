@@ -50,3 +50,6 @@ data/spellbook_state.json
 .env.local
 .DS_Store
 .superpowers/
+
+# deploy/deploy.sh: immutable web releases + the `current` symlink (prod only)
+/releases/

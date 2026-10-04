@@ -1,17 +1,20 @@
 [Unit]
-Description=Deck Doctor web (Next.js standalone server, basePath=/deckdoctor)
+Description=Deck Doctor web (Next.js standalone server, basePath=/deck-doctor)
 After=network.target deckdoctor-api.service
 
 [Service]
 Type=simple
 User=simmander
-WorkingDirectory=/opt/deck-doctor/frontend/.next/standalone
-# basePath is baked at build time; the server only needs host/port. It proxies
-# /deckdoctor/api/* to the backend in dev, but in prod nginx routes the API
-# before it reaches Next, so BACKEND_ORIGIN is only a harmless fallback.
+# deploy/deploy.sh assembles each build as an immutable release (standalone server +
+# .next/static + public/) under releases/ and flips this symlink, so `next build`
+# never touches the files of the running server and rollback is a symlink flip.
+WorkingDirectory=/opt/deck-doctor/releases/current
+# basePath is baked at build time; the server only needs host/port. nginx routes
+# /deck-doctor/api/* straight to the backend, so BACKEND_ORIGIN is only a fallback.
 Environment=PORT=3001
 Environment=HOSTNAME=127.0.0.1
 Environment=NODE_ENV=production
+Environment=NEXT_TELEMETRY_DISABLED=1
 Environment=BACKEND_ORIGIN=http://127.0.0.1:8002
 ExecStart=/usr/bin/node server.js
 Restart=on-failure
