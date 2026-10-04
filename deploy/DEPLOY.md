@@ -1,132 +1,145 @@
 # Deploying Deck Doctor at simmander.app/deck-doctor
 
-Deck Doctor is path-hosted **alongside** the price tracker on the same VPS — it does
-**not** replace simmander.app. The tracker keeps serving `/`; Deck Doctor serves
-`/deck-doctor`. Two small services + three nginx location blocks; the tracker is untouched.
+Deck Doctor is path-hosted **alongside** the price tracker on the tracker VPS (**simtrack**).
+The tracker keeps serving `/`; Deck Doctor serves `/deck-doctor`.
 
 ```
-simmander.app/               -> tracker  (Vite static, FastAPI :8000)   [unchanged]
-simmander.app/deck-doctor     -> Deck Doctor web  (Next.js standalone :3001)
-simmander.app/deck-doctor/api -> Deck Doctor API  (FastAPI :8002)
+simmander.app/                -> tracker            (not ours — don't touch)
+simmander.app/deck-doctor      -> deckdoctor-web     Next.js standalone, 127.0.0.1:3001
+simmander.app/deck-doctor/api  -> deckdoctor-api     FastAPI/uvicorn,     127.0.0.1:8002
 ```
 
-## 0. Prerequisites on the box
-- Node 20+ and a Python 3.13+ venv (`/opt/deck-doctor/.venv`).
-- The repo cloned to `/opt/deck-doctor` (origin: the `deck-doctor` GitHub repo).
-- **Postgres 16** (the tracker already runs it) — Deck Doctor gets its **own
-  database** on that server, isolated from the tracker.
-- Ports **8002** (API) and **3001** (web) free — the tracker uses 8000.
+**The nginx blocks live in the tracker repo** (`simmander-tracker/nginx/nginx.conf`, applied by
+the tracker's auto-deploy). They already route the paths above and return **403 for
+`/deck-doctor/api/admin/`**. `deploy/nginx-deckdoctor.conf` here is reference only.
 
-## 1. Backend
+## Production layout (simtrack, as of 2026-10-04)
+
+| Thing | Where |
+|---|---|
+| SSH | `ssh trashdad@simtrack` (Tailscale SSH, passwordless `sudo -n`). Run remote commands from `cd /tmp`. |
+| Checkout | `/opt/deck-doctor` (owner `simmander`, **detached HEAD** at the deployed sha). Run git as the owner: `sudo -u simmander git -C /opt/deck-doctor …` (as trashdad it fails with "dubious ownership"). |
+| Python | `/opt/deck-doctor/.venv` (Python 3.10) |
+| Web releases | `/opt/deck-doctor/releases/web-<sha>-<ts>/` (standalone server + `.next/static` + `public/`); `releases/current` → the live one |
+| Database | Postgres 14 on the box, DB `deckdoctor` (role `deckdoctor`). ~85.6k corpus decks. |
+| Units | `deckdoctor-api`, `deckdoctor-web`, `deckdoctor-refresh.timer` (04:30 UTC), `deckdoctor-backup.timer` (03:30 UTC) |
+| Secrets | `DATABASE_URL` in the api/refresh/backup units, `SIMMANDER_JWT_SECRET` in `deckdoctor-api.service.d/jwt.conf`, restic env in `/etc/deck-doctor/restic.env` (root 0400). Never commit or print them. |
+| Unit backups | `/var/backups/deck-doctor/` (copies of units before they were edited) |
+
+## Deploy (the normal path)
+
+Pushing to `main` does **not** deploy. On simtrack:
+
 ```bash
-cd /opt/deck-doctor/backend
-/opt/deck-doctor/.venv/bin/pip install -r requirements.txt   # incl. psycopg2-binary
+cd /tmp
+sudo /opt/deck-doctor/deploy/deploy.sh            # deploy origin/main
+sudo /opt/deck-doctor/deploy/deploy.sh <ref>      # a branch / tag / sha
+sudo /opt/deck-doctor/deploy/deploy.sh --force    # rebuild + reinstall even if already there
 ```
 
-## 2. Database (its own deckdoctor DB on the shared Postgres)
-Create an isolated role + database (one line; separate from the tracker's DB):
+What it does (`deploy/deploy.sh`):
+1. refuses if another deploy holds the lock or **`deckdoctor-refresh` is running**;
+2. `git fetch` + **detached checkout** of the ref (as `simmander`);
+3. `pip install -r backend/requirements.txt` — only if it changed;
+4. `npm ci` — only if `package*.json` changed; then `next build`;
+5. assembles an **immutable release**: copies `.next/standalone`, `.next/static` and `public/`
+   into `releases/web-<sha>-<ts>/` and flips `releases/current` (atomic `mv -T`). `next build`
+   wipes `frontend/.next`, so the web unit must never serve from there;
+6. restarts `deckdoctor-api` + `deckdoctor-web` and health-checks `http://127.0.0.1:8002/health`,
+   `http://127.0.0.1:3001/deck-doctor`, one hashed `_next/static` chunk and `golden-axe.svg`;
+7. **on any failure after the checkout, rolls back**: previous commit + previous release (no
+   rebuild), restart, re-check, exit 1. Keeps the newest 3 releases (+ current and previous).
+
+Typical run: ~45 s with `npm ci`, ~30 s without; the API is unavailable for ~5–10 s while it
+reloads its in-memory store. Manual rollback to any earlier commit = `deploy.sh <old-sha>`.
+
+Then verify from outside:
 ```bash
-sudo -u postgres psql -c "CREATE ROLE deckdoctor LOGIN PASSWORD 'STRONG_PW';"
-sudo -u postgres psql -c "CREATE DATABASE deckdoctor OWNER deckdoctor;"
-export DATABASE_URL=postgresql://deckdoctor:STRONG_PW@127.0.0.1:5432/deckdoctor
+curl -s  https://simmander.app/deck-doctor/api/health        # 200, card/EDHREC/spellbook counts
+curl -sI https://simmander.app/deck-doctor                    # 200
+curl -sI https://simmander.app/deck-doctor/golden-axe.svg     # 200 (public/ is in the release)
+curl -s -o /dev/null -w '%{http_code}\n' -X POST https://simmander.app/deck-doctor/api/admin/reload  # 403
+# on simtrack: the nightly refresh's reload path (loopback, no proxy headers) must still work
+curl -s -X POST http://127.0.0.1:8002/admin/reload            # 200
 ```
-Put the same `DATABASE_URL` in `deploy/systemd/deckdoctor-api.service`.
+Cloudflare blocks default script user-agents (`error code: 1010`); send a browser-like UA
+when scripting against the public URL.
 
-The app reads `data/cards.json` (committed, ~21 MB) and **Postgres** for everything
-else. The analytical tables are loaded into Postgres from the offline SQLite build
-artifacts (gitignored, regenerable). Two ways to populate the DB:
+## First-time setup on a new box
 
-> ⚠️ The VPS runs **Postgres 14**; a local **Postgres 16** dump will NOT restore onto
-> it (pg_restore can't read a newer-version dump). Until the versions match, use the
-> rsync-artifacts + `load_to_postgres` path below (what the live deploy used). The
-> pg_dump/restore path is for same-major-version dev→prod.
+1. Node 20, Python 3.10+, Postgres. `git clone https://github.com/trashdad/deck-doctor /opt/deck-doctor`
+   (owner `simmander`), `python3 -m venv /opt/deck-doctor/.venv`,
+   `.venv/bin/pip install -r backend/requirements.txt`.
+2. Database: `CREATE ROLE deckdoctor LOGIN PASSWORD '…'; CREATE DATABASE deckdoctor OWNER deckdoctor;`
+   then either restore a dump (same PG major or newer target:
+   `pg_restore --no-owner --clean --if-exists -d deckdoctor <dump>`) or rsync the SQLite build
+   artifacts into `data/` and run `tools/load_to_postgres.py --database-url …`.
+   ⚠️ `load_to_postgres.py` defaults to `postgresql://deckdoctor:deckdoctor@localhost/deckdoctor`
+   when `DATABASE_URL` is unset — always pass the URL explicitly on a box that hosts prod.
+3. Units: copy `deploy/systemd/*` to `/etc/systemd/system/`, fill in `DATABASE_URL`, add the JWT
+   drop-in (`[Service] Environment=SIMMANDER_JWT_SECRET=<tracker [auth] secret_key>`), then
+   bootstrap `releases/current` once (build the frontend, then
+   `cp -a frontend/.next/standalone releases/web-init && cp -a frontend/.next/static releases/web-init/.next/static && cp -a frontend/public releases/web-init/public && ln -s web-init releases/current`),
+   `systemctl daemon-reload && systemctl enable --now deckdoctor-api deckdoctor-web deckdoctor-refresh.timer deckdoctor-backup.timer`.
+   After that, always use `deploy.sh`.
+4. nginx: add the blocks from `deploy/nginx-deckdoctor.conf` to the tracker's server block **via
+   the tracker repo** (`nginx/nginx.conf`).
 
-- **Ship a dump (fastest, same PG major):** on a machine that already built + loaded
-  the data, `pg_dump` it; restore on the box:
-  ```bash
-  # on dev:
-  pg_dump --no-owner --no-acl -Fc deckdoctor > deckdoctor.dump
-  rsync -avz deckdoctor.dump simmander@VPS:/tmp/
-  # on the box:
-  pg_restore --no-owner --clean --if-exists -d deckdoctor /tmp/deckdoctor.dump
-  ```
-- **Or rsync the SQLite artifacts + load them into PG on the box:**
-  ```bash
-  rsync -avz data/{scores.sqlite,edhrec.sqlite,decks.sqlite,spellbook.sqlite} \
-        simmander@VPS:/opt/deck-doctor/data/
-  python tools/load_to_postgres.py        # mirrors the artifacts into Postgres
-  ```
-- **Or rebuild from scratch** (needs the scraped corpus + sibling combo catalogs),
-  then `python tools/load_to_postgres.py`:
-  ```bash
-  python tools/scrape_decklists/load_corpus.py
-  python scoring/build_relationships.py --db data/scores.sqlite \
-    --catalog ../simmander/data/combo_catalog.json --catalog ../simmander/data/known_combos.json
-  python scoring/build_cooccurrence.py --scores data/scores.sqlite \
-    --decks data/decks.sqlite --edhrec data/edhrec.sqlite --min-support 20
-  python tools/import_spellbook/load_spellbook.py
-  python tools/load_to_postgres.py
-  ```
-The userdecks tables are created automatically on first write.
+## Nightly data refresh (`deckdoctor-refresh`, 04:30 UTC)
 
-## 3. Frontend (build with the path prefix)
-`basePath=/deck-doctor` is the default; nothing to set.
+`deploy/refresh_corpus.sh`: scrape (newest-first per source + a commander-breadth pass) →
+`load_corpus` → `build_relationships` → `build_cooccurrence` → `load_to_postgres` →
+`POST localhost:8002/admin/reload` (allowed: loopback, no proxy headers). Logs:
+`journalctl -u deckdoctor-refresh`. It runs code from `/opt/deck-doctor`, which is why deploys
+refuse to run while it is active.
+
+Combo catalogs: `build_relationships` only produces *asserted* combos when `COMBO_CATALOG` /
+`KNOWN_COMBOS` point at the simmander repo's `data/combo_catalog.json` + `data/known_combos.json`.
+The VPS has none, so prod has **0 asserted combos** (Commander Spellbook's 88k combos are
+unaffected). With the catalogs a staging rebuild produced 96, and the golden scoring tests +
+`test_engine_completion_surfaces_missing_piece` pass only on such data. Owner decision pending.
+
+## Backups (`deckdoctor-backup`, 03:30 UTC)
+
+`deploy/backup.sh` (runs as root) writes two independent copies; the unit fails if either fails:
+
+| Copy | How | Retention |
+|---|---|---|
+| **tower** (on-site NAS) `root@tower:/mnt/user/backups/deck-doctor/` | `tools/backup_db.py` as `simmander` (its SSH key is authorized on tower): `pg_dump -Fc` → scp, host-tagged file names | newest 14 per host (pruned by the script) |
+| **callisto** (off-site) restic repo `rest:http://…@callisto:8000/simmander/deck-doctor` | `pg_dump -Fc -Z0` as `postgres` (peer auth) streamed by `restic backup --stdin-from-command` (a failed dump never becomes a snapshot); tags `pg nightly`, host `simtrack` | append-only rest-server: **no forget/prune from simtrack** — prune on callisto |
+
+`/etc/deck-doctor/restic.env` (root 0400) reuses the tracker's rest-server user and repo password
+file (`/etc/restic/repo-password`) with its own repo path, so the one password the owner already
+keeps for the tracker also opens Deck Doctor's repo.
+
+Run one now / inspect:
 ```bash
-cd /opt/deck-doctor/frontend
-npm ci && npm run build
-# standalone output needs static + public copied next to server.js:
-cp -r .next/static .next/standalone/.next/static
-cp -r public        .next/standalone/public   # if present
+sudo systemctl start deckdoctor-backup && journalctl -u deckdoctor-backup -n 30
+sudo bash -c 'set -a; . /etc/deck-doctor/restic.env; set +a; restic snapshots'
+sudo -u simmander ssh root@tower ls -la /mnt/user/backups/deck-doctor/
 ```
-
-## 4. Services
+Restore:
 ```bash
-sudo cp deploy/systemd/deckdoctor-api.service deploy/systemd/deckdoctor-web.service /etc/systemd/system/
-# edit User=/paths if your layout differs from /opt/deck-doctor + user `simmander`
-# Shared login needs the SAME JWT secret the tracker signs with — copy it in:
-SECRET=$(sudo grep -iP '^\s*secret_key' /opt/simmander-tracker/backend/config.ini | head -1 | sed 's/.*=\s*//')
-sudo sed -i "s|SIMMANDER_JWT_SECRET=.*|SIMMANDER_JWT_SECRET=$SECRET|" /etc/systemd/system/deckdoctor-api.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now deckdoctor-api deckdoctor-web
-curl -s localhost:8002/health        # {"status":"ok",...}
-curl -s localhost:3001/deck-doctor    # Next HTML
+# from tower
+pg_restore --no-owner --clean --if-exists -d deckdoctor deckdoctor-<host>-<ts>.dump
+# from callisto
+sudo bash -c 'set -a; . /etc/deck-doctor/restic.env; set +a; restic dump latest /deckdoctor.dump' > deckdoctor.dump
+pg_restore --no-owner --clean --if-exists -d deckdoctor deckdoctor.dump
 ```
+History: the job failed on Postgres password auth from June until 2026-10-04, so tower only holds
+two June dumps plus the October ones.
 
-## 5. nginx
-Paste the blocks from `deploy/nginx-deckdoctor.conf` into the tracker's `server { }`
-for simmander.app, **above** its `location / {}`. Then:
-```bash
-sudo nginx -t && sudo systemctl reload nginx
-```
-No new TLS cert needed — it's the same hostname as the tracker.
+## Staging (how 2026-10-04's release was verified)
 
-## 6. Verify live
-```bash
-curl -s https://simmander.app/deck-doctor/api/health
-curl -sI https://simmander.app/deck-doctor          # 200, Next HTML
-```
-Open https://simmander.app/deck-doctor — commander list (popularity), Template dropdown,
-and the Doctor should all work; the tracker at https://simmander.app/ is unaffected.
+Copy prod data into a throwaway DB and run the candidate on spare loopback ports:
+`pg_dump -Fc deckdoctor` → `createdb deckdoctor_verify` (own temp role) → `pg_restore`; check out
+the candidate in `/opt/deck-doctor-staging` with a `.env` pointing `DATABASE_URL` at
+`deckdoctor_verify`; run uvicorn on 127.0.0.1:8012 and the web release on :3011; run
+`backend`/`scoring` pytest there (the conftest only allows destructive tests against a local or
+`*_test` DB — on simtrack *prod is local too*, so double-check `DATABASE_URL` before running
+pytest). Drop the DB, role and directory afterwards.
 
-## 7. Backups (to the tower NAS)
-`tools/backup_db.py` runs `pg_dump -Fc` and scp's the dump to tower, keeping the
-newest N (default 14). It needs the deploy user's SSH key authorized on tower
-(Tailscale-reachable). One-off:
-```bash
-python tools/backup_db.py --dest root@tower:/mnt/user/backups/deck-doctor --keep 14
-```
-Schedule it daily:
-- **Prod (VPS):** install the systemd timer:
-  ```bash
-  sudo cp deploy/systemd/deckdoctor-backup.{service,timer} /etc/systemd/system/
-  sudo systemctl daemon-reload && sudo systemctl enable --now deckdoctor-backup.timer
-  ```
-- **Dev (Windows):** a Daily Task Scheduler job named `DeckDoctorDBBackup` runs it
-  at 03:30 (created with `schtasks`; the dev box must be on at that time).
+## Alternative: containers
 
-Restore: `pg_restore --no-owner --clean --if-exists -d deckdoctor <dump>`.
-
-## 8. Auto-deploy (optional)
-Mirror the tracker's `auto-deploy` timer for `/opt/deck-doctor`: `git pull`, rebuild
-frontend, `pip install -r`, `systemctl restart deckdoctor-api deckdoctor-web`. Keep the
-heavy data rebuild on its own cadence (`tools/refresh_loop.py`), not every deploy.
+`deploy/compose.yaml` + the Dockerfiles run the full stack (see `deploy/README.md`). Production
+does not use them.

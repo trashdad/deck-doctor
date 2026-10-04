@@ -290,14 +290,23 @@ The mirror image of §4: instead of scoring outside cards *against* your deck, i
 already *in* your deck against the rest of it, and lists the **lowest contributors** first:
 
 ```
-   contribution(c) = w_edh·edhrec(cmd,c) + w_cooc·mean_lift(c, deck∖c) + w_struct·mean_syn(c, deck∖c)
+   contribution(c) = w_edh·max(synergy(cmd,c), inclusion(cmd,c))
+                   + w_cooc·mean_lift(c, deck∖c) + w_struct·mean_syn(c, deck∖c)
 
    cards that real decks rarely run alongside the rest of YOUR deck sink to the bottom.
    (Lands, your commander, and any card that's part of a complete combo are protected from cuts.)
 ```
 
-In testing, a Dragon deck correctly surfaces generic *Lightning Bolt* and *Sol Ring* as the first
-cut candidates — they're powerful but contribute little to *this* deck's web of synergies.
+The EDHREC term takes the stronger of *synergy* and *inclusion*. Synergy alone scores format
+staples (*Sol Ring*, *Arcane Signet*) near zero because every deck plays them, which used to put
+them at the top of the cut list; inclusion — how often players keep the card with this commander —
+is the opposite of a cut. Since 2026-10-04 a deck's first cut candidates are its genuinely
+off-plan cards (e.g. *Expedite*, *Crimson Wisps* in a Krenko list), not its staples.
+
+**Tune-up** (`POST /deck/upgrade-sweep`) chains the two: the weakest cards from this list, each
+paired with **Card Upgrade Finder** (`POST /deck/card-upgrade`) replacements in the commander's
+colours. A Tune-up swap must beat the card it replaces — higher IER or stronger commander
+synergy — so side-grades are not offered.
 
 ---
 
@@ -468,12 +477,12 @@ colours — strong evidence it's modelling genuine synergy, not just popularity.
 ```
    frontend/   Next.js 14 (App Router, TypeScript) — card-art builder, zones, drag-drop,
                Suggestions / Combos / Doctor / Graph / Decks panels. zustand + react-query + Tailwind.
-   backend/    FastAPI on :8001 — every read is an O(1) lookup against the in-memory card map or the
-               indexed SQLite store. No model inference at request time.
+   backend/    FastAPI (:8001 dev, :8002 prod) — every read is an O(1) lookup against the in-memory
+               Store, loaded once from Postgres (DATABASE_URL). No model inference at request time.
    scoring/    Offline Python pipeline (stdlib-only) — IER, relationships, co-occurrence, eval harness.
-   tools/      The scrapers + the live refresh daemon (stdlib-only).
-   deploy/     Dockerfiles + compose for containerised deploy.
-   data/       cards.json (committed) + generated sqlite stores (gitignored).
+   tools/      The scrapers, load_to_postgres.py (SQLite build artifacts → Postgres), backup_db.py.
+   deploy/     deploy.sh / backup.sh / refresh_corpus.sh + systemd units (prod), Dockerfiles (alt).
+   data/       cards.json (committed) + generated sqlite build artifacts (gitignored).
 ```
 
 The backend is built around a single in-memory `Store` (`backend/app/store.py`) loaded once at
@@ -484,16 +493,19 @@ thin, pure function over that store.
 ### Run it locally
 
 ```bash
-# 1. Backend (port 8001) — needs the prebuilt data/*.sqlite stores
+# 0. A Postgres `deckdoctor` database loaded with the analytical tables — restore a prod dump
+#    (DEPLOY.md → Backups) or run tools/load_to_postgres.py over data/*.sqlite.
+#    Set DATABASE_URL (default postgresql://deckdoctor:deckdoctor@localhost:5432/deckdoctor).
+
+# 1. Backend (port 8001)
 cd backend && pip install -r requirements.txt
 python -m uvicorn app.main:app --port 8001
 
-# 2. Frontend (port 3000, proxies /api → :8001)
-cd frontend && npm install && npm run dev
-
-# 3. (optional) keep the corpus growing in the background
-python tools/refresh_loop.py --interval 1800
+# 2. Frontend (http://localhost:3000/deck-doctor, proxies /api → :8001)
+cd frontend && npm ci && npm run dev
 ```
+Production runs on simtrack — see [`deploy/DEPLOY.md`](deploy/DEPLOY.md). The corpus is refreshed
+there nightly by `deploy/refresh_corpus.sh` (`deckdoctor-refresh.timer`).
 
 ### Affiliate links
 
@@ -520,18 +532,28 @@ python tools/import_spellbook/runner.py && python tools/import_spellbook/load_sp
 ### Tests
 
 ```bash
-cd backend && python -m pytest -q     # 43 API/engine tests
-cd scoring && python -m pytest -q     # 92 scoring/eval tests
-cd frontend && npm run build          # type-check + production build
+cd backend && python -m pytest -q     # 144 passed, 6 skipped (2026-10-04, against a prod-data copy)
+cd scoring && python -m pytest -q     # 91 passed, 1 skipped (golden tests need data/scores.sqlite
+                                      #   built WITH the simmander combo catalogs)
+cd frontend && npx tsc --noEmit && npm run build
 ```
+The backend tests read and **mutate** the database in `DATABASE_URL` (they truncate the userdecks
+tables and swap the combo tables aside). `tests/conftest.py` refuses non-local hosts unless the DB
+name ends in `_test`, but on the prod box the prod DB *is* local — never run pytest there without
+pointing `DATABASE_URL` at a throwaway copy.
 
 ### Deploy
 
+Production (simmander.app/deck-doctor on simtrack) is deployed by hand — pushing to `main` does
+not deploy:
+
 ```bash
-docker compose -f deploy/compose.yaml up --build   # full stack on :3000 against mounted data/
+ssh trashdad@simtrack 'cd /tmp && sudo /opt/deck-doctor/deploy/deploy.sh'   # origin/main, auto-rollback
 ```
 
-See [`deploy/README.md`](deploy/README.md) for the data-volume contract.
+[`deploy/DEPLOY.md`](deploy/DEPLOY.md) has the layout, the verify checklist, the nightly refresh and
+the backups (tower + callisto off-site). A containerised alternative lives in
+`deploy/compose.yaml` ([`deploy/README.md`](deploy/README.md)); production does not use it.
 
 ---
 

@@ -15,6 +15,7 @@ Environment=BACKUP_DEST=root@tower:/mnt/user/backups/deck-doctor
 # restic env for callisto: RESTIC_REPOSITORY=rest:http://<user>:<pw>@callisto:8000/simmander/deck-doctor
 # and RESTIC_PASSWORD_FILE=... (root:root 0400 — never commit it).
 Environment=RESTIC_ENV=/etc/deck-doctor/restic.env
+CacheDirectory=deck-doctor
 ExecStart=/opt/deck-doctor/deploy/backup.sh
 TimeoutStartSec=1800
 Nice=10

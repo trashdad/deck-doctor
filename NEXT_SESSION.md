@@ -1,4 +1,4 @@
-# Deck Doctor — Session Handoff (current: 2026-10-04)
+# Deck Doctor — Session Handoff (current: 2026-10-04, late)
 
 > Everything below the line "Historical handoff" is the **June 10** handoff and is stale
 > (it predates the Postgres migration, the VPS deploy, the Arcade theme, Card Upgrade Finder).
@@ -6,41 +6,75 @@
 ## Where things run (owner decision 2026-10-04)
 
 - **Production:** simtrack (tracker VPS). `deckdoctor-api` (uvicorn 127.0.0.1:8002),
-  `deckdoctor-web` (Next standalone :3001), `deckdoctor-refresh.timer` (04:30 UTC, scrape → load →
-  rebuild → reload; corpus 85,598 decks on 2026-10-04), `deckdoctor-backup.timer` (03:30 UTC,
-  pg_dump → tower). nginx blocks live in **simmander-tracker `nginx/nginx.conf`** (auto-applied).
+  `deckdoctor-web` (Next standalone :3001, served from `/opt/deck-doctor/releases/current`),
+  `deckdoctor-refresh.timer` (04:30 UTC, scrape → load → rebuild → reload; corpus 85,598 decks),
+  `deckdoctor-backup.timer` (03:30 UTC, pg_dump → tower **and** restic → callisto).
+  nginx blocks live in **simmander-tracker `nginx/nginx.conf`** (auto-applied).
   SSH: `ssh trashdad@simtrack` (Tailscale SSH). App at `/opt/deck-doctor`, Python 3.10.
-- **Development:** legion (this Windows laptop). Machine roles: `simmander-hub/docs/machine-roles.md`.
+- **Deploy:** `ssh trashdad@simtrack 'cd /tmp && sudo /opt/deck-doctor/deploy/deploy.sh [ref]'` —
+  builds an immutable web release, restarts, health-checks, **auto-rolls back**. Pushing to `main`
+  does not deploy. Full runbook: `deploy/DEPLOY.md`.
+- **Development:** legion (this Windows laptop; low RAM — build/verify on simtrack instead).
+  Machine roles: `simmander-hub/docs/machine-roles.md`.
 
 ## Local dev on legion
 
 ```bash
 # Postgres 16 (portable). Password auth; credentials in %APPDATA%\postgresql\pgpass.conf.
 C:/simmander/pg/pgsql/bin/pg_ctl.exe -D C:/simmander/pg/data -l C:/simmander/pg/server.log start
-# Tests (system Python 3.14 has the deps; prod is 3.10)
-cd backend && python -m pytest -q        # 135 passed, 6 skipped (2026-10-04)
-cd scoring && python -m pytest -q        # 92 passed
+cd backend && python -m pytest -q        # needs that DB; pure tests (test_upgrade, test_cuts_unit) don't
+cd scoring && python -m pytest -q
 cd frontend && npx tsc --noEmit && npm run build
-# Run: backend :8001, frontend :3000 (proxies /api -> :8001)
-cd backend && python -m uvicorn app.main:app --port 8001
-cd frontend && npm run dev
+cd backend && python -m uvicorn app.main:app --port 8001     # + cd frontend && npm run dev
 ```
 The local DB is the **June snapshot (~5k decks)**; prod has ~85k. Restore a prod dump before
-judging recommendation quality (dumps: `root@tower:/mnt/user/backups/deck-doctor/`).
+judging recommendation quality (`deploy/DEPLOY.md` → Backups → Restore).
 
-## State on 2026-10-04
+## State on 2026-10-04 (end of the verify-then-deploy session)
 
-- **Live build is `3cc4e57` (Jun 17).** `main` adds Card Upgrade Finder (PR #2) and the admin guard
-  (`f8d0c85`); **neither is deployed**. PR #3 Tune-up (`claude/precon-upgrade-sweep`) is open.
-  Upgrade Finder and Tune-up were never checked against real data.
-- **Security fixed:** `POST /admin/reload` was public → nginx 403 (live) + backend
-  `auth.require_local_or_admin` (on main). The refresh calls `localhost:8002` directly and is unaffected.
-- **Known issues:** `frontend/public/*.svg` 404 live (deploy doesn't copy `public/`); mobile unusable;
-  card art defaults to novelty printings; card pool frozen Jun 9 (`data/cards.json`, rebuilt with
-  Windows-only paths in `scoring/prep_cards.py`); `db.query` swallows DB errors; no CI; ESLint not
-  configured; README/deploy docs stale.
-- **Finish plan:** tiers in `simmander-hub/docs/plans/2026-10-04-revival-brief.md` §5. The plan going
-  forward is being designed with Fable; check the hub for the resulting plan before starting.
+- **Live = `main`** (everything below is deployed; release dirs under `/opt/deck-doctor/releases/`).
+  Deployed 23:47 UTC (`3cc4e57` → `164a9cd`, 43 s, API blip ~10 s), docs/backup follow-up after.
+- **Shipped:** Card Upgrade Finder (PR #2), admin guard (`f8d0c85`), **precon Tune-up (PR #3,
+  merged as `8898b0f`)**, fixes `e0b90e9`, `deploy/deploy.sh` + `deploy/backup.sh` (`164a9cd`).
+- **Bugs found on a copy of prod data and fixed (`e0b90e9`, TDD):**
+  1. `/deck/combos` "one card away" offered off-identity pieces (mono-R Krenko → Food Chain,
+     Hullbreaker Horror) and banned ones (Sway of the Stars). Filtered before the 50-cap.
+  2. `suggest_cuts` used EDHREC *synergy* only → **Tune-up said "cut Sol Ring" first** (also
+     Arcane Signet, Orcish Bowmasters, Blasphemous Act). Now `max(synergy, inclusion)`.
+  3. Tune-up offered downgrades (Talisman of Dominance → Pristine Talisman, −0.9 IER). A swap must
+     now beat the target on IER or commander synergy.
+- **Fixed ops:** `public/*.svg` 404 (releases now include `public/` + `.next/static`); backups go
+  off-site to callisto (`rest:…@callisto:8000/simmander/deck-doctor`, first snapshot `51fbd15d`,
+  restore-tested) as well as tower; refresh/frontload scripts are executable in git.
+- **Verified live:** 5 real corpus decks (Wise Mothman precon-ish, Atraxa, Krenko, Edgar, Prosper)
+  through every deck endpoint via the public API — 0 colour-identity/banlist violations; p50
+  latency: sweep ~0.7 s, complete ~0.9 s, recommend ~0.5 s, card-upgrade ~0.1 s. Browser: Tune-up
+  panel renders on a real deck, 0 console errors.
+
+## Open — owner decisions
+
+- **Combo catalogs on the VPS.** Prod's nightly rebuild has no `COMBO_CATALOG`/`KNOWN_COMBOS`
+  → **0 asserted combos** since June (Spellbook's 88k combos unaffected). With the simmander
+  repo's `data/combo_catalog.json` + `known_combos.json` (49 KB, private repo) a staging rebuild
+  got 96 and all tests pass; without them `scoring` golden tests (2) and
+  `test_engine_completion_surfaces_missing_piece` fail on prod data. Ship the files to the box and
+  set the env in `deckdoctor-refresh.service`?
+- **IER blind spots** surface in upgrades: alternative / Phyrexian costs aren't understood
+  (Snuff Out → Soul Rend "+6.8 IER", Dismember → Nim Replica). Needs an IER model fix.
+- **Alerting:** a backup failed silently for ~4 months. The tracker's generic
+  `simmander-alert@%n.service` could be attached (`OnFailure=`) to `deckdoctor-backup`/`-refresh`.
+- **Callisto retention:** the rest-server is append-only — schedule `restic forget --prune` for
+  `/simmander/deck-doctor` on callisto (~100 MB/snapshot stored before dedup).
+- **Secrets in world-readable unit files** (`DATABASE_URL` in api/refresh/backup units, 0644) →
+  move to an `EnvironmentFile` (0600).
+- Static `BANLIST` in `suggest.py` disagrees with the Scryfall data the card pool was filtered by
+  (e.g. Sway of the Stars, Biorhythm, Lutri are in the June pool). Decide the source of truth.
+
+## Known issues (unchanged)
+Mobile unusable; card art defaults to novelty printings; card pool frozen Jun 9 (`data/cards.json`,
+`scoring/prep_cards.py` has Windows-only paths); `db.query` swallows DB errors; no CI; ESLint not
+configured. Finish plan: `simmander-hub/docs/plans/2026-10-04-revival-brief.md` §5 (and the Fable
+plan in the hub, if present).
 
 ---
 

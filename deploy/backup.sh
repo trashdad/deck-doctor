@@ -41,6 +41,8 @@ if [[ ! -r "$RESTIC_ENV" ]]; then
     log "callisto: FAILED — $RESTIC_ENV missing/unreadable"; exit 1
 fi
 set -a; . "$RESTIC_ENV"; set +a
+# systemd gives root no $HOME; without a cache restic re-downloads the index every run.
+export RESTIC_CACHE_DIR="${RESTIC_CACHE_DIR:-/var/cache/deck-doctor/restic}"
 if ! "$RESTIC" cat config >/dev/null 2>&1; then
     log "callisto: repository not initialised — restic init"
     "$RESTIC" init >/dev/null || { log "callisto: restic init FAILED"; exit 1; }
