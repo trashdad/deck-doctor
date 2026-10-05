@@ -1,0 +1,977 @@
+{
+ "id": 27077380,
+ "createdAt": "2026-10-04T10:42:39.689289Z",
+ "updatedAt": "2026-10-04T10:43:06.893030Z",
+ "categories": [
+  {
+   "name": "Sorcery",
+   "includedInDeck": true
+  },
+  {
+   "name": "Enchantment",
+   "includedInDeck": true
+  },
+  {
+   "name": "Land",
+   "includedInDeck": true
+  },
+  {
+   "name": "Artifact",
+   "includedInDeck": true
+  },
+  {
+   "name": "Instant",
+   "includedInDeck": true
+  },
+  {
+   "name": "Creature",
+   "includedInDeck": true
+  },
+  {
+   "name": "Commander",
+   "includedInDeck": true
+  }
+ ],
+ "cards": [
+  {
+   "categories": [
+    "Commander"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Tidus, Yuna's Guardian"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Altered Ego"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Instant"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "An Offer You Can't Refuse"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Artifact"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Arcane Signet"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Ash Barrens"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Auron, Venerated Guardian"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Bane of Progress"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Artifact"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Blitzball Stadium"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Enchantment"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Bred for the Hunt"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Brushland"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Canopy Vista"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Chasm Skulker"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Chocobo Knights"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Sorcery"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Collective Effort"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Sorcery"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Damning Verdict"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Instant"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Destroy Evil"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Duskshell Crawler"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Command Tower"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Instant"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Endless Detour"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Artifact"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Everflowing Chalice"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Evolving Wilds"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Exotic Orchard"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Sorcery"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Farewell"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Sorcery"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Farseek"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Fathom Mage"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Enchantment"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Fight Rigging"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Flooded Grove"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Forge of Heroes"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Forgotten Ancient"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Fortified Village"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Forest"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Gatta and Luzzu"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Generous Patron"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Glacial Fortress"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Grateful Apparition"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Gyre Sage"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Enchantment"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Hardened Scales"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Hinterland Harbor"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Idyllic Beachfront"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Incubation Druid"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Enchantment"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Inexorable Tide"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Instant"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Inspiring Call"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Kimahri, Valiant Guardian"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Lord Jyscal Guado"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Lulu, Stern Guardian"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Luminous Broodmoth"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Maester Seymour"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Nesting Grounds"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "O'aka, Traveling Merchant"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Overflowing Basin"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Path of Ancestry"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Enchantment"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Path of Discovery"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Instant"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Path to Exile"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Port Town"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Prairie Stream"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Sorcery"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Promise of Loyalty"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Instant"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Protection Magic"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Instant"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Pull from Tomorrow"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Radiant Grove"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Rampant Rejuvenator"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Enchantment"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Resourceful Defense"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Rikku, Resourceful Guardian"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Scholar of New Horizons"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Seaside Citadel"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Shelinda, Yevon Acolyte"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Sin, Unending Cataclysm"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Skycloud Expanse"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Enchantment"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Sphere Grid"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Summon: Ixion"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Summon: Magus Sisters"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Summon: Valefor"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Summon: Yojimbo"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Enchantment"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Summoner's Sending"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Sungrass Prairie"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Sunpetal Grove"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Sunscorch Regent"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Tangled Islet"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Temple of Enlightenment"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Temple of Mystery"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Temple of Plenty"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Temple of the False God"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Sorcery"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Three Visits"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Tireless Tracker"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Enchantment"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Together Forever"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Tromell, Seymour's Butler"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Vineglimmer Snarl"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Wakka, Devoted Guardian"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Walking Ballista"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Sorcery"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Yuna's Decision"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Instant"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Yuna's Whistle"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Creature"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Yuna, Grand Summoner"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Artifact"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Sol Ring"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Island"
+    }
+   }
+  },
+  {
+   "categories": [
+    "Land"
+   ],
+   "card": {
+    "oracleCard": {
+     "name": "Plains"
+    }
+   }
+  }
+ ]
+}

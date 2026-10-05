@@ -1,0 +1,330 @@
+{
+ "url": "https://archidekt.com/decks/27071260",
+ "urlhash": "oxaoFGjhLIe8bU2R3if_Zw",
+ "savedate": "2026-10-04",
+ "header": "Deck with Krenko, Mob Boss",
+ "commanders": [
+  "Krenko, Mob Boss"
+ ],
+ "deck": {
+  "commander": [
+   "Krenko, Mob Boss"
+  ],
+  "commander_v2": [
+   [
+    "Krenko, Mob Boss",
+    1
+   ]
+  ],
+  "cards": {
+   "Creature": [
+    [
+     "Agate Instigator",
+     1
+    ],
+    [
+     "Ancient Copper Dragon",
+     1
+    ],
+    [
+     "Etali, Primal Storm",
+     1
+    ],
+    [
+     "Humble Defector",
+     1
+    ],
+    [
+     "Imperial Recruiter",
+     1
+    ],
+    [
+     "Purphoros, God of the Forge",
+     1
+    ]
+   ],
+   "Artifact": [
+    [
+     "Altar of the Brood",
+     1
+    ],
+    [
+     "Arcane Signet",
+     1
+    ],
+    [
+     "Ashnod's Altar",
+     1
+    ],
+    [
+     "Caged Sun",
+     1
+    ],
+    [
+     "Coat of Arms",
+     1
+    ],
+    [
+     "Defense Grid",
+     1
+    ],
+    [
+     "Gauntlet of Might",
+     1
+    ],
+    [
+     "Grim Monolith",
+     1
+    ],
+    [
+     "Hazoret's Monument",
+     1
+    ],
+    [
+     "Helm of the Host",
+     1
+    ],
+    [
+     "Jandor's Saddlebags",
+     1
+    ],
+    [
+     "Magewright's Stone",
+     1
+    ],
+    [
+     "Mana Vault",
+     1
+    ],
+    [
+     "Mithril Coat",
+     1
+    ],
+    [
+     "Orcrist, Goblin-cleaver",
+     1
+    ],
+    [
+     "Rings of Brighthearth",
+     1
+    ],
+    [
+     "Ruby Medallion",
+     1
+    ],
+    [
+     "Skullclamp",
+     1
+    ],
+    [
+     "Sol Ring",
+     1
+    ],
+    [
+     "Staff of Domination",
+     1
+    ],
+    [
+     "Sting, the Glinting Dagger",
+     1
+    ],
+    [
+     "The Fire Crystal",
+     1
+    ],
+    [
+     "The One Ring",
+     1
+    ],
+    [
+     "Thousand-Year Elixir",
+     1
+    ],
+    [
+     "Throne of the God-Pharaoh",
+     1
+    ]
+   ],
+   "Instant": [
+    [
+     "Battle Hymn",
+     1
+    ],
+    [
+     "Big Score",
+     1
+    ],
+    [
+     "Brightstone Ritual",
+     1
+    ],
+    [
+     "Chaos Warp",
+     1
+    ],
+    [
+     "Deflecting Swat",
+     1
+    ],
+    [
+     "Desperate Ritual",
+     1
+    ],
+    [
+     "Final Fortune",
+     1
+    ],
+    [
+     "Flare of Duplication",
+     1
+    ],
+    [
+     "Last-Ditch Effort",
+     1
+    ],
+    [
+     "Lightning Bolt",
+     1
+    ],
+    [
+     "Pyretic Ritual",
+     1
+    ],
+    [
+     "Redirect Lightning",
+     1
+    ],
+    [
+     "Reverberate",
+     1
+    ],
+    [
+     "Seething Song",
+     1
+    ],
+    [
+     "Thrill of Possibility",
+     1
+    ],
+    [
+     "Tibalt's Trickery",
+     1
+    ]
+   ],
+   "Sorcery": [
+    [
+     "Blasphemous Act",
+     1
+    ],
+    [
+     "Empty the Warrens",
+     1
+    ],
+    [
+     "Faithless Looting",
+     1
+    ],
+    [
+     "Gamble",
+     1
+    ],
+    [
+     "Goblin War Strike",
+     1
+    ],
+    [
+     "Jeska's Will",
+     1
+    ],
+    [
+     "Vandalblast",
+     1
+    ],
+    [
+     "Wheel of Fortune",
+     1
+    ]
+   ],
+   "Land": [
+    [
+     "Cavern of Souls",
+     1
+    ],
+    [
+     "Command Beacon",
+     1
+    ],
+    [
+     "Mountain",
+     26
+    ],
+    [
+     "Myriad Landscape",
+     1
+    ],
+    [
+     "Nykthos, Shrine to Nyx",
+     1
+    ],
+    [
+     "Path of Ancestry",
+     1
+    ],
+    [
+     "Reliquary Tower",
+     1
+    ],
+    [
+     "Strip Mine",
+     1
+    ],
+    [
+     "Temple of the False God",
+     1
+    ],
+    [
+     "Three Tree City",
+     1
+    ],
+    [
+     "Urza's Saga",
+     1
+    ]
+   ],
+   "Enchantment": [
+    [
+     "Collective Inferno",
+     1
+    ],
+    [
+     "Descent into Avernus",
+     1
+    ],
+    [
+     "Fiery Emancipation",
+     1
+    ],
+    [
+     "Goblin Bombardment",
+     1
+    ],
+    [
+     "Impact Tremors",
+     1
+    ],
+    [
+     "Mana Echoes",
+     1
+    ],
+    [
+     "Mass Hysteria",
+     1
+    ],
+    [
+     "Powerbalance",
+     1
+    ]
+   ]
+  }
+ }
+}

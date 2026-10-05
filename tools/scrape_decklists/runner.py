@@ -224,13 +224,23 @@ class Corpus:
 _ARCHIDEKT_EXCLUDE = {"Maybeboard", "Sideboard"}
 
 
-def _fetch_archidekt(native_id: str) -> tuple[str | None, list[str]]:
-    data = _get_json(f"https://archidekt.com/api/decks/{native_id}/")
+def _parse_archidekt(data: dict) -> tuple[str | None, list[str]]:
+    """Card names from an Archidekt deck payload.
+
+    `cards` is a list of entries with categories + card.oracleCard.name.
+    A non-list `cards` value is refused: iterating a dict would store its
+    keys ('cards', ...) as card names. Returns (commander, card_names).
+    """
     not_included = {c["name"] for c in data.get("categories", [])
-                    if not c.get("includedInDeck", True)} | _ARCHIDEKT_EXCLUDE
+                    if isinstance(c, dict) and not c.get("includedInDeck", True)} | _ARCHIDEKT_EXCLUDE
+    cards = data.get("cards", [])
+    if not isinstance(cards, list):
+        return None, []
     commander: str | None = None
     names: list[str] = []
-    for c in data.get("cards", []):
+    for c in cards:
+        if not isinstance(c, dict):
+            continue
         cats = set(c.get("categories") or [])
         if not_included & cats:
             continue
@@ -241,6 +251,11 @@ def _fetch_archidekt(native_id: str) -> tuple[str | None, list[str]]:
             commander = name
         names.append(name)  # unique-card mining wants presence; mining dedups per deck
     return commander, names
+
+
+def _fetch_archidekt(native_id: str) -> tuple[str | None, list[str]]:
+    data = _get_json(f"https://archidekt.com/api/decks/{native_id}/")
+    return _parse_archidekt(data)
 
 
 def _fetch_moxfield(native_id: str) -> tuple[str | None, list[str]]:
@@ -724,21 +739,81 @@ def _parse_source_url(url: str) -> tuple[str, str] | None:
     return None
 
 
-def _fetch_edhrec_deckpreview(urlhash: str) -> tuple[str, str, str | None, list[str]] | None:
-    """deckpreview/<urlhash> -> (source, native_id, commander, card_names)."""
-    data = _get_json(f"https://edhrec.com/api/deckpreview/{urlhash}")
-    src = _parse_source_url(data.get("url", ""))
+# EDHREC deckpreview `deck` is either a list of "N Card Name" lines (the
+# shape this parser originally read) or a zone object. Captured 2026-10-05:
+#   commander:     ["Name", ...]
+#   commander_v2:  [["Name", qty], ...]
+#   cards:         {"Creature": [["Name", qty], ...], "Land": [...], ...}
+# Iterating the object yields the keys cards/commander/commander_v2, which
+# were stored as the deck's entire card list.
+_PREVIEW_LINE = re.compile(r"^\s*\d+\s+(.*\S)\s*$")
+
+
+def _names_from_entries(entries) -> list[str]:
+    """Names from a zone: 'N Name' lines, bare name strings, or [name, qty] pairs."""
+    if isinstance(entries, str):
+        entries = [entries]
+    if not isinstance(entries, list):
+        return []
+    names: list[str] = []
+    for item in entries:
+        name = ""
+        if isinstance(item, str):
+            m = _PREVIEW_LINE.match(item)
+            name = (m.group(1) if m else item).strip()
+        elif isinstance(item, (list, tuple)) and item and isinstance(item[0], str):
+            name = item[0].strip()
+        elif isinstance(item, dict):
+            raw = item.get("name") or ""
+            name = raw.strip() if isinstance(raw, str) else ""
+        if name:
+            names.append(name)
+    return names
+
+
+def _card_names_from_preview_deck(deck) -> list[str]:
+    """Presence-only card names from a deckpreview `deck` field.
+
+    Accepts the historical line list and the zone object. Does not iterate
+    a dict's keys. Commander zones are included; quantity is ignored.
+    """
+    if isinstance(deck, list):
+        names = _names_from_entries(deck)
+    elif isinstance(deck, dict):
+        names = []
+        names.extend(_names_from_entries(deck.get("commander")))
+        names.extend(_names_from_entries(deck.get("commander_v2")))
+        cards = deck.get("cards")
+        if isinstance(cards, dict):
+            for group in cards.values():
+                names.extend(_names_from_entries(group))
+        else:
+            names.extend(_names_from_entries(cards))
+    else:
+        return []
+    return list(dict.fromkeys(names))
+
+
+def _parse_edhrec_deckpreview(data: dict) -> tuple[str, str, str | None, list[str]] | None:
+    """deckpreview JSON -> (source, native_id, commander, card_names)."""
+    src = _parse_source_url(data.get("url") or "")
     if not src:
         return None
     source, native_id = src
     cmdrs = data.get("commanders") or []
-    commander = cmdrs[0] if cmdrs else None
-    names: list[str] = []
-    for line in data.get("deck", []) or []:
-        m = re.match(r"^\s*\d+\s+(.*\S)\s*$", line)
-        names.append((m.group(1) if m else line).strip())
-    names = [n for n in names if n]
+    commander = cmdrs[0] if cmdrs and isinstance(cmdrs[0], str) else None
+    names = _card_names_from_preview_deck(data.get("deck"))
+    if commander is None and isinstance(data.get("deck"), dict):
+        zone = data["deck"].get("commander")
+        if isinstance(zone, list) and zone and isinstance(zone[0], str):
+            commander = zone[0].strip() or None
     return source, native_id, commander, names
+
+
+def _fetch_edhrec_deckpreview(urlhash: str) -> tuple[str, str, str | None, list[str]] | None:
+    """deckpreview/<urlhash> -> (source, native_id, commander, card_names)."""
+    data = _get_json(f"https://edhrec.com/api/deckpreview/{urlhash}")
+    return _parse_edhrec_deckpreview(data)
 
 
 # ── Recency-driven discovery (newest-first; bias the corpus to the live meta) ─

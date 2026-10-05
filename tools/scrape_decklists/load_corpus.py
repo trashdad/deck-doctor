@@ -12,6 +12,11 @@ Idempotent and re-runnable: run it any time (including while a scrape is in
 progress) to refresh the DBs from the current corpus. Computes NO statistics —
 it only transcribes raw records; lift/synergy fusion lives in scoring/cooccurrence/.
 
+Decks whose card names are JSON field names, or that have fewer than 15
+names resolving against the cards table, are rejected and counted. An
+accepted deck replaces that deck's card rows so a later good parse does
+not keep an earlier shell.
+
 Usage:
     python tools/scrape_decklists/load_corpus.py
     python tools/scrape_decklists/load_corpus.py --corpus data/decklists --out data
@@ -23,9 +28,15 @@ import argparse
 import glob
 import json
 import sqlite3
+import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+# JSON object keys the deckpreview parser used to store as card names.
+# None of these are printed Magic card names (checked against the cards table).
+FIELD_NAME_CARDS = frozenset({"cards", "commander", "commander_v2"})
+MIN_RESOLVABLE_CARDS = 15
 
 
 def _connect(path: Path) -> sqlite3.Connection:
@@ -68,14 +79,82 @@ def _init_edhrec(con: sqlite3.Connection) -> None:
     )
 
 
-def load(corpus_dir: Path, out_dir: Path) -> dict:
+def _norm(name: str) -> str:
+    """Accent/case-folded key. Same fold as scoring/cooccurrence/corpus.py:norm."""
+    nfkd = unicodedata.normalize("NFKD", name or "")
+    return "".join(c for c in nfkd if not unicodedata.combining(c)).lower().strip()
+
+
+def _resolvable_names(scores_db: Path | None) -> set[str] | None:
+    """norm(card name) set from the SP2 cards table, or None if it cannot be read."""
+    if scores_db is None or not scores_db.exists():
+        return None
+    try:
+        con = sqlite3.connect(f"file:{scores_db.as_posix()}?mode=ro", uri=True)
+    except sqlite3.Error:
+        return None
+    try:
+        rows = con.execute("SELECT name FROM cards").fetchall()
+    except sqlite3.Error:
+        return None
+    finally:
+        con.close()
+    return {_norm(r[0]) for r in rows if r and r[0]}
+
+
+def _clean_names(names) -> list[str]:
+    if not isinstance(names, list):
+        return []
+    out: list[str] = []
+    for n in names:
+        if isinstance(n, str) and n.strip():
+            out.append(n.strip())
+    return list(dict.fromkeys(out))
+
+
+def deck_rejection(names, resolvable: set[str] | None) -> str | None:
+    """Why this deck must not be stored, or None if it is safe to load.
+
+    Rejects a card_names dict (its keys are field names), any list that
+    contains the field-name tokens, and any list with fewer than
+    MIN_RESOLVABLE_CARDS names that resolve in `resolvable`. When the card
+    table is unavailable, the size check uses distinct raw names so a
+    3-token shell is still rejected.
+    """
+    if isinstance(names, dict):
+        return "field_names"
+    cleaned = _clean_names(names)
+    if not cleaned:
+        return "empty"
+    if {n.casefold() for n in cleaned} & FIELD_NAME_CARDS:
+        return "field_names"
+    if resolvable is None:
+        n_res = len(cleaned)
+    else:
+        n_res = len({n for n in cleaned if _norm(n) in resolvable})
+    if n_res < MIN_RESOLVABLE_CARDS:
+        return "too_few_resolvable"
+    return None
+
+
+def load(corpus_dir: Path, out_dir: Path, scores_db: Path | None = None) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     decks_con = _connect(out_dir / "decks.sqlite")
     edhrec_con = _connect(out_dir / "edhrec.sqlite")
     _init_decks(decks_con)
     _init_edhrec(edhrec_con)
 
+    if scores_db is None:
+        scores_db = ROOT / "data" / "scores.sqlite"
+    resolvable = _resolvable_names(scores_db)
+    if resolvable is None:
+        print("resolver: cards table unavailable; "
+              "too-few guard counts distinct names")
+    else:
+        print(f"resolver: {len(resolvable):,} card names")
+
     n_decks = n_cards = n_edhrec_rows = n_edhrec_cmdrs = skipped = 0
+    rejected = n_field = n_few = 0
     files = sorted(glob.glob(str(corpus_dir / "*.jsonl")))
     for fp in files:
         with open(fp, encoding="utf-8") as fh:
@@ -91,21 +170,35 @@ def load(corpus_dir: Path, out_dir: Path) -> dict:
                 kind = rec.get("kind")
                 if kind == "deck":
                     deck_id = rec.get("deck_id")
-                    names = rec.get("card_names") or []
-                    if not deck_id or not names:
+                    raw_names = rec.get("card_names")
+                    if not deck_id or raw_names is None:
                         skipped += 1
                         continue
+                    reason = deck_rejection(raw_names, resolvable)
+                    if reason == "empty":
+                        skipped += 1
+                        continue
+                    if reason:
+                        rejected += 1
+                        if reason == "field_names":
+                            n_field += 1
+                        else:
+                            n_few += 1
+                        continue
+                    names = _clean_names(raw_names)
                     decks_con.execute(
                         "INSERT OR REPLACE INTO decks (deck_id, source, commander) VALUES (?,?,?)",
                         (deck_id, rec.get("source", ""), rec.get("commander")),
                     )
-                    # dedup card presence within a deck via PK(deck_id, card_name)
+                    # Replace the card set. INSERT OR IGNORE alone kept field-name
+                    # rows forever after a later good parse (and the reverse).
+                    decks_con.execute("DELETE FROM deck_cards WHERE deck_id = ?", (deck_id,))
                     decks_con.executemany(
                         "INSERT OR IGNORE INTO deck_cards (deck_id, card_name) VALUES (?,?)",
-                        [(deck_id, name) for name in dict.fromkeys(names)],
+                        [(deck_id, name) for name in names],
                     )
                     n_decks += 1
-                    n_cards += len(set(names))
+                    n_cards += len(names)
                 elif kind == "edhrec":
                     commander = rec.get("commander")
                     cards = rec.get("cards") or []
@@ -125,6 +218,8 @@ def load(corpus_dir: Path, out_dir: Path) -> dict:
 
     decks_con.commit()
     edhrec_con.commit()
+    print(f"rejected decks: {rejected:,} "
+          f"(field_names={n_field:,}, too_few_resolvable={n_few:,})")
     # de-duplicated totals from the DB (the corpus may carry repeat deck_ids
     # across batches; INSERT OR REPLACE collapses them)
     uniq_decks = decks_con.execute("SELECT COUNT(*) FROM decks").fetchone()[0]
@@ -137,6 +232,9 @@ def load(corpus_dir: Path, out_dir: Path) -> dict:
         "deck_records_read": n_decks, "unique_decks": uniq_decks,
         "edhrec_records_read": n_edhrec_cmdrs, "unique_commanders": uniq_cmdrs,
         "edhrec_metric_rows": n_edhrec_rows, "skipped": skipped,
+        "rejected_decks": rejected,
+        "rejected_field_names": n_field,
+        "rejected_too_few_resolvable": n_few,
     }
 
 
@@ -144,13 +242,16 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Load JSONL corpus into decks.sqlite + edhrec.sqlite")
     ap.add_argument("--corpus", default=str(ROOT / "data" / "decklists"))
     ap.add_argument("--out", default=str(ROOT / "data"))
+    ap.add_argument("--scores", default=str(ROOT / "data" / "scores.sqlite"),
+                    help="scores sqlite whose cards.name column resolves card names")
     args = ap.parse_args()
-    stats = load(Path(args.corpus), Path(args.out))
+    stats = load(Path(args.corpus), Path(args.out), scores_db=Path(args.scores))
     print(f"decks.sqlite:  {stats['unique_decks']:,} unique decks "
           f"({stats['deck_records_read']:,} records read)")
     print(f"edhrec.sqlite: {stats['unique_commanders']:,} commanders, "
           f"{stats['edhrec_metric_rows']:,} metric rows")
-    print(f"files: {stats['files']}  |  skipped lines: {stats['skipped']:,}")
+    print(f"files: {stats['files']}  |  skipped lines: {stats['skipped']:,}  |  "
+          f"rejected decks: {stats['rejected_decks']:,}")
     return 0
 
 
