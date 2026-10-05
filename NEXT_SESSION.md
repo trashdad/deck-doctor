@@ -22,8 +22,12 @@
 ```bash
 # Postgres 16 (portable). Password auth; credentials in %APPDATA%\postgresql\pgpass.conf.
 C:/simmander/pg/pgsql/bin/pg_ctl.exe -D C:/simmander/pg/data -l C:/simmander/pg/server.log start
-cd backend && python -m pytest -q        # needs that DB; pure tests (test_upgrade, test_cuts_unit) don't
-cd scoring && python -m pytest -q
+# Tests mutate the DB, so they refuse `deckdoctor` (= prod's name on simtrack). Use a copy:
+C:/simmander/pg/pgsql/bin/createdb.exe -U deckdoctor -O deckdoctor deckdoctor_test
+C:/simmander/pg/pgsql/bin/pg_restore.exe -U deckdoctor --no-owner -d deckdoctor_test <dump>
+set DATABASE_URL=postgresql://deckdoctor:<pw>@localhost:5432/deckdoctor_test   # (bash: export …)
+cd backend && python -m pytest -q        # pure tests need no DB, but still a *_test URL
+cd scoring && python -m pytest -q        # golden tests need data/scores.sqlite built WITH the catalogs
 cd frontend && npx tsc --noEmit && npm run build
 cd backend && python -m uvicorn app.main:app --port 8001     # + cd frontend && npm run dev
 ```
@@ -51,22 +55,26 @@ judging recommendation quality (`deploy/DEPLOY.md` → Backups → Restore).
   latency: sweep ~0.7 s, complete ~0.9 s, recommend ~0.5 s, card-upgrade ~0.1 s. Browser: Tune-up
   panel renders on a real deck, 0 console errors.
 
+## Hardening done 2026-10-05 (coordinator-approved)
+
+- **Test guard:** destructive tests only against `*_test` DBs (or the explicit opt-in); `deckdoctor`
+  always refused. `tests/test_db_guard.py`.
+- **Secrets:** out of the world-readable units into `/etc/deck-doctor/secrets.env` (root 0600,
+  `EnvironmentFile=`); old units backed up in `/var/backups/deck-doctor/20261005-secrets/`.
+- **Alerts:** `OnFailure=simmander-alert@%n.service` on api/web/refresh/backup (tracker's ntfy
+  pager); self-test delivered `ntfy=ok`.
+- **Combo catalogs** shipped to `/var/lib/deck-doctor/combo-catalogs/` and wired into the refresh
+  unit; a manual refresh rebuilt prod with asserted combos.
+
 ## Open — owner decisions
 
-- **Combo catalogs on the VPS.** Prod's nightly rebuild has no `COMBO_CATALOG`/`KNOWN_COMBOS`
-  → **0 asserted combos** since June (Spellbook's 88k combos unaffected). With the simmander
-  repo's `data/combo_catalog.json` + `known_combos.json` (49 KB, private repo) a staging rebuild
-  got 96 and all tests pass; without them `scoring` golden tests (2) and
-  `test_engine_completion_surfaces_missing_piece` fail on prod data. Ship the files to the box and
-  set the env in `deckdoctor-refresh.service`?
 - **IER blind spots** surface in upgrades: alternative / Phyrexian costs aren't understood
   (Snuff Out → Soul Rend "+6.8 IER", Dismember → Nim Replica). Needs an IER model fix.
-- **Alerting:** a backup failed silently for ~4 months. The tracker's generic
-  `simmander-alert@%n.service` could be attached (`OnFailure=`) to `deckdoctor-backup`/`-refresh`.
 - **Callisto retention:** the rest-server is append-only — schedule `restic forget --prune` for
   `/simmander/deck-doctor` on callisto (~100 MB/snapshot stored before dedup).
-- **Secrets in world-readable unit files** (`DATABASE_URL` in api/refresh/backup units, 0644) →
-  move to an `EnvironmentFile` (0600).
+- **Rotate the callisto rest-server credential** (it was shown in a session transcript on
+  2026-10-04; not committed anywhere).
+- **Catalog sync:** the box's combo catalogs are a manual copy of the simmander repo's files.
 - Static `BANLIST` in `suggest.py` disagrees with the Scryfall data the card pool was filtered by
   (e.g. Sway of the Stars, Biorhythm, Lutri are in the June pool). Decide the source of truth.
 

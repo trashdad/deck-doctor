@@ -23,8 +23,10 @@ the tracker's auto-deploy). They already route the paths above and return **403 
 | Web releases | `/opt/deck-doctor/releases/web-<sha>-<ts>/` (standalone server + `.next/static` + `public/`); `releases/current` → the live one |
 | Database | Postgres 14 on the box, DB `deckdoctor` (role `deckdoctor`). ~85.6k corpus decks. |
 | Units | `deckdoctor-api`, `deckdoctor-web`, `deckdoctor-refresh.timer` (04:30 UTC), `deckdoctor-backup.timer` (03:30 UTC) |
-| Secrets | `DATABASE_URL` in the api/refresh/backup units, `SIMMANDER_JWT_SECRET` in `deckdoctor-api.service.d/jwt.conf`, restic env in `/etc/deck-doctor/restic.env` (root 0400). Never commit or print them. |
-| Unit backups | `/var/backups/deck-doctor/` (copies of units before they were edited) |
+| Secrets | `/etc/deck-doctor/secrets.env` (root 0600: `DATABASE_URL`, `SIMMANDER_JWT_SECRET`) via `EnvironmentFile=` in api/refresh/backup; `/etc/deck-doctor/restic.env` (root 0400). Unit files hold **no** secrets. Never commit, cat or echo them. |
+| Alerts | `OnFailure=simmander-alert@%n.service` on all four units → the tracker's pager (ntfy topic `simmander-watchdog`) |
+| Combo catalogs | `/var/lib/deck-doctor/combo-catalogs/{combo_catalog.json,known_combos.json}` (root:simmander 0640), from the simmander repo |
+| Unit backups | `/var/backups/deck-doctor/` (root 0700; copies of units before they were edited) |
 
 ## Deploy (the normal path)
 
@@ -65,6 +67,32 @@ curl -s -X POST http://127.0.0.1:8002/admin/reload            # 200
 Cloudflare blocks default script user-agents (`error code: 1010`); send a browser-like UA
 when scripting against the public URL.
 
+## Secrets
+
+Since 2026-10-05 no unit file contains a secret. `deckdoctor-api`, `-refresh` and `-backup` read
+`EnvironmentFile=/etc/deck-doctor/secrets.env` (systemd reads it as root before dropping to
+`simmander`; the web unit needs no secrets). Format — single-quote values so systemd takes them
+literally:
+
+```
+DATABASE_URL='postgresql://deckdoctor:<password>@127.0.0.1:5432/deckdoctor'
+SIMMANDER_JWT_SECRET='<the tracker backend/config.ini [auth] secret_key>'
+```
+
+Check without revealing: `sudo test -s /etc/deck-doctor/secrets.env && sudo grep -c '^[A-Z_]*=' /etc/deck-doctor/secrets.env`
+(→ 2) and `systemctl show deckdoctor-api -p Environment` (must not list either variable). After
+editing: `sudo systemctl restart deckdoctor-api` (refresh/backup pick it up on their next run).
+
+## Failure alerts
+
+All four units carry `OnFailure=simmander-alert@%n.service` — the tracker's generic unit-failure
+pager (`simmander-tracker/docs/systemd/simmander-alert@.service` → `backend.healing.notify`): ntfy
+topic `simmander-watchdog` always, plus Discord/Telegram/email unless muted, throttled to one
+page per unit per hour. Tested 2026-10-05 with a throwaway failing unit (`ntfy=ok`). The handler
+runs as `simmander`, which cannot read other units' journals, so the page may say "(no output
+captured)" — look with `sudo journalctl -u <unit>`. If the tracker ever drops that template,
+systemd only logs a missing OnFailure= target; the units themselves are unaffected.
+
 ## First-time setup on a new box
 
 1. Node 20, Python 3.10+, Postgres. `git clone https://github.com/trashdad/deck-doctor /opt/deck-doctor`
@@ -76,8 +104,8 @@ when scripting against the public URL.
    artifacts into `data/` and run `tools/load_to_postgres.py --database-url …`.
    ⚠️ `load_to_postgres.py` defaults to `postgresql://deckdoctor:deckdoctor@localhost/deckdoctor`
    when `DATABASE_URL` is unset — always pass the URL explicitly on a box that hosts prod.
-3. Units: copy `deploy/systemd/*` to `/etc/systemd/system/`, fill in `DATABASE_URL`, add the JWT
-   drop-in (`[Service] Environment=SIMMANDER_JWT_SECRET=<tracker [auth] secret_key>`), then
+3. Units: copy `deploy/systemd/*` to `/etc/systemd/system/`, create `/etc/deck-doctor/secrets.env`
+   (see Secrets) and the combo catalogs (see below), then
    bootstrap `releases/current` once (build the frontend, then
    `cp -a frontend/.next/standalone releases/web-init && cp -a frontend/.next/static releases/web-init/.next/static && cp -a frontend/public releases/web-init/public && ln -s web-init releases/current`),
    `systemctl daemon-reload && systemctl enable --now deckdoctor-api deckdoctor-web deckdoctor-refresh.timer deckdoctor-backup.timer`.
@@ -93,11 +121,23 @@ when scripting against the public URL.
 `journalctl -u deckdoctor-refresh`. It runs code from `/opt/deck-doctor`, which is why deploys
 refuse to run while it is active.
 
-Combo catalogs: `build_relationships` only produces *asserted* combos when `COMBO_CATALOG` /
-`KNOWN_COMBOS` point at the simmander repo's `data/combo_catalog.json` + `data/known_combos.json`.
-The VPS has none, so prod has **0 asserted combos** (Commander Spellbook's 88k combos are
-unaffected). With the catalogs a staging rebuild produced 96, and the golden scoring tests +
-`test_engine_completion_surfaces_missing_piece` pass only on such data. Owner decision pending.
+### Combo catalogs
+
+`build_relationships` only produces *asserted* combos (`engines.asserted_combo`, the
+`card_relationships.combo` axis) when the refresh unit's `COMBO_CATALOG` / `KNOWN_COMBOS` point at
+the catalogs. They are **shared data owned by the simmander repo** (`data/combo_catalog.json`,
+`data/known_combos.json`; the hub will later own the contract) and are copied to
+`/var/lib/deck-doctor/combo-catalogs/` (root:simmander 0640). Refresh them by hand when the
+simmander repo changes them:
+
+```bash
+scp C:/simmander/simmander/data/{combo_catalog.json,known_combos.json} trashdad@simtrack:/tmp/
+ssh trashdad@simtrack 'cd /tmp && for f in combo_catalog.json known_combos.json; do sudo install -m 640 -o root -g simmander /tmp/$f /var/lib/deck-doctor/combo-catalogs/$f; rm /tmp/$f; done'
+```
+
+From June to 2026-10-05 the VPS had none, so prod had 0 asserted combos (Commander Spellbook's
+88k combos were unaffected). A missing configured catalog is now logged as a WARNING by
+`refresh_corpus.sh`.
 
 ## Backups (`deckdoctor-backup`, 03:30 UTC)
 
@@ -134,10 +174,11 @@ two June dumps plus the October ones.
 Copy prod data into a throwaway DB and run the candidate on spare loopback ports:
 `pg_dump -Fc deckdoctor` → `createdb deckdoctor_verify` (own temp role) → `pg_restore`; check out
 the candidate in `/opt/deck-doctor-staging` with a `.env` pointing `DATABASE_URL` at
-`deckdoctor_verify`; run uvicorn on 127.0.0.1:8012 and the web release on :3011; run
-`backend`/`scoring` pytest there (the conftest only allows destructive tests against a local or
-`*_test` DB — on simtrack *prod is local too*, so double-check `DATABASE_URL` before running
-pytest). Drop the DB, role and directory afterwards.
+`deckdoctor_verify`; run uvicorn on 127.0.0.1:8012 and the web release on :3011. For pytest use a
+DB whose name ends in **`_test`** (e.g. `deckdoctor_test`, restored from the same dump): the
+conftest guard refuses anything else, and always refuses `deckdoctor` (prod is local on simtrack)
+unless `DECKDOCTOR_ALLOW_DESTRUCTIVE_TESTS=1` — never set that on simtrack. Drop the DBs, role and
+directory afterwards.
 
 ## Alternative: containers
 

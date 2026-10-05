@@ -524,10 +524,16 @@ box — without config they point to bare product pages. To earn commissions, co
 ```bash
 python tools/scrape_decklists/runner.py seeds --top 400 --decks-per 40   # scrape decks
 python tools/scrape_decklists/load_corpus.py                              # → decks/edhrec.sqlite
-python scoring/build_relationships.py  --db data/scores.sqlite ...        # → relationships, engines
+python scoring/build_relationships.py  --db data/scores.sqlite     --catalog ../simmander/data/combo_catalog.json     --catalog ../simmander/data/known_combos.json                         # → relationships, engines
 python scoring/build_cooccurrence.py   --scores data/scores.sqlite ...    # → co-occurrence, synergy
 python tools/import_spellbook/runner.py && python tools/import_spellbook/load_spellbook.py  # combos
 ```
+
+The two `--catalog` files are **shared data from the simmander repo** (`data/combo_catalog.json`,
+`data/known_combos.json` — hand-verified combos from the rules engine; the hub will later own the
+contract). Without them `build_relationships` produces 0 *asserted* combos, and the golden scoring
+tests plus `test_engine_completion_surfaces_missing_piece` fail. Production keeps copies in
+`/var/lib/deck-doctor/combo-catalogs/` ([`deploy/DEPLOY.md`](deploy/DEPLOY.md)).
 
 ### Tests
 
@@ -538,9 +544,13 @@ cd scoring && python -m pytest -q     # 91 passed, 1 skipped (golden tests need 
 cd frontend && npx tsc --noEmit && npm run build
 ```
 The backend tests read and **mutate** the database in `DATABASE_URL` (they truncate the userdecks
-tables and swap the combo tables aside). `tests/conftest.py` refuses non-local hosts unless the DB
-name ends in `_test`, but on the prod box the prod DB *is* local — never run pytest there without
-pointing `DATABASE_URL` at a throwaway copy.
+tables and swap the combo tables aside), so `tests/conftest.py` only runs them against a database
+whose name ends in **`_test`**, and always refuses one named `deckdoctor` (prod is on localhost on
+simtrack). Make a test copy first, e.g. `createdb deckdoctor_test && pg_restore --no-owner -d
+deckdoctor_test <dump>`, then `DATABASE_URL=postgresql://…/deckdoctor_test python -m pytest -q`.
+Pure tests (`test_upgrade.py`, `test_cuts_unit.py`, `test_db_guard.py`) never connect — any
+`…/deckdoctor_test` URL works for them. `DECKDOCTOR_ALLOW_DESTRUCTIVE_TESTS=1` overrides the guard;
+use it only on a dev box with no production data.
 
 ### Deploy
 
