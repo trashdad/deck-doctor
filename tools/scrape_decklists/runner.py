@@ -804,9 +804,11 @@ def _parse_edhrec_deckpreview(data: dict) -> tuple[str, str, str | None, list[st
     commander = cmdrs[0] if cmdrs and isinstance(cmdrs[0], str) else None
     names = _card_names_from_preview_deck(data.get("deck"))
     if commander is None and isinstance(data.get("deck"), dict):
-        zone = data["deck"].get("commander")
-        if isinstance(zone, list) and zone and isinstance(zone[0], str):
-            commander = zone[0].strip() or None
+        for key in ("commander", "commander_v2"):
+            found = _names_from_entries(data["deck"].get(key))
+            if found:
+                commander = found[0]
+                break
     return source, native_id, commander, names
 
 

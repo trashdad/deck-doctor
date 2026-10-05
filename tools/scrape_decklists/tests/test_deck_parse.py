@@ -79,3 +79,14 @@ def test_deckpreview_historical_line_list_still_parses():
     assert native_id == "ExamplePublicId"
     assert commander == "Ghyrson Starn, Kelermorph"
     assert names == ["Ghyrson Starn, Kelermorph", "Sol Ring", "Mountain"]
+
+
+def test_deckpreview_commander_fallback_reads_pair_shaped_zone():
+    # No top-level `commanders`, and the commander zone uses the
+    # [name, qty] pair shape that commander_v2 already uses.
+    data = _load("edhrec_deckpreview_27071260.json")
+    data.pop("commanders", None)
+    data["deck"] = dict(data["deck"], commander=[["Krenko, Mob Boss", 1]])
+    _source, _native_id, commander, names = runner._parse_edhrec_deckpreview(data)
+    assert commander == "Krenko, Mob Boss"
+    assert names[0] == "Krenko, Mob Boss"

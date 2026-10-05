@@ -46,12 +46,19 @@ def test_rejection_rules():
         ["cards", "commander", "commander_v2"], known) == "field_names"
     assert load_corpus.deck_rejection(
         {"cards": [], "commander": [], "commander_v2": []}, known) == "field_names"
+    # The floor only catches junk: names that are not cards. A commander
+    # alone, or a commander plus names that resolve to nothing, is junk.
+    assert load_corpus.deck_rejection(["Card 0"], known) == "too_few_resolvable"
+    assert load_corpus.deck_rejection(
+        ["Card 0", "Mainboard", "Sideboard", "Creature"], known) == "too_few_resolvable"
+    # Small but real decks are kept: "any number of copies" decks (Relentless
+    # Rats, Rat Colony, ...) store very few distinct names. 23 such decks in
+    # prod (2026-10-05) have under 15 distinct names; the smallest has 2.
+    assert load_corpus.deck_rejection(["Card 0", "Card 1"], known) is None
     real_14 = [f"Card {i}" for i in range(14)]
-    assert load_corpus.deck_rejection(real_14, known) == "too_few_resolvable"
-    real_15 = [f"Card {i}" for i in range(15)]
-    assert load_corpus.deck_rejection(real_15, known) is None
+    assert load_corpus.deck_rejection(real_14, known) is None
     # Field names plus a full real list are still rejected.
-    assert load_corpus.deck_rejection(real_15 + ["commander_v2"], known) == "field_names"
+    assert load_corpus.deck_rejection(real_14 + ["commander_v2"], known) == "field_names"
     assert load_corpus.deck_rejection([], known) == "empty"
 
 
@@ -77,7 +84,7 @@ def test_loader_rejects_shell_and_short_deck_and_replaces_cards(tmp_path, capsys
     short = {
         "kind": "deck", "deck_id": "archidekt:short", "source": "archidekt",
         "commander": "Krenko, Mob Boss",
-        "card_names": names[:10],
+        "card_names": [commander, "Mainboard", "Sideboard"],
     }
     corpus = tmp_path / "corpus"
     corpus.mkdir()
@@ -130,3 +137,88 @@ def test_loader_rejects_shell_and_short_deck_and_replaces_cards(tmp_path, capsys
     stored = _cards(out2 / "decks.sqlite", "archidekt:9")
     assert stored == sorted(names)
     assert not ({"cards", "commander", "commander_v2"} & set(stored))
+
+
+def _seed_rows(db: Path, deck_id: str, commander: str, cards: list[str]) -> None:
+    """Write rows the way the pre-fix loader did (INSERT OR IGNORE, no replace)."""
+    con = sqlite3.connect(db)
+    con.execute("INSERT OR REPLACE INTO decks VALUES (?, 'archidekt', ?)", (deck_id, commander))
+    con.executemany("INSERT OR IGNORE INTO deck_cards VALUES (?, ?)",
+                    [(deck_id, c) for c in cards])
+    con.commit()
+    con.close()
+
+
+def _deck_ids(db: Path) -> set[str]:
+    con = sqlite3.connect(db)
+    ids = {r[0] for r in con.execute("SELECT deck_id FROM decks")}
+    con.close()
+    return ids
+
+
+def test_reloading_shell_records_purges_stored_field_name_rows(tmp_path, capsys):
+    """Production state: shells already stored, their shell lines still in the JSONL.
+
+    Reloading must remove the field-name rows. A deck left with no cards is
+    removed; a mixed deck keeps its real cards; a good deck is untouched.
+    """
+    preview = json.loads((FIX / "edhrec_deckpreview_27071260.json").read_text(encoding="utf-8"))
+    _source, _native_id, commander, names = runner._parse_edhrec_deckpreview(preview)
+    scores = tmp_path / "scores.sqlite"
+    _scores(scores, names)
+
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    out = tmp_path / "out"
+    field = ["cards", "commander", "commander_v2"]
+    shell_line = {"kind": "deck", "source": "archidekt", "commander": commander,
+                  "card_names": field}
+    good_line = {"kind": "deck", "source": "archidekt", "commander": commander,
+                 "card_names": names}
+    # pure: only a shell line ever. mixed: a good line and a shell line.
+    # good: only a good line.
+    _write_jsonl(corpus / "archidekt-refresh.jsonl", [
+        shell_line | {"deck_id": "archidekt:pure"},
+        good_line | {"deck_id": "archidekt:mixed"},
+        shell_line | {"deck_id": "archidekt:mixed"},
+        good_line | {"deck_id": "archidekt:good"},
+    ])
+    load_corpus.load(corpus, out, scores_db=scores)  # creates the schema
+    db = out / "decks.sqlite"
+    _seed_rows(db, "archidekt:pure", commander, field)
+    _seed_rows(db, "archidekt:mixed", commander, field + names)
+    capsys.readouterr()
+
+    stats = load_corpus.load(corpus, out, scores_db=scores)
+
+    assert _cards(db, "archidekt:pure") == []
+    assert "archidekt:pure" not in _deck_ids(db)
+    assert _cards(db, "archidekt:mixed") == sorted(names)
+    assert _cards(db, "archidekt:good") == sorted(names)
+    # The mixed deck's good line comes first, and its replace already drops
+    # the seeded field-name rows; the purge counts only the pure shell's 3.
+    assert stats["purged_shell_decks"] == 1
+    assert stats["purged_field_name_rows"] == 3
+    assert "purged shells: 1 decks, 3 field-name rows" in capsys.readouterr().out
+
+
+def test_shell_record_never_removes_real_cards(tmp_path):
+    """A shell line after a good line removes nothing but field-name rows."""
+    preview = json.loads((FIX / "edhrec_deckpreview_27071260.json").read_text(encoding="utf-8"))
+    _source, _native_id, commander, names = runner._parse_edhrec_deckpreview(preview)
+    scores = tmp_path / "scores.sqlite"
+    _scores(scores, names)
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    _write_jsonl(corpus / "a.jsonl", [
+        {"kind": "deck", "deck_id": "archidekt:1", "source": "archidekt",
+         "commander": commander, "card_names": names},
+        {"kind": "deck", "deck_id": "archidekt:1", "source": "archidekt",
+         "commander": commander, "card_names": {"cards": {}, "commander": [], "commander_v2": []}},
+        {"kind": "deck", "deck_id": "archidekt:1", "source": "archidekt",
+         "commander": commander, "card_names": [commander, "Mainboard"]},
+    ])
+    load_corpus.load(corpus, tmp_path / "out", scores_db=scores)
+    db = tmp_path / "out" / "decks.sqlite"
+    assert _cards(db, "archidekt:1") == sorted(names)
+    assert "archidekt:1" in _deck_ids(db)

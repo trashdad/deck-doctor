@@ -12,10 +12,12 @@ Idempotent and re-runnable: run it any time (including while a scrape is in
 progress) to refresh the DBs from the current corpus. Computes NO statistics —
 it only transcribes raw records; lift/synergy fusion lives in scoring/cooccurrence/.
 
-Decks whose card names are JSON field names, or that have fewer than 15
+Decks whose card names are JSON field names, or that have fewer than 2
 names resolving against the cards table, are rejected and counted. An
 accepted deck replaces that deck's card rows so a later good parse does
-not keep an earlier shell.
+not keep an earlier shell. A field-name record also deletes stored
+field-name rows for its deck (never real cards), and the deck itself if
+no cards remain, so reloading the corpus cleans shells already stored.
 
 Usage:
     python tools/scrape_decklists/load_corpus.py
@@ -36,7 +38,10 @@ ROOT = Path(__file__).resolve().parents[2]
 # JSON object keys the deckpreview parser used to store as card names.
 # None of these are printed Magic card names (checked against the cards table).
 FIELD_NAME_CARDS = frozenset({"cards", "commander", "commander_v2"})
-MIN_RESOLVABLE_CARDS = 15
+# Junk guard, not a deck-size policy: a commander plus at least one other
+# real card. "Any number of copies" decks (Relentless Rats, Rat Colony, ...)
+# store as few as 2 distinct names. Deck-size filtering belongs in scoring.
+MIN_RESOLVABLE_CARDS = 2
 
 
 def _connect(path: Path) -> sqlite3.Connection:
@@ -155,6 +160,8 @@ def load(corpus_dir: Path, out_dir: Path, scores_db: Path | None = None) -> dict
 
     n_decks = n_cards = n_edhrec_rows = n_edhrec_cmdrs = skipped = 0
     rejected = n_field = n_few = 0
+    purged_decks = purged_rows = 0
+    field_marks = ",".join("?" * len(FIELD_NAME_CARDS))
     files = sorted(glob.glob(str(corpus_dir / "*.jsonl")))
     for fp in files:
         with open(fp, encoding="utf-8") as fh:
@@ -182,6 +189,18 @@ def load(corpus_dir: Path, out_dir: Path, scores_db: Path | None = None) -> dict
                         rejected += 1
                         if reason == "field_names":
                             n_field += 1
+                            # Clean a shell stored by the pre-fix loader: drop
+                            # only field-name rows, then the deck if it is empty.
+                            purged_rows += decks_con.execute(
+                                f"DELETE FROM deck_cards WHERE deck_id = ? "
+                                f"AND lower(card_name) IN ({field_marks})",
+                                (deck_id, *sorted(FIELD_NAME_CARDS)),
+                            ).rowcount
+                            purged_decks += decks_con.execute(
+                                "DELETE FROM decks WHERE deck_id = ? AND NOT EXISTS "
+                                "(SELECT 1 FROM deck_cards WHERE deck_id = ?)",
+                                (deck_id, deck_id),
+                            ).rowcount
                         else:
                             n_few += 1
                         continue
@@ -220,6 +239,7 @@ def load(corpus_dir: Path, out_dir: Path, scores_db: Path | None = None) -> dict
     edhrec_con.commit()
     print(f"rejected decks: {rejected:,} "
           f"(field_names={n_field:,}, too_few_resolvable={n_few:,})")
+    print(f"purged shells: {purged_decks:,} decks, {purged_rows:,} field-name rows")
     # de-duplicated totals from the DB (the corpus may carry repeat deck_ids
     # across batches; INSERT OR REPLACE collapses them)
     uniq_decks = decks_con.execute("SELECT COUNT(*) FROM decks").fetchone()[0]
@@ -235,6 +255,8 @@ def load(corpus_dir: Path, out_dir: Path, scores_db: Path | None = None) -> dict
         "rejected_decks": rejected,
         "rejected_field_names": n_field,
         "rejected_too_few_resolvable": n_few,
+        "purged_shell_decks": purged_decks,
+        "purged_field_name_rows": purged_rows,
     }
 
 
