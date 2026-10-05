@@ -9,7 +9,17 @@ import { useRelationshipStore } from "@/store/relationship";
 import type { DeckEntry } from "@/lib/types";
 import { ReasonChips } from "./SuggestionsPanel";
 
-export function GainBadge({ gain }: { gain: number }) {
+export function GainBadge({ gain }: { gain: number | null }) {
+  if (gain === null) {
+    return (
+      <span
+        className="shrink-0 rounded border border-edge bg-panel2/60 px-1.5 py-0.5 text-[9px] font-bold text-zinc-400"
+        title="IER unknown for this card or the one it replaces"
+      >
+        IER ?
+      </span>
+    );
+  }
   const cls =
     gain > 0.05
       ? "border-green-400/50 bg-green-400/10 text-green-300"

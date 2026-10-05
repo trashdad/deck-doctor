@@ -266,22 +266,27 @@ def suggest_cuts(store: Store, commander_id: str, deck_ids: list[str],
         card = store.get(cid)
         if card is None or category_of(card) == "land" or cid in protected:
             continue
-        # EDHREC value = the stronger of commander *synergy* and *inclusion*. Synergy
-        # alone scores format staples (Sol Ring, Arcane Signet) ~0 because everyone
-        # plays them, which made them the "weakest" cards; inclusion is literally how
-        # often players keep the card with this commander, i.e. the opposite of a cut.
-        syn, incl = edh.get(cid, (0.0, 0.0)) if edh else (0.0, 0.0)
-        syn = max(0.0, min(1.0, syn))
-        incl = max(0.0, min(1.0, incl))
-        edh_v = max(syn, incl)
+        # "Do players keep this card?" = the strongest of commander *synergy*, EDHREC
+        # *inclusion* and corpus-wide *staple* popularity. Synergy alone scores format
+        # staples (Sol Ring, Arcane Signet) ~0 because everyone plays them, which made
+        # them the "weakest" cards; inclusion fixes that only when the commander HAS
+        # EDHREC data listing the card, so the corpus staple score is the floor.
+        raw_syn, raw_incl = edh.get(cid, (0.0, 0.0)) if edh else (0.0, 0.0)
+        syn = max(0.0, min(1.0, raw_syn))        # clamped copies are for SCORING only;
+        incl = max(0.0, min(1.0, raw_incl))      # the explanation shows the raw values
+        staple = max(0.0, min(1.0, store.staple_score(cid)))
+        edh_v = max(syn, incl, staple)
         contrib = (WEIGHTS["edh"] * edh_v
                    + WEIGHTS["cooc"] * (cooc[cid] / denom)
                    + WEIGHTS["struct"] * (struct[cid] / denom)) / total_w
         reasons = []
         if edh:
             reasons.append({"signal": "edhrec", "value": round(edh_v, 4),
-                            "detail": f"EDHREC: in {incl:.0%} of this commander's decks"
-                                      f" (synergy {syn:+.2f})"})
+                            "detail": f"EDHREC: in {raw_incl:.0%} of this commander's decks"
+                                      f" (synergy {raw_syn:+.2f})"})
+        if staple >= 0.05:
+            reasons.append({"signal": "staple", "value": round(staple, 4),
+                            "detail": "corpus staple (1.0 = the most-played card)"})
         reasons.append({"signal": "cooccurrence", "value": round(cooc[cid] / denom, 4),
                         "detail": f"played with {cooc_hits[cid]} of your other cards"})
         reasons.append({"signal": "synergy", "value": round(struct[cid] / denom, 4),

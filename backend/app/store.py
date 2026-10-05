@@ -463,6 +463,12 @@ class Store:
             "near": [{"combo": c, "missing": m} for c, m in near[:50]],
         }
 
+    def staple_score(self, card_id: str) -> float:
+        """0..1 corpus popularity, independent of EDHREC: the card's deck-frequency
+        proxy (max co_count) over the most-played card's. Sol Ring ~1, filler ~0."""
+        top = self._staples[0][1] if self._staples else 0
+        return min(1.0, self._deck_freq.get(card_id, 0) / top) if top else 0.0
+
     def staples_for_colors(self, color_identity: set[str], limit: int = 50,
                            exclude: set[str] | None = None) -> list[tuple[str, int]]:
         """Top deck-frequency cards whose color identity fits, basics excluded."""

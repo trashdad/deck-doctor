@@ -192,14 +192,14 @@ def test_sweep_only_offers_real_upgrades():
 def test_sweep_skips_card_with_only_downgrades_and_trims_to_per_card():
     cards = {"a": {"id": "a", "name": "A"}, "b": {"id": "b", "name": "B"}}
     store = _SynStore(cards, {})
-    seen_limits = []
+    seen_kw = []
 
     def fake_cuts(_s, _c, _d, limit):
         return [{"card_id": "a", "contribution": 0.0, "reasons": []},
                 {"card_id": "b", "contribution": 0.1, "reasons": []}]
 
     def fake_upgrades(_s, tid, _c, _d, **kw):
-        seen_limits.append(kw["limit"])
+        seen_kw.append(kw)
         if tid == "a":
             return {"target": cards[tid], "options": [_opt("a-worse", -1.0)]}
         return {"target": cards[tid],
@@ -209,4 +209,95 @@ def test_sweep_skips_card_with_only_downgrades_and_trims_to_per_card():
                         _cuts=fake_cuts, _upgrades=fake_upgrades)
     assert [s["target"]["id"] for s in out["swaps"]] == ["b"]   # a had only downgrades
     assert [o["card"]["id"] for o in out["swaps"][0]["options"]] == ["b1"]
-    assert all(lim > 1 for lim in seen_limits)   # over-fetch so filtering can't starve
+    # filtering happens inside the ranker, before its limit, so it can't starve
+    assert all(kw["upgrades_only"] is True and kw["limit"] == 1 for kw in seen_kw)
+
+
+# ---- review fixes (2026-10-05) ----
+
+def test_unknown_target_ier_is_not_an_efficiency_gain():
+    """Review #1: with no target IER, `ier or 0.0` made every candidate's own IER
+    look like a gain, so everything passed the Tune-up's "real upgrade" filter."""
+    target = dict(TARGET, ier=None)
+    opts = rank_upgrades(target, CANDS, efficiency=0.5)
+    assert opts and all(o["efficiency_gain"] is None for o in opts)
+    assert not any(r["signal"] == "efficiency" for o in opts for r in o["reasons"])
+
+
+def test_unknown_candidate_ier_is_not_an_efficiency_gain():
+    cands = [dict(c, ier=None) if c["id"] == "efficient" else c for c in CANDS]
+    by_id = {o["card"]["id"]: o for o in rank_upgrades(TARGET, cands, efficiency=0.5)}
+    assert by_id["efficient"]["efficiency_gain"] is None
+    assert by_id["lateral"]["efficiency_gain"] == 0.0
+
+
+def test_upgrades_only_filters_before_the_limit():
+    """Review #5: the upgrades-only predicate must apply before truncation, or a
+    low-similarity genuine upgrade is cut by blended score before it is seen."""
+    downgrades = [_sig(f"down{i}", ier=3.0, cmc=3, category="removal",
+                       mech=["removal"], sem=["e:destroy"]) for i in range(12)]
+    upgrade = _sig("upgrade", ier=9.0, cmc=6, category="removal",
+                   mech=["removal"], sem=[])
+    plain = _ids(rank_upgrades(TARGET, downgrades + [upgrade], efficiency=0.4, limit=4))
+    assert "upgrade" not in plain                      # precondition: it ranks low
+    only = rank_upgrades(TARGET, downgrades + [upgrade], efficiency=0.4, limit=4,
+                         upgrades_only=True)
+    assert _ids(only) == ["upgrade"]
+
+
+def test_upgrades_only_keeps_unknown_ier_with_more_synergy():
+    target = dict(TARGET, ier=None)
+    cands = [_sig("syn", ier=4.0, cmc=3, category="removal", mech=["removal"], sem=["e:destroy"]),
+             _sig("nosyn", ier=9.0, cmc=3, category="removal", mech=["removal"], sem=["e:destroy"])]
+    only = rank_upgrades(target, cands, efficiency=0.5, synergy={"syn": 0.4},
+                         upgrades_only=True)
+    assert _ids(only) == ["syn"]                       # IER unknown -> synergy decides
+
+
+class _SweepStore:
+    """Store surface used by the REAL find_upgrades path (no DB)."""
+
+    def __init__(self, cards, pool_ids, edh=None):
+        self._c, self._pool, self._edh = cards, pool_ids, edh or {}
+
+    def get(self, cid):
+        return self._c.get(cid)
+
+    def similar_cards(self, _cid, limit=20):
+        return [self._c[i] for i in self._pool][:limit]
+
+    def edhrec_for(self, _cmd):
+        return self._edh
+
+
+def _card(cid, *, ier, cmc, mech, sem, ci=("B",)):
+    return {"id": cid, "name": cid, "type_line": "Instant", "color_identity": list(ci),
+            "ier": ier, "cmc": cmc, "mechanic_tags": list(mech), "semantic_tags": list(sem)}
+
+
+def _weak_cut(_s, _c, _d, limit):
+    return [{"card_id": "weak", "contribution": 0.0, "reasons": []}]
+
+
+def test_sweep_real_ranking_finds_low_similarity_upgrade():
+    """Review #5 end-to-end through rank_upgrades (no stubbed _upgrades)."""
+    cards = {"cmd": _card("cmd", ier=1.0, cmc=4, mech=[], sem=[]),
+             "weak": _card("weak", ier=5.0, cmc=3, mech=["removal"], sem=["e:destroy"])}
+    pool = []
+    for i in range(12):
+        cards[f"down{i}"] = _card(f"down{i}", ier=3.0, cmc=3, mech=["removal"], sem=["e:destroy"])
+        pool.append(f"down{i}")
+    cards["upgrade"] = _card("upgrade", ier=9.0, cmc=6, mech=["removal"], sem=[])
+    pool.append("upgrade")
+    out = upgrade_sweep(_SweepStore(cards, pool), "cmd", ["weak"], per_card=1,
+                        _cuts=_weak_cut)
+    assert [s["target"]["id"] for s in out["swaps"]] == ["weak"]
+    assert [o["card"]["id"] for o in out["swaps"][0]["options"]] == ["upgrade"]
+
+
+def test_sweep_real_ranking_unknown_target_ier_needs_synergy():
+    cards = {"cmd": _card("cmd", ier=1.0, cmc=4, mech=[], sem=[]),
+             "weak": _card("weak", ier=None, cmc=3, mech=["removal"], sem=["e:destroy"]),
+             "other": _card("other", ier=8.0, cmc=3, mech=["removal"], sem=["e:destroy"])}
+    out = upgrade_sweep(_SweepStore(cards, ["other"]), "cmd", ["weak"], _cuts=_weak_cut)
+    assert out["swaps"] == []

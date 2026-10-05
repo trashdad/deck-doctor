@@ -64,7 +64,7 @@ export interface SuggestionResponse {
 export interface UpgradeOption {
   card: Card;
   score: number;
-  efficiency_gain: number; // candidate IER - target IER (can be negative)
+  efficiency_gain: number | null; // candidate IER - target IER; null if either is unknown
   similarity: number; // 0..1 functional similarity to the target
   reasons: Reason[];
 }

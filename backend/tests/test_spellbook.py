@@ -106,3 +106,45 @@ def test_deck_combos_near_skips_banned_missing_piece(fx, monkeypatch):
     b = fx["members"]["b_members"]
     ur = fx["store"]._name_to_id["the ur-dragon"]
     assert "fxB" not in _near_ids(ur, b[:2])
+
+
+
+def _named(store, name):
+    cid = store._name_to_id.get(name.lower())
+    if cid is None:
+        pytest.skip(f"{name!r} not in the card pool")
+    return cid
+
+
+def _near(body) -> set[str]:
+    r = client.post("/deck/combos", json=body)
+    assert r.status_code == 200
+    return {n["combo"]["combo_id"] for n in r.json()["near"]}
+
+
+def test_deck_combos_partner_identity_is_the_union(fx):
+    """Review #3: partners send the 2nd commander in cards with zone "Commanders";
+    the identity is the union (Tymna WB + Kraum UR)."""
+    store = fx["store"]
+    b = fx["members"]["b_members"]             # Bolt (R), Counterspell (U), Elves (G)
+    tymna = _named(store, "Tymna the Weaver")
+    kraum = _named(store, "Kraum, Ludevic's Opus")
+    deck = [{"id": b[0]}, {"id": b[2]}]        # missing piece: Counterspell (U)
+    assert "fxB" in _near({"commander_id": tymna,
+                           "cards": deck + [{"id": kraum, "zone": "Commanders"}]})
+    assert "fxB" not in _near({"commander_id": tymna, "cards": deck})   # WB alone
+
+
+def test_deck_combos_non_creature_commander_still_restricts(fx):
+    """Review #4: a commander that is not a legendary creature/planeswalker (Shorikai,
+    a Vehicle, identity WU) must still restrict instead of disabling the filter."""
+    store = fx["store"]
+    b = fx["members"]["b_members"]
+    shorikai = _named(store, "Shorikai, Genesis Engine")
+    assert "fxB" not in _near({"commander_id": shorikai,
+                               "cards": [{"id": b[0]}, {"id": b[1]}]})   # needs Elves (G)
+
+
+def test_deck_combos_without_commander_keeps_identity_open(fx):
+    b = fx["members"]["b_members"]
+    assert "fxB" in _near({"commander_id": None, "cards": [{"id": b[0]}, {"id": b[1]}]})

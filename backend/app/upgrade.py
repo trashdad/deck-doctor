@@ -60,6 +60,17 @@ def _functional_similarity(target: dict, cand: dict) -> float:
     return round(0.55 * sem + 0.25 * mech + 0.20 * same_cat, 4)
 
 
+def is_real_upgrade(efficiency_gain: float | None, cand_synergy: float,
+                    target_synergy: float) -> bool:
+    """Does a replacement actually beat the card it replaces?
+
+    Yes if it has a KNOWN IER gain (both IERs known and the difference > 0), or more
+    commander synergy than the target. An unknown IER is never counted as a gain —
+    `ier or 0.0` used to turn a missing target IER into "every candidate is +IER".
+    """
+    return (efficiency_gain is not None and efficiency_gain > 0) or cand_synergy > target_synergy
+
+
 def _flexibility(target: dict, cand: dict) -> float:
     """Multimodal bonus: extra functional roles the candidate has beyond the target."""
     extra = set(cand["mech"]) - set(target["mech"])
@@ -75,8 +86,12 @@ def rank_upgrades(
     favor_flexibility: bool = False,
     synergy: dict[str, float] | None = None,
     limit: int = 12,
+    upgrades_only: bool = False,
 ) -> list[dict]:
     """Rank candidate replacements for `target`. PURE — no Store/DB.
+
+    `upgrades_only` keeps only options that pass `is_real_upgrade`, applied BEFORE
+    the `limit` cut so a low-similarity genuine upgrade can't be truncated away.
 
     Each signal dict (target + candidates) must carry:
         id, card, ier (float|None), cmc (float), category (str),
@@ -93,9 +108,10 @@ def rank_upgrades(
     w_flex = FLEX_ON if favor_flexibility else FLEX_OFF
     total_w = w_sim + w_eff + w_syn + w_flex + W_COST
 
-    t_ier = target.get("ier") or 0.0
+    t_ier = target.get("ier")             # None = unknown; never treated as 0
     t_cmc = float(target.get("cmc") or 0.0)
     t_name = target["card"].get("name", "this card")
+    t_syn = max(0.0, min(1.0, synergy.get(target["id"], 0.0)))
 
     # Pre-compute functional similarity + gate, collect IERs for min-max normalisation.
     rows: list[dict] = []
@@ -118,10 +134,14 @@ def rank_upgrades(
     for r in rows:
         c = r["c"]
         sim = r["sim"]
-        c_ier = c.get("ier") or 0.0
-        eff_norm = (c_ier - lo) / span                # 0..1 within candidate set
-        eff_gain = round(c_ier - t_ier, 2)
+        c_ier = c.get("ier")
+        eff_norm = ((c_ier or 0.0) - lo) / span       # 0..1 within candidate set
+        # A gain is only meaningful when BOTH IERs are known.
+        eff_gain = (round(c_ier - t_ier, 2)
+                    if c_ier is not None and t_ier is not None else None)
         syn = max(0.0, min(1.0, synergy.get(c["id"], 0.0)))
+        if upgrades_only and not is_real_upgrade(eff_gain, syn, t_syn):
+            continue  # filtered BEFORE the limit below
         flex = _flexibility(target, c)
         c_cmc = float(c.get("cmc") or 0.0)
         cost_sim = 1.0 - min(1.0, abs(c_cmc - t_cmc) / 4.0)
@@ -137,13 +157,16 @@ def rank_upgrades(
             "reasons": _reasons(t_name, t_cmc, c, sim, eff_gain, syn, flex, c_cmc),
         })
 
-    options.sort(key=lambda o: (-o["score"], -o["efficiency_gain"], o["card"]["name"]))
+    options.sort(key=lambda o: (-o["score"],
+                                -(o["efficiency_gain"] if o["efficiency_gain"] is not None
+                                  else float("-inf")),
+                                o["card"]["name"]))
     return options[:limit]
 
 
 def _reasons(t_name, t_cmc, cand, sim, eff_gain, syn, flex, c_cmc) -> list[dict]:
     out: list[dict] = []
-    if eff_gain > 0.05:
+    if eff_gain is not None and eff_gain > 0.05:
         out.append({"signal": "efficiency", "value": round(eff_gain, 2),
                     "detail": f"+{eff_gain:.1f} IER vs {t_name}"})
     if sim > 0:
@@ -178,7 +201,7 @@ def _signal(category_of, card: dict) -> dict:
 def find_upgrades(store, target_id: str, commander_id: str | None,
                   deck_ids: list[str], *, efficiency: float = 0.5,
                   favor_synergy: bool = False, favor_flexibility: bool = False,
-                  limit: int = 12) -> dict:
+                  limit: int = 12, upgrades_only: bool = False) -> dict:
     """Orchestrator: pull candidate signals from the Store and rank them.
 
     Candidate pool = the target's functional neighbours (TF-IDF similar_cards),
@@ -223,6 +246,7 @@ def find_upgrades(store, target_id: str, commander_id: str | None,
         target_sig, cand_sigs,
         efficiency=efficiency, favor_synergy=favor_synergy,
         favor_flexibility=favor_flexibility, synergy=synergy, limit=limit,
+        upgrades_only=upgrades_only,
     )
     return {"target": target, "options": options}
 
@@ -258,18 +282,19 @@ def upgrade_sweep(store, commander_id: str, deck_ids: list[str], *,
         target = store.get(cut["card_id"])
         if target is None:
             continue
+        # A Tune-up swap must actually beat the card it replaces: a known IER gain or
+        # more commander synergy (is_real_upgrade). Side-grades and downgrades are
+        # noise here (the Card Upgrade Finder's slider still offers "closest match"
+        # options on purpose). upgrades_only filters inside rank_upgrades BEFORE its
+        # limit; the re-check below keeps injected _upgrades honest too.
         res = _upgrades(
             store, cut["card_id"], commander_id, deck_ids,
             efficiency=efficiency, favor_synergy=favor_synergy,
-            favor_flexibility=favor_flexibility, limit=per_card * 4,
+            favor_flexibility=favor_flexibility, limit=per_card, upgrades_only=True,
         )
-        # A Tune-up swap must actually beat the card it replaces: more efficient
-        # (IER gain > 0) or more synergistic with the commander. Side-grades and
-        # downgrades are noise here (the Card Upgrade Finder's slider still offers
-        # "closest match" options on purpose). Over-fetch above, trim after filtering.
         t_syn = _syn(cut["card_id"])
         options = [o for o in res.get("options", [])
-                   if o.get("efficiency_gain", 0.0) > 0 or _syn(o["card"]["id"]) > t_syn]
+                   if is_real_upgrade(o.get("efficiency_gain"), _syn(o["card"]["id"]), t_syn)]
         options = options[:per_card]
         if not options:
             continue  # no better replacement exists — leave the card alone

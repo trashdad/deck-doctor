@@ -553,9 +553,15 @@ def deck_combos(req: DeckRequest) -> dict:
     if req.commander_id:
         ids.append(req.commander_id)
     # "One card away" is only useful if that card can legally join THIS deck:
-    # inside the commander's colour identity and not banned.
-    cmd = store.get(req.commander_id) if req.commander_id else None
-    ci = set(cmd.get("color_identity") or []) if is_commander(cmd) else None
+    # inside the command zone's colour identity and not banned. The identity is the
+    # UNION over commander_id and every "Commanders"-zone card (partners,
+    # backgrounds), whatever their type (Shorikai is a Vehicle); an empty union is a
+    # colourless commander and still restricts. No commander at all -> unrestricted.
+    cmd_ids = ({req.commander_id} if req.commander_id else set()) | {
+        e.id for e in req.cards if e.zone == "Commanders"}
+    cmd_cards = [c for c in (store.get(i) for i in cmd_ids) if c is not None]
+    ci = (set().union(*(c.get("color_identity") or [] for c in cmd_cards))
+          if cmd_cards else None)
 
     def near_ok(missing_id: str) -> bool:
         card = store.get(missing_id)

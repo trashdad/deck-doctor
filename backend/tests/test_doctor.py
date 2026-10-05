@@ -92,11 +92,20 @@ def test_basics_follow_pips():
 
 def test_cuts_orders_low_contribution_first():
     ur = _id("The Ur-Dragon")
-    dragons = _dragons(10)
-    # 2 off-plan mono-white lifegain-ish cards inside CI but off the dragon plan.
+    # ON-plan dragons = the ones Ur-Dragon players actually run (EDHREC synergy).
+    # (`_dragons(10)` picks store-order dragons, mostly unplayed ones with zero
+    # signal, so "off-plan among the worst" used to hold only by id tie-break.)
+    edh = store.edhrec_for(ur)
+    dragons = sorted((cid for cid in edh
+                      if "Dragon" in (store.get(cid) or {}).get("type_line", "")
+                      and "Legendary" not in store.get(cid)["type_line"]),
+                     key=lambda cid: -edh[cid][0])[:10]
+    assert len(dragons) == 10
+    # 2 off-plan mono-white creatures inside CI, absent from Ur-Dragon's EDHREC list.
     offplan = [cid for cid, c in store._cards.items()
                if set(c.get("color_identity") or []) == {"W"}
                and "Creature" in (c.get("type_line") or "")
+               and cid not in edh
                and category_of(store.get(cid)) == "synergy"][:2]
     deck = dragons + offplan
     cuts = suggest_cuts(store, ur, deck, limit=10)
@@ -133,12 +142,26 @@ def test_cuts_never_lead_with_format_staples():
     *inclusion*, so they must not rank among the weakest cards."""
     ur = _id("The Ur-Dragon")
     sol = _id("Sol Ring")
-    if sol not in store.edhrec_for(ur):
-        pytest.skip("no EDHREC row for Sol Ring under The Ur-Dragon")
     offplan = [cid for cid, c in store._cards.items()
                if set(c.get("color_identity") or []) == {"W"}
                and "Creature" in (c.get("type_line") or "")
                and category_of(store.get(cid)) == "synergy"][:2]
     deck = _dragons(10) + offplan + [sol]
     cut_ids = [c["card_id"] for c in suggest_cuts(store, ur, deck, limit=5)]
+    assert sol not in cut_ids
+
+
+def test_cuts_spare_staples_for_a_commander_without_edhrec_data():
+    """Review #2: no EDHREC page for the commander -> the corpus staple signal alone
+    must still keep Sol Ring off the top of the cut list."""
+    from app.suggest import is_commander
+    sol = _id("Sol Ring")
+    cmd = next(cid for cid, c in store._cards.items()
+               if is_commander(c) and not store.edhrec_for(cid)
+               and set(c.get("color_identity") or []) == {"W"})
+    offplan = [cid for cid, c in store._cards.items()
+               if set(c.get("color_identity") or []) == {"W"}
+               and "Creature" in (c.get("type_line") or "") and cid != cmd
+               and category_of(c) == "synergy"][:8]
+    cut_ids = [c["card_id"] for c in suggest_cuts(store, cmd, offplan + [sol], limit=5)]
     assert sol not in cut_ids

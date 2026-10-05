@@ -78,7 +78,7 @@ class SuggestionResponse(BaseModel):
 class UpgradeOption(BaseModel):
     card: Card
     score: float
-    efficiency_gain: float     # candidate IER - target IER (can be negative)
+    efficiency_gain: float | None  # candidate IER - target IER; None if either is unknown
     similarity: float          # 0..1 functional similarity to the target
     reasons: list[Reason] = []
 
