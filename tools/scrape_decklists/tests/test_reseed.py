@@ -85,3 +85,15 @@ def test_read_targets(tmp_path):
     p = tmp_path / "t.tsv"
     p.write_text("Krenko, Mob Boss\t186\nAtraxa, Praetors' Voice\t0\n\n", encoding="utf-8")
     assert reseed.read_targets(p) == [("Krenko, Mob Boss", 186)]
+
+
+def test_decks_already_fetched_in_the_last_chunk_are_kept(corpus):
+    # target is met on the first row of a 3-row chunk; the other two rows were
+    # already fetched, so they are written instead of thrown away.
+    hashes = ["h1", "h2", "h3", "h4"]
+    mapping = {h: ("moxfield", h) for h in hashes}
+    res = reseed.reseed_commander(
+        corpus, "Krenko, Mob Boss", target=1, max_rows=10,
+        hashes_fn=lambda c, limit: hashes[:limit], preview_fn=_previews(mapping), workers=3)
+    assert res["added"] == 3
+    assert res["scanned"] == 3

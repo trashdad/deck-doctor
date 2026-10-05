@@ -7,7 +7,7 @@ in Commander.  Output is the native format the backend store.py expects.
 Usage:
     python scoring/prep_cards.py \
         --src C:/simmander/simmander/data/default-cards.json \
-        --out data/cards.json
+        --out data/cards.json         --keep-ids-from data/cards.json   # keep existing card ids on a refresh
 """
 
 from __future__ import annotations
@@ -78,10 +78,42 @@ def _slim(card: dict) -> dict:
     return out
 
 
+def select_prints(all_cards: list[dict], keep_ids: set[str] | None = None) -> list[dict]:
+    """One kept print per oracle_id.
+
+    A print listed in `keep_ids` (the ids of a previous cards.json) wins for its
+    oracle_id, so a Scryfall refresh that adds a reprint does not change the
+    card id that user decks and the score tables already reference. Otherwise:
+    newest release date, then a print that has a normal image.
+    """
+    keep_ids = keep_ids or set()
+    by_oracle: dict[str, dict] = {}
+    for card in all_cards:
+        if not _keep(card):
+            continue
+        oid = card.get("oracle_id", card["id"])
+        existing = by_oracle.get(oid)
+        if existing is None:
+            by_oracle[oid] = card
+        elif existing["id"] in keep_ids:
+            continue
+        elif card["id"] in keep_ids:
+            by_oracle[oid] = card
+        # prefer newer release; break ties by having a normal image
+        elif card.get("released_at", "") > existing.get("released_at", ""):
+            by_oracle[oid] = card
+        elif card.get("released_at", "") == existing.get("released_at", ""):
+            if _image(card) and not _image(existing):
+                by_oracle[oid] = card
+    return list(by_oracle.values())
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", required=True, help="Path to Scryfall default-cards.json")
     ap.add_argument("--out", required=True, help="Output path for filtered cards.json")
+    ap.add_argument("--keep-ids-from", help="previous cards.json: keep each oracle_id's "
+                    "existing print (stable card ids across Scryfall refreshes)")
     args = ap.parse_args()
 
     src = Path(args.src)
@@ -96,24 +128,13 @@ def main() -> None:
 
     print(f"  {len(all_cards):,} total prints — filtering …", flush=True)
 
-    # One print per oracle_id: prefer newest release date, then highest-res image
-    by_oracle: dict[str, dict] = {}
-    for card in all_cards:
-        if not _keep(card):
-            continue
-        oid = card.get("oracle_id", card["id"])
-        existing = by_oracle.get(oid)
-        if existing is None:
-            by_oracle[oid] = card
-        else:
-            # prefer newer release; break ties by having a normal image
-            if card.get("released_at", "") > existing.get("released_at", ""):
-                by_oracle[oid] = card
-            elif card.get("released_at", "") == existing.get("released_at", ""):
-                if _image(card) and not _image(existing):
-                    by_oracle[oid] = card
+    keep_ids: set[str] = set()
+    if args.keep_ids_from:
+        with Path(args.keep_ids_from).open(encoding="utf-8") as fh:
+            keep_ids = {c["id"] for c in json.load(fh)}
+        print(f"  pinning prints from {args.keep_ids_from} ({len(keep_ids):,} ids)", flush=True)
 
-    slimmed = [_slim(c) for c in by_oracle.values()]
+    slimmed = [_slim(c) for c in select_prints(all_cards, keep_ids)]
     slimmed.sort(key=lambda c: c["name"])
 
     out.parent.mkdir(parents=True, exist_ok=True)

@@ -71,8 +71,9 @@ def reseed_commander(corpus: runner.Corpus, commander: str, target: int, max_row
                         res["added"] += 1
                         if deck_id not in uncounted:
                             res["counted"] += 1
-                if res["counted"] >= target:
-                    return res
+            # Checked per chunk: rows already fetched in this chunk are kept.
+            if res["counted"] >= target:
+                return res
     return res
 
 
