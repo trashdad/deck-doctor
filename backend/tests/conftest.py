@@ -44,10 +44,11 @@ def assert_safe_destructive_db() -> None:
         "with no production data.")
 
 
-@pytest.fixture(scope="session", autouse=True)
-def _guard_destructive_tests():
+def pytest_sessionstart(session):
+    """Check BEFORE collection: several test modules build the Store (i.e. connect to
+    DATABASE_URL) at import time, so a fixture-time check would already have touched
+    the database. Abort the whole run here instead."""
     try:
         assert_safe_destructive_db()
     except RuntimeError as e:
         pytest.exit(str(e), returncode=2)
-    yield
