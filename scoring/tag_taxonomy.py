@@ -148,6 +148,9 @@ ACTION_MAP: dict[str, list[str]] = {
     "ExileAllCreatures":                         ["e:exile", "e:board_wipe"],
     "ExileGraveyardCard":                        ["e:exile"],
     "ExileGraveyard":                            ["e:exile"],
+    # Upstream MTGish (i5jb/mtgish, 2026-10) folded the Exile* actions into one
+    # Exile action whose argument is an _Exilable node.
+    "Exile":                                     ["e:exile"],
     "SacrificePermanent":                        ["e:sacrifice"],
     "SacrificeAPermanent":                       ["e:sacrifice"],
     "SacrificeNumberPermanents":                 ["e:sacrifice"],
@@ -161,6 +164,11 @@ ACTION_MAP: dict[str, list[str]] = {
     "MoveACounterOfTypeFromPermanentOntoAnotherPermanent": ["e:remove_counter", "e:add_counter"],
     "DoubleCountersOfTypeOnPermanent":           ["e:add_counter"],
     "Proliferate":                               ["e:proliferate"],
+    # Upstream MTGish (2026-10) folded the counter actions into PutCounters /
+    # RemoveCounters / MoveCounters with a _PutCountersAction (etc.) argument.
+    "PutCounters":                               ["e:add_counter"],
+    "RemoveCounters":                            ["e:remove_counter"],
+    "MoveCounters":                              ["e:remove_counter", "e:add_counter"],
     # Tokens
     "CreateTokens":                              ["e:create_token"],
     "CreateTokensWithFlags":                     ["e:create_token"],

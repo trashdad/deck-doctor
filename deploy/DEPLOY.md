@@ -139,6 +139,32 @@ From June to 2026-10-05 the VPS had none, so prod had 0 asserted combos (Command
 88k combos were unaffected). A missing configured catalog is now logged as a WARNING by
 `refresh_corpus.sh`.
 
+## Adding new card sets (card data refresh, run on legion)
+
+The nightly refresh only rebuilds deck-driven tables. New cards need the card layer
+rebuilt on the dev box and shipped. Done this way on 2026-10-05 (5 sets, +1,148 cards):
+
+1. Scryfall now publishes bulk data as gzipped JSONL (`jsonl_download_uri` on
+   `https://api.scryfall.com/bulk-data/default-cards`). Convert it to the JSON array
+   `prep_cards.py` reads, e.g. `C:/simmander/simmander/data/default-cards.<date>.json`.
+2. `python scoring/prep_cards.py --src <that file> --out data/cards.json --keep-ids-from data/cards.json`
+   — `--keep-ids-from` keeps every existing card's print (and id) while it still exists;
+   without it, reprints in new sets change ids that user decks store.
+3. `python backend/scripts/enrich_lands.py` (rewrites `backend/data/land_meta.json`).
+4. `python scoring/mtgish_merge.py --upstream-commit <i5jb/mtgish sha>` — the 2026-04-28
+   MTGish base plus upstream (github.com/i5jb/mtgish) entries for cards the base lacks;
+   writes `data/mtgish.merged.json` + `.source.json` (provenance). Upstream restructured its
+   schema, so do not swap the base wholesale without porting `tag_taxonomy.py` /
+   `fingerprints/` (measure with an old-vs-new table diff first).
+5. Fresh store: `build_store.py --cards data/cards.json --out <new>`, then
+   `build_semantics.py` and `build_fingerprints.py` with `--db <new> --mtgish data/mtgish.merged.json`.
+6. Verify against the previous store: existing cards' fingerprints/tags/synergy values unchanged
+   (only image cache-busters and errata), then rehearse `build_relationships` →
+   `build_cooccurrence` → `load_to_postgres` into `deckdoctor_test` and run both test suites.
+7. Ship: back up prod, copy the new store over `/opt/deck-doctor/data/scores.sqlite`, run
+   `deckdoctor-refresh` (rebuilds relationships/co-occurrence, loads Postgres, reloads the API),
+   then deploy the commit that carries `data/cards.json` + `land_meta.json`.
+
 ## Backups (`deckdoctor-backup`, 03:30 UTC)
 
 `deploy/backup.sh` (runs as root) writes two independent copies; the unit fails if either fails:

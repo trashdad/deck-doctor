@@ -1,0 +1,307 @@
+{
+ "source": "https://github.com/i5jb/mtgish/blob/153451e44d88baabfeb9902092032c328f4d5416/data/mtgish.lines.json",
+ "cards": [
+  {
+   "_OracleCard": "Card",
+   "Name": "Ant-Man, Scott Lang",
+   "Typeline": {
+    "Supertypes": [
+     "Legendary"
+    ],
+    "Cardtypes": [
+     "Creature"
+    ],
+    "Subtypes": [
+     "Human",
+     "Hero"
+    ]
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 1
+    },
+    {
+     "_ManaSymbol": "ManaCostW"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "Activated",
+     "args": [
+      {
+       "_Cost": "PayMana",
+       "args": [
+        {
+         "_ManaSymbol": "ManaCostGeneric",
+         "args": 4
+        }
+       ]
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "PutCounters",
+         "args": [
+          {
+           "_PutCountersAction": "ACounterOfTypeOnPermanent",
+           "args": [
+            {
+             "_CounterType": "PTCounter",
+             "args": [
+              1,
+              1
+             ]
+            },
+            {
+             "_Permanent": "ThisPermanent"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "CardPT": {
+    "Power": 2,
+    "Toughness": 2
+   }
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Overwrite the Multiverse",
+   "Typeline": {
+    "Supertypes": [],
+    "Cardtypes": [
+     "Sorcery"
+    ],
+    "Subtypes": []
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 4
+    },
+    {
+     "_ManaSymbol": "ManaCostB"
+    },
+    {
+     "_ManaSymbol": "ManaCostB"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "SpellActions",
+     "args": {
+      "_Actions": "ActionList",
+      "args": [
+       {
+        "_Action": "Exile",
+        "args": [
+         [
+          {
+           "_Exilable": "EachPermanent",
+           "args": {
+            "_Permanents": "IsCardtype",
+            "args": "Creature"
+           }
+          }
+         ],
+         []
+        ]
+       },
+       {
+        "_Action": "EmpowerJace",
+        "args": {
+         "_GameNumber": "NumPermanentsExiledThisWay"
+        }
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Mabel, Bitter Recluse",
+   "Typeline": {
+    "Supertypes": [
+     "Legendary"
+    ],
+    "Cardtypes": [
+     "Creature"
+    ],
+    "Subtypes": [
+     "Mouse",
+     "Warlock"
+    ]
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostB"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "Deathtouch"
+    },
+    {
+     "_Rule": "TriggerA",
+     "args": [
+      {
+       "_Trigger": "WhenAPermanentEntersTheBattlefield",
+       "args": {
+        "_Permanents": "SinglePermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       }
+      },
+      {
+       "_Actions": "Targeted",
+       "args": [
+        [
+         {
+          "_Target": "TargetPermanent",
+          "args": {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "Other",
+             "args": {
+              "_Permanent": "ThisPermanent"
+             }
+            },
+            {
+             "_Permanents": "Or",
+             "args": [
+              {
+               "_Permanents": "IsCardtype",
+               "args": "Creature"
+              },
+              {
+               "_Permanents": "IsCardtype",
+               "args": "Planeswalker"
+              }
+             ]
+            }
+           ]
+          }
+         }
+        ],
+        {
+         "_Actions": "ActionList",
+         "args": [
+          {
+           "_Action": "RemoveCounters",
+           "args": [
+            {
+             "_RemoveCountersAction": "UptoNumberCountersFromPermanent",
+             "args": [
+              {
+               "_GameNumber": "Integer",
+               "args": 3
+              },
+              {
+               "_Permanent": "Ref_TargetPermanent"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "CardPT": {
+    "Power": 1,
+    "Toughness": 1
+   }
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Fate Transfer",
+   "Typeline": {
+    "Supertypes": [],
+    "Cardtypes": [
+     "Instant"
+    ],
+    "Subtypes": []
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 1
+    },
+    {
+     "_ManaSymbol": "ManaCostUB"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "SpellActions",
+     "args": {
+      "_Actions": "Targeted",
+      "args": [
+       [
+        {
+         "_Target": "TargetPermanent",
+         "args": {
+          "_Permanents": "IsCardtype",
+          "args": "Creature"
+         }
+        },
+        {
+         "_Target": "TargetPermanent",
+         "args": {
+          "_Permanents": "And",
+          "args": [
+           {
+            "_Permanents": "Other",
+            "args": {
+             "_Permanent": "Ref_TargetPermanent1"
+            }
+           },
+           {
+            "_Permanents": "IsCardtype",
+            "args": "Creature"
+           }
+          ]
+         }
+        }
+       ],
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "MoveCounters",
+          "args": [
+           {
+            "_MoveCountersAction": "AllCountersFromPermanentOntoNewPermanent",
+            "args": [
+             {
+              "_Permanent": "Ref_TargetPermanent1"
+             },
+             {
+              "_Permanent": "Ref_TargetPermanent2"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  }
+ ]
+}

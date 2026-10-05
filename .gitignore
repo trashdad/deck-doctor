@@ -17,6 +17,9 @@ next-env.d.ts
 data/scores.sqlite
 data/scores.sqlite-shm
 data/scores.sqlite-wal
+# MTGish merge output + pinned upstream download (scoring/mtgish_merge.py)
+data/mtgish.merged.json*
+data/mtgish.lines.*.json
 data/*.faiss
 
 # SP3 scraped decklist corpus (regenerable; sample.jsonl is the committed fixture)
