@@ -35,3 +35,22 @@ def test_remove_counters_tags_remove_counter():
 
 def test_move_counters_tags_both_counter_effects():
     assert {"e:add_counter", "e:remove_counter"} <= _tags("Fate Transfer")
+
+
+# New-set keyword actions; tags follow the cards' Oracle reminder text.
+def test_empower_jace_creates_a_jace_token_and_adds_loyalty():
+    # "Put two loyalty counters on a Jace token you control. If you don't control
+    # one, first create a blue Jace planeswalker token ..."
+    assert {"e:create_token", "e:add_counter", "c:loyalty"} <= _tags("Academic Ascent")
+
+
+def test_recruit_loots_and_may_create_a_soldier():
+    # "Draw a card, then discard a card. If you discarded a nonland card, create a
+    # 1/1 white Human Soldier creature token."
+    assert {"e:draw", "e:discard", "e:create_token"} <= _tags("Esgaroth Garrison")
+
+
+def test_amass_creates_an_army_and_adds_plus1_counters():
+    # "Put N +1/+1 counters on an Army you control. If you don't control an Army,
+    # create a 0/0 ... Army creature token first."
+    assert {"e:create_token", "e:add_counter", "c:plus1"} <= _tags("Along the Crooked Way")

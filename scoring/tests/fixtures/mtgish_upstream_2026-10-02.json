@@ -302,6 +302,343 @@
      }
     }
    ]
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Academic Ascent",
+   "Typeline": {
+    "Supertypes": [],
+    "Cardtypes": [
+     "Instant"
+    ],
+    "Subtypes": []
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 1
+    },
+    {
+     "_ManaSymbol": "ManaCostW"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "SpellActions",
+     "args": {
+      "_Actions": "Targeted",
+      "args": [
+       [
+        {
+         "_Target": "TargetPermanent",
+         "args": {
+          "_Permanents": "IsCardtype",
+          "args": "Creature"
+         }
+        }
+       ],
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreatePermanentLayerEffectUntil",
+          "args": [
+           {
+            "_Permanent": "Ref_TargetPermanent"
+           },
+           [
+            {
+             "_LayerEffect": "AdjustPT",
+             "args": [
+              2,
+              2
+             ]
+            },
+            {
+             "_LayerEffect": "AddAbility",
+             "args": [
+              {
+               "_Rule": "Flying"
+              }
+             ]
+            }
+           ],
+           {
+            "_Expiration": "UntilEndOfTurn"
+           }
+          ]
+         },
+         {
+          "_Action": "EmpowerJace",
+          "args": {
+           "_GameNumber": "Integer",
+           "args": 2
+          }
+         }
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Esgaroth Garrison",
+   "Typeline": {
+    "Supertypes": [],
+    "Cardtypes": [
+     "Creature"
+    ],
+    "Subtypes": [
+     "Human",
+     "Soldier"
+    ]
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 4
+    },
+    {
+     "_ManaSymbol": "ManaCostW"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "CDA_Power",
+     "args": {
+      "_GameNumber": "TheNumberOfPermanentsOnTheBattlefield",
+      "args": {
+       "_Permanents": "And",
+       "args": [
+        {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        },
+        {
+         "_Permanents": "ControlledByAPlayer",
+         "args": {
+          "_Players": "SinglePlayer",
+          "args": {
+           "_Player": "You"
+          }
+         }
+        }
+       ]
+      }
+     }
+    },
+    {
+     "_Rule": "TriggerA",
+     "args": [
+      {
+       "_Trigger": "WhenAPermanentEntersTheBattlefield",
+       "args": {
+        "_Permanents": "SinglePermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       }
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "Recruit"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "CardPT": {
+    "Power": 0,
+    "Toughness": 5
+   }
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Along the Crooked Way",
+   "Typeline": {
+    "Supertypes": [],
+    "Cardtypes": [
+     "Enchantment"
+    ],
+    "Subtypes": []
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 2
+    },
+    {
+     "_ManaSymbol": "ManaCostB"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "TriggerA",
+     "args": [
+      {
+       "_Trigger": "WhenAPermanentEntersTheBattlefield",
+       "args": {
+        "_Permanents": "SinglePermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       }
+      },
+      {
+       "_Actions": "Targeted",
+       "args": [
+        [
+         {
+          "_Target": "TargetGraveyardCard",
+          "args": {
+           "_CardsInGraveyards": "And",
+           "args": [
+            {
+             "_CardsInGraveyards": "IsCardtype",
+             "args": "Creature"
+            },
+            {
+             "_CardsInGraveyards": "InAPlayersGraveyard",
+             "args": {
+              "_Players": "SinglePlayer",
+              "args": {
+               "_Player": "You"
+              }
+             }
+            }
+           ]
+          }
+         }
+        ],
+        {
+         "_Actions": "ActionList",
+         "args": [
+          {
+           "_Action": "PutGraveyardCardIntoHand",
+           "args": {
+            "_CardInGraveyards": "Ref_TargetGraveyardCard"
+           }
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "_Rule": "TriggerA",
+     "args": [
+      {
+       "_Trigger": "WhenAGraveyardCardLeaves",
+       "args": {
+        "_CardsInGraveyards": "And",
+        "args": [
+         {
+          "_CardsInGraveyards": "IsCardtype",
+          "args": "Creature"
+         },
+         {
+          "_CardsInGraveyards": "InAPlayersGraveyard",
+          "args": {
+           "_Players": "SinglePlayer",
+           "args": {
+            "_Player": "You"
+           }
+          }
+         }
+        ]
+       }
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "Amass",
+         "args": [
+          {
+           "_GameNumber": "Integer",
+           "args": 1
+          },
+          "Goblin"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "_Rule": "Activated",
+     "args": [
+      {
+       "_Cost": "PayMana",
+       "args": [
+        {
+         "_ManaSymbol": "ManaCostGeneric",
+         "args": 1
+        },
+        {
+         "_ManaSymbol": "ManaCostB"
+        }
+       ]
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "CreateEachPermanentLayerEffectUntil",
+         "args": [
+          {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "Or",
+             "args": [
+              {
+               "_Permanents": "IsCreatureType",
+               "args": "Goblin"
+              },
+              {
+               "_Permanents": "IsCreatureType",
+               "args": "Orc"
+              }
+             ]
+            },
+            {
+             "_Permanents": "ControlledByAPlayer",
+             "args": {
+              "_Players": "SinglePlayer",
+              "args": {
+               "_Player": "You"
+              }
+             }
+            }
+           ]
+          },
+          [
+           {
+            "_LayerEffect": "AddAbility",
+            "args": [
+             {
+              "_Rule": "Menace"
+             }
+            ]
+           }
+          ],
+          {
+           "_Expiration": "UntilEndOfTurn"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
   }
  ]
 }

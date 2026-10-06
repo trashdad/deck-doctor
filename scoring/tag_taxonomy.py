@@ -169,6 +169,13 @@ ACTION_MAP: dict[str, list[str]] = {
     "PutCounters":                               ["e:add_counter"],
     "RemoveCounters":                            ["e:remove_counter"],
     "MoveCounters":                              ["e:remove_counter", "e:add_counter"],
+    # Keyword actions whose effect is fixed by their Oracle reminder text:
+    #   Amass N: N +1/+1 counters on an Army you control (a 0/0 Army token first if none).
+    #   Empower Jace N: N loyalty counters on a Jace token (a Jace planeswalker token first if none).
+    #   Recruit: draw, then discard; a 1/1 Human Soldier token if the discard was nonland.
+    "Amass":                                     ["e:create_token", "e:add_counter", "c:plus1"],
+    "EmpowerJace":                               ["e:create_token", "e:add_counter", "c:loyalty"],
+    "Recruit":                                   ["e:draw", "e:discard", "e:create_token"],
     # Tokens
     "CreateTokens":                              ["e:create_token"],
     "CreateTokensWithFlags":                     ["e:create_token"],
