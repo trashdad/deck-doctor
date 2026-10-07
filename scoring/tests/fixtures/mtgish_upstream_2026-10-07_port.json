@@ -6677,6 +6677,461 @@
     "Power": 0,
     "Toughness": 0
    }
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Woeleecher",
+   "Typeline": {
+    "Supertypes": [],
+    "Cardtypes": [
+     "Creature"
+    ],
+    "Subtypes": [
+     "Elemental"
+    ]
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 5
+    },
+    {
+     "_ManaSymbol": "ManaCostW"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "Activated",
+     "args": [
+      {
+       "_Cost": "And",
+       "args": [
+        {
+         "_Cost": "PayMana",
+         "args": [
+          {
+           "_ManaSymbol": "ManaCostW"
+          }
+         ]
+        },
+        {
+         "_Cost": "TapPermanent",
+         "args": {
+          "_Permanent": "ThisPermanent"
+         }
+        }
+       ]
+      },
+      {
+       "_Actions": "Targeted",
+       "args": [
+        [
+         {
+          "_Target": "TargetPermanent",
+          "args": {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          }
+         }
+        ],
+        {
+         "_Actions": "ActionList",
+         "args": [
+          {
+           "_Action": "MustCost",
+           "args": {
+            "_Cost": "RemoveCounters",
+            "args": [
+             {
+              "_RemoveCountersCost": "ACounterOfTypeFromPermanent",
+              "args": [
+               {
+                "_CounterType": "PTCounter",
+                "args": [
+                 -1,
+                 -1
+                ]
+               },
+               {
+                "_Permanent": "Ref_TargetPermanent"
+               }
+              ]
+             }
+            ]
+           }
+          },
+          {
+           "_Action": "If",
+           "args": [
+            {
+             "_Condition": "CostWasPaid"
+            },
+            [
+             {
+              "_Action": "GainLife",
+              "args": {
+               "_GameNumber": "Integer",
+               "args": 2
+              }
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "CardPT": {
+    "Power": 3,
+    "Toughness": 5
+   }
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Noosegraf Mob",
+   "Typeline": {
+    "Supertypes": [],
+    "Cardtypes": [
+     "Creature"
+    ],
+    "Subtypes": [
+     "Zombie"
+    ]
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 4
+    },
+    {
+     "_ManaSymbol": "ManaCostB"
+    },
+    {
+     "_ManaSymbol": "ManaCostB"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "AsPermanentEnters",
+     "args": [
+      {
+       "_Permanent": "ThisPermanent"
+      },
+      [
+       {
+        "_ReplacementActionWouldEnter": "EntersWithNumberCounters",
+        "args": [
+         {
+          "_GameNumber": "Integer",
+          "args": 5
+         },
+         {
+          "_CounterType": "PTCounter",
+          "args": [
+           1,
+           1
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    },
+    {
+     "_Rule": "TriggerA",
+     "args": [
+      {
+       "_Trigger": "WhenAPlayerCastsASpell",
+       "args": [
+        {
+         "_Players": "AnyPlayer"
+        },
+        {
+         "_Spells": "AnySpell"
+        }
+       ]
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "MustCost",
+         "args": {
+          "_Cost": "RemoveCounters",
+          "args": [
+           {
+            "_RemoveCountersCost": "ACounterOfTypeFromPermanent",
+            "args": [
+             {
+              "_CounterType": "PTCounter",
+              "args": [
+               1,
+               1
+              ]
+             },
+             {
+              "_Permanent": "ThisPermanent"
+             }
+            ]
+           }
+          ]
+         }
+        },
+        {
+         "_Action": "If",
+         "args": [
+          {
+           "_Condition": "CostWasPaid"
+          },
+          [
+           {
+            "_Action": "CreateTokens",
+            "args": [
+             [
+              {
+               "_CreatableToken": "TokenWithPT",
+               "args": [
+                {
+                 "_PT": "PT",
+                 "args": [
+                  2,
+                  2
+                 ]
+                },
+                {
+                 "_TokenColorList": "Colors",
+                 "args": [
+                  "Black"
+                 ]
+                },
+                [],
+                [
+                 "Creature"
+                ],
+                {
+                 "_TokenSubtypes": "SubtypesList",
+                 "args": [
+                  "Zombie"
+                 ]
+                },
+                []
+               ]
+              }
+             ],
+             []
+            ]
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "CardPT": {
+    "Power": 0,
+    "Toughness": 0
+   }
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Jinxed Choker",
+   "Typeline": {
+    "Supertypes": [],
+    "Cardtypes": [
+     "Artifact"
+    ],
+    "Subtypes": []
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 3
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "TriggerA",
+     "args": [
+      {
+       "_Trigger": "AtTheBeginningOfAPlayersEndStep",
+       "args": {
+        "_Players": "SinglePlayer",
+        "args": {
+         "_Player": "You"
+        }
+       }
+      },
+      {
+       "_Actions": "Targeted",
+       "args": [
+        [
+         {
+          "_Target": "TargetPlayer",
+          "args": {
+           "_Players": "Opponent"
+          }
+         }
+        ],
+        {
+         "_Actions": "ActionList",
+         "args": [
+          {
+           "_Action": "PlayerAction",
+           "args": [
+            {
+             "_Player": "Ref_TargetPlayer"
+            },
+            {
+             "_Action": "GainControlOfPermanent",
+             "args": {
+              "_Permanent": "ThisPermanent"
+             }
+            }
+           ]
+          },
+          {
+           "_Action": "PlayerAction",
+           "args": [
+            {
+             "_Player": "Ref_TargetPlayer"
+            },
+            {
+             "_Action": "PutCounters",
+             "args": [
+              {
+               "_PutCountersAction": "ACounterOfTypeOnPermanent",
+               "args": [
+                {
+                 "_CounterType": "ChargeCounter"
+                },
+                {
+                 "_Permanent": "ThisPermanent"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "_Rule": "TriggerA",
+     "args": [
+      {
+       "_Trigger": "AtTheBeginningOfAPlayersUpkeep",
+       "args": {
+        "_Players": "SinglePlayer",
+        "args": {
+         "_Player": "You"
+        }
+       }
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "PermanentDealsDamage",
+         "args": [
+          {
+           "_Permanent": "ThisPermanent"
+          },
+          {
+           "_GameNumber": "TheTotalNumberOfCountersOfTypeAmongPermanents",
+           "args": [
+            {
+             "_CounterType": "ChargeCounter"
+            },
+            {
+             "_Permanents": "SinglePermanent",
+             "args": {
+              "_Permanent": "ThisPermanent"
+             }
+            }
+           ]
+          },
+          {
+           "_DamageRecipient": "Player",
+           "args": {
+            "_Player": "You"
+           }
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "_Rule": "Activated",
+     "args": [
+      {
+       "_Cost": "PayMana",
+       "args": [
+        {
+         "_ManaSymbol": "ManaCostGeneric",
+         "args": 3
+        }
+       ]
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "ChooseAnAction",
+         "args": [
+          [
+           {
+            "_Action": "PutCounters",
+            "args": [
+             {
+              "_PutCountersAction": "ACounterOfTypeOnPermanent",
+              "args": [
+               {
+                "_CounterType": "ChargeCounter"
+               },
+               {
+                "_Permanent": "ThisPermanent"
+               }
+              ]
+             }
+            ]
+           }
+          ],
+          [
+           {
+            "_Action": "RemoveCounters",
+            "args": [
+             {
+              "_RemoveCountersAction": "ACounterOfTypeFromPermanent",
+              "args": [
+               {
+                "_CounterType": "ChargeCounter"
+               },
+               {
+                "_Permanent": "ThisPermanent"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
   }
  ]
 }

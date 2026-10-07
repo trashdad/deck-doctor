@@ -16,6 +16,7 @@ _Rule AnchorWord, Reflexive_* actions).
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 from typing import Any, Optional
@@ -23,8 +24,9 @@ from typing import Any, Optional
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tag_taxonomy import COUNTER_MAP, PLAYER_MAP, PLAYERS_MAP  # noqa: E402
 from mtgish_schema import (  # noqa: E402
-    action_extras, anchor_word, core_trigger, cost_op, is_reflexive, nested_actions, qualify,
-    reflexive_split, token_list, variant_nodes,
+    ACTION_VARIANT_KEYS, COST_VARIANT_KEYS, action_extras, anchor_word, core_trigger, cost_op,
+    is_reflexive, nested_actions, qualify, reflexive_split, reflexive_steps, token_list,
+    variant_nodes,
 )
 
 from .schema import Amount, Effect, AbilityRecord
@@ -37,36 +39,74 @@ _SCAN_DEPTH = 8
 _SCAN_DEPTH_UPSTREAM = 11
 
 
-def parse_counter(node: Any, depth: int = 0, limit: Optional[int] = None) -> Optional[str]:
-    """Find a `_CounterType` under a node and return its slug (plus1/minus1/poison/...)."""
-    if limit is None:
-        return (parse_counter(node, depth, _SCAN_DEPTH)
-                or parse_counter(node, depth, _SCAN_DEPTH_UPSTREAM))
+def _counter_slug(node: dict) -> Optional[str]:
+    ct = node["_CounterType"]
+    if ct == "PTCounter":
+        args = node.get("args")
+        if args == [1, 1]:
+            return "plus1"
+        if args == [-1, -1]:
+            return "minus1"
+        return "pt_counter"
+    tags = COUNTER_MAP.get(ct)        # e.g. "PoisonCounter" -> ["c:poison"]
+    if tags:
+        return tags[0].split(":", 1)[1]
+    return None
+
+
+def _counter_search(node: Any, depth: int, limit: int, anc: tuple) -> Optional[tuple]:
+    """(slug, ancestor dicts) of the first known `_CounterType` under a node."""
     if depth > limit or not isinstance(node, (dict, list)):
         return None
     if isinstance(node, dict):
         if "_CounterType" in node:
-            ct = node["_CounterType"]
-            if ct == "PTCounter":
-                args = node.get("args")
-                if args == [1, 1]:
-                    return "plus1"
-                if args == [-1, -1]:
-                    return "minus1"
-                return "pt_counter"
-            tags = COUNTER_MAP.get(ct)        # e.g. "PoisonCounter" -> ["c:poison"]
-            if tags:
-                return tags[0].split(":", 1)[1]
-            return None
+            slug = _counter_slug(node)
+            return (slug, anc) if slug else None
         for v in node.values():
-            r = parse_counter(v, depth + 1, limit)
+            r = _counter_search(v, depth + 1, limit, anc + (node,))
             if r:
                 return r
     else:
         for v in node:
-            r = parse_counter(v, depth + 1, limit)
+            r = _counter_search(v, depth + 1, limit, anc)
             if r:
                 return r
+    return None
+
+
+def _find_counter(node: Any, depth: int = 0) -> Optional[tuple]:
+    return (_counter_search(node, depth, _SCAN_DEPTH, ())
+            or _counter_search(node, depth, _SCAN_DEPTH_UPSTREAM, ()))
+
+
+def parse_counter(node: Any, depth: int = 0, limit: Optional[int] = None) -> Optional[str]:
+    """Find a `_CounterType` under a node and return its slug (plus1/minus1/poison/...)."""
+    found = (_find_counter(node, depth) if limit is None
+             else _counter_search(node, depth, limit, ()))
+    return found[0] if found else None
+
+
+# Ops that take counters away (upstream RemoveCounters, April RemoveACounter... /
+# RemoveAllCounters... / LoseAllCounters...).
+_COUNTER_REMOVAL = re.compile(r"^(Remove|Lose)\w*Counter")
+
+
+def _removal_verb(ancestors: tuple) -> Optional[str]:
+    """Verb of the innermost counter-removing `_Action` / `_Cost` among a counter's
+    ancestors (qualified with its variant), or None when the counter is not removed."""
+    for i in range(len(ancestors) - 1, -1, -1):
+        node = ancestors[i]
+        for key, vkeys in (("_Action", ACTION_VARIANT_KEYS), ("_Cost", COST_VARIANT_KEYS)):
+            op = node.get(key)
+            if not isinstance(op, str):
+                continue
+            removes = bool(_COUNTER_REMOVAL.match(op)) or (
+                is_reflexive(op) and any(_COUNTER_REMOVAL.match(s) for s in reflexive_steps(op)))
+            if not removes:
+                continue
+            inner = ancestors[i + 1] if i + 1 < len(ancestors) else {}
+            variant = next((inner[k] for k in vkeys if isinstance(inner.get(k), str)), None)
+            return qualify(op, variant)
     return None
 
 
@@ -164,19 +204,34 @@ def _scan_scope(args: Any) -> dict:
     return {"scope": None, "object": None, "quantifier": None}
 
 
-def _leaf_effect(node: dict, *, optional: bool, targeted: bool) -> Effect:
+def _leaf_effect(node: dict, *, optional: bool, targeted: bool, own_counter: bool = True) -> Effect:
     # NOTE: grants / duration / prefixes are first-class schema fields but the
     # projector does not extract them yet (deferred backlog per the fingerprint
     # spec §4/§6 — modal, durations, granted keywords). They stay at their
     # defaults until a dedicated pass adds them; the canonical `raw` preserves
     # the source data so no information is lost.
+    #
+    # A leaf's counter is scanned from everything under it. Containers whose actions
+    # are projected separately pass own_counter=False (their children carry them).
+    # When the counter sits under a counter removal ("you may remove a +1/+1
+    # counter. If you do, ..."), it moves to a sub-effect named after the removal
+    # so that it tags (c:..., e:remove_counter) without counting as placed.
     args = node.get("args")
     sc = _scan_scope(args)
-    return Effect(
+    eff = Effect(
         verb=node["_Action"],
         object=sc["object"], scope=sc["scope"], quantifier=sc["quantifier"],
-        targeted=targeted, counter=parse_counter(args), amount=_scan_amount(args),
+        targeted=targeted, amount=_scan_amount(args),
     )
+    found = _find_counter(args) if own_counter else None
+    if found:
+        removal = _removal_verb(found[1])
+        if removal is None:
+            eff.counter = found[0]
+        else:
+            eff.sub_effects.append(Effect(verb=removal, targeted=targeted,
+                                          counter=found[0], optional=optional))
+    return eff
 
 
 def _scan_amount_in(nodes: list) -> Optional[Amount]:
@@ -301,7 +356,8 @@ def _reflexive_effect(node: dict, *, targeted: bool) -> Effect:
     return Effect(
         verb=node["_Action"],
         object=sc["object"], scope=sc["scope"], quantifier=sc["quantifier"],
-        targeted=targeted, counter=parse_counter(node.get("args")),
+        # the step's own counter; the body's effects are projected with theirs
+        targeted=targeted, counter=parse_counter(steps),
         amount=_scan_amount_in(flat_steps),
     )
 
@@ -385,9 +441,8 @@ def extract_effects(actions: Any, *, optional: bool = False, targeted: bool = Fa
             # "At the beginning of the next end step, <actions>": the trigger node
             # is timing; the body is the effect. Kept as sub_effects so the
             # wrapper stays one effect and the delayed verbs still tag.
-            eff = _leaf_effect(node, optional=optional, targeted=targeted)
             # The counter slug belongs to the body (a remove must not produce it).
-            eff.counter = None
+            eff = _leaf_effect(node, optional=optional, targeted=targeted, own_counter=False)
             args = node.get("args")
             bodies = []
             for a in (args if isinstance(args, list) else [args]):
@@ -430,7 +485,8 @@ def extract_effects(actions: Any, *, optional: bool = False, targeted: bool = Fa
             continue
         if op is not None:
             may = op == "ChooseAnAction" and _has_do_nothing_option(node.get("args"))
-            eff = _leaf_effect(node, optional=optional or may, targeted=targeted)
+            eff = _leaf_effect(node, optional=optional or may, targeted=targeted,
+                               own_counter=op not in _ACTION_CONTAINERS)
             eff.optional = optional or may
             out.append(eff)
             if op in _ACTION_CONTAINERS:

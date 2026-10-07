@@ -99,6 +99,37 @@ def test_delayed_counter_removal_does_not_produce_counters():
     assert "e:remove_counter" in _flat("Clockwork Beetle", 1)
 
 
+def test_choose_an_action_wrapper_leaves_counters_to_its_options():
+    # Jinxed Choker: "{3}: Put a charge counter on this artifact or remove one from it."
+    # The options are projected as their own effects; the ChooseAnAction wrapper must not
+    # copy one option's counter (it would claim the removal option places it).
+    rec = _recs("Jinxed Choker")[2]
+    assert _verbs(rec) == ["ChooseAnAction", "PutCounters.ACounterOfTypeOnPermanent",
+                           "RemoveCounters.ACounterOfTypeFromPermanent"]
+    assert rec.effects[0].counter is None
+    assert [e.counter for e in rec.effects[1:]] == ["charge", "charge"]
+    assert {"c:charge", "e:add_counter", "e:remove_counter"} <= _flat("Jinxed Choker", 2)
+
+
+def test_counter_removal_cost_inside_an_action_is_not_a_counter_product():
+    # Woeleecher: "{W}, {T}: Remove a -1/-1 counter from target creature. If you do, you
+    # gain 2 life." (upstream: MustCost {_Cost RemoveCounters}, If CostWasPaid GainLife)
+    (rec,) = _recs("Woeleecher")
+    must = rec.effects[0]
+    assert must.verb == "MustCost" and must.counter is None
+    assert [(s.verb, s.counter) for s in must.sub_effects] == [
+        ("RemoveCounters.ACounterOfTypeFromPermanent", "minus1")]
+    produced = card_resources([rec])["produces"]
+    assert "counter" not in produced and "counter:-1/-1" not in produced
+    assert {"c:minus1", "e:remove_counter", "e:gain_life"} <= _flat("Woeleecher")
+    # Noosegraf Mob: "Whenever a player casts a spell, remove a +1/+1 counter from this
+    # creature. If you do, create a 2/2 black Zombie creature token."
+    produced = card_resources(_recs("Noosegraf Mob"))["produces"]
+    assert "token" in produced
+    assert "counter" not in produced and "counter:+1/+1" not in produced
+    assert {"c:plus1", "e:remove_counter", "e:create_token"} <= _flat("Noosegraf Mob", 1)
+
+
 # ── exile: Exile + [_Exilable ...] ───────────────────────────────────────────
 
 def test_exile_permanent():
