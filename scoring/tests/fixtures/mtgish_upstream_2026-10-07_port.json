@@ -6521,6 +6521,162 @@
     "Power": 2,
     "Toughness": 2
    }
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Clockwork Beetle",
+   "Typeline": {
+    "Supertypes": [],
+    "Cardtypes": [
+     "Artifact",
+     "Creature"
+    ],
+    "Subtypes": [
+     "Insect"
+    ]
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 1
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "AsPermanentEnters",
+     "args": [
+      {
+       "_Permanent": "ThisPermanent"
+      },
+      [
+       {
+        "_ReplacementActionWouldEnter": "EntersWithNumberCounters",
+        "args": [
+         {
+          "_GameNumber": "Integer",
+          "args": 2
+         },
+         {
+          "_CounterType": "PTCounter",
+          "args": [
+           1,
+           1
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    },
+    {
+     "_Rule": "TriggerA",
+     "args": [
+      {
+       "_Trigger": "WhenACreatureAttacks",
+       "args": {
+        "_Permanents": "SinglePermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       }
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "CreateFutureTrigger",
+         "args": [
+          {
+           "_FutureTrigger": "AtTheNextEndOfCombat"
+          },
+          {
+           "_Actions": "ActionList",
+           "args": [
+            {
+             "_Action": "RemoveCounters",
+             "args": [
+              {
+               "_RemoveCountersAction": "ACounterOfTypeFromPermanent",
+               "args": [
+                {
+                 "_CounterType": "PTCounter",
+                 "args": [
+                  1,
+                  1
+                 ]
+                },
+                {
+                 "_Permanent": "Trigger_ThatCreature"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "_Rule": "TriggerA",
+     "args": [
+      {
+       "_Trigger": "WhenACreatureBlocks",
+       "args": {
+        "_Permanents": "SinglePermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       }
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "CreateFutureTrigger",
+         "args": [
+          {
+           "_FutureTrigger": "AtTheNextEndOfCombat"
+          },
+          {
+           "_Actions": "ActionList",
+           "args": [
+            {
+             "_Action": "RemoveCounters",
+             "args": [
+              {
+               "_RemoveCountersAction": "ACounterOfTypeFromPermanent",
+               "args": [
+                {
+                 "_CounterType": "PTCounter",
+                 "args": [
+                  1,
+                  1
+                 ]
+                },
+                {
+                 "_Permanent": "Trigger_ThatCreature"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "CardPT": {
+    "Power": 0,
+    "Toughness": 0
+   }
   }
  ]
 }

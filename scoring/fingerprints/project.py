@@ -386,6 +386,8 @@ def extract_effects(actions: Any, *, optional: bool = False, targeted: bool = Fa
             # is timing; the body is the effect. Kept as sub_effects so the
             # wrapper stays one effect and the delayed verbs still tag.
             eff = _leaf_effect(node, optional=optional, targeted=targeted)
+            # The counter slug belongs to the body (a remove must not produce it).
+            eff.counter = None
             args = node.get("args")
             bodies = []
             for a in (args if isinstance(args, list) else [args]):

@@ -83,6 +83,22 @@ def test_removing_counters_does_not_count_as_producing_them():
     assert "counter" in placed and "counter:charge" in placed
 
 
+def test_delayed_counter_removal_does_not_produce_counters():
+    # Clockwork Beetle: "Whenever this creature attacks or blocks, remove a +1/+1
+    # counter from it at end of combat."
+    recs = _recs("Clockwork Beetle")
+    delayed = [e for r in recs for e in r.effects if e.verb == "CreateFutureTrigger"]
+    assert [s.verb for e in delayed for s in e.sub_effects] == [
+        "RemoveCounters.ACounterOfTypeFromPermanent",
+        "RemoveCounters.ACounterOfTypeFromPermanent",
+    ]
+    assert all(s.counter == "plus1" for e in delayed for s in e.sub_effects)
+    produced = card_resources(recs)["produces"]
+    assert "counter" not in produced and "counter:+1/+1" not in produced
+    assert "c:plus1" in _flat("Clockwork Beetle", 1)
+    assert "e:remove_counter" in _flat("Clockwork Beetle", 1)
+
+
 # ── exile: Exile + [_Exilable ...] ───────────────────────────────────────────
 
 def test_exile_permanent():
