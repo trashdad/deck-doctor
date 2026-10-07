@@ -381,6 +381,23 @@ def extract_effects(actions: Any, *, optional: bool = False, targeted: bool = Fa
             out.extend(_reflexive_body(node.get("args"), optional=optional,
                                        targeted=targeted, depth=depth + 1))
             continue
+        if op == "CreateFutureTrigger":
+            # "At the beginning of the next end step, <actions>": the trigger node
+            # is timing; the body is the effect. Kept as sub_effects so the
+            # wrapper stays one effect and the delayed verbs still tag.
+            eff = _leaf_effect(node, optional=optional, targeted=targeted)
+            args = node.get("args")
+            bodies = []
+            for a in (args if isinstance(args, list) else [args]):
+                if (isinstance(a, dict) and "_FutureTrigger" in a
+                        and "_Action" not in a and "_Actions" not in a):
+                    continue
+                if a is not None:
+                    bodies.append(a)
+            eff.sub_effects = extract_effects(bodies, optional=optional, targeted=targeted,
+                                              depth=depth + 1)
+            out.append(eff)
+            continue
         if is_reflexive(op):
             # upstream Reflexive_<step>_When...: the step itself, then the reflexive body
             eff = _reflexive_effect(node, targeted=targeted)

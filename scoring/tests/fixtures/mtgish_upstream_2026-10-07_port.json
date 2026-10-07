@@ -6421,6 +6421,106 @@
     "Power": 2,
     "Toughness": 2
    }
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Amy Pond",
+   "Typeline": {
+    "Supertypes": [
+     "Legendary"
+    ],
+    "Cardtypes": [
+     "Creature"
+    ],
+    "Subtypes": [
+     "Human"
+    ]
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 2
+    },
+    {
+     "_ManaSymbol": "ManaCostR"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "DeckConstruction",
+     "args": {
+      "_DeckConstruction": "PartnerWith",
+      "args": "Rory Williams"
+     }
+    },
+    {
+     "_Rule": "TriggerA",
+     "args": [
+      {
+       "_Trigger": "WhenACreatureDealsCombatDamageToAPlayer",
+       "args": [
+        {
+         "_Permanents": "SinglePermanent",
+         "args": {
+          "_Permanent": "ThisPermanent"
+         }
+        },
+        {
+         "_Players": "AnyPlayer"
+        }
+       ]
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "RemoveCounters",
+         "args": [
+          {
+           "_RemoveCountersAction": "NumberCountersOfTypeFromACardInExile",
+           "args": [
+            {
+             "_GameNumber": "Trigger_AmountOfDamageDealt"
+            },
+            {
+             "_CounterType": "TimeCounter"
+            },
+            {
+             "_CardsInExile": "And",
+             "args": [
+              {
+               "_CardsInExile": "IsSuspended"
+              },
+              {
+               "_CardsInExile": "OwnedByAPlayer",
+               "args": {
+                "_Players": "SinglePlayer",
+                "args": {
+                 "_Player": "You"
+                }
+               }
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "_Rule": "DeckConstruction",
+     "args": {
+      "_DeckConstruction": "DoctorsCompanion"
+     }
+    }
+   ],
+   "CardPT": {
+    "Power": 2,
+    "Toughness": 2
+   }
   }
  ]
 }

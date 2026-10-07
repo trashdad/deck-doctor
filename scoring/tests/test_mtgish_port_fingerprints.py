@@ -68,6 +68,21 @@ def test_vector_uses_the_qualified_verb():
     assert vec["verb:PutCounters.NumberCountersOfTypeOnPermanent"] == 1
 
 
+def test_removing_counters_does_not_count_as_producing_them():
+    # Amy Pond: "Whenever Amy Pond deals combat damage to a player, choose a suspended
+    # card you own and remove that many time counters from it."
+    recs = _recs("Amy Pond")
+    removes = [e for r in recs for e in r.effects if e.verb.startswith("RemoveCounters")]
+    assert [e.verb for e in removes] == ["RemoveCounters.NumberCountersOfTypeFromACardInExile"]
+    assert removes[0].counter == "time"
+    produced = card_resources(recs)["produces"]
+    assert "counter" not in produced
+    assert "counter:time" not in produced
+    # Coretapper: "Sacrifice this creature: Put two charge counters on target artifact."
+    placed = card_resources(_recs("Coretapper"))["produces"]
+    assert "counter" in placed and "counter:charge" in placed
+
+
 # ── exile: Exile + [_Exilable ...] ───────────────────────────────────────────
 
 def test_exile_permanent():
@@ -359,11 +374,17 @@ def test_ops_on_the_created_tokens_as_a_group():
     # Feldon of the Third Path: "... Create a token that's a copy of target creature card in
     # your graveyard ... It gains haste. Sacrifice it at the beginning of the next end step."
     # Upstream: TheTokensCreatedThisWay + CreateEachPermanentLayerEffect / SacrificeEachPermanent.
-    assert {"e:create_token", "e:pump"} <= _flat("Feldon of the Third Path")
+    assert {"e:create_token", "e:pump", "e:sacrifice"} <= _flat("Feldon of the Third Path")
     # Rolling Hamsphere: "... create three 1/1 red Hamster creature tokens, then it deals X damage
     # to any target ..." (upstream: EachPermanentDealsDamage)
     assert "e:damage" in _flat("Rolling Hamsphere", 1)
-    # Cauldron Dance: "... Its controller sacrifices it at the beginning of the next end step."
+    # Cauldron Dance: "Return it to your hand at the beginning of the next end step. ...
+    # Its controller sacrifices it at the beginning of the next end step."
+    # Both delayed actions are the bodies of CreateFutureTrigger.
+    bodies = [s.verb for e in _recs("Cauldron Dance")[1].effects
+              if e.verb == "CreateFutureTrigger" for s in e.sub_effects]
+    assert {"PutPermanentIntoItsOwnersHand", "ControllersSacrificeEachPermanent"} <= set(bodies)
+    assert {"e:sacrifice", "e:bounce"} <= _flat("Cauldron Dance", 1)
     # Cut the Tethers: "For each Spirit, return it to its owner's hand unless that player pays {3}."
     assert "e:bounce" in _flat("Cut the Tethers")
 
