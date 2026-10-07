@@ -1,4 +1,8 @@
-"""Build the MTGish file the card pipeline reads: base snapshot + upstream gap-fill.
+"""Build the MTGish file the card pipeline read before the upstream port: base snapshot + upstream gap-fill.
+
+Since the port to the restructured upstream schema (mtgish_schema.py), build_semantics.py
+and build_fingerprints.py read upstream data/mtgish.lines.json directly; this script is
+kept to reproduce stores built from the merged file.
 
 The base snapshot (simmander/mtgish/data/cards.json, 2026-04-28) is what every
 existing card's tags and fingerprints were built from. Upstream
