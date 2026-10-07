@@ -219,3 +219,32 @@ def test_high_inclusion_card_without_synergy_can_be_suggested():
     body = _recommend(cmd, limit=60).json()
     got = {s["card"]["id"] for s in body["suggestions"]}
     assert got & set(picks)
+
+
+def test_unit_clamp_treats_nan_and_none_as_zero():
+    from app.suggest import _unit
+    assert _unit(float("nan")) == 0.0
+    assert _unit(None) == 0.0
+    assert _unit(float("inf")) == 0.0
+    assert _unit(-0.2) == 0.0 and _unit(1.7) == 1.0 and _unit(0.42) == 0.42
+
+
+def test_scores_never_increase_down_the_list_including_staple_fill():
+    # Staples are a last resort: they must sit below every signal-driven suggestion,
+    # even when a weak signal-driven card scores under STAPLE_SCORE.
+    cases = []
+    for c in ("The Ur-Dragon", "Krenko, Mob Boss"):
+        cmd = _id(c)
+        cases.append((cmd, list(store._edhrec.get(cmd, {}))[:3]))
+    for cid, card in list(store._cards.items()):
+        if is_commander(card) and cid not in store._edhrec:
+            cases.append((cid, []))
+            if len(cases) >= 8:
+                break
+    filled = 0
+    for cmd, deck in cases:
+        body = _recommend(cmd, cards=deck, limit=60, explain=True).json()
+        scores = [s["score"] for s in body["suggestions"]]
+        assert scores == sorted(scores, reverse=True), store.get(cmd)["name"]
+        filled += any(r["signal"] == "staple" for s in body["suggestions"] for r in s["reasons"])
+    assert filled, "expected at least one case to reach the staple fill"

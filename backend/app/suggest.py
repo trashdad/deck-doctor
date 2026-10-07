@@ -43,6 +43,13 @@ ENGINE_BONUS_CANDIDATE = 0.3
 SPELLBOOK_BONUS = 1.2    # curated Commander Spellbook combos outrank mined engines
 STAPLE_SCORE = 0.05      # below any signal-driven score; staples are a last resort
 
+def _unit(x) -> float:
+    """Clamp to [0, 1]; None, NaN and infinities count as 0 (min(1.0, nan) would be 1.0)."""
+    if x is None or not math.isfinite(x):
+        return 0.0
+    return max(0.0, min(1.0, x))
+
+
 # Mirror of scoring/cooccurrence/fuse.py::lift_to_norm (backend must not import scoring/).
 LIFT_K = 0.25
 
@@ -101,8 +108,8 @@ def recommend(store: Store, commander_id: str, deck_ids: list[str],
     edh = store.edhrec_for(commander_id)
     tier = "edhrec" if edh else "cooccurrence"
     for cid, (synergy, inclusion) in edh.items():
-        acc[cid]["edh"] = max(0.0, min(1.0, synergy or 0.0))
-        acc[cid]["inc"] = max(0.0, min(1.0, inclusion or 0.0))
+        acc[cid]["edh"] = _unit(synergy)
+        acc[cid]["inc"] = _unit(inclusion)
 
     for d in members:
         for other, lift, _jac in store.cooccurrence_neighbors(d, NEIGHBOR_K):
@@ -164,12 +171,14 @@ def recommend(store: Store, commander_id: str, deck_ids: list[str],
             tier = "color_staple"
         have = {cid for _, cid, _ in scored}
         top_freq = None
+        # Staples are a last resort: keep every one below the weakest signal-driven pick.
+        ceiling = min(STAPLE_SCORE, scored[-1][0] / 2) if scored else STAPLE_SCORE
         for cid, freq in store.staples_for_colors(ci, limit=limit * 3, exclude=deck_set | have):
             card = store.get(cid)
             if card is None or card["name"] in BANLIST:
                 continue
             top_freq = top_freq or max(freq, 1)
-            staple_fill.append((STAPLE_SCORE * freq / top_freq, cid,
+            staple_fill.append((ceiling * freq / top_freq, cid,
                                 {"staple_freq": freq}))
             if len(scored) + len(staple_fill) >= limit:
                 break
