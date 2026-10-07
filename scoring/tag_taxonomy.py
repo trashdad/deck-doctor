@@ -9,7 +9,12 @@ Tag namespaces:
   tgt:  target    — WHO is affected (player)
   perm: perm type — WHAT TYPES of permanents the ability cares about
   r:    replace   — replacement effect type
+
+Action verbs may be qualified with an upstream variant ("PutCounters.ACounterOfTypeOnEachPermanent",
+see mtgish_schema.py); look them up with action_tags(), which falls back to the plain op.
 """
+
+from mtgish_schema import reflexive_steps
 
 # ── Trigger map ───────────────────────────────────────────────────────────────
 
@@ -74,6 +79,7 @@ TRIGGER_MAP: dict[str, list[str]] = {
     "WhenACounterOfTypeIsPutOnAPermanent":                              ["t:counter_placed"],
     "WhenACounterOfTypeIsRemovedFromAPermanent":                        ["t:counter_removed"],
     "WhenACounterIsPutOnAPermanent":                                    ["t:counter_placed"],
+    "WhenAnyNumberOfCountersArePutOnAPermanent":                        ["t:counter_placed"],  # upstream name
     "WhenTheLastCounterOfTypeIsRemovedFromAPermanent":                  ["t:counter_removed"],
     # Tapping/untapping
     "WhenAPermanentBecomesTapped":                                      ["t:tapped"],
@@ -108,8 +114,10 @@ ACTION_MAP: dict[str, list[str]] = {
     "DrawNumberCards":                           ["e:draw"],
     "DrawUntilHandSize":                         ["e:draw"],
     "DrawACardForEach":                          ["e:draw"],
+    "MultiDraw":                                 ["e:draw"],   # upstream: "you and that player each draw"
     "LookAtTheTopNumberCardsOfLibrary":          ["e:scry"],
     "LookAtTopCards":                            ["e:scry"],
+    "LookAtTheTopNumberCardsOfLibraryNEW":       ["e:scry"],   # upstream's split look-at action
     "Surveil":                                   ["e:surveil"],
     "Scry":                                      ["e:scry"],
     "DiscardACard":                              ["e:discard"],
@@ -124,6 +132,9 @@ ACTION_MAP: dict[str, list[str]] = {
     "DealsDamageToPlayer":                       ["e:damage"],
     "DeadPermanentDealsDamage":                  ["e:damage"],
     "PermanentDealsDamage":                      ["e:damage"],
+    # Upstream refers to created tokens as a group (TheTokensCreatedThisWay), so the
+    # single-permanent ops on them became their Each* forms.
+    "EachPermanentDealsDamage":                  ["e:damage"],
     "PermanentDealsDamageForEach":               ["e:damage"],
     "SpellDealsDamage":                          ["e:damage"],
     "SpellDealsDamageToAny":                     ["e:damage"],
@@ -154,6 +165,8 @@ ACTION_MAP: dict[str, list[str]] = {
     "SacrificePermanent":                        ["e:sacrifice"],
     "SacrificeAPermanent":                       ["e:sacrifice"],
     "SacrificeNumberPermanents":                 ["e:sacrifice"],
+    "SacrificeEachPermanent":                    ["e:sacrifice"],
+    "ControllersSacrificeEachPermanent":         ["e:sacrifice"],
     # Counters
     "PutACounterOfTypeOnPermanent":              ["e:add_counter"],
     "PutNumberCountersOfTypeOnPermanent":        ["e:add_counter"],
@@ -169,6 +182,14 @@ ACTION_MAP: dict[str, list[str]] = {
     "PutCounters":                               ["e:add_counter"],
     "RemoveCounters":                            ["e:remove_counter"],
     "MoveCounters":                              ["e:remove_counter", "e:add_counter"],
+    # Variant-qualified verbs override the plain op. The April op
+    # PutACounterOfTypeOnEachPermanent carried e:proliferate; its upstream variant keeps it.
+    "PutCounters.ACounterOfTypeOnEachPermanent": ["e:add_counter", "e:proliferate"],
+    # The two other upstream variants that replaced April PutACounterOfTypeOnEachPermanent
+    # uses (a chosen / each kind of counter put on each other creature).
+    "PutCounters.DuplicateACounterOfAPermanentOnEachOtherPermanent":            ["e:add_counter", "e:proliferate"],
+    "PutCounters.ADuplicateOfEachKindOfCounterAmongPermanentDistibutedToPermanents": ["e:add_counter", "e:proliferate"],
+    "PutCountersWithRestriction":                ["e:add_counter"],
     # Keyword actions whose effect is fixed by their Oracle reminder text:
     #   Amass N: N +1/+1 counters on an Army you control (a 0/0 Army token first if none).
     #   Empower Jace N: N loyalty counters on a Jace token (a Jace planeswalker token first if none).
@@ -181,6 +202,14 @@ ACTION_MAP: dict[str, list[str]] = {
     "CreateTokensWithFlags":                     ["e:create_token"],
     "CreateNumberTokens":                        ["e:create_token"],
     "ForEachPlayerCreateTokens":                 ["e:create_token"],
+    # Upstream (2026-10): EachPlayerAction(CreateTokens) and the ForEach*CreateTokens*
+    # ops became these; token flags moved into CreateTokens itself.
+    "EachPlayerCreatesTokens":                   ["e:create_token"],
+    "EachPlayerMayCreateTokens":                 ["e:create_token"],
+    "EachPlayerCreatesTokensOfTheirChoice":      ["e:create_token"],
+    "CreateTokensForEachPlayer":                 ["e:create_token"],
+    "CreateTokensForEachPermanent":              ["e:create_token"],
+    "MultiCreateTokens":                         ["e:create_token"],
     "PopulateNumberTimes":                       ["e:populate"],
     "Populate":                                  ["e:populate"],
     # Library / tutoring
@@ -203,6 +232,7 @@ ACTION_MAP: dict[str, list[str]] = {
     "ReturnToHand":                              ["e:bounce"],
     "ReturnPermanentToHand":                     ["e:bounce"],
     "PutPermanentIntoItsOwnersHand":             ["e:bounce"],
+    "PutEachPermanentIntoItsOwnersHand":         ["e:bounce"],
     # Tap / untap
     "TapPermanent":                              ["e:tap"],
     "TapNumberPermanents":                       ["e:tap"],
@@ -228,6 +258,8 @@ ACTION_MAP: dict[str, list[str]] = {
     "CreateEachPermanentLayerEffectUntil":       ["e:pump"],
     "CreatePermanentRuleEffectUntil":            ["e:pump"],
     "CreatePermanentLayerEffect":                ["e:pump"],
+    "CreateEachPermanentLayerEffect":            ["e:pump"],
+    "CreateEachPermanentRuleEffectUntil":        ["e:pump"],
     "ModifyPT":                                  ["e:pump"],
     # Discover / explore / venture / investigate
     "Discover":                                  ["e:discover"],
@@ -239,6 +271,8 @@ ACTION_MAP: dict[str, list[str]] = {
     "TakeTheInitiative":                         ["e:initiative"],
     "FightCreatures":                            ["e:fight"],
     "HaveCreaturesFight":                        ["e:fight"],
+    "Fight":                                     ["e:fight"],      # upstream name of HaveCreaturesFight
+    "MultiFight":                                ["e:fight"],
     "GainControl":                               ["e:steal"],
     "GainControlOfPermanent":                    ["e:steal"],
     "AttachAPermanentToAPermanent":              ["e:equip"],
@@ -250,6 +284,49 @@ ACTION_MAP: dict[str, list[str]] = {
     "RegeneratePermanent":                       ["e:regenerate"],
     "ReflexiveTrigger":                          [],  # structural wrapper, handled by recursion
 }
+
+# Upstream folds "you may/must <step>. When you do, <body>" into one action named
+# Reflexive_<step>[_<step>]_When...; each step is tagged like the action it names.
+REFLEXIVE_STEP_ACTION: dict[str, str] = {
+    "Sacrifice":                        "SacrificePermanent",
+    "PlayerSacrifices":                 "SacrificePermanent",
+    "Exile":                            "Exile",
+    "EachPlayerExiles":                 "Exile",
+    "CreateTokens":                     "CreateTokens",
+    "PutCounters":                      "PutCounters",
+    "RemoveCounters":                   "RemoveCounters",
+    "Discard":                          "DiscardACard",
+    "Mill":                             "MillNumberCards",
+    "EachPlayerMills":                  "MillNumberCards",
+    "Draw":                             "DrawACard",
+    "Tap":                              "TapPermanent",
+    "DealDamage":                       "DealsDamage",
+    "Fight":                            "Fight",
+    "Surveil":                          "Surveil",
+    "Amass":                            "Amass",
+    "AddMana":                          "AddMana",
+    "FlipACoin":                        "FlipACoin",
+    "RollDice":                         "RollAD6",
+    "SearchLibrary":                    "SearchLibrary",
+    "PutAPermanentInOwnersHand":        "PutPermanentIntoItsOwnersHand",
+    "HavePlayerGainControlOfPermanent": "GainControlOfPermanent",
+}
+
+
+def action_tags(verb: str) -> list[str]:
+    """Tags of an action verb: exact (variant-qualified) entry, else the plain op's,
+    else (Reflexive_* actions) the union of the tags of the steps it names."""
+    if verb in ACTION_MAP:
+        return list(ACTION_MAP[verb])
+    base = verb.split(".", 1)[0]
+    if base in ACTION_MAP:
+        return list(ACTION_MAP[base])
+    tags: list[str] = []
+    for step in reflexive_steps(base):
+        for t in ACTION_MAP.get(REFLEXIVE_STEP_ACTION.get(step, step), []):
+            if t not in tags:
+                tags.append(t)
+    return tags
 
 # ── Permanent cardtype map (_Permanents: "IsCardtype" → perm: tags) ───────────
 # Captures WHAT TYPE of permanent the ability cares about.
@@ -379,6 +456,8 @@ KEYWORD_MAP: dict[str, list[str]] = {
 REPLACEMENT_MAP: dict[str, list[str]] = {
     "ReplaceWouldDraw":             ["r:replace_draw"],
     "ReplaceWouldDealDamage":       ["r:replace_damage"],
+    # Upstream split damage prevention out of ReplaceWouldDealDamage into PreventDamage.
+    "PreventDamage":                ["r:replace_damage"],
     "ReplaceWouldEnter":            ["r:replace_etb"],
     "ReplaceWouldLeaveTheBattlefield": ["r:replace_death"],
     "ReplaceWouldDestroy":          ["r:replace_destroy"],
