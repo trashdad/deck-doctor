@@ -110,7 +110,7 @@ def build_inverted_index(per_card_tags: dict[str, list[str]]) -> dict[str, list[
     for card_id, tags in per_card_tags.items():
         for t in tags:
             inv[t].add(card_id)
-    return {t: sorted(ids) for t, ids in inv.items()}
+    return {t: sorted(inv[t]) for t in sorted(inv)}
 
 
 def fingerprint_to_vector(records: list[AbilityRecord]) -> dict[str, int]:
@@ -138,7 +138,7 @@ def fingerprint_to_vector(records: list[AbilityRecord]) -> dict[str, int]:
                 vec["targeted"] += 1
             if e.amount:
                 vec[f"amt:{e.amount.kind}"] += 1
-    return dict(vec)
+    return {k: vec[k] for k in sorted(vec)}
 
 
 def _iter_effects(effects: list[Effect]):

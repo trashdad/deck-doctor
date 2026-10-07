@@ -1,0 +1,5738 @@
+{
+ "source": "Real MTGish entries copied verbatim from data/mtgish.merged.json (sha256 fd3f12dbd7f5f4e9b372807f6ce5d079cd7d96abb7a43d9b17d016ced247e577), the corpus production fingerprints are built from: MTGish base 2026-04-28 (sha256 3ee975375adf04777680a6aab73c0a69a6670efc1978f8ab294f846d6fc4a9f8) plus i5jb/mtgish@153451e44d88baabfeb9902092032c328f4d5416 gap-fill via scoring/mtgish_merge.py. Card ids are the Scryfall ids in data/cards.json.",
+ "cards": [
+  {
+   "id": "b5275d76-2947-4219-be21-614c7421614a",
+   "name": "Blood Artist",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Blood Artist",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Vampire"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "Or",
+        "args": [
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "SinglePermanent",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          }
+         },
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "Other",
+             "args": {
+              "_Permanent": "ThisPermanent"
+             }
+            },
+            {
+             "_Permanents": "IsCardtype",
+             "args": "Creature"
+            }
+           ]
+          }
+         }
+        ]
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "TargetPlayer",
+           "args": {
+            "_Players": "AnyPlayer"
+           }
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "PlayerAction",
+            "args": [
+             {
+              "_Player": "Ref_TargetPlayer"
+             },
+             {
+              "_Action": "LoseLife",
+              "args": {
+               "_GameNumber": "Integer",
+               "args": 1
+              }
+             }
+            ]
+           },
+           {
+            "_Action": "GainLife",
+            "args": {
+             "_GameNumber": "Integer",
+             "args": 1
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 0,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "c43609fb-3cee-44e0-98d0-3ecaba1d5767",
+   "name": "Zulaport Cutthroat",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Zulaport Cutthroat",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Human",
+      "Rogue",
+      "Ally"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "Or",
+        "args": [
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "SinglePermanent",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          }
+         },
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "Other",
+             "args": {
+              "_Permanent": "ThisPermanent"
+             }
+            },
+            {
+             "_Permanents": "And",
+             "args": [
+              {
+               "_Permanents": "IsCardtype",
+               "args": "Creature"
+              },
+              {
+               "_Permanents": "ControlledByAPlayer",
+               "args": {
+                "_Players": "SinglePlayer",
+                "args": {
+                 "_Player": "You"
+                }
+               }
+              }
+             ]
+            }
+           ]
+          }
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "EachPlayerAction",
+          "args": [
+           {
+            "_Players": "Opponent"
+           },
+           {
+            "_Action": "LoseLife",
+            "args": {
+             "_GameNumber": "Integer",
+             "args": 1
+            }
+           }
+          ]
+         },
+         {
+          "_Action": "GainLife",
+          "args": {
+           "_GameNumber": "Integer",
+           "args": 1
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "2d97757e-f1fb-4ce6-9e14-3deedda7a03a",
+   "name": "Falkenrath Noble",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Falkenrath Noble",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Vampire",
+      "Noble"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 3
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Flying"
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "Or",
+        "args": [
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "SinglePermanent",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          }
+         },
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "Other",
+             "args": {
+              "_Permanent": "ThisPermanent"
+             }
+            },
+            {
+             "_Permanents": "IsCardtype",
+             "args": "Creature"
+            }
+           ]
+          }
+         }
+        ]
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "TargetPlayer",
+           "args": {
+            "_Players": "AnyPlayer"
+           }
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "PlayerAction",
+            "args": [
+             {
+              "_Player": "Ref_TargetPlayer"
+             },
+             {
+              "_Action": "LoseLife",
+              "args": {
+               "_GameNumber": "Integer",
+               "args": 1
+              }
+             }
+            ]
+           },
+           {
+            "_Action": "GainLife",
+            "args": {
+             "_GameNumber": "Integer",
+             "args": 1
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "b3f8be99-a398-4664-beb6-3e98d6e62a32",
+   "name": "Cruel Celebrant",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Cruel Celebrant",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Vampire"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostW"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "Or",
+        "args": [
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "SinglePermanent",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          }
+         },
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "Other",
+             "args": {
+              "_Permanent": "ThisPermanent"
+             }
+            },
+            {
+             "_Permanents": "And",
+             "args": [
+              {
+               "_Permanents": "Or",
+               "args": [
+                {
+                 "_Permanents": "IsCardtype",
+                 "args": "Creature"
+                },
+                {
+                 "_Permanents": "IsCardtype",
+                 "args": "Planeswalker"
+                }
+               ]
+              },
+              {
+               "_Permanents": "ControlledByAPlayer",
+               "args": {
+                "_Players": "SinglePlayer",
+                "args": {
+                 "_Player": "You"
+                }
+               }
+              }
+             ]
+            }
+           ]
+          }
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "EachPlayerAction",
+          "args": [
+           {
+            "_Players": "Opponent"
+           },
+           {
+            "_Action": "LoseLife",
+            "args": {
+             "_GameNumber": "Integer",
+             "args": 1
+            }
+           }
+          ]
+         },
+         {
+          "_Action": "GainLife",
+          "args": {
+           "_GameNumber": "Integer",
+           "args": 1
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "6fe6ccad-e303-48f9-9dfa-0db7c1878031",
+   "name": "Bastion of Remembrance",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Bastion of Remembrance",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Enchantment"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPermanentEntersTheBattlefield",
+        "args": {
+         "_Permanents": "SinglePermanent",
+         "args": {
+          "_Permanent": "ThisPermanent"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreateTokens",
+          "args": [
+           {
+            "_CreatableToken": "CreatureToken",
+            "args": [
+             {
+              "_PT": "PT",
+              "args": [
+               1,
+               1
+              ]
+             },
+             {
+              "_CreatureTokenType": "CreatureToken"
+             },
+             {
+              "_ColorList": "Colors",
+              "args": [
+               {
+                "_Color": "White"
+               }
+              ]
+             },
+             {
+              "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+              "args": [
+               "Human",
+               "Soldier"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          },
+          {
+           "_Permanents": "ControlledByAPlayer",
+           "args": {
+            "_Players": "SinglePlayer",
+            "args": {
+             "_Player": "You"
+            }
+           }
+          }
+         ]
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "EachPlayerAction",
+          "args": [
+           {
+            "_Players": "Opponent"
+           },
+           {
+            "_Action": "LoseLife",
+            "args": {
+             "_GameNumber": "Integer",
+             "args": 1
+            }
+           }
+          ]
+         },
+         {
+          "_Action": "GainLife",
+          "args": {
+           "_GameNumber": "Integer",
+           "args": 1
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "2c12928e-ec68-40d4-8126-af5af4b49033",
+   "name": "Grim Haruspex",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Grim Haruspex",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Morph",
+      "args": {
+       "_Cost": "PayMana",
+       "args": [
+        {
+         "_ManaSymbol": "ManaCostB"
+        }
+       ]
+      }
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "Other",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          },
+          {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "IsNonToken"
+            },
+            {
+             "_Permanents": "IsCardtype",
+             "args": "Creature"
+            },
+            {
+             "_Permanents": "ControlledByAPlayer",
+             "args": {
+              "_Players": "SinglePlayer",
+              "args": {
+               "_Player": "You"
+              }
+             }
+            }
+           ]
+          }
+         ]
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "DrawACard"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 3,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "33c16202-4d7f-449c-8b29-144b2a9fda9a",
+   "name": "Midnight Reaper",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Midnight Reaper",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Zombie",
+      "Knight"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "IsNonToken"
+          },
+          {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          },
+          {
+           "_Permanents": "ControlledByAPlayer",
+           "args": {
+            "_Players": "SinglePlayer",
+            "args": {
+             "_Player": "You"
+            }
+           }
+          }
+         ]
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "PermanentDealsDamage",
+          "args": [
+           {
+            "_Permanent": "ThisPermanent"
+           },
+           {
+            "_GameNumber": "Integer",
+            "args": 1
+           },
+           {
+            "_DamageRecipient": "Player",
+            "args": {
+             "_Player": "You"
+            }
+           }
+          ]
+         },
+         {
+          "_Action": "DrawACard"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 3,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "8ba8b02a-8a05-40cd-8b83-51fd0cc0a7a5",
+   "name": "Pitiless Plunderer",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Pitiless Plunderer",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Human",
+      "Pirate"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 3
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "Other",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          },
+          {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "IsCardtype",
+             "args": "Creature"
+            },
+            {
+             "_Permanents": "ControlledByAPlayer",
+             "args": {
+              "_Players": "SinglePlayer",
+              "args": {
+               "_Player": "You"
+              }
+             }
+            }
+           ]
+          }
+         ]
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreateTokens",
+          "args": [
+           {
+            "_CreatableToken": "TreasureToken"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 4
+    }
+   }
+  },
+  {
+   "id": "1a015b68-eb88-4c20-867e-fa61ef046188",
+   "name": "Butcher of Malakir",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Butcher of Malakir",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Vampire",
+      "Warrior"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 5
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Flying"
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "Or",
+        "args": [
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "SinglePermanent",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          }
+         },
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "Other",
+             "args": {
+              "_Permanent": "ThisPermanent"
+             }
+            },
+            {
+             "_Permanents": "And",
+             "args": [
+              {
+               "_Permanents": "IsCardtype",
+               "args": "Creature"
+              },
+              {
+               "_Permanents": "ControlledByAPlayer",
+               "args": {
+                "_Players": "SinglePlayer",
+                "args": {
+                 "_Player": "You"
+                }
+               }
+              }
+             ]
+            }
+           ]
+          }
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "EachPlayerAction",
+          "args": [
+           {
+            "_Players": "Opponent"
+           },
+           {
+            "_Action": "SacrificeAPermanent",
+            "args": {
+             "_Permanents": "IsCardtype",
+             "args": "Creature"
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 5,
+     "Toughness": 4
+    }
+   }
+  },
+  {
+   "id": "9aaced6e-f656-49d3-9130-ba255800e0a5",
+   "name": "Grave Pact",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Grave Pact",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Enchantment"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          },
+          {
+           "_Permanents": "ControlledByAPlayer",
+           "args": {
+            "_Players": "SinglePlayer",
+            "args": {
+             "_Player": "You"
+            }
+           }
+          }
+         ]
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "EachPlayerAction",
+          "args": [
+           {
+            "_Players": "Other",
+            "args": {
+             "_Player": "Trigger_ControllerOfThatPermanent"
+            }
+           },
+           {
+            "_Action": "SacrificeAPermanent",
+            "args": {
+             "_Permanents": "IsCardtype",
+             "args": "Creature"
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "343e7a7a-60d3-4a63-8428-25de639e5df1",
+   "name": "Dictate of Erebos",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Dictate of Erebos",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Enchantment"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 3
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Flash"
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          },
+          {
+           "_Permanents": "ControlledByAPlayer",
+           "args": {
+            "_Players": "SinglePlayer",
+            "args": {
+             "_Player": "You"
+            }
+           }
+          }
+         ]
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "EachPlayerAction",
+          "args": [
+           {
+            "_Players": "Opponent"
+           },
+           {
+            "_Action": "SacrificeAPermanent",
+            "args": {
+             "_Permanents": "IsCardtype",
+             "args": "Creature"
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "674f3a8a-4552-4289-b92a-06ce158f115c",
+   "name": "Mayhem Devil",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Mayhem Devil",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Devil"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPlayerSacrificesAPermanent",
+        "args": [
+         {
+          "_Players": "AnyPlayer"
+         },
+         {
+          "_Permanents": "AnyPermanent"
+         }
+        ]
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "AnyTarget"
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "PermanentDealsDamage",
+            "args": [
+             {
+              "_Permanent": "ThisPermanent"
+             },
+             {
+              "_GameNumber": "Integer",
+              "args": 1
+             },
+             {
+              "_DamageRecipient": "Ref_AnyTarget"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 3,
+     "Toughness": 3
+    }
+   }
+  },
+  {
+   "id": "4e5d5649-3e30-4aca-80f8-5a7522d366da",
+   "name": "Skullclamp",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Skullclamp",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Artifact"
+     ],
+     "Subtypes": [
+      "Equipment"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "PermanentLayerEffect",
+      "args": [
+       {
+        "_Permanent": "HostPermanent"
+       },
+       [
+        {
+         "_StaticLayerEffect": "AdjustPT",
+         "args": [
+          1,
+          -1
+         ]
+        }
+       ]
+      ]
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+        "args": {
+         "_Permanents": "SinglePermanent",
+         "args": {
+          "_Permanent": "HostPermanent"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "DrawNumberCards",
+          "args": {
+           "_GameNumber": "Integer",
+           "args": 2
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "Equip",
+      "args": [
+       {
+        "_Permanents": "IsCardtype",
+        "args": "Creature"
+       },
+       {
+        "_Cost": "PayMana",
+        "args": [
+         {
+          "_ManaSymbol": "ManaCostGeneric",
+          "args": 1
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "aac33238-e4bd-4c72-aecc-9905232c3ab4",
+   "name": "Smothering Abomination",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Smothering Abomination",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Eldrazi"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "CDA_Color",
+      "args": {
+       "_SettableColor": "Devoid"
+      }
+     },
+     {
+      "_Rule": "Flying"
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "AtTheBeginningOfAPlayersUpkeep",
+        "args": {
+         "_Players": "SinglePlayer",
+         "args": {
+          "_Player": "You"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "SacrificeAPermanent",
+          "args": {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPlayerSacrificesAPermanent",
+        "args": [
+         {
+          "_Players": "SinglePlayer",
+          "args": {
+           "_Player": "You"
+          }
+         },
+         {
+          "_Permanents": "IsCardtype",
+          "args": "Creature"
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "DrawACard"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 4,
+     "Toughness": 3
+    }
+   }
+  },
+  {
+   "id": "f511830b-1c1f-4d30-aa5d-4314726d142e",
+   "name": "Viscera Seer",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Viscera Seer",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Vampire",
+      "Wizard"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "Scry",
+          "args": {
+           "_GameNumber": "Integer",
+           "args": 1
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "c0e175cb-ffea-473f-8422-53273f263016",
+   "name": "Carrion Feeder",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Carrion Feeder",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Zombie"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "PermanentRuleEffect",
+      "args": [
+       {
+        "_Permanent": "ThisPermanent"
+       },
+       [
+        {
+         "_PermanentRule": "CantBlock"
+        }
+       ]
+      ]
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "PutACounterOfTypeOnPermanent",
+          "args": [
+           {
+            "_CounterType": "PTCounter",
+            "args": [
+             1,
+             1
+            ]
+           },
+           {
+            "_Permanent": "ThisPermanent"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "fe96fe60-f251-403c-acd1-d658a1d0c930",
+   "name": "Ashnod's Altar",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Ashnod's Altar",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Artifact"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 3
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "AddMana",
+          "args": {
+           "_ManaProduce": "And",
+           "args": [
+            {
+             "_ManaProduce": "ManaProduceC"
+            },
+            {
+             "_ManaProduce": "ManaProduceC"
+            }
+           ]
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "68875b43-6839-467c-909e-52fd2212b7de",
+   "name": "Phyrexian Altar",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Phyrexian Altar",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Artifact"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 3
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "AddMana",
+          "args": {
+           "_ManaProduce": "AnyManaColor"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "18a9fb7b-780c-46c7-9a5f-f9abb3c353df",
+   "name": "Goblin Bombardment",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Goblin Bombardment",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Enchantment"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "AnyTarget"
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "PermanentDealsDamage",
+            "args": [
+             {
+              "_Permanent": "ThisPermanent"
+             },
+             {
+              "_GameNumber": "Integer",
+              "args": 1
+             },
+             {
+              "_DamageRecipient": "Ref_AnyTarget"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "8bab577a-4d2b-4b52-a861-1a43fdaa3f97",
+   "name": "Altar of Dementia",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Altar of Dementia",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Artifact"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "TargetPlayer",
+           "args": {
+            "_Players": "AnyPlayer"
+           }
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "MillNumberCards",
+            "args": {
+             "_GameNumber": "PowerOfTheSacrificedCreature"
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "2d50685e-1905-4a48-a7bf-82afcf5b6838",
+   "name": "Spawning Pit",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Spawning Pit",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Artifact"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "PutACounterOfTypeOnPermanent",
+          "args": [
+           {
+            "_CounterType": "ChargeCounter"
+           },
+           {
+            "_Permanent": "ThisPermanent"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "And",
+        "args": [
+         {
+          "_Cost": "PayMana",
+          "args": [
+           {
+            "_ManaSymbol": "ManaCostGeneric",
+            "args": 1
+           }
+          ]
+         },
+         {
+          "_Cost": "RemoveNumberCountersOfTypeFromPermanent",
+          "args": [
+           {
+            "_GameNumber": "Integer",
+            "args": 2
+           },
+           {
+            "_CounterType": "ChargeCounter"
+           },
+           {
+            "_Permanent": "ThisPermanent"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreateTokens",
+          "args": [
+           {
+            "_CreatableToken": "CreatureToken",
+            "args": [
+             {
+              "_PT": "PT",
+              "args": [
+               2,
+               2
+              ]
+             },
+             {
+              "_CreatureTokenType": "ArtifactCreatureToken"
+             },
+             {
+              "_ColorList": "Colorless"
+             },
+             {
+              "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+              "args": [
+               "Spawn"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "1efd76f1-4dc8-4689-aeeb-3923d9d1910a",
+   "name": "Bloodthrone Vampire",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Bloodthrone Vampire",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Vampire"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreatePermanentLayerEffectUntil",
+          "args": [
+           {
+            "_Permanent": "ThisPermanent"
+           },
+           [
+            {
+             "_LayerEffect": "AdjustPT",
+             "args": [
+              2,
+              2
+             ]
+            }
+           ],
+           {
+            "_Expiration": "UntilEndOfTurn"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "f458ae68-5cda-4c40-a348-47b4196fba02",
+   "name": "Woe Strider",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Woe Strider",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Horror"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPermanentEntersTheBattlefield",
+        "args": {
+         "_Permanents": "SinglePermanent",
+         "args": {
+          "_Permanent": "ThisPermanent"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreateTokens",
+          "args": [
+           {
+            "_CreatableToken": "CreatureToken",
+            "args": [
+             {
+              "_PT": "PT",
+              "args": [
+               0,
+               1
+              ]
+             },
+             {
+              "_CreatureTokenType": "CreatureToken"
+             },
+             {
+              "_ColorList": "Colors",
+              "args": [
+               {
+                "_Color": "White"
+               }
+              ]
+             },
+             {
+              "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+              "args": [
+               "Goat"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "Other",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          },
+          {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          }
+         ]
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "Scry",
+          "args": {
+           "_GameNumber": "Integer",
+           "args": 1
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "Escape",
+      "args": {
+       "_Cost": "And",
+       "args": [
+        {
+         "_Cost": "PayMana",
+         "args": [
+          {
+           "_ManaSymbol": "ManaCostGeneric",
+           "args": 3
+          },
+          {
+           "_ManaSymbol": "ManaCostB"
+          },
+          {
+           "_ManaSymbol": "ManaCostB"
+          }
+         ]
+        },
+        {
+         "_Cost": "ExileNumberGraveyardCards",
+         "args": [
+          {
+           "_GameNumber": "Integer",
+           "args": 4
+          },
+          {
+           "_CardsInGraveyard": "And",
+           "args": [
+            {
+             "_CardsInGraveyard": "Other",
+             "args": {
+              "_GraveyardCard": "ThisGraveyardCard"
+             }
+            },
+            {
+             "_CardsInGraveyard": "InAPlayersGraveyard",
+             "args": {
+              "_Players": "SinglePlayer",
+              "args": {
+               "_Player": "You"
+              }
+             }
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_Rule": "AsPermanentEscapes",
+      "args": [
+       {
+        "_Permanent": "ThisPermanent"
+       },
+       [
+        {
+         "_ReplacementActionWouldEnter": "EntersWithNumberCounters",
+         "args": [
+          {
+           "_GameNumber": "Integer",
+           "args": 2
+          },
+          {
+           "_CounterType": "PTCounter",
+           "args": [
+            1,
+            1
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 3,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "a8bb6c1f-a7ad-458e-a57f-aa41de9b7817",
+   "name": "Cartel Aristocrat",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Cartel Aristocrat",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Human",
+      "Advisor"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostW"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "Other",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          },
+          {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          }
+         ]
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "ChooseAColor",
+          "args": {
+           "_ChoosableColor": "AnyColor"
+          }
+         },
+         {
+          "_Action": "CreatePermanentLayerEffectUntil",
+          "args": [
+           {
+            "_Permanent": "ThisPermanent"
+           },
+           [
+            {
+             "_LayerEffect": "AddAbility",
+             "args": [
+              {
+               "_Rule": "Protection",
+               "args": {
+                "_Protectable": "FromColor",
+                "args": {
+                 "_ProtectableColor": "TheChosenColor"
+                }
+               }
+              }
+             ]
+            }
+           ],
+           {
+            "_Expiration": "UntilEndOfTurn"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "8f32622e-1481-43ee-99fa-bb97282550d3",
+   "name": "Martyr's Cause",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Martyr's Cause",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Enchantment"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostW"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "SacrificeAPermanent",
+        "args": {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "AnyTarget"
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "ChooseADamageSource",
+            "args": {
+             "_DamageSources": "AnyDamageSource"
+            }
+           },
+           {
+            "_Action": "CreateFutureReplaceWouldDealDamage",
+            "args": [
+             {
+              "_FutureReplacableEventWouldDealDamage": "NextTimeDamageWouldBeDealtThisTurnBySourceToRecipient",
+              "args": [
+               {
+                "_SingleDamageSource": "TheChosenDamageSource"
+               },
+               {
+                "_SingleDamageRecipient": "Ref_AnyTarget"
+               }
+              ]
+             },
+             [
+              {
+               "_ReplacementActionWouldDealDamage": "PreventThatDamage"
+              }
+             ]
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "4c2fd7bd-6528-453b-b55d-a708967b14e8",
+   "name": "Bitterblossom",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Bitterblossom",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Kindred",
+      "Enchantment"
+     ],
+     "Subtypes": [
+      "Faerie"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "AtTheBeginningOfAPlayersUpkeep",
+        "args": {
+         "_Players": "SinglePlayer",
+         "args": {
+          "_Player": "You"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "LoseLife",
+          "args": {
+           "_GameNumber": "Integer",
+           "args": 1
+          }
+         },
+         {
+          "_Action": "CreateTokens",
+          "args": [
+           {
+            "_CreatableToken": "CreatureTokenWithAbilities",
+            "args": [
+             {
+              "_PT": "PT",
+              "args": [
+               1,
+               1
+              ]
+             },
+             {
+              "_CreatureTokenType": "CreatureToken"
+             },
+             {
+              "_ColorList": "Colors",
+              "args": [
+               {
+                "_Color": "Black"
+               }
+              ]
+             },
+             {
+              "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+              "args": [
+               "Faerie",
+               "Rogue"
+              ]
+             },
+             [
+              {
+               "_Rule": "Flying"
+              }
+             ]
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "c0d74ecd-a595-4012-81b4-083264b40c94",
+   "name": "Young Pyromancer",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Young Pyromancer",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Human",
+      "Shaman"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPlayerCastsASpell",
+        "args": [
+         {
+          "_Players": "SinglePlayer",
+          "args": {
+           "_Player": "You"
+          }
+         },
+         {
+          "_Spells": "Or",
+          "args": [
+           {
+            "_Spells": "IsCardtype",
+            "args": "Instant"
+           },
+           {
+            "_Spells": "IsCardtype",
+            "args": "Sorcery"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreateTokens",
+          "args": [
+           {
+            "_CreatableToken": "CreatureToken",
+            "args": [
+             {
+              "_PT": "PT",
+              "args": [
+               1,
+               1
+              ]
+             },
+             {
+              "_CreatureTokenType": "CreatureToken"
+             },
+             {
+              "_ColorList": "Colors",
+              "args": [
+               {
+                "_Color": "Red"
+               }
+              ]
+             },
+             {
+              "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+              "args": [
+               "Elemental"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "81d3e5c5-6531-48e7-9dd6-2db519dd61b1",
+   "name": "Raise the Alarm",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Raise the Alarm",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Instant"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostW"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "SpellActions",
+      "args": {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "CreateTokens",
+         "args": [
+          {
+           "_CreatableToken": "NumberTokens",
+           "args": [
+            {
+             "_GameNumber": "Integer",
+             "args": 2
+            },
+            {
+             "_CreatableToken": "CreatureToken",
+             "args": [
+              {
+               "_PT": "PT",
+               "args": [
+                1,
+                1
+               ]
+              },
+              {
+               "_CreatureTokenType": "CreatureToken"
+              },
+              {
+               "_ColorList": "Colors",
+               "args": [
+                {
+                 "_Color": "White"
+                }
+               ]
+              },
+              {
+               "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+               "args": [
+                "Soldier"
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "e464408d-3e50-4a9e-beca-b91e15baacaf",
+   "name": "Lingering Souls",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Lingering Souls",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Sorcery"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostW"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "SpellActions",
+      "args": {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "CreateTokens",
+         "args": [
+          {
+           "_CreatableToken": "NumberTokens",
+           "args": [
+            {
+             "_GameNumber": "Integer",
+             "args": 2
+            },
+            {
+             "_CreatableToken": "CreatureTokenWithAbilities",
+             "args": [
+              {
+               "_PT": "PT",
+               "args": [
+                1,
+                1
+               ]
+              },
+              {
+               "_CreatureTokenType": "CreatureToken"
+              },
+              {
+               "_ColorList": "Colors",
+               "args": [
+                {
+                 "_Color": "White"
+                }
+               ]
+              },
+              {
+               "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+               "args": [
+                "Spirit"
+               ]
+              },
+              [
+               {
+                "_Rule": "Flying"
+               }
+              ]
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_Rule": "Flashback",
+      "args": {
+       "_Cost": "PayMana",
+       "args": [
+        {
+         "_ManaSymbol": "ManaCostGeneric",
+         "args": 1
+        },
+        {
+         "_ManaSymbol": "ManaCostB"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "f9abe517-f601-4784-8d62-2350bd755146",
+   "name": "Dragon Fodder",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Dragon Fodder",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Sorcery"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "SpellActions",
+      "args": {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "CreateTokens",
+         "args": [
+          {
+           "_CreatableToken": "NumberTokens",
+           "args": [
+            {
+             "_GameNumber": "Integer",
+             "args": 2
+            },
+            {
+             "_CreatableToken": "CreatureToken",
+             "args": [
+              {
+               "_PT": "PT",
+               "args": [
+                1,
+                1
+               ]
+              },
+              {
+               "_CreatureTokenType": "CreatureToken"
+              },
+              {
+               "_ColorList": "Colors",
+               "args": [
+                {
+                 "_Color": "Red"
+                }
+               ]
+              },
+              {
+               "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+               "args": [
+                "Goblin"
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "824b2d73-2151-4e5e-9f05-8f63e2bdcaa9",
+   "name": "Krenko, Mob Boss",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Krenko, Mob Boss",
+    "Typeline": {
+     "Supertypes": [
+      "Legendary"
+     ],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreateTokens",
+          "args": [
+           {
+            "_CreatableToken": "NumberTokens",
+            "args": [
+             {
+              "_GameNumber": "TheNumberOfPermanentsOnTheBattlefield",
+              "args": {
+               "_Permanents": "And",
+               "args": [
+                {
+                 "_Permanents": "IsCreatureType",
+                 "args": "Goblin"
+                },
+                {
+                 "_Permanents": "ControlledByAPlayer",
+                 "args": {
+                  "_Players": "SinglePlayer",
+                  "args": {
+                   "_Player": "You"
+                  }
+                 }
+                }
+               ]
+              }
+             },
+             {
+              "_CreatableToken": "CreatureToken",
+              "args": [
+               {
+                "_PT": "PT",
+                "args": [
+                 1,
+                 1
+                ]
+               },
+               {
+                "_CreatureTokenType": "CreatureToken"
+               },
+               {
+                "_ColorList": "Colors",
+                "args": [
+                 {
+                  "_Color": "Red"
+                 }
+                ]
+               },
+               {
+                "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+                "args": [
+                 "Goblin"
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 3,
+     "Toughness": 3
+    }
+   }
+  },
+  {
+   "id": "aadf5e24-1ac0-40b4-8702-cd0e077c17e0",
+   "name": "Secure the Wastes",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Secure the Wastes",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Instant"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostX"
+     },
+     {
+      "_ManaSymbol": "ManaCostW"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "SpellActions",
+      "args": {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "CreateTokens",
+         "args": [
+          {
+           "_CreatableToken": "NumberTokens",
+           "args": [
+            {
+             "_GameNumber": "ValueX"
+            },
+            {
+             "_CreatableToken": "CreatureToken",
+             "args": [
+              {
+               "_PT": "PT",
+               "args": [
+                1,
+                1
+               ]
+              },
+              {
+               "_CreatureTokenType": "CreatureToken"
+              },
+              {
+               "_ColorList": "Colors",
+               "args": [
+                {
+                 "_Color": "White"
+                }
+               ]
+              },
+              {
+               "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+               "args": [
+                "Warrior"
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "def3571c-01dd-4eee-8f60-0ac4d1928d33",
+   "name": "Tendershoot Dryad",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Tendershoot Dryad",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Dryad"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 4
+     },
+     {
+      "_ManaSymbol": "ManaCostG"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Ascend"
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "AtTheBeginningOfAPlayersUpkeep",
+        "args": {
+         "_Players": "AnyPlayer"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreateTokens",
+          "args": [
+           {
+            "_CreatableToken": "CreatureToken",
+            "args": [
+             {
+              "_PT": "PT",
+              "args": [
+               1,
+               1
+              ]
+             },
+             {
+              "_CreatureTokenType": "CreatureToken"
+             },
+             {
+              "_ColorList": "Colors",
+              "args": [
+               {
+                "_Color": "Green"
+               }
+              ]
+             },
+             {
+              "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+              "args": [
+               "Saproling"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "If",
+      "args": [
+       {
+        "_Condition": "PlayerPassesFilter",
+        "args": [
+         {
+          "_Player": "You"
+         },
+         {
+          "_Players": "HasTheCitysBlessing"
+         }
+        ]
+       },
+       [
+        {
+         "_Rule": "EachPermanentLayerEffect",
+         "args": [
+          {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "IsCreatureType",
+             "args": "Saproling"
+            },
+            {
+             "_Permanents": "ControlledByAPlayer",
+             "args": {
+              "_Players": "SinglePlayer",
+              "args": {
+               "_Player": "You"
+              }
+             }
+            }
+           ]
+          },
+          [
+           {
+            "_StaticLayerEffect": "AdjustPT",
+            "args": [
+             2,
+             2
+            ]
+           }
+          ]
+         ]
+        }
+       ]
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "c1b0377c-efd6-4fab-89f0-b219ca2c4c22",
+   "name": "Pawn of Ulamog",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Pawn of Ulamog",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Vampire",
+      "Shaman"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "Or",
+        "args": [
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "SinglePermanent",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          }
+         },
+         {
+          "_Trigger": "WhenACreatureOrPlaneswalkerDies",
+          "args": {
+           "_Permanents": "And",
+           "args": [
+            {
+             "_Permanents": "Other",
+             "args": {
+              "_Permanent": "ThisPermanent"
+             }
+            },
+            {
+             "_Permanents": "And",
+             "args": [
+              {
+               "_Permanents": "IsNonToken"
+              },
+              {
+               "_Permanents": "IsCardtype",
+               "args": "Creature"
+              },
+              {
+               "_Permanents": "ControlledByAPlayer",
+               "args": {
+                "_Players": "SinglePlayer",
+                "args": {
+                 "_Player": "You"
+                }
+               }
+              }
+             ]
+            }
+           ]
+          }
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "MayAction",
+          "args": {
+           "_Action": "CreateTokens",
+           "args": [
+            {
+             "_CreatableToken": "CreatureTokenWithAbilities",
+             "args": [
+              {
+               "_PT": "PT",
+               "args": [
+                0,
+                1
+               ]
+              },
+              {
+               "_CreatureTokenType": "CreatureToken"
+              },
+              {
+               "_ColorList": "Colorless"
+              },
+              {
+               "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+               "args": [
+                "Eldrazi",
+                "Spawn"
+               ]
+              },
+              [
+               {
+                "_Rule": "Activated",
+                "args": [
+                 {
+                  "_Cost": "SacrificePermanent",
+                  "args": {
+                   "_Permanent": "ThisPermanent"
+                  }
+                 },
+                 {
+                  "_Actions": "ActionList",
+                  "args": [
+                   {
+                    "_Action": "AddMana",
+                    "args": {
+                     "_ManaProduce": "ManaProduceC"
+                    }
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             ]
+            }
+           ]
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "5183ca53-dc90-4971-a610-38b4ba85dc83",
+   "name": "Hordeling Outburst",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Hordeling Outburst",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Sorcery"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "SpellActions",
+      "args": {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "CreateTokens",
+         "args": [
+          {
+           "_CreatableToken": "NumberTokens",
+           "args": [
+            {
+             "_GameNumber": "Integer",
+             "args": 3
+            },
+            {
+             "_CreatableToken": "CreatureToken",
+             "args": [
+              {
+               "_PT": "PT",
+               "args": [
+                1,
+                1
+               ]
+              },
+              {
+               "_CreatureTokenType": "CreatureToken"
+              },
+              {
+               "_ColorList": "Colors",
+               "args": [
+                {
+                 "_Color": "Red"
+                }
+               ]
+              },
+              {
+               "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+               "args": [
+                "Goblin"
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "71c818eb-3846-471f-967a-76e1cb809b9f",
+   "name": "Goblin Instigator",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Goblin Instigator",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Goblin",
+      "Rogue"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPermanentEntersTheBattlefield",
+        "args": {
+         "_Permanents": "SinglePermanent",
+         "args": {
+          "_Permanent": "ThisPermanent"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreateTokens",
+          "args": [
+           {
+            "_CreatableToken": "CreatureToken",
+            "args": [
+             {
+              "_PT": "PT",
+              "args": [
+               1,
+               1
+              ]
+             },
+             {
+              "_CreatureTokenType": "CreatureToken"
+             },
+             {
+              "_ColorList": "Colors",
+              "args": [
+               {
+                "_Color": "Red"
+               }
+              ]
+             },
+             {
+              "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+              "args": [
+               "Goblin"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "2d19a474-b008-4088-8a31-333c0b2d9d65",
+   "name": "Beetleback Chief",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Beetleback Chief",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPermanentEntersTheBattlefield",
+        "args": {
+         "_Permanents": "SinglePermanent",
+         "args": {
+          "_Permanent": "ThisPermanent"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreateTokens",
+          "args": [
+           {
+            "_CreatableToken": "NumberTokens",
+            "args": [
+             {
+              "_GameNumber": "Integer",
+              "args": 2
+             },
+             {
+              "_CreatableToken": "CreatureToken",
+              "args": [
+               {
+                "_PT": "PT",
+                "args": [
+                 1,
+                 1
+                ]
+               },
+               {
+                "_CreatureTokenType": "CreatureToken"
+               },
+               {
+                "_ColorList": "Colors",
+                "args": [
+                 {
+                  "_Color": "Red"
+                 }
+                ]
+               },
+               {
+                "_CreatureTokenSubtypes": "CreatureTokenSubtypesList",
+                "args": [
+                 "Goblin"
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "16080517-48af-4c4a-85d3-fc67e3d6b3dd",
+   "name": "Kiora's Follower",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Kiora's Follower",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Merfolk"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostG"
+     },
+     {
+      "_ManaSymbol": "ManaCostU"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "TargetPermanent",
+           "args": {
+            "_Permanents": "And",
+            "args": [
+             {
+              "_Permanents": "Other",
+              "args": {
+               "_Permanent": "ThisPermanent"
+              }
+             },
+             {
+              "_Permanents": "AnyPermanent"
+             }
+            ]
+           }
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "UntapPermanent",
+            "args": {
+             "_Permanent": "Ref_TargetPermanent"
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "ecb01acc-8302-426f-a22c-47fe4864f3d4",
+   "name": "Seeker of Skybreak",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Seeker of Skybreak",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Elf"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostG"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "TargetPermanent",
+           "args": {
+            "_Permanents": "IsCardtype",
+            "args": "Creature"
+           }
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "UntapPermanent",
+            "args": {
+             "_Permanent": "Ref_TargetPermanent"
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "6431d71c-f76c-4b36-9e11-b492ec67a266",
+   "name": "Pemmin's Aura",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Pemmin's Aura",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Enchantment"
+     ],
+     "Subtypes": [
+      "Aura"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostU"
+     },
+     {
+      "_ManaSymbol": "ManaCostU"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "EnchantPermanent",
+      "args": {
+       "_Permanents": "IsCardtype",
+       "args": "Creature"
+      }
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "PayMana",
+        "args": [
+         {
+          "_ManaSymbol": "ManaCostU"
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "UntapPermanent",
+          "args": {
+           "_Permanent": "HostPermanent"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "PayMana",
+        "args": [
+         {
+          "_ManaSymbol": "ManaCostU"
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreatePermanentLayerEffectUntil",
+          "args": [
+           {
+            "_Permanent": "HostPermanent"
+           },
+           [
+            {
+             "_LayerEffect": "AddAbility",
+             "args": [
+              {
+               "_Rule": "Flying"
+              }
+             ]
+            }
+           ],
+           {
+            "_Expiration": "UntilEndOfTurn"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "PayMana",
+        "args": [
+         {
+          "_ManaSymbol": "ManaCostU"
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreatePermanentLayerEffectUntil",
+          "args": [
+           {
+            "_Permanent": "HostPermanent"
+           },
+           [
+            {
+             "_LayerEffect": "AddAbility",
+             "args": [
+              {
+               "_Rule": "Shroud"
+              }
+             ]
+            }
+           ],
+           {
+            "_Expiration": "UntilEndOfTurn"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "PayMana",
+        "args": [
+         {
+          "_ManaSymbol": "ManaCostGeneric",
+          "args": 1
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "ChoosePTMod",
+          "args": [
+           {
+            "_PTMod": "PTMod",
+            "args": [
+             1,
+             -1
+            ]
+           },
+           {
+            "_PTMod": "PTMod",
+            "args": [
+             -1,
+             1
+            ]
+           }
+          ]
+         },
+         {
+          "_Action": "CreatePermanentLayerEffectUntil",
+          "args": [
+           {
+            "_Permanent": "HostPermanent"
+           },
+           [
+            {
+             "_LayerEffect": "AdjustPT_TheChosenPTMod"
+            }
+           ],
+           {
+            "_Expiration": "UntilEndOfTurn"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "58f2b68b-d07c-45f1-8db9-9afa952c51ec",
+   "name": "Thousand-Year Elixir",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Thousand-Year Elixir",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Artifact"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 3
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "PlayerEffect",
+      "args": [
+       {
+        "_Player": "You"
+       },
+       [
+        {
+         "_PlayerEffect": "MayActivateAbilitiesOfCreaturesAsThoughTheyHadHaste",
+         "args": {
+          "_Permanents": "And",
+          "args": [
+           {
+            "_Permanents": "IsCardtype",
+            "args": "Creature"
+           },
+           {
+            "_Permanents": "ControlledByAPlayer",
+            "args": {
+             "_Players": "SinglePlayer",
+             "args": {
+              "_Player": "You"
+             }
+            }
+           }
+          ]
+         }
+        }
+       ]
+      ]
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "And",
+        "args": [
+         {
+          "_Cost": "PayMana",
+          "args": [
+           {
+            "_ManaSymbol": "ManaCostGeneric",
+            "args": 1
+           }
+          ]
+         },
+         {
+          "_Cost": "TapPermanent",
+          "args": {
+           "_Permanent": "ThisPermanent"
+          }
+         }
+        ]
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "TargetPermanent",
+           "args": {
+            "_Permanents": "IsCardtype",
+            "args": "Creature"
+           }
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "UntapPermanent",
+            "args": {
+             "_Permanent": "Ref_TargetPermanent"
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "0ef9c823-3810-4e1f-8bb4-aba59e29c111",
+   "name": "Intruder Alarm",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Intruder Alarm",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Enchantment"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostU"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "EachPermanentRuleEffect",
+      "args": [
+       {
+        "_Permanents": "IsCardtype",
+        "args": "Creature"
+       },
+       [
+        {
+         "_PermanentRule": "DoesntUntapDuringControllersUntap"
+        }
+       ]
+      ]
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPermanentEntersTheBattlefield",
+        "args": {
+         "_Permanents": "IsCardtype",
+         "args": "Creature"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "UntapEachPermanent",
+          "args": {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "abda88df-68df-4f70-bd23-578c5b374390",
+   "name": "Freed from the Real",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Freed from the Real",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Enchantment"
+     ],
+     "Subtypes": [
+      "Aura"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostU"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "EnchantPermanent",
+      "args": {
+       "_Permanents": "IsCardtype",
+       "args": "Creature"
+      }
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "PayMana",
+        "args": [
+         {
+          "_ManaSymbol": "ManaCostU"
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "TapPermanent",
+          "args": {
+           "_Permanent": "HostPermanent"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "PayMana",
+        "args": [
+         {
+          "_ManaSymbol": "ManaCostU"
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "UntapPermanent",
+          "args": {
+           "_Permanent": "HostPermanent"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "8ae6d023-2945-47f1-bc9f-f9c5ff9f5282",
+   "name": "Sol Ring",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Sol Ring",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Artifact"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "AddMana",
+          "args": {
+           "_ManaProduce": "And",
+           "args": [
+            {
+             "_ManaProduce": "ManaProduceC"
+            },
+            {
+             "_ManaProduce": "ManaProduceC"
+            }
+           ]
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "de7e17bc-9d4e-40c8-b8eb-a28882143d67",
+   "name": "Llanowar Elves",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Llanowar Elves",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Elf",
+      "Druid"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostG"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "AddMana",
+          "args": {
+           "_ManaProduce": "ManaProduceG"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "9f8b95bd-c709-4259-b3fe-92119b92acae",
+   "name": "Birds of Paradise",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Birds of Paradise",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Bird"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostG"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Flying"
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "AddMana",
+          "args": {
+           "_ManaProduce": "AnyManaColor"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 0,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "eb654a76-62ee-4fd8-83d4-cb912211a9a0",
+   "name": "Elvish Mystic",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Elvish Mystic",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Elf",
+      "Druid"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostG"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "AddMana",
+          "args": {
+           "_ManaProduce": "ManaProduceG"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "dc04f5a7-94cf-417d-a09b-972a1ca97ec8",
+   "name": "Arcane Signet",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Arcane Signet",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Artifact"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "AddMana",
+          "args": {
+           "_ManaProduce": "AnyManaColorInCommanderColorIdentity"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "ad881aa0-decc-447b-8c8a-983546a9a55a",
+   "name": "Mind Stone",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Mind Stone",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Artifact"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "AddMana",
+          "args": {
+           "_ManaProduce": "ManaProduceC"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "And",
+        "args": [
+         {
+          "_Cost": "PayMana",
+          "args": [
+           {
+            "_ManaSymbol": "ManaCostGeneric",
+            "args": 1
+           }
+          ]
+         },
+         {
+          "_Cost": "TapPermanent",
+          "args": {
+           "_Permanent": "ThisPermanent"
+          }
+         },
+         {
+          "_Cost": "SacrificePermanent",
+          "args": {
+           "_Permanent": "ThisPermanent"
+          }
+         }
+        ]
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "DrawACard"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "6bce5aeb-0087-4ac6-96d2-6b3df55e4266",
+   "name": "Prodigal Sorcerer",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Prodigal Sorcerer",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Human",
+      "Wizard",
+      "Sorcerer"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostU"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "AnyTarget"
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "PermanentDealsDamage",
+            "args": [
+             {
+              "_Permanent": "ThisPermanent"
+             },
+             {
+              "_GameNumber": "Integer",
+              "args": 1
+             },
+             {
+              "_DamageRecipient": "Ref_AnyTarget"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "c46a217c-0ed2-4b3c-9a01-ee38d12d76f3",
+   "name": "Command Tower",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Command Tower",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Land"
+     ],
+     "Subtypes": []
+    },
+    "Rules": [
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "TapPermanent",
+        "args": {
+         "_Permanent": "ThisPermanent"
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "AddMana",
+          "args": {
+           "_ManaProduce": "AnyManaColorInCommanderColorIdentity"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "bc9df8ac-0214-4d8a-a401-667f8c34e63e",
+   "name": "Soul Warden",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Soul Warden",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Human",
+      "Cleric"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostW"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPermanentEntersTheBattlefield",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "Other",
+           "args": {
+            "_Permanent": "ThisPermanent"
+           }
+          },
+          {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          }
+         ]
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "GainLife",
+          "args": {
+           "_GameNumber": "Integer",
+           "args": 1
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 1,
+     "Toughness": 1
+    }
+   }
+  },
+  {
+   "id": "222c1a68-e34c-4103-b1be-17d4ceaef6ce",
+   "name": "Ajani's Pridemate",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Ajani's Pridemate",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Cat",
+      "Soldier"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostW"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPlayerGainsLife",
+        "args": {
+         "_Players": "SinglePlayer",
+         "args": {
+          "_Player": "You"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "PutACounterOfTypeOnPermanent",
+          "args": [
+           {
+            "_CounterType": "PTCounter",
+            "args": [
+             1,
+             1
+            ]
+           },
+           {
+            "_Permanent": "ThisPermanent"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "1d8ecf20-5f80-4a17-93bd-700e4dd44d65",
+   "name": "Archangel of Thune",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Archangel of Thune",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Angel"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 3
+     },
+     {
+      "_ManaSymbol": "ManaCostW"
+     },
+     {
+      "_ManaSymbol": "ManaCostW"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Flying"
+     },
+     {
+      "_Rule": "Lifelink"
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPlayerGainsLife",
+        "args": {
+         "_Players": "SinglePlayer",
+         "args": {
+          "_Player": "You"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "PutACounterOfTypeOnEachPermanent",
+          "args": [
+           {
+            "_CounterType": "PTCounter",
+            "args": [
+             1,
+             1
+            ]
+           },
+           {
+            "_Permanents": "And",
+            "args": [
+             {
+              "_Permanents": "IsCardtype",
+              "args": "Creature"
+             },
+             {
+              "_Permanents": "ControlledByAPlayer",
+              "args": {
+               "_Players": "SinglePlayer",
+               "args": {
+                "_Player": "You"
+               }
+              }
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 3,
+     "Toughness": 4
+    }
+   }
+  },
+  {
+   "id": "236a1f7c-3ca9-4029-9064-4c215d02137a",
+   "name": "Heliod, Sun-Crowned",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Heliod, Sun-Crowned",
+    "Typeline": {
+     "Supertypes": [
+      "Legendary"
+     ],
+     "Cardtypes": [
+      "Enchantment",
+      "Creature"
+     ],
+     "Subtypes": [
+      "God"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostW"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Indestructible"
+     },
+     {
+      "_Rule": "If",
+      "args": [
+       {
+        "_Condition": "PlayerPassesFilter",
+        "args": [
+         {
+          "_Player": "You"
+         },
+         {
+          "_Players": "DevotionToColorsIs",
+          "args": [
+           {
+            "_ColorList": "Colors",
+            "args": [
+             {
+              "_Color": "White"
+             }
+            ]
+           },
+           {
+            "_Comparison": "LessThanOrEqualTo",
+            "args": {
+             "_GameNumber": "Integer",
+             "args": 5
+            }
+           }
+          ]
+         }
+        ]
+       },
+       [
+        {
+         "_Rule": "PermanentLayerEffect",
+         "args": [
+          {
+           "_Permanent": "ThisPermanent"
+          },
+          [
+           {
+            "_StaticLayerEffect": "RemoveCardtype",
+            "args": "Creature"
+           }
+          ]
+         ]
+        }
+       ]
+      ]
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPlayerGainsLife",
+        "args": {
+         "_Players": "SinglePlayer",
+         "args": {
+          "_Player": "You"
+         }
+        }
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "TargetPermanent",
+           "args": {
+            "_Permanents": "And",
+            "args": [
+             {
+              "_Permanents": "Or",
+              "args": [
+               {
+                "_Permanents": "IsCardtype",
+                "args": "Creature"
+               },
+               {
+                "_Permanents": "IsCardtype",
+                "args": "Enchantment"
+               }
+              ]
+             },
+             {
+              "_Permanents": "ControlledByAPlayer",
+              "args": {
+               "_Players": "SinglePlayer",
+               "args": {
+                "_Player": "You"
+               }
+              }
+             }
+            ]
+           }
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "PutACounterOfTypeOnPermanent",
+            "args": [
+             {
+              "_CounterType": "PTCounter",
+              "args": [
+               1,
+               1
+              ]
+             },
+             {
+              "_Permanent": "Ref_TargetPermanent"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "Activated",
+      "args": [
+       {
+        "_Cost": "PayMana",
+        "args": [
+         {
+          "_ManaSymbol": "ManaCostGeneric",
+          "args": 1
+         },
+         {
+          "_ManaSymbol": "ManaCostW"
+         }
+        ]
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "TargetPermanent",
+           "args": {
+            "_Permanents": "And",
+            "args": [
+             {
+              "_Permanents": "Other",
+              "args": {
+               "_Permanent": "ThisPermanent"
+              }
+             },
+             {
+              "_Permanents": "IsCardtype",
+              "args": "Creature"
+             }
+            ]
+           }
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "CreatePermanentLayerEffectUntil",
+            "args": [
+             {
+              "_Permanent": "Ref_TargetPermanent"
+             },
+             [
+              {
+               "_LayerEffect": "AddAbility",
+               "args": [
+                {
+                 "_Rule": "Lifelink"
+                }
+               ]
+              }
+             ],
+             {
+              "_Expiration": "UntilEndOfTurn"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 5,
+     "Toughness": 5
+    }
+   }
+  },
+  {
+   "id": "48a3356c-738e-4dd9-b25a-3f10f923d0df",
+   "name": "Sanguine Bond",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Sanguine Bond",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Enchantment"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 3
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPlayerGainsLife",
+        "args": {
+         "_Players": "SinglePlayer",
+         "args": {
+          "_Player": "You"
+         }
+        }
+       },
+       {
+        "_Actions": "Targeted",
+        "args": [
+         [
+          {
+           "_Target": "TargetPlayer",
+           "args": {
+            "_Players": "Opponent"
+           }
+          }
+         ],
+         {
+          "_Actions": "ActionList",
+          "args": [
+           {
+            "_Action": "PlayerAction",
+            "args": [
+             {
+              "_Player": "Ref_TargetPlayer"
+             },
+             {
+              "_Action": "LoseLife",
+              "args": {
+               "_GameNumber": "Trigger_AmountOfLifeGained"
+              }
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "f1cc00f9-ae7b-4f7b-95f2-bc5c00e4bd72",
+   "name": "Cultivate",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Cultivate",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Sorcery"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostG"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "SpellActions",
+      "args": {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "SearchLibrary",
+         "args": [
+          {
+           "_SearchLibraryAction": "RevealUptoNumberCardsOfType",
+           "args": [
+            {
+             "_GameNumber": "Integer",
+             "args": 2
+            },
+            {
+             "_Cards": "And",
+             "args": [
+              {
+               "_Cards": "IsSupertype",
+               "args": "Basic"
+              },
+              {
+               "_Cards": "IsCardtype",
+               "args": "Land"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "_SearchLibraryAction": "PutACardRevealedThisWayOntoBattlefield",
+           "args": [
+            {
+             "_ReplacementActionWouldEnter": "EntersTapped"
+            }
+           ]
+          },
+          {
+           "_SearchLibraryAction": "PutTheRemainingCardsIntoHand"
+          },
+          {
+           "_SearchLibraryAction": "Shuffle"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "8c2d6fde-5c3b-48c3-828c-832f00570824",
+   "name": "Doubling Season",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Doubling Season",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Enchantment"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 4
+     },
+     {
+      "_ManaSymbol": "ManaCostG"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "ReplaceAnEffectWouldCreateAnyNumberOfTokens",
+      "args": [
+       {
+        "_ReplacableEventAnEffectWouldCreateAnyNumberOfTokens": "AnEffectWouldCreateAnyNumberOfTokensUnderAPlayersControl",
+        "args": [
+         {
+          "_Permanents": "AnyPermanent"
+         },
+         {
+          "_Players": "SinglePlayer",
+          "args": {
+           "_Player": "You"
+          }
+         }
+        ]
+       },
+       [
+        {
+         "_ReplacementActionAnEffectWouldCreateAnyNumberOfTokens": "CreateTokensInstead",
+         "args": [
+          {
+           "_CreatableToken": "ThoseTokens"
+          },
+          {
+           "_CreatableToken": "ThoseTokens"
+          }
+         ]
+        }
+       ]
+      ]
+     },
+     {
+      "_Rule": "ReplaceWouldPutCounters",
+      "args": [
+       {
+        "_ReplacableEventWouldPutCounters": "AnEffectWouldPutCountersOnAPermanent",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "IsPermanent"
+          },
+          {
+           "_Permanents": "ControlledByAPlayer",
+           "args": {
+            "_Players": "SinglePlayer",
+            "args": {
+             "_Player": "You"
+            }
+           }
+          }
+         ]
+        }
+       },
+       [
+        {
+         "_ReplacementActionWouldPutCounters": "PutNewAmount",
+         "args": {
+          "_GameNumber": "Twice",
+          "args": {
+           "_GameNumber": "WouldPutCounters_NumberOfCounters"
+          }
+         }
+        }
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "bde26955-6de3-4212-9e1a-5e11f73ebf44",
+   "name": "Lightning Bolt",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Lightning Bolt",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Instant"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostR"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "SpellActions",
+      "args": {
+       "_Actions": "Targeted",
+       "args": [
+        [
+         {
+          "_Target": "AnyTarget"
+         }
+        ],
+        {
+         "_Actions": "ActionList",
+         "args": [
+          {
+           "_Action": "SpellDealsDamage",
+           "args": [
+            {
+             "_Spell": "ThisSpell"
+            },
+            {
+             "_GameNumber": "Integer",
+             "args": 3
+            },
+            {
+             "_DamageRecipient": "Ref_AnyTarget"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "9cb2478c-1672-44eb-a9a1-a103fcdf3701",
+   "name": "Counterspell",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Counterspell",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Instant"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostU"
+     },
+     {
+      "_ManaSymbol": "ManaCostU"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "SpellActions",
+      "args": {
+       "_Actions": "Targeted",
+       "args": [
+        [
+         {
+          "_Target": "TargetSpell",
+          "args": {
+           "_Spells": "AnySpell"
+          }
+         }
+        ],
+        {
+         "_Actions": "ActionList",
+         "args": [
+          {
+           "_Action": "CounterSpell",
+           "args": {
+            "_Spell": "Ref_TargetSpell"
+           }
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "75cebafe-00e5-478d-b34e-35b1b3f02e50",
+   "name": "Goblin Chieftain",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Goblin Chieftain",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Goblin"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     },
+     {
+      "_ManaSymbol": "ManaCostR"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Haste"
+     },
+     {
+      "_Rule": "EachPermanentLayerEffect",
+      "args": [
+       {
+        "_Permanents": "And",
+        "args": [
+         {
+          "_Permanents": "Other",
+          "args": {
+           "_Permanent": "ThisPermanent"
+          }
+         },
+         {
+          "_Permanents": "And",
+          "args": [
+           {
+            "_Permanents": "IsCreatureType",
+            "args": "Goblin"
+           },
+           {
+            "_Permanents": "IsCardtype",
+            "args": "Creature"
+           },
+           {
+            "_Permanents": "ControlledByAPlayer",
+            "args": {
+             "_Players": "SinglePlayer",
+             "args": {
+              "_Player": "You"
+             }
+            }
+           }
+          ]
+         }
+        ]
+       },
+       [
+        {
+         "_StaticLayerEffect": "AdjustPT",
+         "args": [
+          1,
+          1
+         ]
+        },
+        {
+         "_StaticLayerEffect": "AddAbility",
+         "args": [
+          {
+           "_Rule": "Haste"
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "1d58d08d-cd62-416d-8d8e-7d9c56d5c4da",
+   "name": "Evolution Sage",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Evolution Sage",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Elf",
+      "Druid"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 2
+     },
+     {
+      "_ManaSymbol": "ManaCostG"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "WhenAPermanentEntersTheBattlefield",
+        "args": {
+         "_Permanents": "And",
+         "args": [
+          {
+           "_Permanents": "IsCardtype",
+           "args": "Land"
+          },
+          {
+           "_Permanents": "ControlledByAPlayer",
+           "args": {
+            "_Players": "SinglePlayer",
+            "args": {
+             "_Player": "You"
+            }
+           }
+          }
+         ]
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "Proliferate"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 3,
+     "Toughness": 2
+    }
+   }
+  },
+  {
+   "id": "68ec2aed-7662-48ae-ab25-04f74ece1e41",
+   "name": "Swords to Plowshares",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Swords to Plowshares",
+    "Typeline": {
+     "Supertypes": [],
+     "Cardtypes": [
+      "Instant"
+     ],
+     "Subtypes": []
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostW"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "SpellActions",
+      "args": {
+       "_Actions": "Targeted",
+       "args": [
+        [
+         {
+          "_Target": "TargetPermanent",
+          "args": {
+           "_Permanents": "IsCardtype",
+           "args": "Creature"
+          }
+         }
+        ],
+        {
+         "_Actions": "ActionList",
+         "args": [
+          {
+           "_Action": "ExilePermanent",
+           "args": {
+            "_Permanent": "Ref_TargetPermanent"
+           }
+          },
+          {
+           "_Action": "PlayerAction",
+           "args": [
+            {
+             "_Player": "ControllerOfPermanent",
+             "args": {
+              "_Permanent": "Ref_TargetPermanent"
+             }
+            },
+            {
+             "_Action": "GainLife",
+             "args": {
+              "_GameNumber": "PowerOfPermanent",
+              "args": {
+               "_Permanent": "Ref_TargetPermanent"
+              }
+             }
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "20e44330-f880-455e-852c-16d0a985cdf0",
+   "name": "Atraxa, Praetors' Voice",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Atraxa, Praetors' Voice",
+    "Typeline": {
+     "Supertypes": [
+      "Legendary"
+     ],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Phyrexian",
+      "Angel",
+      "Horror"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostG"
+     },
+     {
+      "_ManaSymbol": "ManaCostW"
+     },
+     {
+      "_ManaSymbol": "ManaCostU"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Flying"
+     },
+     {
+      "_Rule": "Vigilance"
+     },
+     {
+      "_Rule": "Deathtouch"
+     },
+     {
+      "_Rule": "Lifelink"
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "AtTheBeginningOfAPlayersEndStep",
+        "args": {
+         "_Players": "SinglePlayer",
+         "args": {
+          "_Player": "You"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "Proliferate"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "CardPT": {
+     "Power": 4,
+     "Toughness": 4
+    }
+   }
+  },
+  {
+   "id": "87eff269-c8d7-479e-ade4-383b8622e70d",
+   "name": "Tymna the Weaver",
+   "mtgish": {
+    "_OracleCard": "Card",
+    "Name": "Tymna the Weaver",
+    "Typeline": {
+     "Supertypes": [
+      "Legendary"
+     ],
+     "Cardtypes": [
+      "Creature"
+     ],
+     "Subtypes": [
+      "Human",
+      "Cleric"
+     ]
+    },
+    "ManaCost": [
+     {
+      "_ManaSymbol": "ManaCostGeneric",
+      "args": 1
+     },
+     {
+      "_ManaSymbol": "ManaCostW"
+     },
+     {
+      "_ManaSymbol": "ManaCostB"
+     }
+    ],
+    "Rules": [
+     {
+      "_Rule": "Lifelink"
+     },
+     {
+      "_Rule": "TriggerA",
+      "args": [
+       {
+        "_Trigger": "AtTheBeginningOfAPlayersPostcombatMainPhase",
+        "args": {
+         "_Players": "SinglePlayer",
+         "args": {
+          "_Player": "You"
+         }
+        }
+       },
+       {
+        "_Actions": "ActionList",
+        "args": [
+         {
+          "_Action": "CreateValueX",
+          "args": {
+           "_GameNumber": "NumPlayers",
+           "args": {
+            "_Players": "And",
+            "args": [
+             {
+              "_Players": "Opponent"
+             },
+             {
+              "_Players": "WasDealtCombatDamageThisTurn"
+             }
+            ]
+           }
+          }
+         },
+         {
+          "_Action": "MayCost",
+          "args": {
+           "_Cost": "PayLife",
+           "args": {
+            "_GameNumber": "ValueX"
+           }
+          }
+         },
+         {
+          "_Action": "If",
+          "args": [
+           {
+            "_Condition": "CostWasPaid"
+           },
+           [
+            {
+             "_Action": "DrawNumberCards",
+             "args": {
+              "_GameNumber": "ValueX"
+             }
+            }
+           ]
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "_Rule": "DeckConstruction",
+      "args": {
+       "_DeckConstruction": "Partner"
+      }
+     }
+    ],
+    "CardPT": {
+     "Power": 2,
+     "Toughness": 2
+    }
+   }
+  }
+ ]
+}
