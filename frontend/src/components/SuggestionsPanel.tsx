@@ -15,6 +15,7 @@ const TIER_STYLE: Record<string, { label: string; cls: string }> = {
 
 const SIGNAL_LABEL: Record<string, string> = {
   edhrec: "EDHREC",
+  edhrec_inclusion: "EDHREC inclusion",
   cooccurrence: "played with",
   synergy: "synergy",
   engine: "combo piece",
@@ -33,7 +34,7 @@ export function ReasonChips({ reasons }: { reasons: Reason[] }) {
             "rounded border px-1 py-0.5 text-[9px] font-medium",
             r.signal === "engine"
               ? "border-magenta/50 bg-magenta/15 text-magenta"
-              : r.signal === "edhrec"
+              : r.signal === "edhrec" || r.signal === "edhrec_inclusion"
                 ? "border-accent/40 bg-accent/10 text-accent"
                 : "border-cyan/40 bg-cyan/10 text-cyan",
           ].join(" ")}

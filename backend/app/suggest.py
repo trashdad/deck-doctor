@@ -29,6 +29,14 @@ from .store import Store
 
 # Blend weights (hand-tuned vs. the golden tests; learned weights are a non-goal).
 WEIGHTS = {"edh": 0.45, "cooc": 0.30, "struct": 0.15, "engine": 0.10}
+# Final score = (1 - w) * blend + w * EDHREC inclusion (share of the commander's EDHREC
+# decks that play the card). Measured on 88,626 decks (simmander-hub
+# docs/research/2026-10-07-deckdoctor-blend-experiment): Recall@25 +0.033 on a random
+# split, +0.029 on unseen commanders; w=0.3 chosen on the unseen-commander validation set.
+# A commander without EDHREC rows has inclusion 0, so its order is the plain blend.
+# The engine/combo-completion bonus is added outside the mix, so a missing combo piece is
+# not pushed out by popular staples (same Recall@25 as mixing it, measured 2026-10-07).
+INCLUSION_WEIGHT = 0.3
 NEIGHBOR_K = 30          # neighbors pulled per deck member per signal
 ENGINE_BONUS_ASSERTED = 1.0
 ENGINE_BONUS_CANDIDATE = 0.3
@@ -86,14 +94,15 @@ def recommend(store: Store, commander_id: str, deck_ids: list[str],
     n = len(members)
 
     acc: dict[str, dict] = defaultdict(lambda: {
-        "edh": 0.0, "cooc": 0.0, "struct": 0.0, "engine": 0.0,
+        "edh": 0.0, "inc": 0.0, "cooc": 0.0, "struct": 0.0, "engine": 0.0,
         "cooc_hits": 0, "struct_hits": 0, "engine_with": None,
     })
 
     edh = store.edhrec_for(commander_id)
     tier = "edhrec" if edh else "cooccurrence"
-    for cid, (synergy, _inclusion) in edh.items():
-        acc[cid]["edh"] = max(0.0, min(1.0, synergy))
+    for cid, (synergy, inclusion) in edh.items():
+        acc[cid]["edh"] = max(0.0, min(1.0, synergy or 0.0))
+        acc[cid]["inc"] = max(0.0, min(1.0, inclusion or 0.0))
 
     for d in members:
         for other, lift, _jac in store.cooccurrence_neighbors(d, NEIGHBOR_K):
@@ -137,10 +146,11 @@ def recommend(store: Store, commander_id: str, deck_ids: list[str],
         card = store.get(cid)
         if card is None or not _suggestable(card, ci):
             continue
-        score = (weights["edh"] * a["edh"]
+        blend = (weights["edh"] * a["edh"]
                  + weights["cooc"] * (a["cooc"] / n)
-                 + weights["struct"] * (a["struct"] / n)
-                 + weights["engine"] * a["engine"]) / total_w
+                 + weights["struct"] * (a["struct"] / n)) / total_w
+        engine = weights["engine"] * a["engine"] / total_w
+        score = (1.0 - INCLUSION_WEIGHT) * blend + INCLUSION_WEIGHT * a["inc"] + engine
         if score <= 0.0:
             continue
         scored.append((score, cid, a))
@@ -187,6 +197,9 @@ def _reasons(store: Store, a: dict, n: int, cmd_name: str) -> list[dict]:
     if a["edh"] > 0:
         out.append({"signal": "edhrec", "value": round(a["edh"], 4),
                     "detail": f"EDHREC synergy with {cmd_name}"})
+    if a["inc"] > 0:
+        out.append({"signal": "edhrec_inclusion", "value": round(a["inc"], 4),
+                    "detail": f"in {a['inc']:.0%} of {cmd_name} decks on EDHREC"})
     if a["cooc"] > 0:
         out.append({"signal": "cooccurrence", "value": round(a["cooc"] / n, 4),
                     "detail": f"played alongside {a['cooc_hits']} of your cards"})

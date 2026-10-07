@@ -167,3 +167,55 @@ def test_recommend_rejects_non_legendary():
     sol = _id("Sol Ring")
     r = client.post("/deck/recommend", json={"commander_id": sol, "cards": []})
     assert r.status_code == 400
+
+
+# ── EDHREC inclusion in the blend (hub docs/research/2026-10-07-deckdoctor-blend-experiment) ──
+# score = (1 − w)·blend + w·inclusion + engine bonus, w = INCLUSION_WEIGHT. The blend is
+# EDHREC synergy + co-occurrence + structural synergy; the engine/combo-completion bonus
+# stays outside the mix so known combo pieces are not pushed out by popular staples.
+
+def _b0_from_reasons(reasons, has_edh):
+    from app.suggest import WEIGHTS
+    w = dict(WEIGHTS)
+    if not has_edh:
+        w["edh"] = 0.0
+    v = {r["signal"]: r["value"] for r in reasons}
+    tw = sum(w.values())
+    blend = (w["edh"] * v.get("edhrec", 0.0) + w["cooc"] * v.get("cooccurrence", 0.0)
+             + w["struct"] * v.get("synergy", 0.0)) / tw
+    return blend, w["engine"] * v.get("engine", 0.0) / tw
+
+
+@pytest.mark.parametrize("commander", ["The Ur-Dragon", "Krenko, Mob Boss"])
+def test_score_is_b0_mixed_with_edhrec_inclusion(commander):
+    from app.suggest import INCLUSION_WEIGHT
+    cmd = _id(commander)
+    deck = [cid for cid in list(store._edhrec.get(cmd, {}))[:8]]
+    body = _recommend(cmd, cards=deck, limit=40, explain=True).json()
+    edh = store.edhrec_for(cmd)
+    checked = 0
+    for s in body["suggestions"]:
+        if any(r["signal"] == "staple" for r in s["reasons"]):
+            continue
+        cid = s["card"]["id"]
+        inc = (edh.get(cid) or (0.0, 0.0))[1] or 0.0
+        reasons = {r["signal"]: r["value"] for r in s["reasons"]}
+        if inc > 0:
+            assert reasons.get("edhrec_inclusion") == pytest.approx(round(inc, 4), abs=1e-4)
+        blend, engine = _b0_from_reasons(s["reasons"], bool(edh))
+        expected = (1 - INCLUSION_WEIGHT) * blend + INCLUSION_WEIGHT * inc + engine
+        assert s["score"] == pytest.approx(expected, abs=2e-4), s["card"]["name"]
+        checked += 1
+    assert checked >= 20
+
+
+def test_high_inclusion_card_without_synergy_can_be_suggested():
+    # Staples like Sol Ring often have EDHREC synergy <= 0 but high inclusion. The
+    # old blend scored them 0 for an empty deck and dropped them.
+    cmd = _id("The Ur-Dragon")
+    edh = store.edhrec_for(cmd)
+    picks = [cid for cid, (syn, inc) in edh.items() if (syn or 0) <= 0 and (inc or 0) >= 0.5]
+    assert picks, "expected an Ur-Dragon card with synergy <= 0 and inclusion >= 50%"
+    body = _recommend(cmd, limit=60).json()
+    got = {s["card"]["id"] for s in body["suggestions"]}
+    assert got & set(picks)

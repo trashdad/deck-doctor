@@ -44,7 +44,7 @@ export interface SynergyEdge {
 
 // ---- SP5 suggestions ----
 export interface Reason {
-  signal: string; // "edhrec" | "cooccurrence" | "synergy" | "engine" | "staple"
+  signal: string; // "edhrec" | "edhrec_inclusion" | "cooccurrence" | "synergy" | "engine" | "staple"
   detail: string;
   value: number;
 }
