@@ -99,6 +99,18 @@ def test_delayed_counter_removal_does_not_produce_counters():
     assert "e:remove_counter" in _flat("Clockwork Beetle", 1)
 
 
+def test_delayed_trigger_inside_a_may_wrapper_stays_optional():
+    # Meek Attack: "{1}{R}: You may put a creature card with total power and toughness 5 or
+    # less from your hand onto the battlefield. That creature gains haste. At the beginning of
+    # the next end step, sacrifice that creature." (all under one MayActions)
+    (rec,) = _recs("Meek Attack")
+    assert _verbs(rec) == ["PutACardFromHandOnBattlefield", "CreatePermanentLayerEffect",
+                           "CreateFutureTrigger"]
+    assert all(e.optional for e in rec.effects)
+    assert rec.optional is True
+    assert all(s.optional for s in rec.effects[2].sub_effects)
+
+
 def test_choose_an_action_wrapper_leaves_counters_to_its_options():
     # Jinxed Choker: "{3}: Put a charge counter on this artifact or remove one from it."
     # The options are projected as their own effects; the ChooseAnAction wrapper must not

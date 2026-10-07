@@ -453,6 +453,7 @@ def extract_effects(actions: Any, *, optional: bool = False, targeted: bool = Fa
                     bodies.append(a)
             eff.sub_effects = extract_effects(bodies, optional=optional, targeted=targeted,
                                               depth=depth + 1)
+            eff.optional = optional       # "you may ..." around the delayed trigger
             out.append(eff)
             continue
         if is_reflexive(op):

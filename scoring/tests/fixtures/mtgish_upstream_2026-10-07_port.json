@@ -7132,6 +7132,121 @@
      ]
     }
    ]
+  },
+  {
+   "_OracleCard": "Card",
+   "Name": "Meek Attack",
+   "Typeline": {
+    "Supertypes": [],
+    "Cardtypes": [
+     "Enchantment"
+    ],
+    "Subtypes": []
+   },
+   "ManaCost": [
+    {
+     "_ManaSymbol": "ManaCostGeneric",
+     "args": 2
+    },
+    {
+     "_ManaSymbol": "ManaCostR"
+    }
+   ],
+   "Rules": [
+    {
+     "_Rule": "Activated",
+     "args": [
+      {
+       "_Cost": "PayMana",
+       "args": [
+        {
+         "_ManaSymbol": "ManaCostGeneric",
+         "args": 1
+        },
+        {
+         "_ManaSymbol": "ManaCostR"
+        }
+       ]
+      },
+      {
+       "_Actions": "ActionList",
+       "args": [
+        {
+         "_Action": "MayActions",
+         "args": [
+          {
+           "_Action": "PutACardFromHandOnBattlefield",
+           "args": [
+            {
+             "_CardsInHand": "And",
+             "args": [
+              {
+               "_CardsInHand": "IsCardtype",
+               "args": "Creature"
+              },
+              {
+               "_CardsInHand": "TotalPowerAndToughnessIs",
+               "args": {
+                "_Comparison": "LessThanOrEqualTo",
+                "args": {
+                 "_GameNumber": "Integer",
+                 "args": 5
+                }
+               }
+              }
+             ]
+            },
+            [
+             {
+              "_EnterFlag": "EntersNormally"
+             }
+            ]
+           ]
+          },
+          {
+           "_Action": "CreatePermanentLayerEffect",
+           "args": [
+            {
+             "_Permanent": "ThePermanentPutOnTheBattlefieldThisWay"
+            },
+            [
+             {
+              "_LayerEffect": "AddAbility",
+              "args": [
+               {
+                "_Rule": "Haste"
+               }
+              ]
+             }
+            ]
+           ]
+          },
+          {
+           "_Action": "CreateFutureTrigger",
+           "args": [
+            {
+             "_FutureTrigger": "AtTheBeginningOfTheNextEndStep"
+            },
+            {
+             "_Actions": "ActionList",
+             "args": [
+              {
+               "_Action": "SacrificePermanent",
+               "args": {
+                "_Permanent": "ThePermanentPutOnTheBattlefieldThisWay"
+               }
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
   }
  ]
 }
