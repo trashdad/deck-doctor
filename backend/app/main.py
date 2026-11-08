@@ -17,6 +17,7 @@ from .analysis import analyze
 from .diagnosis import diagnose
 from .decks import get_userdecks
 from .doctor import TEMPLATE as DOCTOR_TEMPLATE, complete_deck, suggest_cuts
+from .cut_to_100 import cut_to_100
 from .manabase import fill_lands
 from .graph import deck_graph
 from .importer import parse_decklist, parse_decklist_rich
@@ -36,6 +37,7 @@ from .upgrade import find_upgrades, upgrade_sweep
 from .templates import TEMPLATES, THEMES, theme_suggest
 from .export import ExportRow, to_archidekt_csv, to_manapool, to_moxfield_csv, to_text
 from .ier import ier_breakdown
+from .pivot import PivotResponse, find_pivots
 
 
 def _deck_detail(deck: dict) -> dict:
@@ -646,11 +648,28 @@ def deck_lands(req: DeckRequest, max_price: float = Query(0.0, ge=0)) -> dict:
 
 
 @app.post("/deck/cuts", response_model=CutsResponse)
-def deck_cuts(req: DeckRequest, limit: int = Query(10, le=30)) -> dict:
-    """Lowest-contribution cards (doctor.suggest_cuts); 400 on missing/illegal commander."""
+def deck_cuts(req: DeckRequest, limit: int = Query(10, le=30),
+              to_100: bool = Query(False),
+              target: int | None = Query(None, ge=1, le=30)) -> dict:
+    """Lowest-contribution cards (doctor.suggest_cuts); 400 on missing/illegal commander.
+
+    `to_100=true` switches to the role/curve-aware ranking (cut_to_100.py): exactly
+    `target` cuts (default: cards over 100) against `req.template`'s quotas; `limit`
+    is ignored in that mode. Default mode is unchanged."""
     store = get_store()
     if not req.commander_id or not is_commander(store.get(req.commander_id)):
         raise HTTPException(400, "commander_id must be a legendary creature or planeswalker")
+    if to_100:
+        expanded = [e.id for e in req.cards for _ in range(max(1, e.quantity))]
+        res = cut_to_100(store, req.commander_id, expanded,
+                         template={**DOCTOR_TEMPLATE, **(req.template or {})}, target=target)
+        cuts = []
+        for c in res["cuts"]:
+            card = store.get(c["card_id"])
+            if card is not None:
+                cuts.append({**{k: v for k, v in c.items() if k != "card_id"}, "card": card})
+        return {"cuts": cuts, "over_by": res["over_by"], "target": res["target"],
+                "shortfall": res["shortfall"]}
     deck_ids = [e.id for e in req.cards]
     cuts = []
     for c in suggest_cuts(store, req.commander_id, deck_ids, limit=limit):
@@ -659,6 +678,24 @@ def deck_cuts(req: DeckRequest, limit: int = Query(10, le=30)) -> dict:
             continue
         cuts.append({"card": card, "contribution": c["contribution"], "reasons": c["reasons"]})
     return {"cuts": cuts}
+
+
+@app.post("/deck/pivot", response_model=PivotResponse)
+def deck_pivot(
+    req: DeckRequest,
+    limit: int = Query(10, ge=1, le=50),
+    max_off_color: int = Query(8, ge=0, description="skip commanders forcing more cuts than this"),
+    include_all: bool = Query(False, description="also return candidates no better than the current commander"),
+) -> dict:
+    """Commander pivot finder: alternative commanders whose EDHREC page this deck's
+    cards match better (pivot.find_pivots). commander_id is optional; 400 if given
+    but unknown. No EDHREC page → candidate omitted."""
+    store = get_store()
+    if req.commander_id and store.get(req.commander_id) is None:
+        raise HTTPException(400, "unknown commander_id")
+    deck_ids = [e.id for e in req.cards if e.zone != "Commanders"]
+    return find_pivots(store, req.commander_id, deck_ids, limit=limit,
+                       max_off_color=max_off_color, include_all=include_all)
 
 
 # ---- SP9: synergy graph (scaffold — roadmap §9.1) --------------------------

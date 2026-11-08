@@ -42,6 +42,9 @@ ENGINE_BONUS_ASSERTED = 1.0
 ENGINE_BONUS_CANDIDATE = 0.3
 SPELLBOOK_BONUS = 1.2    # curated Commander Spellbook combos outrank mined engines
 STAPLE_SCORE = 0.05      # below any signal-driven score; staples are a last resort
+# Interaction-record signal (app/interactions.py). OFF by default: weight 0 and no
+# records unless INTERACTIONS_JSONL is set, so existing scores are unchanged.
+INTERACTION_WEIGHT = 0.0
 
 def _unit(x) -> float:
     """Clamp to [0, 1]; None, NaN and infinities count as 0 (min(1.0, nan) would be 1.0)."""
@@ -91,8 +94,11 @@ def _suggestable(card: dict, ci: set[str]) -> bool:
 
 
 def recommend(store: Store, commander_id: str, deck_ids: list[str],
-              limit: int = 12, explain: bool = False) -> dict:
+              limit: int = 12, explain: bool = False,
+              interactions: list | None = None,
+              interaction_weight: float = INTERACTION_WEIGHT) -> dict:
     """Rank the best next cards for the commander + partial deck. See module docstring."""
+    from .interactions import lookup as _ix_lookup
     cmd = store.get(commander_id)
     ci = set(cmd.get("color_identity") or [])
     cmd_name = cmd.get("name", "")
@@ -158,6 +164,18 @@ def recommend(store: Store, commander_id: str, deck_ids: list[str],
                  + weights["struct"] * (a["struct"] / n)) / total_w
         engine = weights["engine"] * a["engine"] / total_w
         score = (1.0 - INCLUSION_WEIGHT) * blend + INCLUSION_WEIGHT * a["inc"] + engine
+        if interactions:
+            hits = _ix_lookup(interactions, deck_set, cid)
+            if hits:
+                # plan §3: sum over deck members of max(confidence x kind_weight)
+                per_member: dict[str, float] = {}
+                for r in hits:
+                    for m in r.cards:
+                        if m in deck_set:
+                            per_member[m] = max(per_member.get(m, 0.0), r.weight())
+                a["interaction"] = sum(per_member.values())
+                a["interaction_with"] = hits
+                score += interaction_weight * a["interaction"]
         if score <= 0.0:
             continue
         scored.append((score, cid, a))
@@ -227,4 +245,9 @@ def _reasons(store: Store, a: dict, n: int, cmd_name: str) -> list[dict]:
             detail = f"completes {kind}: {' + '.join(names)}"
         out.append({"signal": "engine", "value": round(a["engine"], 4),
                     "detail": detail})
+    # Interaction receipts: only verified records may state a confident sentence.
+    for r in a.get("interaction_with") or []:
+        if r.verified and r.receipt:
+            out.append({"signal": "interaction", "value": round(r.weight(), 4),
+                        "detail": r.receipt})
     return out

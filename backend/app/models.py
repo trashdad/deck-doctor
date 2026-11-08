@@ -267,10 +267,25 @@ class Cut(BaseModel):
     card: Card
     contribution: float
     reasons: list[Reason] = []
+    # Set only by /deck/cuts?to_100=true (cut_to_100.py); None in the default mode.
+    role: str | None = None
+    role_before: int | None = None
+    quota_after: int | None = None
+    quota: int | None = None
+    curve_bin: int | None = None
+    curve_before: int | None = None
+    curve_after: int | None = None
+    curve_ideal: float | None = None
+    breaks_quota: bool | None = None
+    reason: str | None = None
 
 
 class CutsResponse(BaseModel):
     cuts: list[Cut]
+    # to_100 mode only: cards over 100, cuts requested, cuts that could not be found.
+    over_by: int | None = None
+    target: int | None = None
+    shortfall: int | None = None
 
 
 # ---- SP9: synergy graph ----
