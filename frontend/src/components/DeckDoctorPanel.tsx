@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { postDeckComplete, postDeckCuts, fillLands } from "@/lib/api";
 import { useDeck } from "@/store/deck";
-import { ReasonChips } from "./SuggestionsPanel";
+import { ReasonLine } from "./reason/ReasonLine";
 import type { Card, CompletionAdd, Cut, DeckEntry } from "@/lib/types";
 import type { Zone as DeckZone } from "@/lib/zones";
 
@@ -364,7 +364,12 @@ export function DeckDoctorPanel({
                           style={{ width: `${(c.contribution / maxContrib) * 100}%` }}
                         />
                       </div>
-                      <ReasonChips reasons={c.reasons} />
+                      <ReasonLine
+                        reasons={c.reasons}
+                        commanderName={commander?.name ?? null}
+                        context="cut"
+                        className="mt-1"
+                      />
                     </div>
                     <button
                       onClick={() => remove(c.card.id)}

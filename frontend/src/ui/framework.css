@@ -1,0 +1,505 @@
+/* ===== UX framework styles (plan §4.7 / §7) =====
+   Scoped by `dd-` class prefix. */
+
+/* --- CardFrame --- */
+.dd-card {
+  position: relative;
+  aspect-ratio: 488 / 680;
+  border-radius: 4.75% / 3.4%;
+  background: #0f0d18;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  transition:
+    transform var(--t-reflow) ease,
+    box-shadow var(--t-reflow) ease,
+    opacity var(--t-reflow) ease;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+.dd-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Hover affordance (principle 3): 1 px gold ring + 2 px lift, no scale, no glow halo. */
+.dd-card[data-force-hover="true"],
+.dd-card:focus-visible,
+.dd-card.dd-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px #ffd24a,
+    0 6px 16px rgba(0, 0, 0, 0.55);
+  z-index: var(--z-lifted);
+}
+.dd-card[data-size="pile"][data-force-hover="true"],
+.dd-card[data-size="pile"]:focus-visible,
+.dd-card[data-size="pile"].dd-interactive:hover {
+  transform: translateY(-10px);
+}
+.dd-card:focus-visible {
+  box-shadow:
+    0 0 0 1px #ffd24a,
+    0 0 0 3px rgba(0, 238, 255, 0.55),
+    0 6px 16px rgba(0, 0, 0, 0.55);
+}
+/* States */
+.dd-card[data-selected="true"] {
+  box-shadow:
+    0 0 0 2px #00eeff,
+    0 6px 16px rgba(0, 0, 0, 0.55);
+}
+/* Cut candidate: a single 1 px dashed danger ring — the badge (tile/hero only) says the rest. */
+.dd-card[data-cut="true"] {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
+}
+.dd-card[data-cut="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px dashed var(--danger);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.dd-card[data-ghost] {
+  opacity: 0.5;
+  box-shadow: 0 0 0 1px rgba(0, 238, 255, 0.7);
+}
+.dd-card[data-ghost]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px dashed rgba(0, 238, 255, 0.8);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.dd-card[data-off-color="true"] img {
+  filter: grayscale(1) brightness(0.55);
+}
+.dd-card[data-dragging="true"] {
+  opacity: 0.35;
+}
+.dd-card .dd-fallback {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2px;
+  padding: 6px;
+  font-size: 11px;
+  line-height: 1.2;
+  background: linear-gradient(160deg, #221d33, #14111f);
+}
+.dd-card[data-size="pile"] .dd-fallback,
+.dd-card[data-size="thumb"] .dd-fallback {
+  padding: 3px;
+  font-size: 11px;
+}
+/* Corner badges scale with the frame (§3.3): tile/hero 20 px, pile 14 px, thumb a 10 px
+   dot. Numbers (IER) and the cut badge exist only at tile/hero — CardFrame omits them below. */
+.dd-badge {
+  position: absolute;
+  top: 4px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  min-width: 20px;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+.dd-badge-tl {
+  left: 4px;
+}
+.dd-badge-tr {
+  right: 4px;
+}
+.dd-badge-ier {
+  color: var(--cyan);
+  background: rgba(10, 4, 32, 0.85);
+  border: 1px solid rgba(0, 238, 255, 0.5);
+}
+.dd-badge-cut {
+  color: #fff;
+  background: var(--danger);
+}
+.dd-badge-wincon {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background-image: url("/deck-doctor/golden-axe.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 3px rgba(10, 4, 32, 0.9));
+}
+.dd-card[data-size="pile"] .dd-badge {
+  top: 2px;
+  height: 14px;
+  min-width: 14px;
+  padding: 0;
+}
+.dd-card[data-size="pile"] .dd-badge-tl {
+  left: 2px;
+}
+.dd-card[data-size="pile"] .dd-badge-tr {
+  right: 2px;
+}
+.dd-card[data-size="pile"] .dd-badge-wincon {
+  width: 14px;
+  height: 14px;
+}
+/* Thumb: the win-con mark is a 10 px gold dot — no glyph survives at 40 px wide. */
+.dd-card[data-size="thumb"] .dd-badge {
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  min-width: 0;
+  padding: 0;
+  border-radius: 50%;
+}
+.dd-card[data-size="thumb"] .dd-badge-wincon {
+  background-image: none;
+  background-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(10, 4, 32, 0.9);
+  filter: none;
+}
+/* Bottom label strip (ghost kind / off-color) — tile/hero only. */
+.dd-strip {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 10px 4px 4px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: linear-gradient(to top, rgba(10, 4, 32, 0.92), rgba(10, 4, 32, 0));
+  pointer-events: none;
+}
+/* Below tile size the same states collapse to a 2 px bottom bar (no text under 11 px). */
+.dd-bar {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 2;
+  height: 2px;
+  pointer-events: none;
+}
+.dd-bar[data-kind="ghost"] {
+  background: var(--cyan);
+}
+.dd-bar[data-kind="off-color"] {
+  background: var(--muted);
+}
+
+/* --- Lane (board row) --- */
+/* The count pill is the signal; lane chrome stays quiet (§3.2): Press Start 2P kept, but
+   11 px, accent only, no bevel shadow; a 1 px top rule separates lanes instead. */
+.dd-lane {
+  border-top: 1px solid var(--edge);
+  padding-top: 6px;
+}
+.dd-lane-title {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  text-shadow: none;
+}
+/* Action bar (CardTile.hasActions) — visible on hover AND while any child has focus. */
+.dd-actions {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 1px;
+  background: rgba(10, 4, 32, 0.88);
+  opacity: 0;
+  transition: opacity var(--t-reflow) ease;
+}
+.dd-card:hover .dd-actions,
+.dd-card:focus-within .dd-actions,
+.dd-card[data-force-hover="true"] .dd-actions {
+  opacity: 1;
+}
+.dd-actions button {
+  flex: 1;
+  min-height: 28px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* --- Preview --- */
+.dd-preview {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 4.75% / 3.4%;
+  overflow: hidden;
+  background: #0f0d18;
+  /* 1 px accent border + a tight shadow: no glow halo on the work surface (§3.3). */
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 2px 8px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition:
+    opacity var(--t-preview-fade) ease,
+    transform var(--t-preview-fade) ease;
+  z-index: var(--z-preview);
+}
+.dd-preview[data-side="right"] {
+  transform: translateX(-2px);
+}
+.dd-preview[data-side="left"] {
+  transform: translateX(2px);
+}
+.dd-preview[data-side="below"] {
+  transform: translateY(-2px);
+}
+.dd-preview[data-side="above"] {
+  transform: translateY(2px);
+}
+.dd-preview[data-open="true"] {
+  opacity: 1;
+  transform: none;
+}
+.dd-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Menu --- */
+.dd-menu {
+  width: var(--menu-w);
+  max-height: 70vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 210, 74, 0.35);
+  background: rgba(10, 4, 32, 0.96);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7);
+  color: #e4e4e7;
+  outline: none;
+  font-size: 13px;
+}
+.dd-menu-floating {
+  position: fixed;
+  z-index: var(--z-menu);
+  opacity: 0;
+  transition: opacity var(--t-menu-fade) ease;
+}
+.dd-menu-floating[data-open="true"] {
+  opacity: 1;
+}
+.dd-menu-header {
+  padding: 8px 12px 6px;
+  border-bottom: 1px solid rgba(255, 210, 74, 0.2);
+}
+.dd-menu-sep {
+  height: 1px;
+  margin: 4px 8px;
+  background: rgba(255, 210, 74, 0.18);
+}
+.dd-menu-item {
+  display: flex;
+  width: 100%;
+  min-height: var(--menu-item-h);
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  text-align: left;
+  color: #e4e4e7;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: default;
+  outline: none;
+  background: transparent;
+}
+.dd-menu-item:hover,
+.dd-menu-item:focus-visible,
+.dd-menu-item[data-active="true"] {
+  background: rgba(255, 210, 74, 0.12);
+  color: #fff;
+}
+.dd-menu-item[data-tone="primary"] {
+  color: #00eeff;
+  font-weight: 600;
+}
+.dd-menu-item[data-tone="danger"] {
+  color: #f87171;
+}
+/* One 20 px icon gutter, muted, the same for every row (the check mark shares it). */
+.dd-menu-item .dd-menu-icon {
+  width: 20px;
+  flex: none;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+  /* Emoji glyphs ignore `color`; neutralise them so the set reads as one. */
+  filter: grayscale(1);
+  opacity: 0.85;
+}
+.dd-menu-item .dd-menu-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* The check mark (radio rows) shares the gutter; a checked row shows it in the accent. */
+.dd-menu-item .dd-menu-icon[data-checked="true"] {
+  color: var(--accent);
+  opacity: 1;
+}
+/* Hint column: shortcuts and the submenu chevron share one right-aligned column. */
+.dd-menu-item .dd-menu-shortcut {
+  display: flex;
+  flex: none;
+  min-width: 32px;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: #9fd0ff;
+  opacity: 0.8;
+}
+.dd-menu-item .dd-menu-shortcut[data-kind="submenu"] {
+  color: var(--muted);
+}
+/* Destructive rows: label red at rest, icon goes red only on hover/focus. */
+.dd-menu-item[data-tone="danger"]:hover .dd-menu-icon,
+.dd-menu-item[data-tone="danger"]:focus-visible .dd-menu-icon {
+  color: #f87171;
+  opacity: 1;
+}
+/* Disabled rows stay in place (no layout shift) but are inert. */
+.dd-menu-item[aria-disabled="true"],
+.dd-menu-item[aria-disabled="true"]:hover {
+  background: none;
+  color: var(--muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* Vendor links: plain text links with ↗ in the label column — never boxed pills, which
+   would read as the menu's primary action. */
+.dd-menu-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  padding: 2px 12px 8px 42px;
+}
+.dd-menu-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #d4d4d8;
+  text-decoration: underline;
+  text-decoration-color: rgba(228, 228, 231, 0.35);
+  text-underline-offset: 3px;
+}
+.dd-menu-links a:hover,
+.dd-menu-links a:focus-visible {
+  color: #fff;
+  text-decoration-color: var(--accent);
+  outline: none;
+}
+/* .dd-submenu is portaled and positioned inline (Submenu.tsx). */
+
+/* --- Sheet --- */
+.dd-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sheet);
+  background: rgba(10, 4, 32, 0.78);
+}
+.dd-sheet {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: var(--z-sheet);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px 14px 0 0;
+  border-top: 1px solid rgba(255, 210, 74, 0.35);
+  background: #150d33;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.6);
+  transform: translateY(0);
+  transition: transform var(--t-reflow) ease;
+}
+.dd-sheet-row {
+  display: flex;
+  width: 100%;
+  min-height: var(--sheet-row-h);
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #e4e4e7;
+  text-align: left;
+}
+.dd-sheet-row:active {
+  background: rgba(255, 210, 74, 0.12);
+}
+.dd-sheet-row[data-tone="primary"] {
+  color: #00eeff;
+  font-weight: 600;
+}
+/* Icons are one monochrome set; the destructive row goes red only once pressed. */
+.dd-sheet-row .dd-sheet-icon {
+  width: 20px;
+  flex: none;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--muted);
+  filter: grayscale(1);
+  opacity: 0.85;
+}
+.dd-sheet-row[data-tone="danger"]:active,
+.dd-sheet-row[data-tone="danger"]:hover,
+.dd-sheet-row[data-tone="danger"]:active .dd-sheet-icon,
+.dd-sheet-row[data-tone="danger"]:hover .dd-sheet-icon {
+  color: #f87171;
+}
+.dd-sheet-row[data-tone="danger"]:active {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+/* --- Toast --- */
+.dd-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 10px 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 210, 74, 0.35);
+  background: rgba(10, 4, 32, 0.96);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  color: #e4e4e7;
+  font-size: 13px;
+}

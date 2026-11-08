@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { Card } from "@/lib/types";
 import { canHavePartner } from "@/lib/partners";
 import { useUI } from "@/store/ui";
-import { HoverPreview } from "./HoverPreview";
-import { CardMenu } from "./CardMenu";
+import { CardInteractive } from "./card/CardInteractive";
+import { CardSurface } from "./card/CardSurface";
+
+const COMMANDER_SURFACE = "commander";
 
 interface Props {
   /** All cards currently in the Commanders zone (1 = commander, 2 = partner pair). */
@@ -24,40 +26,18 @@ const PIP_BG: Record<string, string> = {
 };
 
 function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void }) {
-  const [hovering, setHovering] = useState(false);
-  const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
-  const art = card.image_uris?.normal;
-
   return (
     <>
       <div className="flex items-center gap-2">
-        <div
-          className="group relative flex-none cursor-pointer"
-          onMouseEnter={() => setHovering(true)}
-          onMouseLeave={() => setHovering(false)}
-          onClick={(e) => {
-            e.stopPropagation();
-            setMenuPos({ x: e.clientX, y: e.clientY });
-          }}
-          onContextMenu={(e) => {
-            // Right-click opens the same menu (Archidekt-style).
-            e.preventDefault();
-            e.stopPropagation();
-            setMenuPos({ x: e.clientX, y: e.clientY });
-          }}
-          data-card-hover="1"
+        <CardInteractive
+          card={card}
+          size="pile"
+          context="commander"
+          surfaceId={COMMANDER_SURFACE}
+          onRemove={onRemove}
+          loading="eager"
+          className="group flex-none shadow-[0_0_0_1px_rgba(255,210,74,0.55),_0_0_18px_rgba(255,43,214,0.4),_0_8px_24px_rgba(0,0,0,0.6)]"
         >
-          <div className="mtg-card w-[72px] shadow-[0_0_0_1px_rgba(255,210,74,0.55),_0_0_18px_rgba(255,43,214,0.4),_0_8px_24px_rgba(0,0,0,0.6)]">
-            {art ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={art} alt={card.name} loading="eager" />
-            ) : (
-              <div className="mtg-fallback">
-                <span className="font-semibold text-zinc-100 text-[8px]">{card.name}</span>
-                <span className="text-zinc-400 text-[7px]">{card.type_line}</span>
-              </div>
-            )}
-          </div>
           {/* Always-visible remove handle. */}
           <button
             onClick={(e) => {
@@ -73,7 +53,7 @@ function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void })
           >
             ×
           </button>
-        </div>
+        </CardInteractive>
         <div className="flex min-w-0 flex-col gap-0.5">
           <span className="truncate text-sm font-semibold text-white [text-shadow:0_0_14px_rgba(255,43,214,0.45)]">
             {card.name}
@@ -94,15 +74,6 @@ function CommanderCard({ card, onRemove }: { card: Card; onRemove: () => void })
           )}
         </div>
       </div>
-      <HoverPreview card={card} active={hovering} />
-      {menuPos && (
-        <CardMenu
-          card={card}
-          anchor={menuPos}
-          onRemove={onRemove}
-          onClose={() => setMenuPos(null)}
-        />
-      )}
     </>
   );
 }
@@ -133,9 +104,16 @@ export function CommanderStrip({ commanders, onRemove, controls }: Props) {
         </p>
       ) : (
         <>
-          {commanders.map((c) => (
-            <CommanderCard key={c.id} card={c} onRemove={() => onRemove(c.id)} />
-          ))}
+          <CardSurface
+            id={COMMANDER_SURFACE}
+            orientation="row"
+            label="Commanders"
+            className="flex flex-wrap items-center gap-4"
+          >
+            {commanders.map((c) => (
+              <CommanderCard key={c.id} card={c} onRemove={() => onRemove(c.id)} />
+            ))}
+          </CardSurface>
           {/* A partner pair is at most 2 commanders, and only if the commander
               actually has a partner ability. */}
           {canPartner && (

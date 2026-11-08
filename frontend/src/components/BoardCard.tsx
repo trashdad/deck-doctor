@@ -3,8 +3,8 @@
 import { useState, useCallback } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import type { Card } from "@/lib/types";
-import { HoverPreview } from "./HoverPreview";
-import { CardMenu } from "./CardMenu";
+import type { Zone } from "@/lib/zones";
+import { CardInteractive } from "./card/CardInteractive";
 
 export type BoardCardVariant = "solid" | "ghost";
 export type GhostKind = "additional" | "bridge";
@@ -17,21 +17,18 @@ interface Props {
   onRemove?: () => void;
   /** Stacking index for CSS tuck offset — 0 = front, increases into the pile. */
   stackIndex: number;
+  /** Id of the enclosing `CardSurface` (the pile). */
+  surfaceId: string;
+  /** Lane the card sits in — checks the current entry of the "Move to …" submenu. */
+  zone?: Zone;
 }
 
 const TUCK_OFFSET_X = 44; // px overlap between consecutive cards
-const HOVER_LIFT_Y = -18; // px the hovered card rises above the static pile
+const HOVER_LIFT_Y = -10; // px the hovered card rises above the static pile (§4.7: 10 px)
 const MAX_TUCK_ROT = [0, 2.5, -2, 1.5, -1]; // rotation per position (wraps)
 
-export function BoardCard({
-  card,
-  variant,
-  ghostKind,
-  onRemove,
-  stackIndex,
-}: Props) {
+export function BoardCard({ card, variant, ghostKind, onRemove, stackIndex, surfaceId, zone }: Props) {
   const [hovering, setHovering] = useState(false);
-  const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
 
   // Use a separator unlikely to appear in Scryfall UUIDs when constructing the
   // drag id, so we can reliably strip the suffix back to the card id on drop.
@@ -42,127 +39,71 @@ export function BoardCard({
     disabled: variant === "ghost",
   });
 
-  const handleMouseEnter = useCallback(() => setHovering(true), []);
-  const handleMouseLeave = useCallback(() => setHovering(false), []);
+  const handleEnter = useCallback(() => setHovering(true), []);
+  const handleLeave = useCallback(() => setHovering(false), []);
 
   const rot = MAX_TUCK_ROT[stackIndex % MAX_TUCK_ROT.length] ?? 0;
   // Only the hovered card lifts (and straightens) — the rest of the pile is static.
   const liftY = hovering ? HOVER_LIFT_Y : 0;
-  // Drag override
   const dragX = transform ? transform.x : 0;
   const dragY = transform ? transform.y : 0;
 
   const tuckStyle: React.CSSProperties = {
     position: "relative",
-    // Overlap cards like a tucked pile
     marginLeft: stackIndex === 0 ? 0 : -TUCK_OFFSET_X,
     transform: `rotate(${hovering ? 0 : rot}deg) translate(${dragX}px, ${dragY + liftY}px)`,
     transition: "transform 0.12s ease",
-    // Hovered card floats above the pile; otherwise later cards sit atop earlier ones.
     zIndex: hovering ? 999 : stackIndex,
     opacity: isDragging ? 0.35 : variant === "ghost" ? 0.5 : 1,
   };
 
-  const art = card.image_uris?.normal;
+  // dnd-kit's PointerSensor in page.tsx has `activationConstraint: { distance: 6 }`,
+  // so a plain click never starts a drag and still reaches CardInteractive's menu.
+  const dragHandle = variant === "solid" ? { ...listeners, ...attributes } : undefined;
 
   return (
-    <>
-      <div
-        ref={setNodeRef}
-        style={tuckStyle}
-        className={[
-          "mtg-card group flex-none cursor-pointer select-none",
-          "w-[70px]", // fixed width inside pile
-          variant === "ghost"
-            ? "border border-dashed border-cyan/70"
-            : "",
-          variant === "solid" ? "cursor-grab active:cursor-grabbing" : "cursor-default",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onClick={(e) => {
-          // A genuine click (dnd-kit suppresses this after a drag) opens the
-          // card menu — same interaction available in every zone.
-          e.stopPropagation();
-          setMenuPos({ x: e.clientX, y: e.clientY });
-        }}
-        onContextMenu={(e) => {
-          // Right-click opens the same menu (Archidekt-style).
-          e.preventDefault();
-          e.stopPropagation();
-          setMenuPos({ x: e.clientX, y: e.clientY });
-        }}
-        {...(variant === "solid" ? { ...listeners, ...attributes } : {})}
-        data-card-hover="1"
-      >
-        {art ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={art} alt={card.name} loading="lazy" />
-        ) : (
-          <div className="mtg-fallback">
-            <div className="flex items-start justify-between gap-1">
-              <span className="font-semibold text-zinc-100 text-[8px]">{card.name}</span>
-            </div>
-            <div className="text-zinc-400 text-[7px]">{card.type_line}</div>
-          </div>
-        )}
-
-        {/* Win-con chip — flags win conditions on the board (top-left, clear of
-            the top-right remove handle). */}
-        {variant === "solid" && card.wincon && (
-          <span
-            className="pointer-events-none absolute left-0.5 top-0.5 z-10 inline-block bg-contain bg-no-repeat [image-rendering:pixelated]"
-            style={{
-              backgroundImage: "url(/deck-doctor/golden-axe.svg)",
-              width: 14,
-              height: 14,
-              filter: "drop-shadow(0 0 4px rgba(255,174,0,.85))",
-            }}
-            title="Win condition"
-          />
-        )}
-
-        {/* Ghost overlay label */}
-        {variant === "ghost" && ghostKind && (
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-center
-                       bg-gradient-to-t from-ink/80 to-transparent pb-1"
-          >
-            <span className="text-[7px] font-bold uppercase tracking-wider text-cyan">
-              {ghostKind}
-            </span>
-          </div>
-        )}
-
-        {/* Remove button for solid cards */}
-        {variant === "solid" && onRemove && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove();
-            }}
-            className="absolute -right-1 -top-1 hidden h-5 w-5 items-center justify-center
-                       rounded-full bg-red-600 text-xs text-white group-hover:flex"
-            aria-label={`Remove ${card.name}`}
-          >
-            ×
-          </button>
-        )}
-      </div>
-
-      {/* Cursor-following hover blow-up (suppressed while the menu is open) */}
-      <HoverPreview card={card} active={hovering} />
-
-      {menuPos && (
-        <CardMenu
-          card={card}
-          anchor={menuPos}
-          onRemove={onRemove}
-          onClose={() => setMenuPos(null)}
-        />
+    <CardInteractive
+      ref={setNodeRef}
+      card={card}
+      size="pile"
+      context="deck"
+      surfaceId={surfaceId}
+      zone={zone}
+      state={{ ghost: ghostKind, dragging: isDragging }}
+      dragHandle={dragHandle}
+      onRemove={onRemove}
+      style={tuckStyle}
+      className={[
+        "group flex-none select-none",
+        variant === "solid" ? "cursor-grab active:cursor-grabbing" : "cursor-default",
+      ].join(" ")}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+    >
+      {/* Ghost overlay label */}
+      {variant === "ghost" && ghostKind && (
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-center
+                     bg-gradient-to-t from-ink/80 to-transparent pb-1"
+        >
+          <span className="text-[7px] font-bold uppercase tracking-wider text-cyan">{ghostKind}</span>
+        </div>
       )}
-    </>
+
+      {/* Remove button for solid cards */}
+      {variant === "solid" && onRemove && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          className="absolute -right-1 -top-1 hidden h-5 w-5 items-center justify-center
+                     rounded-full bg-red-600 text-xs text-white group-hover:flex"
+          aria-label={`Remove ${card.name}`}
+        >
+          ×
+        </button>
+      )}
+    </CardInteractive>
   );
 }

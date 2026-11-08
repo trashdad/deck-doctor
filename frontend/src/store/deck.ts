@@ -28,9 +28,23 @@ export interface BasicEntry {
   quantity: number;
 }
 
-interface DeckState {
+/** Shallow copy of the mutable deck state, for the undo ring. */
+export interface Snapshot {
+  cards: Record<string, DeckCard>;
+  basics: Record<string, BasicEntry>;
+}
+
+/** Undo ring depth (plan §7.3). */
+export const MAX_HISTORY = 20;
+
+export interface DeckState {
   cards: Record<string, DeckCard>; // keyed by card id (singletons)
   basics: Record<string, BasicEntry>; // basic lands with multiplicity
+  /** Undo ring — every mutating action pushes the pre-change snapshot. Not persisted. */
+  history: Snapshot[];
+  future: Snapshot[];
+  undo: () => boolean;
+  redo: () => boolean;
   add: (card: Card) => void;
   remove: (id: string) => void;
   move: (id: string, zone: Zone) => void;
@@ -62,11 +76,47 @@ interface DeckState {
   ) => void;
 }
 
+/** Apply `patch` and push the pre-change snapshot onto the undo ring (clears redo). */
+function withHistory(s: DeckState, patch: Partial<Snapshot>): Partial<DeckState> {
+  const snap: Snapshot = { cards: s.cards, basics: s.basics };
+  return {
+    ...patch,
+    history: [...s.history.slice(-(MAX_HISTORY - 1)), snap],
+    future: [],
+  };
+}
+
 export const useDeck = create<DeckState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
   cards: {},
   basics: {},
+  history: [],
+  future: [],
+  undo: () => {
+    const s = get();
+    const prev = s.history[s.history.length - 1];
+    if (!prev) return false;
+    set({
+      cards: prev.cards,
+      basics: prev.basics,
+      history: s.history.slice(0, -1),
+      future: [...s.future.slice(-(MAX_HISTORY - 1)), { cards: s.cards, basics: s.basics }],
+    });
+    return true;
+  },
+  redo: () => {
+    const s = get();
+    const next = s.future[s.future.length - 1];
+    if (!next) return false;
+    set({
+      cards: next.cards,
+      basics: next.basics,
+      future: s.future.slice(0, -1),
+      history: [...s.history.slice(-(MAX_HISTORY - 1)), { cards: s.cards, basics: s.basics }],
+    });
+    return true;
+  },
   add: (card) =>
     set((s) => {
       if (s.cards[card.id]) return s;
@@ -81,19 +131,20 @@ export const useDeck = create<DeckState>()(
       const ci = commanderIdentity(s.cards);
       if (ci.size > 0 && !withinIdentity(ci, card)) return s;
 
-      return { cards: { ...s.cards, [card.id]: { card, zone } } };
+      return withHistory(s, { cards: { ...s.cards, [card.id]: { card, zone } } });
     }),
   remove: (id) =>
     set((s) => {
+      if (!s.cards[id]) return s;
       const next = { ...s.cards };
       delete next[id];
-      return { cards: next };
+      return withHistory(s, { cards: next });
     }),
   move: (id, zone) =>
     set((s) => {
       const dc = s.cards[id];
-      if (!dc) return s;
-      return { cards: { ...s.cards, [id]: { ...dc, zone } } };
+      if (!dc || dc.zone === zone) return s;
+      return withHistory(s, { cards: { ...s.cards, [id]: { ...dc, zone } } });
     }),
   swap: (oldId, newCard) =>
     set((s) => {
@@ -107,7 +158,7 @@ export const useDeck = create<DeckState>()(
       const next = { ...s.cards };
       delete next[oldId];
       next[newCard.id] = { card: newCard, zone };
-      return { cards: next };
+      return withHistory(s, { cards: next });
     }),
   setBasic: (id, quantity, card) =>
     set((s) => {
@@ -120,7 +171,7 @@ export const useDeck = create<DeckState>()(
         if (!c) return s; // need a Card to render the first time
         next[id] = { card: c, quantity };
       }
-      return { basics: next };
+      return withHistory(s, { basics: next });
     }),
   setCommander: (card, asPartner = false) =>
     set((s) => {
@@ -140,9 +191,9 @@ export const useDeck = create<DeckState>()(
       const prunedBasics = Object.fromEntries(
         Object.entries(s.basics).filter(([, be]) => withinIdentity(ci, be.card)),
       );
-      return { cards: prunedCards, basics: prunedBasics };
+      return withHistory(s, { cards: prunedCards, basics: prunedBasics });
     }),
-  clear: () => set({ cards: {}, basics: {} }),
+  clear: () => set((s) => withHistory(s, { cards: {}, basics: {} })),
   loadImported: (rows, replace = true) =>
     set((s) => {
       const nextCards: Record<string, DeckCard> = replace ? {} : { ...s.cards };
@@ -162,12 +213,13 @@ export const useDeck = create<DeckState>()(
         }
       }
 
-      return { cards: nextCards, basics: nextBasics };
+      return withHistory(s, { cards: nextCards, basics: nextBasics });
     }),
     }),
     {
       // Persist the working deck (cards + basics, including the Card objects) so it
-      // survives a reload / browser Back — no progress lost. Methods aren't stored.
+      // survives a reload / browser Back — no progress lost. Methods and the undo
+      // ring aren't stored.
       name: "simmander.deck",
       partialize: (s) => ({ cards: s.cards, basics: s.basics }),
     },

@@ -1,0 +1,1363 @@
+{
+ "_fixture": "FIXTURE for tests/live-mock.spec.ts. Cards are copied by id from data/cards.json (real Scryfall ids, names, oracle text, image URLs). mechanic_tags / wincon are FIXTURE annotations that only steer lane placement; ier is null. Regenerate with the gen_fixture.py snippet described in tests/fixtures/live/index.ts.",
+ "commander": {
+  "id": "824b2d73-2151-4e5e-9f05-8f63e2bdcaa9",
+  "name": "Krenko, Mob Boss",
+  "cmc": 4.0,
+  "type_line": "Legendary Creature — Goblin Warrior",
+  "oracle_text": "{T}: Create X 1/1 red Goblin creature tokens, where X is the number of Goblins you control.",
+  "colors": [
+   "R"
+  ],
+  "color_identity": [
+   "R"
+  ],
+  "power": "3",
+  "toughness": "3",
+  "keywords": [],
+  "image_uris": {
+   "normal": "https://cards.scryfall.io/normal/front/8/2/824b2d73-2151-4e5e-9f05-8f63e2bdcaa9.jpg?1783909065"
+  },
+  "ier": null,
+  "mechanic_tags": [
+   "token_created"
+  ]
+ },
+ "deck": [
+  {
+   "id": "8ae6d023-2945-47f1-bc9f-f9c5ff9f5282",
+   "name": "Sol Ring",
+   "cmc": 1.0,
+   "type_line": "Artifact",
+   "oracle_text": "{T}: Add {C}{C}.",
+   "colors": [],
+   "color_identity": [],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/8/a/8ae6d023-2945-47f1-bc9f-f9c5ff9f5282.jpg?1783903504"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "ramp"
+   ]
+  },
+  {
+   "id": "dc04f5a7-94cf-417d-a09b-972a1ca97ec8",
+   "name": "Arcane Signet",
+   "cmc": 2.0,
+   "type_line": "Artifact",
+   "oracle_text": "{T}: Add one mana of any color in your commander's color identity.",
+   "colors": [],
+   "color_identity": [],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/d/c/dc04f5a7-94cf-417d-a09b-972a1ca97ec8.jpg?1783903505"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "ramp"
+   ]
+  },
+  {
+   "id": "3935034b-611f-4ce7-9bba-14c3b31eb597",
+   "name": "Ruby Medallion",
+   "cmc": 2.0,
+   "type_line": "Artifact",
+   "oracle_text": "Red spells you cast cost {1} less to cast.",
+   "colors": [],
+   "color_identity": [],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/3/9/3935034b-611f-4ce7-9bba-14c3b31eb597.jpg?1783911192"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "ramp"
+   ]
+  },
+  {
+   "id": "385b9f5e-81dd-49f6-a644-59d53245e3dc",
+   "name": "Fellwar Stone",
+   "cmc": 2.0,
+   "type_line": "Artifact",
+   "oracle_text": "{T}: Add one mana of any color that a land an opponent controls could produce.",
+   "colors": [],
+   "color_identity": [],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/3/8/385b9f5e-81dd-49f6-a644-59d53245e3dc.jpg?1783903740"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "ramp"
+   ]
+  },
+  {
+   "id": "ad881aa0-decc-447b-8c8a-983546a9a55a",
+   "name": "Mind Stone",
+   "cmc": 2.0,
+   "type_line": "Artifact",
+   "oracle_text": "{T}: Add {C}.\n{1}, {T}, Sacrifice this artifact: Draw a card.",
+   "colors": [],
+   "color_identity": [],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/a/d/ad881aa0-decc-447b-8c8a-983546a9a55a.jpg?1783903738"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "ramp"
+   ]
+  },
+  {
+   "id": "5c617d99-354a-4586-9a09-1671c0e88754",
+   "name": "Thought Vessel",
+   "cmc": 2.0,
+   "type_line": "Artifact",
+   "oracle_text": "You have no maximum hand size.\n{T}: Add {C}.",
+   "colors": [],
+   "color_identity": [],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/5/c/5c617d99-354a-4586-9a09-1671c0e88754.jpg?1783906230"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "ramp"
+   ]
+  },
+  {
+   "id": "7bc508b3-8b38-4cf0-89a7-a2cb247ed083",
+   "name": "Skirk Prospector",
+   "cmc": 1.0,
+   "type_line": "Creature — Goblin",
+   "oracle_text": "Sacrifice a Goblin: Add {R}.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "1",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/7/b/7bc508b3-8b38-4cf0-89a7-a2cb247ed083.jpg?1783918455"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "ramp"
+   ]
+  },
+  {
+   "id": "4e5d5649-3e30-4aca-80f8-5a7522d366da",
+   "name": "Skullclamp",
+   "cmc": 1.0,
+   "type_line": "Artifact — Equipment",
+   "oracle_text": "Equipped creature gets +1/-1.\nWhenever equipped creature dies, draw two cards.\nEquip {1}",
+   "colors": [],
+   "color_identity": [],
+   "power": null,
+   "toughness": null,
+   "keywords": [
+    "Equip"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/4/e/4e5d5649-3e30-4aca-80f8-5a7522d366da.jpg?1783906237"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "card_draw"
+   ]
+  },
+  {
+   "id": "fc019ffa-4461-4f3d-ab8d-e4d20e77ca0c",
+   "name": "Faithless Looting",
+   "cmc": 1.0,
+   "type_line": "Sorcery",
+   "oracle_text": "Draw two cards, then discard two cards.\nFlashback {2}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [
+    "Flashback"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/f/c/fc019ffa-4461-4f3d-ab8d-e4d20e77ca0c.jpg?1783903774"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "card_draw"
+   ]
+  },
+  {
+   "id": "e7c4556f-652b-4df0-a501-d413d32e7a91",
+   "name": "Wild Guess",
+   "cmc": 2.0,
+   "type_line": "Sorcery",
+   "oracle_text": "As an additional cost to cast this spell, discard a card.\nDraw two cards.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/e/7/e7c4556f-652b-4df0-a501-d413d32e7a91.jpg?1783939908"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "card_draw"
+   ]
+  },
+  {
+   "id": "988134ec-2610-4245-968c-52ddb1f4e62a",
+   "name": "Tormenting Voice",
+   "cmc": 2.0,
+   "type_line": "Sorcery",
+   "oracle_text": "As an additional cost to cast this spell, discard a card.\nDraw two cards.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/9/8/988134ec-2610-4245-968c-52ddb1f4e62a.jpg?1783905153"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "card_draw"
+   ]
+  },
+  {
+   "id": "e3bca51a-b9be-4be2-a256-b15853fde433",
+   "name": "Cathartic Reunion",
+   "cmc": 2.0,
+   "type_line": "Sorcery",
+   "oracle_text": "As an additional cost to cast this spell, discard two cards.\nDraw three cards.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/e/3/e3bca51a-b9be-4be2-a256-b15853fde433.jpg?1783904552"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "card_draw"
+   ]
+  },
+  {
+   "id": "3a21478b-aa47-442d-b04b-33db3f9fe529",
+   "name": "Wheel of Fortune",
+   "cmc": 3.0,
+   "type_line": "Sorcery",
+   "oracle_text": "Each player discards their hand, then draws seven cards.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/3/a/3a21478b-aa47-442d-b04b-33db3f9fe529.jpg?1783919486"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "card_draw"
+   ]
+  },
+  {
+   "id": "fba83c0d-f72b-442c-ae30-6cf557bd157d",
+   "name": "Goblin Ringleader",
+   "cmc": 4.0,
+   "type_line": "Creature — Goblin",
+   "oracle_text": "Haste (This creature can attack and {T} as soon as it comes under your control.)\nWhen this creature enters, reveal the top four cards of your library. Put all Goblin cards revealed this way into your hand and the rest on the bottom of your library in any order.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "2",
+   "toughness": "2",
+   "keywords": [
+    "Haste"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/f/b/fba83c0d-f72b-442c-ae30-6cf557bd157d.jpg?1783911486"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "card_draw"
+   ]
+  },
+  {
+   "id": "bde26955-6de3-4212-9e1a-5e11f73ebf44",
+   "name": "Lightning Bolt",
+   "cmc": 1.0,
+   "type_line": "Instant",
+   "oracle_text": "Lightning Bolt deals 3 damage to any target.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/b/d/bde26955-6de3-4212-9e1a-5e11f73ebf44.jpg?1783903996"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "removal"
+   ]
+  },
+  {
+   "id": "2a6c3d3b-93ec-43df-a0cd-ea12ab047d51",
+   "name": "Chaos Warp",
+   "cmc": 3.0,
+   "type_line": "Instant",
+   "oracle_text": "The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put it onto the battlefield.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/2/a/2a6c3d3b-93ec-43df-a0cd-ea12ab047d51.jpg?1783903314"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "removal"
+   ]
+  },
+  {
+   "id": "9b5a8df2-2bc0-408c-a9d2-e70c0f56642d",
+   "name": "Vandalblast",
+   "cmc": 1.0,
+   "type_line": "Sorcery",
+   "oracle_text": "Destroy target artifact you don't control.\nOverload {4}{R} (You may cast this spell for its overload cost. If you do, change \"target\" in its text to \"each.\")",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [
+    "Overload"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/9/b/9b5a8df2-2bc0-408c-a9d2-e70c0f56642d.jpg?1783906262"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "removal"
+   ]
+  },
+  {
+   "id": "31af49a8-e655-4670-b035-58171a6a57b9",
+   "name": "Abrade",
+   "cmc": 2.0,
+   "type_line": "Instant",
+   "oracle_text": "Choose one —\n• Abrade deals 3 damage to target creature.\n• Destroy target artifact.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/3/1/31af49a8-e655-4670-b035-58171a6a57b9.jpg?1783903509"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "removal"
+   ]
+  },
+  {
+   "id": "18cb5303-de57-4aff-a068-9701ebe19869",
+   "name": "Red Elemental Blast",
+   "cmc": 1.0,
+   "type_line": "Instant",
+   "oracle_text": "Choose one —\n• Counter target blue spell.\n• Destroy target blue permanent.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/1/8/18cb5303-de57-4aff-a068-9701ebe19869.jpg?1783919306"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "counter_spell"
+   ]
+  },
+  {
+   "id": "2dea1e46-9786-429f-ad57-d608c006f508",
+   "name": "Pyroblast",
+   "cmc": 1.0,
+   "type_line": "Instant",
+   "oracle_text": "Choose one —\n• Counter target spell if it's blue.\n• Destroy target permanent if it's blue.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/2/d/2dea1e46-9786-429f-ad57-d608c006f508.jpg?1783910560"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "counter_spell"
+   ]
+  },
+  {
+   "id": "175eb155-7262-4c2e-85c3-e0cc9be855e5",
+   "name": "Blasphemous Act",
+   "cmc": 9.0,
+   "type_line": "Sorcery",
+   "oracle_text": "This spell costs {1} less to cast for each creature on the battlefield.\nBlasphemous Act deals 13 damage to each creature.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/1/7/175eb155-7262-4c2e-85c3-e0cc9be855e5.jpg?1783903777"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "board_wipe"
+   ]
+  },
+  {
+   "id": "85d431c2-e4fa-426d-83cb-ecb782e7e87d",
+   "name": "Fiery Confluence",
+   "cmc": 4.0,
+   "type_line": "Sorcery",
+   "oracle_text": "Choose three. You may choose the same mode more than once.\n• Fiery Confluence deals 1 damage to each creature.\n• Fiery Confluence deals 2 damage to each opponent.\n• Destroy target artifact.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/8/5/85d431c2-e4fa-426d-83cb-ecb782e7e87d.jpg?1783904804"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "removal",
+    "board_wipe"
+   ]
+  },
+  {
+   "id": "a2d3ddb9-ddfb-4ca9-ae77-cf691d385a4a",
+   "name": "Siege-Gang Commander",
+   "cmc": 5.0,
+   "type_line": "Creature — Goblin",
+   "oracle_text": "When this creature enters, create three 1/1 red Goblin creature tokens.\n{1}{R}, Sacrifice a Goblin: This creature deals 2 damage to any target.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "2",
+   "toughness": "2",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/a/2/a2d3ddb9-ddfb-4ca9-ae77-cf691d385a4a.jpg?1783907061"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "token_created"
+   ]
+  },
+  {
+   "id": "fd170aa1-18be-470e-aa36-bfb11e9f92c1",
+   "name": "Mogg War Marshal",
+   "cmc": 2.0,
+   "type_line": "Creature — Goblin Warrior",
+   "oracle_text": "Echo {1}{R} (At the beginning of your upkeep, if this came under your control since the beginning of your last upkeep, sacrifice it unless you pay its echo cost.)\nWhen this creature enters or dies, create a 1/1 red Goblin creature token.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "1",
+   "keywords": [
+    "Echo"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/f/d/fd170aa1-18be-470e-aa36-bfb11e9f92c1.jpg?1783911487"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "token_created"
+   ]
+  },
+  {
+   "id": "699295ea-edf4-46f4-972e-82359c80bb2e",
+   "name": "Krenko's Command",
+   "cmc": 2.0,
+   "type_line": "Sorcery",
+   "oracle_text": "Create two 1/1 red Goblin creature tokens.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/6/9/699295ea-edf4-46f4-972e-82359c80bb2e.jpg?1783908828"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "token_created"
+   ]
+  },
+  {
+   "id": "5183ca53-dc90-4971-a610-38b4ba85dc83",
+   "name": "Hordeling Outburst",
+   "cmc": 3.0,
+   "type_line": "Sorcery",
+   "oracle_text": "Create three 1/1 red Goblin creature tokens.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/5/1/5183ca53-dc90-4971-a610-38b4ba85dc83.jpg?1783909919"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "token_created"
+   ]
+  },
+  {
+   "id": "2d19a474-b008-4088-8a31-333c0b2d9d65",
+   "name": "Beetleback Chief",
+   "cmc": 4.0,
+   "type_line": "Creature — Goblin Warrior",
+   "oracle_text": "When this creature enters, create two 1/1 red Goblin creature tokens.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "2",
+   "toughness": "2",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/2/d/2d19a474-b008-4088-8a31-333c0b2d9d65.jpg?1783907076"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "token_created"
+   ]
+  },
+  {
+   "id": "18a9fb7b-780c-46c7-9a5f-f9abb3c353df",
+   "name": "Goblin Bombardment",
+   "cmc": 2.0,
+   "type_line": "Enchantment",
+   "oracle_text": "Sacrifice a creature: This enchantment deals 1 damage to any target.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/1/8/18a9fb7b-780c-46c7-9a5f-f9abb3c353df.jpg?1783904248"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "75cebafe-00e5-478d-b34e-35b1b3f02e50",
+   "name": "Goblin Chieftain",
+   "cmc": 3.0,
+   "type_line": "Creature — Goblin",
+   "oracle_text": "Haste (This creature can attack and {T} as soon as it comes under your control.)\nOther Goblin creatures you control get +1/+1 and have haste.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "2",
+   "toughness": "2",
+   "keywords": [
+    "Haste"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/7/5/75cebafe-00e5-478d-b34e-35b1b3f02e50.jpg?1783904338"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "8567a329-9e3a-4c3d-b74d-2a2d2d4c8c41",
+   "name": "Goblin Warchief",
+   "cmc": 3.0,
+   "type_line": "Creature — Goblin Warrior",
+   "oracle_text": "Goblin spells you cast cost {1} less to cast.\nGoblins you control have haste.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "2",
+   "toughness": "2",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/8/5/8567a329-9e3a-4c3d-b74d-2a2d2d4c8c41.jpg?1783918937"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "5e02cf82-0cab-42fb-b323-2e87193a4fc4",
+   "name": "Goblin Matron",
+   "cmc": 3.0,
+   "type_line": "Creature — Goblin",
+   "oracle_text": "When this creature enters, you may search your library for a Goblin card, reveal that card, put it into your hand, then shuffle.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "1",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/5/e/5e02cf82-0cab-42fb-b323-2e87193a4fc4.jpg?1783910075"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "6eca7ad8-73e3-489d-90b7-aff9d4b0a0d9",
+   "name": "Goblin Sharpshooter",
+   "cmc": 3.0,
+   "type_line": "Creature — Goblin",
+   "oracle_text": "This creature doesn't untap during your untap step.\nWhenever a creature dies, untap this creature.\n{T}: This creature deals 1 damage to any target.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "1",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/6/e/6eca7ad8-73e3-489d-90b7-aff9d4b0a0d9.jpg?1783904338"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "c925965e-3788-4abb-b671-1b61ece27895",
+   "name": "Thornbite Staff",
+   "cmc": 2.0,
+   "type_line": "Kindred Artifact — Shaman Equipment",
+   "oracle_text": "Equipped creature has \"{2}, {T}: This creature deals 1 damage to any target\" and \"Whenever a creature dies, untap this creature.\"\nWhenever a Shaman creature enters, you may attach this Equipment to it.\nEquip {4}",
+   "colors": [],
+   "color_identity": [],
+   "power": null,
+   "toughness": null,
+   "keywords": [
+    "Equip"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/c/9/c925965e-3788-4abb-b671-1b61ece27895.jpg?1783910589"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "4a78413f-8b7a-460f-ad9c-1074deaf2e70",
+   "name": "Impact Tremors",
+   "cmc": 2.0,
+   "type_line": "Enchantment",
+   "oracle_text": "Whenever a creature you control enters, this enchantment deals 1 damage to each opponent.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/4/a/4a78413f-8b7a-460f-ad9c-1074deaf2e70.jpg?1783905569"
+   },
+   "ier": null,
+   "mechanic_tags": [],
+   "wincon": true
+  },
+  {
+   "id": "fbd25e79-d29b-4b51-9653-3932c980b931",
+   "name": "Purphoros, God of the Forge",
+   "cmc": 4.0,
+   "type_line": "Legendary Enchantment Creature — God",
+   "oracle_text": "Indestructible\nAs long as your devotion to red is less than five, Purphoros isn't a creature.\nWhenever another creature you control enters, Purphoros deals 2 damage to each opponent.\n{2}{R}: Creatures you control get +1/+0 until end of turn.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "6",
+   "toughness": "5",
+   "keywords": [
+    "Indestructible"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/f/b/fbd25e79-d29b-4b51-9653-3932c980b931.jpg?1783906391"
+   },
+   "ier": null,
+   "mechanic_tags": [],
+   "wincon": true
+  }
+ ],
+ "basic": {
+  "id": "2a7b2779-92dd-455d-920f-684276608244",
+  "name": "Mountain",
+  "cmc": 0.0,
+  "type_line": "Basic Land — Mountain",
+  "oracle_text": "({T}: Add {R}.)",
+  "colors": [],
+  "color_identity": [
+   "R"
+  ],
+  "power": null,
+  "toughness": null,
+  "keywords": [],
+  "image_uris": {
+   "normal": "https://cards.scryfall.io/normal/front/2/a/2a7b2779-92dd-455d-920f-684276608244.jpg?1783903501"
+  },
+  "ier": null,
+  "mechanic_tags": []
+ },
+ "basicQuantity": 67,
+ "find": [
+  {
+   "id": "9b920dbc-0a61-43b2-9571-dc9d726842eb",
+   "name": "Goblin Piledriver",
+   "cmc": 2.0,
+   "type_line": "Creature — Goblin Warrior",
+   "oracle_text": "Protection from blue (This creature can't be blocked, targeted, dealt damage, or enchanted by anything blue.)\nWhenever this creature attacks, it gets +2/+0 until end of turn for each other attacking Goblin.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "2",
+   "keywords": [
+    "Protection"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/9/b/9b920dbc-0a61-43b2-9571-dc9d726842eb.jpg?1783931622"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "3d726dff-2904-4a82-adaa-29c57a5c2aed",
+   "name": "Legion Warboss",
+   "cmc": 3.0,
+   "type_line": "Creature — Goblin Soldier",
+   "oracle_text": "Mentor (Whenever this creature attacks, put a +1/+1 counter on target attacking creature with lesser power.)\nAt the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "2",
+   "toughness": "2",
+   "keywords": [
+    "Mentor"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/3/d/3d726dff-2904-4a82-adaa-29c57a5c2aed.jpg?1783907068"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "token_created"
+   ]
+  },
+  {
+   "id": "e9a1920f-43a9-456f-bc3e-517fee9023df",
+   "name": "Goblin Rabblemaster",
+   "cmc": 3.0,
+   "type_line": "Creature — Goblin Warrior",
+   "oracle_text": "Other Goblin creatures you control attack each combat if able.\nAt the beginning of combat on your turn, create a 1/1 red Goblin creature token with haste.\nWhenever this creature attacks, it gets +1/+0 until end of turn for each other attacking Goblin.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "2",
+   "toughness": "2",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/e/9/e9a1920f-43a9-456f-bc3e-517fee9023df.jpg?1783908362"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "token_created"
+   ]
+  },
+  {
+   "id": "fb673948-a6fd-4dbf-9239-6f67c2b6b8d0",
+   "name": "Goblin Lackey",
+   "cmc": 1.0,
+   "type_line": "Creature — Goblin",
+   "oracle_text": "Whenever this creature deals damage to a player, you may put a Goblin permanent card from your hand onto the battlefield.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "1",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/f/b/fb673948-a6fd-4dbf-9239-6f67c2b6b8d0.jpg?1783910561"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "b96b0b4d-ad94-4f1d-b72a-44559c51c76a",
+   "name": "Muxus, Goblin Grandee",
+   "cmc": 6.0,
+   "type_line": "Legendary Creature — Goblin Noble",
+   "oracle_text": "When Muxus enters, reveal the top six cards of your library. Put all Goblin creature cards with mana value 5 or less from among them onto the battlefield and the rest on the bottom of your library in a random order.\nWhenever Muxus attacks, it gets +1/+1 until end of turn for each other Goblin you control.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "4",
+   "toughness": "4",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/b/9/b96b0b4d-ad94-4f1d-b72a-44559c51c76a.jpg?1783910426"
+   },
+   "ier": null,
+   "mechanic_tags": [],
+   "wincon": true
+  },
+  {
+   "id": "20c9477a-7d7e-4ba7-adcc-6f103d242427",
+   "name": "Conspicuous Snoop",
+   "cmc": 2.0,
+   "type_line": "Creature — Goblin Rogue",
+   "oracle_text": "Play with the top card of your library revealed.\nYou may cast Goblin spells from the top of your library.\nAs long as the top card of your library is a Goblin card, this creature has all activated abilities of that card.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "2",
+   "toughness": "2",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/2/0/20c9477a-7d7e-4ba7-adcc-6f103d242427.jpg?1783909927"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "136d69b2-92c1-4f0c-8b1d-1da3f9a596dd",
+   "name": "Goblin Recruiter",
+   "cmc": 2.0,
+   "type_line": "Creature — Goblin",
+   "oracle_text": "When this creature enters, search your library for any number of Goblin cards, reveal them, then shuffle and put those cards on top in any order.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "1",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/1/3/136d69b2-92c1-4f0c-8b1d-1da3f9a596dd.jpg?1783910561"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "0c7d8714-a0ef-4ae8-909b-60f3319c646c",
+   "name": "Krenko, Tin Street Kingpin",
+   "cmc": 3.0,
+   "type_line": "Legendary Creature — Goblin",
+   "oracle_text": "Whenever Krenko attacks, put a +1/+1 counter on it, then create a number of 1/1 red Goblin creature tokens equal to Krenko's power.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "2",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/0/c/0c7d8714-a0ef-4ae8-909b-60f3319c646c.jpg?1783908678"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "token_created"
+   ]
+  },
+  {
+   "id": "71c818eb-3846-471f-967a-76e1cb809b9f",
+   "name": "Goblin Instigator",
+   "cmc": 2.0,
+   "type_line": "Creature — Goblin Rogue",
+   "oracle_text": "When this creature enters, create a 1/1 red Goblin creature token.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "1",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/7/1/71c818eb-3846-471f-967a-76e1cb809b9f.jpg?1783909936"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "token_created"
+   ]
+  },
+  {
+   "id": "a62b7671-efde-40b2-9cb1-76339d614d29",
+   "name": "Pashalik Mons",
+   "cmc": 3.0,
+   "type_line": "Legendary Creature — Goblin Warrior",
+   "oracle_text": "Whenever Pashalik Mons or another Goblin you control dies, Pashalik Mons deals 1 damage to any target.\n{3}{R}, Sacrifice a Goblin: Create two 1/1 red Goblin creature tokens.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "2",
+   "toughness": "2",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/a/6/a62b7671-efde-40b2-9cb1-76339d614d29.jpg?1787729826"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "token_created"
+   ]
+  },
+  {
+   "id": "6257c8a2-4756-40d2-a61d-9fd2ea3a2a92",
+   "name": "Coat of Arms",
+   "cmc": 5.0,
+   "type_line": "Artifact",
+   "oracle_text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it. (For example, if two Goblin Warriors and a Goblin Shaman are on the battlefield, each gets +2/+2.)",
+   "colors": [],
+   "color_identity": [],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/6/2/6257c8a2-4756-40d2-a61d-9fd2ea3a2a92.jpg?1783906683"
+   },
+   "ier": null,
+   "mechanic_tags": [],
+   "wincon": true
+  },
+  {
+   "id": "1bd77ae9-c5ba-44af-80e9-7c852722ef6c",
+   "name": "Shared Animosity",
+   "cmc": 3.0,
+   "type_line": "Enchantment",
+   "oracle_text": "Whenever a creature you control attacks, it gets +1/+0 until end of turn for each other attacking creature that shares a creature type with it.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/1/b/1bd77ae9-c5ba-44af-80e9-7c852722ef6c.jpg?1783913862"
+   },
+   "ier": null,
+   "mechanic_tags": [],
+   "wincon": true
+  },
+  {
+   "id": "aa1e5db0-4cd8-4d42-bde1-3e3d0041339f",
+   "name": "Jeska's Will",
+   "cmc": 3.0,
+   "type_line": "Sorcery",
+   "oracle_text": "Choose one. If you control a commander as you cast this spell, you may choose both instead.\n• Add {R} for each card in target opponent's hand.\n• Exile the top three cards of your library. You may play them this turn.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/a/a/aa1e5db0-4cd8-4d42-bde1-3e3d0041339f.jpg?1783903921"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "3bce6015-a7df-43d4-849b-0f306d501658",
+   "name": "Gamble",
+   "cmc": 1.0,
+   "type_line": "Sorcery",
+   "oracle_text": "Search your library for a card, put that card into your hand, discard a card at random, then shuffle.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/3/b/3bce6015-a7df-43d4-849b-0f306d501658.jpg?1783904751"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  }
+ ],
+ "reserve": [
+  {
+   "id": "43531409-e086-481a-b718-a01a45b13d10",
+   "name": "Goblin Engineer",
+   "cmc": 2.0,
+   "type_line": "Creature — Goblin Artificer",
+   "oracle_text": "When this creature enters, you may search your library for an artifact card, put it into your graveyard, then shuffle.\n{R}, {T}, Sacrifice an artifact: Return target artifact card with mana value 3 or less from your graveyard to the battlefield.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "2",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/4/3/43531409-e086-481a-b718-a01a45b13d10.jpg?1783906071"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "c427b231-3419-407c-803f-d6bcc37efb1d",
+   "name": "Goblin Welder",
+   "cmc": 1.0,
+   "type_line": "Creature — Goblin Artificer",
+   "oracle_text": "{T}: Choose target artifact a player controls and target artifact card in that player's graveyard. If both targets are still legal as this ability resolves, that player simultaneously sacrifices the artifact and returns the artifact card to the battlefield.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "1",
+   "toughness": "1",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/c/4/c427b231-3419-407c-803f-d6bcc37efb1d.jpg?1783911487"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "a05441a9-9603-4a35-90cc-85e24eef09b8",
+   "name": "Goblin Trashmaster",
+   "cmc": 4.0,
+   "type_line": "Creature — Goblin Warrior",
+   "oracle_text": "Other Goblins you control get +1/+1.\nSacrifice a Goblin: Destroy target artifact.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": "3",
+   "toughness": "3",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/a/0/a05441a9-9603-4a35-90cc-85e24eef09b8.jpg?1783925156"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "64b67170-1602-4050-80c0-ade2a6cac211",
+   "name": "Rakdos Charm",
+   "cmc": 2.0,
+   "type_line": "Instant",
+   "oracle_text": "Choose one —\n• Exile target player's graveyard.\n• Destroy target artifact.\n• Each creature deals 1 damage to its controller.",
+   "colors": [
+    "B",
+    "R"
+   ],
+   "color_identity": [
+    "B",
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/6/4/64b67170-1602-4050-80c0-ade2a6cac211.jpg?1783906024"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "21775491-53e7-4654-8d23-54d0acd89299",
+   "name": "Light Up the Stage",
+   "cmc": 3.0,
+   "type_line": "Sorcery",
+   "oracle_text": "Spectacle {R} (You may cast this spell for its spectacle cost rather than its mana cost if an opponent lost life this turn.)\nExile the top two cards of your library. Until the end of your next turn, you may play those cards.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [
+    "Spectacle"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/2/1/21775491-53e7-4654-8d23-54d0acd89299.jpg?1783903987"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "card_draw"
+   ]
+  },
+  {
+   "id": "1c3509c6-2ae7-45be-8ac9-4d14d69db32f",
+   "name": "Reforge the Soul",
+   "cmc": 5.0,
+   "type_line": "Sorcery",
+   "oracle_text": "Each player discards their hand, then draws seven cards.\nMiracle {1}{R} (You may cast this card for its miracle cost when you draw it if it's the first card you drew this turn.)",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [
+    "Miracle"
+   ],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/1/c/1c3509c6-2ae7-45be-8ac9-4d14d69db32f.jpg?1783908117"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "card_draw"
+   ]
+  },
+  {
+   "id": "a0d50603-e31f-4cd7-b4b6-49847d99eb2e",
+   "name": "Commander's Sphere",
+   "cmc": 3.0,
+   "type_line": "Artifact",
+   "oracle_text": "{T}: Add one mana of any color in your commander's color identity.\nSacrifice this artifact: Draw a card.",
+   "colors": [],
+   "color_identity": [],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/a/0/a0d50603-e31f-4cd7-b4b6-49847d99eb2e.jpg?1783904531"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "ramp"
+   ]
+  },
+  {
+   "id": "c2cb5a93-d2f9-4df6-9488-c57b6f18ae2b",
+   "name": "Deflecting Swat",
+   "cmc": 3.0,
+   "type_line": "Instant",
+   "oracle_text": "If you control a commander, you may cast this spell without paying its mana cost.\nYou may choose new targets for target spell or ability.",
+   "colors": [
+    "R"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "power": null,
+   "toughness": null,
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/c/2/c2cb5a93-d2f9-4df6-9488-c57b6f18ae2b.jpg?1783904752"
+   },
+   "ier": null,
+   "mechanic_tags": [
+    "counter_spell"
+   ]
+  }
+ ],
+ "pivotCommanders": [
+  {
+   "id": "508b1442-bf2c-4ad6-9bcf-bd894e081ab6",
+   "name": "Meren of Clan Nel Toth",
+   "cmc": 4.0,
+   "type_line": "Legendary Creature — Human Shaman",
+   "oracle_text": "Whenever another creature you control dies, you get an experience counter.\nAt the beginning of your end step, choose target creature card in your graveyard. If that card's mana value is less than or equal to the number of experience counters you have, return it to the battlefield. Otherwise, put it into your hand.",
+   "colors": [
+    "B",
+    "G"
+   ],
+   "color_identity": [
+    "B",
+    "G"
+   ],
+   "power": "3",
+   "toughness": "4",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/5/0/508b1442-bf2c-4ad6-9bcf-bd894e081ab6.jpg?1783907026"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  },
+  {
+   "id": "21c718f2-b7a2-4d3d-b5de-629347e6a45b",
+   "name": "Karador, Ghost Chieftain",
+   "cmc": 8.0,
+   "type_line": "Legendary Creature — Centaur Spirit",
+   "oracle_text": "This spell costs {1} less to cast for each creature card in your graveyard.\nOnce during each of your turns, you may cast a creature spell from your graveyard.",
+   "colors": [
+    "B",
+    "G",
+    "W"
+   ],
+   "color_identity": [
+    "B",
+    "G",
+    "W"
+   ],
+   "power": "3",
+   "toughness": "4",
+   "keywords": [],
+   "image_uris": {
+    "normal": "https://cards.scryfall.io/normal/front/2/1/21c718f2-b7a2-4d3d-b5de-629347e6a45b.jpg?1783912005"
+   },
+   "ier": null,
+   "mechanic_tags": []
+  }
+ ]
+}

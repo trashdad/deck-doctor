@@ -11,7 +11,7 @@ export const PATREON_URL = "https://www.patreon.com/simmander";
 
 const TOOLTIP_W = 280; // px
 
-// Mirror HoverPreview's global cursor tracker so we position instantly on mount.
+// Global cursor tracker (as the removed HoverPreview had) so we position instantly on mount.
 const _lastCursor = { x: 0, y: 0 };
 if (typeof window !== "undefined") {
   window.addEventListener(

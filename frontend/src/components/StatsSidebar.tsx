@@ -53,21 +53,28 @@ export function StatsSidebar({
   analysis,
   diagnosis,
   diagnosisLoading,
+  variant = "sidebar",
 }: {
   analysis: DeckAnalysis | null;
   diagnosis?: DeckDiagnosis | null;
   diagnosisLoading?: boolean;
+  /** "sidebar" = 320 px right column (desktop); "sheet" = full-width body of a mobile bottom sheet. */
+  variant?: "sidebar" | "sheet";
 }) {
+  const shell =
+    variant === "sheet"
+      ? "min-h-0 w-full flex-1 overflow-y-auto bg-panel-solid p-4 scrollbar-thin"
+      : "w-80 shrink-0 border-l border-accent/30 bg-panel/80 p-4 backdrop-blur-sm";
   if (!analysis) {
     return (
-      <aside className="w-80 shrink-0 space-y-4 border-l border-accent/30 bg-panel/80 p-4 backdrop-blur-sm">
+      <aside data-testid="stats-sidebar" className={`${shell} space-y-4`}>
         <DiagnosisGauge diagnosis={diagnosis ?? null} loading={diagnosisLoading} />
         <p className="text-sm text-zinc-500">Add cards to see the deck engine.</p>
       </aside>
     );
   }
   return (
-    <aside className="w-80 shrink-0 space-y-5 overflow-y-auto border-l border-accent/30 bg-panel/80 p-4 backdrop-blur-sm scrollbar-thin">
+    <aside data-testid="stats-sidebar" className={`${shell} space-y-5 overflow-y-auto scrollbar-thin`}>
       {/* The headline Deck Doctor Diagnosis (0–100) sits above the engine stats. */}
       <DiagnosisGauge diagnosis={diagnosis ?? null} loading={diagnosisLoading} />
       <div className="h-px bg-accent/20" />

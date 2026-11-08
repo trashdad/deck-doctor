@@ -28,6 +28,43 @@ const config: Config = {
           G: "#22c55e",
           C: "#9aa0a6",
         },
+        // Role hues (ui/tokens.ts ROLE_HUE) — one hue per lane/quota bar.
+        role: {
+          lands: "#9aa0a6",
+          ramp: "#22c55e",
+          draw: "#3b82f6",
+          removal: "#ef4444",
+          wipes: "#f97316",
+          counters: "#8b5cf6",
+          tokens: "#14b8a6",
+          utility: "#a1a1aa",
+          wincon: "#ffd24a",
+          commander: "#ffd24a",
+        },
+        // Solid work surface (plan §3 principle 7): panel at 92 %.
+        "panel-solid": "rgba(21, 13, 51, 0.92)",
+      },
+      // Framework layers (ui/tokens.ts Z).
+      zIndex: {
+        lane: "10",
+        lifted: "20",
+        rail: "30",
+        dialog: "100",
+        preview: "200",
+        menu: "300",
+        sheet: "300",
+        toast: "400",
+      },
+      transitionDuration: {
+        fast: "90ms",
+        menu: "80ms",
+        reflow: "120ms",
+      },
+      // Three sizes max (principle 2): label 11, body 13, numbers that matter 20.
+      fontSize: {
+        label: ["11px", "14px"],
+        body: ["13px", "18px"],
+        num: ["20px", "22px"],
       },
       fontFamily: {
         // Press Start 2P — wordmark + section/zone headers ONLY (it's wide).

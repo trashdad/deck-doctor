@@ -6,6 +6,8 @@ import { recommendCards } from "@/lib/api";
 import { useDeck } from "@/store/deck";
 import { useRelationshipStore } from "@/store/relationship";
 import type { Card, DeckEntry, Reason } from "@/lib/types";
+import { ReasonLine } from "./reason/ReasonLine";
+import { formatSignal } from "@/lib/formatSignal";
 
 const TIER_STYLE: Record<string, { label: string; cls: string }> = {
   edhrec: { label: "EDHREC", cls: "border border-accent/50 bg-accent/10 text-accent" },
@@ -39,7 +41,7 @@ export function ReasonChips({ reasons }: { reasons: Reason[] }) {
                 : "border-cyan/40 bg-cyan/10 text-cyan",
           ].join(" ")}
         >
-          {SIGNAL_LABEL[r.signal] ?? r.signal} {r.value.toFixed(2)}
+          {SIGNAL_LABEL[r.signal] ?? r.signal} {formatSignal(r.value)}
         </span>
       ))}
     </div>
@@ -192,7 +194,12 @@ export function SuggestionsPanel({
                         style={{ width: `${Math.min(s.score * 100, 100)}%` }}
                       />
                     </div>
-                    <ReasonChips reasons={s.reasons} />
+                    <ReasonLine
+                      reasons={s.reasons}
+                      commanderName={commander?.name ?? null}
+                      context="suggest"
+                      className="mt-1"
+                    />
                   </div>
 
                   <button

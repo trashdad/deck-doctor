@@ -252,7 +252,9 @@ export function EngineBoard({
         /* ── COMPOSITE: engine columns always visible (red | blue | green | neutral) ──
            Each engine carries its own theme dropdown so you can set it up front;
            cards flow in as soon as a theme is picked. */
-        <div className="flex items-start gap-3">
+        /* < 1024 px (plan §4.9): the engine columns stack full-width instead of
+           squeezing four columns into a phone; ≥ 1024 px unchanged. */
+        <div className="flex flex-wrap items-start gap-3 [&>div]:min-w-full lg:flex-nowrap lg:[&>div]:min-w-0">
           <EngineColumn
             engineKey="e1"
             label="Engine 1"

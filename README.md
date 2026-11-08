@@ -75,7 +75,7 @@ Everything is a one-way river from raw public data on the left to your screen on
 
   ┌───────────┐            ┌──────────────────┐     ┌──────────────┐     ┌───────────────────────┐       ┌─────────────────┐     ┌──────────────┐
   │  EDHREC    │──┐         │ scrape_decklists │     │ decks.sqlite │     │ build_relationships.py│       │ cards (IER,     │     │ FastAPI      │
-  │ (stats +   │  │         │   runner.py      │────▶│  4,255 decks │────▶│  → similarity,        │──┐    │   tags)         │     │  :8001       │
+  │ (stats +   │  │         │   runner.py      │────▶│  5,263 decks │────▶│  → similarity,        │──┐    │   tags)         │     │  :8001       │
   │  decklists)│  ├────────▶│ (per-host        │     │              │     │    synergy, engines   │  │    │ card_relation-  │     │              │
   ├───────────┤  │ JSONL    │  throttled,      │     ├──────────────┤     ├───────────────────────┤  ├───▶│   ships 201,893 │────▶│ /deck/recom- │
   │ Archidekt  │──┤ append-  │  resumable,      │     │ edhrec.sqlite│     │ build_cooccurrence.py │  │    │ card_cooccur-   │     │   mend       │     ┌──────────┐
@@ -96,7 +96,7 @@ The key databases (all gitignored, rebuilt from the pipelines; sizes as of this 
 | File | What's in it | Built by |
 |---|---|---|
 | `data/cards.json` | ~31k Magic cards (Scryfall fields) — *committed* | bundled |
-| `data/decks.sqlite` | 4,255 real human decklists (which cards appear together) | `scrape_decklists` |
+| `data/decks.sqlite` | 5,263 real human decklists (which cards appear together) | `scrape_decklists` |
 | `data/edhrec.sqlite` | EDHREC's per-commander card stats (354 commanders, 94,970 rows) | `scrape_decklists` |
 | `data/spellbook.sqlite` | 87,980 curated two-to-six-card combos | `import_spellbook` |
 | `data/scores.sqlite` | the **query store**: per-card power, card↔card relationships, co-occurrence, engines | `scoring/build_*.py` |
@@ -118,7 +118,7 @@ breaks ties.
 
 ### Signal 2 — Co-occurrence lift: "do real decks actually run these together?"
 
-This is the empirical heart of the system. We scraped 4,255 real decks. For any two cards A and B
+This is the empirical heart of the system. We scraped 5,263 real decks. For any two cards A and B
 we ask: **do they appear together more often than random chance would predict?** That's the
 classic *market-basket "lift"* from association-rule mining:
 
@@ -576,7 +576,7 @@ spec → plan → build cycle under `docs/superpowers/`:
 |---|---|---|
 | SP1 | Relationship measurement | card↔card similarity / synergy / anti-synergy / combo edges |
 | SP2 | Card fingerprint | machine-read mechanical signature per card |
-| SP3 | Decklist co-occurrence | lift/jaccard from 4,255 real decks, fused with structural synergy |
+| SP3 | Decklist co-occurrence | lift/jaccard from 5,263 real decks, fused with structural synergy |
 | — | Semantic Finder | tag-based card search over machine-read abilities |
 | SP4 | Relationship explorer UI | five-axis side panel: similar / synergizes / played-with / combos / tags |
 | SP5 | Suggestion engine | the four-signal blend (§4) with tiered cold-start |

@@ -28,6 +28,7 @@ export function FieldSection({ zone, dropId, entries, onRemove, tint }: Props) {
   return (
     <div
       ref={setNodeRef}
+      data-zone-lane={zone}
       className={[
         "rounded-lg border p-2 transition-colors",
         // Reveal animation — parent stagger is handled by CSS animation-delay
@@ -53,7 +54,7 @@ export function FieldSection({ zone, dropId, entries, onRemove, tint }: Props) {
       </div>
 
       {/* Card pile */}
-      <CardPile entries={entries} onRemove={onRemove} />
+      <CardPile entries={entries} onRemove={onRemove} zone={zone} />
     </div>
   );
 }

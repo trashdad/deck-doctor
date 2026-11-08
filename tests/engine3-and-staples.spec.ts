@@ -21,11 +21,11 @@ test.describe("Engine 3 + Engine Staples", () => {
     const e2BG = await e2.evaluate((el) => (el as HTMLElement).style.background);
     const e3BG = await e3.evaluate((el) => (el as HTMLElement).style.background);
 
-    // e1 = red, e2 = blue, e3 = emerald — all distinct
+    // e1 = pink-red, e2 = blue, e3 = green (EngineColumn.tsx gradients) — all distinct
     // Browser may render rgba values with or without spaces after commas
-    expect(e1BG).toMatch(/239,\s*68,\s*68/);
-    expect(e2BG).toMatch(/59,\s*13[0-9],\s*24[0-9]/);
-    expect(e3BG).toMatch(/16,\s*185,\s*129/);
+    expect(e1BG).toMatch(/255,\s*59,\s*107/);
+    expect(e2BG).toMatch(/59,\s*124,\s*255/);
+    expect(e3BG).toMatch(/33,\s*255,\s*158/);
     expect(e1BG).not.toEqual(e2BG);
     expect(e2BG).not.toEqual(e3BG);
     expect(e1BG).not.toEqual(e3BG);
@@ -42,7 +42,7 @@ test.describe("Engine 3 + Engine Staples", () => {
     // Pick Atraxa as commander (she is 4-color so accepts most cards)
     await page.fill('input[placeholder="Search commanders…"]', "Atraxa");
     await page.waitForTimeout(800); // wait for debounced API
-    const commanderCard = page.locator(".mtg-card").first();
+    const commanderCard = page.locator(".dd-card").first();
     await expect(commanderCard).toBeVisible({ timeout: 8000 });
     await commanderCard.click();
 
@@ -80,7 +80,7 @@ test.describe("Engine 3 + Engine Staples", () => {
     await page.waitForTimeout(500);
     const e1Col = page.locator('[data-testid="engine-col-e1"]');
     // The column should no longer show just the "no cards" message
-    const hasCards = await e1Col.locator(".mtg-card").count() > 0;
+    const hasCards = await e1Col.locator(".dd-card").count() > 0;
     const hasNeutral = await page.locator('[data-testid="engine-col-neutral"]').isVisible();
     // Either cards in engine columns or neutral — or both
     expect(hasCards || hasNeutral).toBeTruthy();
@@ -92,7 +92,7 @@ test.describe("Engine 3 + Engine Staples", () => {
     // Set up Atraxa
     await page.fill('input[placeholder="Search commanders…"]', "Atraxa");
     await page.waitForTimeout(800);
-    const commanderCard = page.locator(".mtg-card").first();
+    const commanderCard = page.locator(".dd-card").first();
     await expect(commanderCard).toBeVisible({ timeout: 8000 });
     await commanderCard.click();
     await page.waitForSelector('[data-testid="commander-strip"]');
@@ -138,7 +138,7 @@ test.describe("Engine 3 + Engine Staples", () => {
     // Set commander
     await page.fill('input[placeholder="Search commanders…"]', "Atraxa");
     await page.waitForTimeout(800);
-    const commanderCard = page.locator(".mtg-card").first();
+    const commanderCard = page.locator(".dd-card").first();
     await expect(commanderCard).toBeVisible({ timeout: 8000 });
     await commanderCard.click();
     await page.waitForSelector('[data-testid="commander-strip"]');
@@ -162,7 +162,7 @@ test.describe("Engine 3 + Engine Staples", () => {
 
     // Should show cards or a "no commander" / loading state
     // We have a commander so it should be fetching or showing cards
-    const cardTiles = panel.locator(".mtg-card");
+    const cardTiles = panel.locator(".dd-card");
     const hasLoading = await panel.locator(".animate-spin").isVisible();
     const hasMessage = await panel.locator("p").count() > 0;
     expect(hasLoading || (await cardTiles.count()) > 0 || hasMessage).toBeTruthy();
@@ -178,7 +178,7 @@ test.describe("Engine 3 + Engine Staples", () => {
     // Set commander
     await page.fill('input[placeholder="Search commanders…"]', "Atraxa");
     await page.waitForTimeout(800);
-    const commanderCard = page.locator(".mtg-card").first();
+    const commanderCard = page.locator(".dd-card").first();
     await expect(commanderCard).toBeVisible({ timeout: 8000 });
     await commanderCard.click();
     await page.waitForSelector('[data-testid="commander-strip"]');

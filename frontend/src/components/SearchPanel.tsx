@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { searchCards, getCommanders } from "@/lib/api";
 import type { Card, CommanderSort } from "@/lib/types";
@@ -8,7 +8,8 @@ import { useDeck, commanderIdentity, withinIdentity } from "@/store/deck";
 import { isValidPartner } from "@/lib/partners";
 import { useUI } from "@/store/ui";
 import { CardTile } from "./CardTile";
-import { CardMenu } from "./CardMenu";
+import { CardInteractive } from "./card/CardInteractive";
+import { CardSurface } from "./card/CardSurface";
 
 const COLORS = ["W", "U", "B", "R", "G"] as const;
 const COLOR_BG: Record<string, string> = {
@@ -30,6 +31,12 @@ function fmtCount(n: number): string {
   return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 }
 
+/**
+ * A Find-grid card (ui/MIGRATION.md step 2): CardInteractive drives the
+ * singleton preview / context menu / sheet; the `.dd-actions` child is the
+ * hover action bar. Off-color cards (illegal once a commander is set) get no
+ * Add action and render in the `offColor` state.
+ */
 function CardWithMenu({
   card,
   onAdd,
@@ -37,74 +44,38 @@ function CardWithMenu({
   card: Card;
   onAdd: (card: Card) => void;
 }) {
-  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
   const deckCards = useDeck((s) => s.cards);
-  // Once a commander is set, off-color cards are illegal and can't be added.
   const ci = commanderIdentity(deckCards);
   const offColor = ci.size > 0 && !withinIdentity(ci, card);
 
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setMenu({ x: e.clientX, y: e.clientY });
-  }, []);
-
-  // Right-click also opens the same menu (Archidekt-style); suppress the
-  // browser's native context menu.
-  const handleContextMenu = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setMenu({ x: e.clientX, y: e.clientY });
-  }, []);
-
-  const handleAdd = useCallback(() => {
-    onAdd(card);
-  }, [onAdd, card]);
-
   return (
-    <>
-      {/*
-        Click the tile art/name for the tag/similar menu.
-        The `onAdd` prop is passed into CardTile's built-in action bar so
-        the button lives INSIDE the card element — no cross-element hover gap
-        that caused the flicker. For off-color cards we pass no onAdd so the
-        action bar is absent; we show an off-color badge instead via a wrapper.
-      */}
-      <div
-        className={`relative ${offColor ? "opacity-45 grayscale" : ""}`}
-        onClick={handleClick}
-        onContextMenu={handleContextMenu}
-      >
-        {offColor ? (
-          // Off-color: no add action, just a visual warning on hover.
-          <div className="group">
-            <CardTile card={card} compact />
-            <div
-              title="Outside your commander's color identity"
-              className="pointer-events-none absolute inset-x-1 bottom-1 z-20 rounded-md bg-red-900/85 py-1
-                         text-center text-[10px] font-bold uppercase tracking-widest text-red-200
-                         opacity-0 shadow-lg transition group-hover:opacity-100"
-            >
-              ⊘ Off-color
-            </div>
-          </div>
-        ) : (
-          // Normal: the CardTile action bar contains the ＋ button — no flicker.
-          <CardTile
-            card={card}
-            compact
-            onAdd={handleAdd}
-          />
-        )}
-      </div>
-      {menu && (
-        <CardMenu
-          card={card}
-          anchor={menu}
-          onClose={() => setMenu(null)}
-          // No onRemove — search-panel cards aren't in the deck yet.
-        />
+    <CardInteractive
+      card={card}
+      size="tile"
+      context="find"
+      surfaceId="find"
+      primary={offColor ? undefined : () => onAdd(card)}
+      state={{ offColor }}
+      // Grid cell sizes the tile: width = column, height from the 63:88 aspect
+      // ratio (not CardFrame's fixed 160 px, which overflowed the ~144 px columns).
+      className="!w-full"
+    >
+      {!offColor && (
+        <div className="dd-actions">
+          <button
+            type="button"
+            title="Add to deck"
+            className="text-accent hover:bg-accent/20"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAdd(card);
+            }}
+          >
+            ＋
+          </button>
+        </div>
       )}
-    </>
+    </CardInteractive>
   );
 }
 
@@ -275,7 +246,15 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 overflow-y-auto p-3 scrollbar-thin">
+          <CardSurface
+            id="find"
+            orientation="grid"
+            label="Find results"
+            // auto-rows-max: `.dd-card` is overflow:hidden, so its automatic minimum
+            // height is 0 and plain `auto` rows get squeezed (86 px rows under 223 px
+            // cards → tiles overlapped and a neighbour's action bar ate clicks).
+            className="grid grid-cols-2 auto-rows-max content-start gap-2 overflow-y-auto p-3 scrollbar-thin"
+          >
             {searchQuery.isLoading && (
               <p className="col-span-2 text-xs text-zinc-500">Searching…</p>
             )}
@@ -290,7 +269,7 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
             {searchQuery.data?.length === 0 && (
               <p className="col-span-2 text-xs text-zinc-600">No matches.</p>
             )}
-          </div>
+          </CardSurface>
         </>
       ) : (
         <>
@@ -361,7 +340,7 @@ export function SearchPanel({ onAdd }: { onAdd: (card: Card) => void }) {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-2 overflow-y-auto p-3 scrollbar-thin">
+          <div className="grid grid-cols-2 auto-rows-max content-start gap-2 overflow-y-auto p-3 scrollbar-thin">
             {commandersQuery.isLoading && (
               <p className="col-span-2 text-xs text-zinc-500">Loading commanders…</p>
             )}

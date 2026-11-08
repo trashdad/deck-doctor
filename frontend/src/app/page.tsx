@@ -14,7 +14,6 @@ import { UpgradeSweepPanel } from "@/components/UpgradeSweepPanel";
 import { SuggestionsPanel } from "@/components/SuggestionsPanel";
 import { useSweepStore } from "@/store/sweep";
 import { DeckManagerPanel } from "@/components/DeckManagerPanel";
-import { ImportExportDialog } from "@/components/ImportExportDialog";
 import { ImportDialog } from "@/components/ImportDialog";
 import { DeckCombosPanel } from "@/components/DeckCombosPanel";
 import { DeckDoctorPanel } from "@/components/DeckDoctorPanel";
@@ -31,6 +30,17 @@ import { useRelationshipStore } from "@/store/relationship";
 import { useSemanticStore } from "@/store/semantic";
 import { useAuth } from "@/store/auth";
 import { useBackToClose } from "@/lib/useBackToClose";
+import { useCuts } from "@/store/cuts";
+import { useUpgradeStore } from "@/store/upgrade";
+import { useUndoableDeck, useUndoHotkeys } from "@/hooks/useUndoableDeck";
+import { CardPreview } from "@/components/card/CardPreview";
+import { CardContextMenu } from "@/components/card/CardContextMenu";
+import { CardSheet } from "@/components/card/CardSheet";
+import { CardActionsProvider, type PageActionDeps } from "@/components/card/CardActionsContext";
+import { ToastHost } from "@/components/feedback/ToastHost";
+import { WorkbenchLive, RAIL_BAR_HEIGHT } from "@/components/workbench/WorkbenchLive";
+import { BottomSheet } from "@/components/workbench/BottomSheet";
+import { useDesktop } from "@/components/workbench/useDesktop";
 import { ZONES, type Zone } from "@/lib/zones";
 import type { EngineKey } from "@/components/EngineColumn";
 import { analyzeDeck, getTemplates, useDiagnosis } from "@/lib/api";
@@ -153,6 +163,26 @@ export default function Page() {
   const [graphOpen, setGraphOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [howOpen, setHowOpen] = useState(false);
+  // < 1024 px (plan §4.9): header actions fold behind ≡, Find is an overlay, the
+  // stats sidebar (flag off) is a bottom sheet. `useDesktop` decides which tree mounts.
+  const desktop = useDesktop();
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [statsOpen, setStatsOpen] = useState(false);
+  const mobileFindOpen = useUI((s) => s.mobileFindOpen);
+  const setMobileFindOpen = useUI((s) => s.setMobileFindOpen);
+  const railSheetOpen = useUI((s) => s.railSheetOpen);
+  const setRailSheetOpen = useUI((s) => s.setRailSheetOpen);
+  // Live workbench (ui/MIGRATION.md): default OFF; `?workbench=1` or localStorage `dd-workbench`="1".
+  const [workbench, setWorkbench] = useState(false);
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search).get("workbench");
+      const ls = window.localStorage.getItem("dd-workbench");
+      setWorkbench(q === "1" || (q == null && ls === "1"));
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   // Store-backed overlays (for Back-to-close + the close-all dispatcher).
   const relationshipOpen = useRelationshipStore((s) => s.isOpen);
@@ -165,6 +195,21 @@ export default function Page() {
   const closeWinconHelper = useUI((s) => s.closeWinconHelper);
   const templatePanelOpen = useTemplateStore((s) => s.panelOpen);
   const closeTemplatePanel = useTemplateStore((s) => s.closePanel);
+  // UX framework singletons (ui/MIGRATION.md step 1): context menu + touch sheet
+  // live in the UI store; Back closes them too (plan §4.7.3).
+  const menuOpen = useUI((s) => s.menu != null);
+  const closeMenu = useUI((s) => s.closeMenu);
+  const sheetOpen = useUI((s) => s.sheet != null);
+  const closeSheet = useUI((s) => s.closeSheet);
+  useUndoHotkeys();
+
+  // Page-level deps for the card context menu / sheet (CardInteractive adds zone/why).
+  const undoableDeck = useUndoableDeck();
+  const cutsToggle = useCuts((s) => s.toggle);
+  const cutsHas = useCuts((s) => s.has);
+  const openExplorer = useRelationshipStore((s) => s.open);
+  const openSemanticCard = useSemanticStore((s) => s.openCard);
+  const openUpgrade = useUpgradeStore((s) => s.open);
 
   // OR of every major overlay. When true, the browser Back button dismisses the
   // topmost overlay (see useBackToClose) instead of leaving /deck-doctor.
@@ -181,12 +226,19 @@ export default function Page() {
     semanticOpen ||
     engineStaplesOpen ||
     winconHelperOpen ||
-    templatePanelOpen;
+    templatePanelOpen ||
+    menuOpen ||
+    sheetOpen ||
+    mobileFindOpen ||
+    railSheetOpen ||
+    statsOpen;
 
   // Close every page + store overlay at once (Back-button handler target). The
-  // per-card CardMenu is local to each card and closes itself on Escape, so it's
-  // intentionally not covered here.
+  // legacy per-card CardMenu is local to each card and closes itself on Escape,
+  // so it's intentionally not covered here; the singleton menu/sheet are.
   const closeAllOverlays = useCallback(() => {
+    closeMenu();
+    closeSheet();
     setSuggestOpen(false);
     setDecksOpen(false);
     setImportOpen(false);
@@ -200,12 +252,19 @@ export default function Page() {
     closeEngineStaples();
     closeWinconHelper();
     closeTemplatePanel();
+    setMobileFindOpen(false);
+    setRailSheetOpen(false);
+    setStatsOpen(false);
   }, [
     closeRelationship,
     closeSemantic,
     closeEngineStaples,
     closeWinconHelper,
     closeTemplatePanel,
+    closeMenu,
+    closeSheet,
+    setMobileFindOpen,
+    setRailSheetOpen,
   ]);
 
   useBackToClose(anyOverlayOpen, closeAllOverlays);
@@ -252,6 +311,28 @@ export default function Page() {
 
   const commander = deckCards.find((dc) => dc.zone === "Commanders")?.card ?? null;
   const commanderId = commander?.id ?? null;
+  const commanders = useMemo(
+    () => deckCards.filter((dc) => dc.zone === "Commanders").map((dc) => dc.card),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [deckCards.filter((dc) => dc.zone === "Commanders").map((dc) => dc.card.id).join(",")],
+  );
+
+  const actionDeps = useMemo<PageActionDeps>(
+    () => ({
+      deck: {
+        add: (c) => undoableDeck.add(c),
+        remove: (c) => undoableDeck.remove(c),
+        move: (c, z) => undoableDeck.move(c, z),
+        setCommander: (c, p) => undoableDeck.setCommander(c, p),
+      },
+      cuts: { toggle: cutsToggle, has: cutsHas },
+      explorer: (card, axis) => openExplorer(card, axis),
+      semantic: (card) => void openSemanticCard(card),
+      upgrade: (card) => openUpgrade(card),
+      commanders,
+    }),
+    [undoableDeck, cutsToggle, cutsHas, openExplorer, openSemanticCard, openUpgrade, commanders],
+  );
 
   // Auth: hydrate on mount; offer migrate-on-login when the user had a working deck.
   const { user, ready, refresh } = useAuth();
@@ -376,6 +457,7 @@ export default function Page() {
   );
 
   return (
+    <CardActionsProvider deps={actionDeps}>
     <div className="flex h-[100dvh] min-h-[100dvh] w-full flex-col overflow-hidden">
       {migratePrompt && (
         <div className="flex items-center justify-between gap-3 border-b border-accent/40 bg-accent/10 px-5 py-2 text-xs text-accent">
@@ -436,7 +518,6 @@ export default function Page() {
         }}
       />
       <ImportDialog isOpen={importOpen} onClose={() => setImportOpen(false)} />
-      <ImportExportDialog isOpen={false} onClose={() => {}} />
       <HowWeCalcModal isOpen={howOpen} onClose={() => setHowOpen(false)} />
       <ExportPanel
         isOpen={exportOpen}
@@ -445,16 +526,43 @@ export default function Page() {
         commanderId={commanderId}
       />
 
-      <header className="flex items-center justify-between border-b border-accent/30 bg-[#0a0420]/70 px-5 py-3 backdrop-blur-md">
-        <div className="flex items-baseline gap-3">
-          <h1 className="arcade-bevel text-sm tracking-wide md:text-base">
+      {/* < 1024 px: one 44 px row (title · count · ⌕ Find · ≡); the action buttons fold
+          under ≡ (plan §4.9). ≥ 1024 px: unchanged single row. */}
+      <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-accent/30 bg-[#0a0420]/70 px-3 py-1.5 backdrop-blur-md lg:px-5 lg:py-3">
+        <div className="flex min-w-0 items-baseline gap-3">
+          <h1 className="arcade-bevel whitespace-nowrap text-sm tracking-wide md:text-base">
             DECK DOCTOR
           </h1>
-          <span className="text-xs uppercase tracking-[0.22em] text-cyan/70">
+          <span className="hidden text-xs uppercase tracking-[0.22em] text-cyan/70 lg:inline">
             EDH deckbuilder · Simmander
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 lg:hidden">
+          <span className="text-xs text-zinc-500">{totalCards} cards</span>
+          <button
+            type="button"
+            data-testid="open-find"
+            aria-pressed={mobileFindOpen}
+            onClick={() => setMobileFindOpen(!mobileFindOpen)}
+            className="flex h-11 min-w-11 items-center justify-center gap-1 rounded-lg border border-accent/50 px-2 text-xs font-semibold text-accent"
+          >
+            ⌕ Find
+          </button>
+          <button
+            type="button"
+            data-testid="open-actions"
+            aria-label="More actions"
+            aria-expanded={actionsOpen}
+            onClick={() => setActionsOpen((o) => !o)}
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-accent/50 text-base text-accent"
+          >
+            ≡
+          </button>
+        </div>
+        <div className={[
+          "w-full flex-wrap items-center gap-2 lg:flex lg:w-auto",
+          actionsOpen ? "flex" : "hidden",
+        ].join(" ")}>
           <UserMenu />
           <HeaderButton testid="open-decks" title="Saved decks" onClick={() => setDecksOpen(true)}>
             🗂 Decks
@@ -489,37 +597,113 @@ export default function Page() {
           >
             ❓ How We Calc
           </HeaderButton>
-          <div className="ml-1 text-xs text-zinc-500">{totalCards} cards · simmander.app/deck-doctor</div>
+          <div className="ml-1 hidden text-xs text-zinc-500 lg:block">{totalCards} cards · simmander.app/deck-doctor</div>
         </div>
       </header>
 
       <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-        <div className="flex min-h-0 flex-1">
-          <SearchPanel onAdd={add} />
-
-          <EngineBoard commanderControls={commanderControls} />
-
-          {/* Long options handle on the right margin of the board — opens the
-              current template's options without touching the dropdown. */}
-          <button
-            onClick={openTemplatePanel}
-            data-testid="template-options"
-            title="Template options"
-            className="flex w-8 shrink-0 items-center justify-center border-l border-accent/40
-                       bg-accent/10 text-accent transition hover:bg-accent/25"
+        {/* ≥ 1024 px: [Find 320] [board] ([handle] [stats] | [rail 400]).
+            < 1024 px: a column — board, then the bottom bar; Find is a full-height
+            overlay (⌕ in the header) and stats/rail open as bottom sheets. */}
+        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+          <div
+            data-testid="find-panel"
+            className={[
+              "lg:contents",
+              "[&>section]:w-full [&>section]:min-h-0 [&>section]:flex-1 [&>section]:border-r-0",
+              "lg:[&>section]:w-80 lg:[&>section]:flex-none lg:[&>section]:border-r",
+              mobileFindOpen ? "fixed inset-0 z-dialog flex flex-col bg-ink" : "hidden",
+            ].join(" ")}
           >
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] [writing-mode:vertical-rl]">
-              ⚙ Template Options
-            </span>
-          </button>
+            <div className="flex h-11 shrink-0 items-center justify-between border-b border-accent/30 px-3 lg:hidden">
+              <span className="text-xs font-semibold uppercase tracking-wide text-accent">Find</span>
+              <button
+                type="button"
+                data-testid="close-find"
+                onClick={() => setMobileFindOpen(false)}
+                className="flex h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs font-semibold text-accent"
+              >
+                Done
+              </button>
+            </div>
+            <SearchPanel onAdd={add} />
+          </div>
 
-          <StatsSidebar
-            analysis={analysis ?? null}
-            diagnosis={diagnosis ?? null}
-            diagnosisLoading={diagnosisLoading}
-          />
+          {workbench ? (
+            <WorkbenchLive>
+              <EngineBoard commanderControls={commanderControls} />
+            </WorkbenchLive>
+          ) : (
+            <>
+              <EngineBoard commanderControls={commanderControls} />
+
+              {desktop ? (
+                <>
+                  {/* Long options handle on the right margin of the board — opens the
+                      current template's options without touching the dropdown. */}
+                  <button
+                    onClick={openTemplatePanel}
+                    data-testid="template-options"
+                    title="Template options"
+                    className="flex w-8 shrink-0 items-center justify-center border-l border-accent/40
+                               bg-accent/10 text-accent transition hover:bg-accent/25"
+                  >
+                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] [writing-mode:vertical-rl]">
+                      ⚙ Template Options
+                    </span>
+                  </button>
+                  <StatsSidebar
+                    analysis={analysis ?? null}
+                    diagnosis={diagnosis ?? null}
+                    diagnosisLoading={diagnosisLoading}
+                  />
+                </>
+              ) : (
+                <>
+                  <div
+                    className="flex shrink-0 items-stretch border-t border-edge bg-panel-solid"
+                    style={{ height: RAIL_BAR_HEIGHT }}
+                    data-testid="mobile-bar"
+                  >
+                    <button
+                      type="button"
+                      data-testid="open-stats"
+                      aria-pressed={statsOpen}
+                      onClick={() => setStatsOpen((o) => !o)}
+                      className={`flex flex-1 items-center justify-center text-[13px] font-semibold tracking-wide ${statsOpen ? "text-accent" : "text-zinc-400"}`}
+                    >
+                      📊 Stats
+                    </button>
+                    <button
+                      type="button"
+                      onClick={openTemplatePanel}
+                      data-testid="template-options"
+                      className="flex flex-1 items-center justify-center text-[13px] font-semibold tracking-wide text-zinc-400"
+                    >
+                      ⚙ Template
+                    </button>
+                  </div>
+                  <BottomSheet open={statsOpen} onClose={() => setStatsOpen(false)} label="Deck stats" bottomOffset={RAIL_BAR_HEIGHT} testid="stats-sheet">
+                    <StatsSidebar
+                      analysis={analysis ?? null}
+                      diagnosis={diagnosis ?? null}
+                      diagnosisLoading={diagnosisLoading}
+                      variant="sheet"
+                    />
+                  </BottomSheet>
+                </>
+              )}
+            </>
+          )}
         </div>
       </DndContext>
+
+      {/* UX framework singletons (ui/MIGRATION.md step 1). */}
+      <CardPreview />
+      <CardContextMenu />
+      <CardSheet />
+      <ToastHost />
     </div>
+    </CardActionsProvider>
   );
 }

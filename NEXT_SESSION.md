@@ -152,7 +152,7 @@ plan in the hub, if present).
 > (keep the existing amber/jewel/Cinzel language — two themes as facing "spell pages").
 
 > **UPDATE (2026-06-10, later session):** Both pending items below are DONE.
-> 1. The scrape finished and the rebuild ran: decks.sqlite **4,255** decks, edhrec.sqlite
+> 1. The scrape finished and the rebuild ran: decks.sqlite **4,255** decks (as of 2026-06-10; 5,263 on 2026-11-06, `select count(*) from decks`), edhrec.sqlite
 >    **355 commanders / 94,970 rows**, card_cooccurrence **97,598** pairs, relationships re-fused.
 > 2. SP5 + SP4 are **implemented and shipped** (plan: `docs/superpowers/plans/2026-06-10-sp5-sp4-beta.md`),
 >    plus a Suggestions panel UI. Senior redesign deltas vs. the specs: accumulation scoring

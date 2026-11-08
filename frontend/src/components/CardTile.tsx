@@ -1,30 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useId, useRef, useState } from "react";
 import type { Card } from "@/lib/types";
-import { HoverPreview } from "./HoverPreview";
+import { CardInteractive } from "./card/CardInteractive";
 import { IerTooltip } from "./IerTooltip";
+import { usePreview } from "@/store/preview";
 
 /**
- * Hover states for the card tile.
- *   "none"    — pointer is not over the card
- *   "preview" — pointer is over the art → show the big blow-up
- *   "ier"     — pointer is over the IER pill → show IER tooltip, suppress preview
- *   "actions" — pointer is over the action bar → suppress preview (button titles suffice)
+ * Legacy-prop card tile for the panels (commanders tab, SemanticFinder,
+ * TemplatePanel, WinconHelperPanel, OraclePhrasePanel, RelationshipExplorer,
+ * DeckCombosPanel, EngineStaplesPanel). Now a thin wrapper over
+ * `CardInteractive size="tile" context="find"`:
+ *
+ *   - hover / focus → the singleton `CardPreview` (via useHoverIntent)
+ *   - right-click / Shift+F10 / Space → the singleton `CardContextMenu`
+ *   - long-press (touch) → `CardSheet`
+ *   - left-click keeps the legacy semantics: calls `onClick` and *bubbles* to
+ *     the parent (several consumers put the click handler on a wrapper div),
+ *     instead of opening the menu.
+ *
+ * Surface: CardInteractive expects a `[data-surface]` ancestor whose id it
+ * echoes as `surfaceId`. These consumer grids have none, so by default the
+ * tile hosts `data-surface` on itself — a one-card surface. The preview and
+ * keyboard-menu placement then anchor beside the tile (exactly the DOM
+ * fallback CardInteractive/useHoverIntent already apply via
+ * `closest("[data-surface]") ?? el`), and the contract "surfaceId matches the
+ * nearest [data-surface]" stays literally true. Consumers that later wrap
+ * tiles in a `CardSurface` pass its id as `surfaceId` and the self-surface is
+ * dropped. Nothing in components/card/** had to change.
  */
-type HoverZone = "none" | "preview" | "ier" | "actions";
-
 export function CardTile({
   card,
   onClick,
-  compact = false,
   badge,
   onAdd,
   onFocus,
   onInspect,
+  surfaceId,
 }: {
   card: Card;
   onClick?: () => void;
+  /** Accepted for compatibility; CardFrame decides what the fallback frame shows. */
   compact?: boolean;
   /** Small metric pill rendered top-right (replaces the bare IER pill). */
   badge?: string;
@@ -32,155 +48,119 @@ export function CardTile({
   onAdd?: () => void;
   onFocus?: () => void;
   onInspect?: () => void;
+  /** Id of an enclosing `CardSurface`. Omit → the tile is its own surface. */
+  surfaceId?: string;
 }) {
-  const art = card.image_uris?.normal;
+  const ownId = useId();
   const hasActions = Boolean(onAdd || onFocus || onInspect);
   const pill = badge ?? (card.ier != null ? String(card.ier) : null);
 
-  const [hoverZone, setHoverZone] = useState<HoverZone>("none");
+  // IER tooltip: hovering the pill shows the breakdown and suppresses the big
+  // preview (refcounted via usePreview.suppress so a pending hover-open cannot
+  // fire underneath the tooltip). Released on leave / unmount.
+  const [ierActive, setIerActive] = useState(false);
+  const releaseRef = useRef<(() => void) | null>(null);
+  const enterPill = useCallback(() => {
+    if (!releaseRef.current) releaseRef.current = usePreview.getState().suppress();
+    setIerActive(true);
+  }, []);
+  const leavePill = useCallback(() => {
+    releaseRef.current?.();
+    releaseRef.current = null;
+    setIerActive(false);
+  }, []);
+  const pillRef = useCallback(
+    (el: HTMLSpanElement | null) => {
+      if (el === null) leavePill();
+    },
+    [leavePill],
+  );
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      onClick?.();
+      // Legacy left-click: no menu, let it bubble to wrapper handlers.
+      e.preventDefault();
+    },
+    [onClick],
+  );
 
   return (
     <>
-      <div
-        className="mtg-card group cursor-pointer select-none"
+      <CardInteractive
+        card={card}
+        size="tile"
+        context="find"
+        surfaceId={surfaceId ?? ownId}
+        data-surface={surfaceId ? undefined : ownId}
+        primary={onClick}
+        // Grid consumers size the tile by the cell, not the 160 px default.
+        className="!w-full"
         // Native tooltip with name + type line (cheap, useful on dense grids).
         title={card.type_line ? `${card.name} — ${card.type_line}` : card.name}
-        onClick={onClick}
-        // The outer wrapper covers the whole card; entering it from outside
-        // starts the "preview" zone.  Leaving the whole card clears state.
-        onMouseEnter={() => setHoverZone("preview")}
-        onMouseLeave={() => setHoverZone("none")}
+        // The custom pill below carries the hover handlers CardFrame's badge lacks.
+        state={{ ierPill: null }}
+        onClick={handleClick}
       >
-        {art ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={art}
-            alt={card.name}
-            loading="lazy"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-              const fb = e.currentTarget.nextElementSibling as HTMLElement | null;
-              if (fb) fb.style.display = "flex";
-            }}
-          />
-        ) : null}
-        <div className="mtg-fallback" style={{ display: art ? "none" : "flex" }}>
-          <div className="flex items-start justify-between gap-1">
-            <span className="font-semibold text-zinc-100">{card.name}</span>
-            <span className="text-zinc-400">{card.cmc > 0 ? card.cmc : ""}</span>
-          </div>
-          <div className="text-zinc-400">{card.type_line}</div>
-          {!compact && (
-            <div className="line-clamp-5 text-zinc-500">{card.oracle_text}</div>
-          )}
-          <div className="flex items-center justify-between text-zinc-400">
-            <span>{card.color_identity.join("") || "C"}</span>
-            {card.ier != null && (
-              <span className="rounded border border-cyan/50 bg-cyan/10 px-1 text-cyan">
-                IER {card.ier}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Win-con chip (top-left) — flags cards that can close the game. Kept
-            opposite the IER pill so the two never overlap. */}
-        {card.wincon && (
-          <span
-            className="absolute left-1 top-1 z-10 inline-block cursor-default bg-contain bg-no-repeat [image-rendering:pixelated]"
-            style={{
-              backgroundImage: "url(/deck-doctor/golden-axe.svg)",
-              width: 18,
-              height: 18,
-              filter: "drop-shadow(0 0 5px rgba(255,174,0,.85))",
-            }}
-            title="Win condition — can close the game"
-          />
-        )}
-
-        {/* IER pill — hovering it switches to "ier" zone, suppressing the big preview */}
         {pill && (
           <span
-            className="absolute right-1 top-1 z-10 cursor-default rounded border border-cyan/50 bg-ink/80 px-1 text-[10px] font-semibold text-cyan"
-            onMouseEnter={(e) => {
-              e.stopPropagation();
-              setHoverZone("ier");
-            }}
-            onMouseLeave={(e) => {
-              e.stopPropagation();
-              // Return to preview when leaving the pill but still on the card.
-              // The outer div's onMouseLeave handles full exit.
-              setHoverZone("preview");
-            }}
+            ref={pillRef}
+            className="dd-badge dd-badge-tr dd-badge-ier cursor-default"
+            style={{ pointerEvents: "auto" }}
+            onMouseEnter={enterPill}
+            onMouseLeave={leavePill}
             title={`IER: ${pill}`}
           >
             {pill}
           </span>
         )}
 
-        {/* Action bar — hovering suppresses the big preview so it can be clicked reliably */}
         {hasActions && (
-          <div
-            className="absolute inset-x-0 bottom-0 z-10 flex items-stretch justify-center gap-px
-                       bg-ink/85 opacity-0 transition-opacity group-hover:opacity-100"
-            onMouseEnter={(e) => {
-              e.stopPropagation();
-              setHoverZone("actions");
-            }}
-            onMouseLeave={(e) => {
-              e.stopPropagation();
-              setHoverZone("preview");
-            }}
-          >
+          <div className="dd-actions">
             {onAdd && (
               <button
+                type="button"
                 title="Add to deck"
                 onClick={(e) => {
                   e.stopPropagation();
                   onAdd();
                 }}
-                className="flex-1 py-1.5 text-[11px] font-bold text-accent hover:bg-accent/20"
+                className="text-accent hover:bg-accent/20"
               >
                 ＋
               </button>
             )}
             {onFocus && (
               <button
+                type="button"
                 title="Focus explorer on this card"
                 onClick={(e) => {
                   e.stopPropagation();
                   onFocus();
                 }}
-                className="flex-1 py-1.5 text-[11px] font-bold text-cyan hover:bg-cyan/20"
+                className="text-cyan hover:bg-cyan/20"
               >
                 ◎
               </button>
             )}
             {onInspect && (
               <button
+                type="button"
                 title="Inspect this pair"
                 onClick={(e) => {
                   e.stopPropagation();
                   onInspect();
                 }}
-                className="flex-1 py-1.5 text-[11px] font-bold text-[#c8b6ff] hover:bg-magenta/20"
+                className="text-[#c8b6ff] hover:bg-magenta/20"
               >
                 ⓘ
               </button>
             )}
           </div>
         )}
-      </div>
+      </CardInteractive>
 
-      {/* Portaled previews — pointer-events:none so they never steal hover */}
-      <HoverPreview card={card} active={hoverZone === "preview"} />
-      {card.ier != null && (
-        <IerTooltip
-          cardId={card.id}
-          ier={card.ier}
-          active={hoverZone === "ier"}
-        />
-      )}
+      {card.ier != null && <IerTooltip cardId={card.id} ier={card.ier} active={ierActive} />}
     </>
   );
 }
