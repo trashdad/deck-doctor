@@ -92,7 +92,7 @@ def _top_k_keep(
 
     kept: set[tuple] = set()
     for card_pairs in buckets.values():
-        card_pairs.sort(key=lambda x: x[0], reverse=True)
+        card_pairs.sort(key=lambda x: (-x[0], x[1][0], x[1][1]))
         for _, pair in card_pairs[:k]:
             kept.add(pair)
     return kept
@@ -172,8 +172,7 @@ def build(db_path: str, catalog_paths: list[str] | None = None, kmax: int = 5) -
     # Seed kept pairs sorted by max(synergy) desc, capped to _MAX_SEEDS
     seeds_sorted = sorted(
         kept,
-        key=lambda p: max(scores_map.get(p, (0.0, 0.0))),
-        reverse=True,
+        key=lambda p: (-max(scores_map.get(p, (0.0, 0.0))), p[0], p[1]),
     )
     engines = mine_engines(
         resources,

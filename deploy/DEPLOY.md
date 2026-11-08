@@ -151,15 +151,22 @@ rebuilt on the dev box and shipped. Done this way on 2026-10-05 (5 sets, +1,148 
    — `--keep-ids-from` keeps every existing card's print (and id) while it still exists;
    without it, reprints in new sets change ids that user decks store.
 3. `python backend/scripts/enrich_lands.py` (rewrites `backend/data/land_meta.json`).
-4. `python scoring/mtgish_merge.py --upstream-commit <i5jb/mtgish sha>` — the 2026-04-28
-   MTGish base plus upstream (github.com/i5jb/mtgish) entries for cards the base lacks;
-   writes `data/mtgish.merged.json` + `.source.json` (provenance). Upstream restructured its
-   schema, so do not swap the base wholesale without porting `tag_taxonomy.py` /
-   `fingerprints/` (measure with an old-vs-new table diff first).
+4. Fetch the MTGish rules data at a pinned upstream (github.com/i5jb/mtgish) commit and
+   record its hash (the card layer reads upstream directly; `mtgish_schema.py` handles the
+   2026-10 schema — folded `PutCounters`/`Exile`/... ops, `Reflexive_*` actions, `_Trigger If`,
+   `AnchorWord`):
+   ```bash
+   SHA=<i5jb/mtgish commit>
+   curl -sSL -o data/mtgish.lines.$SHA.json https://raw.githubusercontent.com/i5jb/mtgish/$SHA/data/mtgish.lines.json
+   sha256sum data/mtgish.lines.$SHA.json
+   ```
+   (`scoring/mtgish_merge.py` — April-2026 base plus upstream gap-fill — is only needed to
+   reproduce stores built before the port.)
 5. Fresh store: `build_store.py --cards data/cards.json --out <new>`, then
-   `build_semantics.py` and `build_fingerprints.py` with `--db <new> --mtgish data/mtgish.merged.json`.
-6. Verify against the previous store: existing cards' fingerprints/tags/synergy values unchanged
-   (only image cache-busters and errata), then rehearse `build_relationships` →
+   `build_semantics.py` and `build_fingerprints.py` with `--db <new> --mtgish data/mtgish.lines.$SHA.json`.
+6. Verify against the previous store: diff `card_flat_tags` / `card_fingerprints` per card and
+   explain every lost tag (upstream re-parses change cards between commits; the unmapped-operator
+   list `build_fingerprints.py` prints shows new upstream ops), then rehearse `build_relationships` →
    `build_cooccurrence` → `load_to_postgres` into `deckdoctor_test` and run both test suites.
 7. Ship: back up prod, copy the new store over `/opt/deck-doctor/data/scores.sqlite`, run
    `deckdoctor-refresh` (rebuilds relationships/co-occurrence, loads Postgres, reloads the API),

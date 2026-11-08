@@ -13,9 +13,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tag_taxonomy import (  # noqa: E402
-    ACTION_MAP, TRIGGER_MAP, PERMANENT_CARDTYPE_MAP, KEYWORD_MAP, REPLACEMENT_MAP,
-    PLAYER_MAP, PLAYERS_MAP,
+    TRIGGER_MAP, PERMANENT_CARDTYPE_MAP, KEYWORD_MAP, REPLACEMENT_MAP,
+    PLAYER_MAP, PLAYERS_MAP, action_tags,
 )
+from mtgish_schema import core_rule, trigger_ops  # noqa: E402
 
 from .schema import AbilityRecord, Effect, Amount  # noqa: E402
 
@@ -27,7 +28,7 @@ def _rule_static_tags(rec: AbilityRecord) -> set[str]:
     their behavior lives in the canonical `raw` _Rule op. Mirrors the proven
     mapping from the prior build_semantics pipeline so keyword coverage holds.
     """
-    op = (rec.raw or {}).get("_Rule", "")
+    op = core_rule(rec.raw or {}).get("_Rule", "")   # through an upstream AnchorWord gate
     tags: set[str] = set(KEYWORD_MAP.get(op, []))
     tags.update(REPLACEMENT_MAP.get(op, []))
     if op == "Landfall":
@@ -51,7 +52,7 @@ def _amount_bucket(amt: Amount | None) -> str | None:
 
 
 def _effect_tags(e: Effect) -> set[str]:
-    tags: set[str] = set(ACTION_MAP.get(e.verb, []))
+    tags: set[str] = set(action_tags(e.verb))      # variant-qualified verbs fall back to the op
     if e.quantifier:
         tags.add(f"q:{e.quantifier}")
     if e.targeted:
@@ -78,8 +79,8 @@ def flat_tags(records: list[AbilityRecord]) -> list[str]:
     tags: set[str] = set()
     for rec in records:
         tags |= _rule_static_tags(rec)
-        if rec.trigger:
-            tags.update(TRIGGER_MAP.get(rec.trigger.get("op", ""), []))
+        for op in trigger_ops(rec.trigger):     # every part of an "Or"/"If" trigger
+            tags.update(TRIGGER_MAP.get(op, []))
         if rec.cost:
             if rec.cost.get("tap"):
                 tags.add("cost:tap")
@@ -109,7 +110,7 @@ def build_inverted_index(per_card_tags: dict[str, list[str]]) -> dict[str, list[
     for card_id, tags in per_card_tags.items():
         for t in tags:
             inv[t].add(card_id)
-    return {t: sorted(ids) for t, ids in inv.items()}
+    return {t: sorted(inv[t]) for t in sorted(inv)}
 
 
 def fingerprint_to_vector(records: list[AbilityRecord]) -> dict[str, int]:
@@ -137,7 +138,7 @@ def fingerprint_to_vector(records: list[AbilityRecord]) -> dict[str, int]:
                 vec["targeted"] += 1
             if e.amount:
                 vec[f"amt:{e.amount.kind}"] += 1
-    return dict(vec)
+    return {k: vec[k] for k in sorted(vec)}
 
 
 def _iter_effects(effects: list[Effect]):

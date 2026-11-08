@@ -3,9 +3,12 @@ Build semantic tag tables in scores.sqlite from MTGish typed card data.
 
 Usage:
     python scoring/build_semantics.py \
-        --mtgish C:/simmander/simmander/mtgish/data/cards.json \
+        --mtgish mtgish.lines.json \
         --cards  data/cards.json \
         --db     data/scores.sqlite
+
+--mtgish takes upstream i5jb/mtgish data/mtgish.lines.json (JSON lines) or the
+April-2026 JSON-array snapshot; mtgish_schema.py handles both rule-tree shapes.
 
 For each card that exists in both datasets we store:
   card_semantics(card_id TEXT, ability_idx INT, tags TEXT)
@@ -26,15 +29,23 @@ from pathlib import Path
 # ── Add scoring dir to path so we can import tag_taxonomy ────────────────────
 sys.path.insert(0, str(Path(__file__).parent))
 from tag_taxonomy import (
-    TRIGGER_MAP, ACTION_MAP, COUNTER_MAP, KEYWORD_MAP,
-    REPLACEMENT_MAP, PLAYER_MAP, PLAYERS_MAP, PERMANENT_CARDTYPE_MAP,
+    TRIGGER_MAP, COUNTER_MAP, KEYWORD_MAP,
+    REPLACEMENT_MAP, PLAYER_MAP, PLAYERS_MAP, PERMANENT_CARDTYPE_MAP, action_tags,
 )
+from mtgish_schema import action_verbs, load_mtgish
 
 # ── Node extraction ───────────────────────────────────────────────────────────
 
+# Recursion guard. Upstream MTGish (2026-10) nests folded operators 2-3 levels deeper
+# than the April snapshot (CreateTokens [[tokens], [flags]], Exile [[_Exilable ...]],
+# PutCounters [_PutCountersAction ...]), so the April guard of 20 was raised to keep
+# the same abilities in reach (e.g. keywords granted to tokens created by tokens).
+MAX_DEPTH = 26
+
+
 def extract_nodes(node, result: list, depth: int = 0) -> None:
     """Flatten all typed operator nodes from an MTGish rule tree."""
-    if depth > 20:
+    if depth > MAX_DEPTH:
         return
     if isinstance(node, dict):
         # Check for typed node keys
@@ -83,7 +94,9 @@ def nodes_to_tags(nodes: list) -> list[str]:
             tags.update(TRIGGER_MAP.get(val, []))
 
         elif key == "_Action":
-            tags.update(ACTION_MAP.get(val, []))
+            # ctx is the action node; folded upstream ops carry their variant(s)
+            for verb in action_verbs(ctx):
+                tags.update(action_tags(verb))
 
         elif key == "_CounterType":
             ct_args = ctx  # ctx is node.get("args") here
@@ -148,8 +161,7 @@ def main() -> None:
     args = parser.parse_args()
 
     print("Loading MTGish cards ...")
-    with open(args.mtgish, encoding="utf-8") as fh:
-        mtgish_cards: list[dict] = json.load(fh)
+    mtgish_cards: list[dict] = load_mtgish(args.mtgish)
     print(f"  {len(mtgish_cards):,} MTGish cards")
 
     print("Loading Scryfall cards ...")

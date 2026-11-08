@@ -2,9 +2,11 @@
 
 Usage:
     python scoring/build_fingerprints.py \
-        --mtgish C:/simmander/simmander/mtgish/data/cards.json \
+        --mtgish mtgish.lines.json \
         --cards  data/cards.json \
         --db     data/scores.sqlite
+
+--mtgish takes upstream i5jb/mtgish data/mtgish.lines.json or the April JSON array.
 """
 
 from __future__ import annotations
@@ -17,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_semantics import norm_name  # noqa: E402  (reuse the proven name join)
+from mtgish_schema import load_mtgish  # noqa: E402
 from fingerprints.project import project_card  # noqa: E402
 from fingerprints.schema import AbilityRecord  # noqa: E402
 from fingerprints.derive import (  # noqa: E402
@@ -42,7 +45,7 @@ def _load_outliers(outliers_dir: str) -> dict[str, list[AbilityRecord]]:
 
 def build(mtgish_path: str, cards_path: str, db_path: str,
           outliers_dir: str = "data/outliers") -> dict:
-    mtgish = json.loads(Path(mtgish_path).read_text(encoding="utf-8"))
+    mtgish = load_mtgish(mtgish_path)   # upstream JSON lines or the April JSON array
     raw = json.loads(Path(cards_path).read_text(encoding="utf-8"))
     cards = raw["data"] if isinstance(raw, dict) and "data" in raw else raw
 

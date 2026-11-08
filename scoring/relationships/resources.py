@@ -7,16 +7,26 @@ op / cost / counter the fingerprint already captured; they are intended to grow.
 
 from __future__ import annotations
 
-from fingerprints.schema import AbilityRecord
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from fingerprints.schema import AbilityRecord  # noqa: E402
+from mtgish_schema import reflexive_steps  # noqa: E402
+from tag_taxonomy import REFLEXIVE_STEP_ACTION  # noqa: E402
 
 # verb (_Action op) -> resource the effect PRODUCES
 PRODUCER_VERB = {
     "AddMana": "mana", "AddManaWithModifiers": "mana", "AddManaRepeated": "mana",
     "CreateTokens": "token", "CreateNumberTokens": "token",
     "CreateTokensWithFlags": "token", "ForEachPlayerCreateTokens": "token",
+    # upstream MTGish (2026-10) names of the token makers
+    "EachPlayerCreatesTokens": "token", "EachPlayerMayCreateTokens": "token",
+    "EachPlayerCreatesTokensOfTheirChoice": "token", "CreateTokensForEachPlayer": "token",
+    "CreateTokensForEachPermanent": "token", "MultiCreateTokens": "token",
     "Populate": "token", "PopulateNumberTimes": "token",
     "DrawACard": "card", "DrawNumberCards": "card", "DrawACardForEach": "card",
-    "DrawUntilHandSize": "card",
+    "DrawUntilHandSize": "card", "MultiDraw": "card",
     "GainLife": "life", "GainLifeForEach": "life", "GainLifeEqualToDamage": "life",
     "UntapPermanent": "untap", "UntapAllPermanents": "untap", "UntapEachPermanent": "untap",
     "SearchLibrary": "tutor", "SearchLibraryAndGraveyard": "tutor", "SeekACard": "tutor",
@@ -28,7 +38,7 @@ PRODUCER_VERB = {
 DEATH_VERBS = {
     "DestroyAllPermanents", "DestroyEachPermanent", "DestroyAllCreatures",
     "ExileAllCreatures", "SacrificePermanent", "SacrificeAPermanent",
-    "SacrificeNumberPermanents",
+    "SacrificeNumberPermanents", "SacrificeEachPermanent", "ControllersSacrificeEachPermanent",
 }
 
 # trigger op -> resource the ability CONSUMES (pays off / cares about)
@@ -42,6 +52,7 @@ TRIGGER_CONSUMER = {
     "WhenAPlayerGainsLife": "life",
     "WhenACounterOfTypeIsPutOnAPermanent": "counter",
     "WhenACounterIsPutOnAPermanent": "counter",
+    "WhenAnyNumberOfCountersArePutOnAPermanent": "counter",
     "WhenAPlayerCastsASpell": "spell_cast",
     "WhenAPlayerCastsANonCreatureSpell": "spell_cast",
     "WhenACreatureAttacks": "attack_trigger",
@@ -60,17 +71,53 @@ def resource_match(produced: str, consumed: str) -> bool:
     return False
 
 
+def _verb_keys(verb: str) -> list[str]:
+    """Lookup keys for a verb: itself, its plain op when variant-qualified
+    ("Exile.Permanent" -> "Exile"), and the actions a Reflexive_* verb's steps name."""
+    base = verb.split(".", 1)[0]
+    keys = [verb] if base == verb else [verb, base]
+    keys += [REFLEXIVE_STEP_ACTION.get(s, s) for s in reflexive_steps(base)]
+    return keys
+
+
+# Ops whose counter field names the counter they take away, not one they place.
+# April's RemoveACounter* ops and upstream RemoveCounters share that field.
+_COUNTER_REMOVAL_OPS = frozenset({
+    "RemoveCounters",
+    "RemoveACounterOfTypeFromPermanent",
+    "RemoveNumberCountersOfTypeFromPermanent",
+})
+_COUNTER_PLACING_STEPS = frozenset({"PutCounters", "MoveCounters"})
+
+
+def _places_counter(verb: str) -> bool:
+    """True when this effect's counter slug is a counter it puts on an object.
+
+    RemoveCounters (and a reflexive step that only removes) carries the same
+    slug for the counter it takes away. MoveCounters still places one.
+    """
+    base = verb.split(".", 1)[0]
+    if base in _COUNTER_REMOVAL_OPS:
+        return False
+    steps = reflexive_steps(base)
+    if steps and any(s in _COUNTER_REMOVAL_OPS for s in steps):
+        if not any(s in _COUNTER_PLACING_STEPS for s in steps):
+            return False
+    return True
+
+
 def _effect_products(effects, out: set) -> None:
     for e in effects:
-        if e.verb in PRODUCER_VERB:
-            out.add(PRODUCER_VERB[e.verb])
-            # Tokens are also sacrifice fodder — links go-wide makers into the
-            # aristocrats engine (token maker -> sac outlet -> death payoff).
-            if PRODUCER_VERB[e.verb] == "token":
-                out.add("sacrifice_fodder")
-        if e.verb in DEATH_VERBS:
-            out.add("death_event")
-        if e.counter:
+        for key in _verb_keys(e.verb):
+            if key in PRODUCER_VERB:
+                out.add(PRODUCER_VERB[key])
+                # Tokens are also sacrifice fodder — links go-wide makers into the
+                # aristocrats engine (token maker -> sac outlet -> death payoff).
+                if PRODUCER_VERB[key] == "token":
+                    out.add("sacrifice_fodder")
+            if key in DEATH_VERBS:
+                out.add("death_event")
+        if e.counter and _places_counter(e.verb):
             out.add(f"counter:{_counter_label(e.counter)}")
             out.add("counter")
         _effect_products(e.sub_effects, out)

@@ -8,7 +8,8 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from tag_taxonomy import ACTION_MAP, TRIGGER_MAP  # noqa: E402
+from tag_taxonomy import ACTION_MAP, TRIGGER_MAP, action_tags  # noqa: E402
+from mtgish_schema import is_reflexive  # noqa: E402
 
 from .schema import AbilityRecord  # noqa: E402
 
@@ -51,7 +52,8 @@ def unmapped_operators(cards: list[dict]) -> list[tuple[str, int]]:
         _collect_ops(c.get("Rules", []), "_Trigger", triggers)
     out: Counter = Counter()
     for op, n in actions.items():
-        if op not in ACTION_MAP and op not in _STRUCTURAL:
+        if (op not in ACTION_MAP and op not in _STRUCTURAL and not is_reflexive(op)
+                and not action_tags(op)):
             out[op] += n
     for op, n in triggers.items():
         if op not in TRIGGER_MAP:
@@ -63,6 +65,7 @@ def unmapped_operators(cards: list[dict]) -> list[tuple[str, int]]:
 _STRUCTURAL = {
     "If", "Unless", "IfElse", "MayAction", "MayActions",
     "PlayerAction", "EachPlayerAction", "CreateFutureTrigger",
+    "ReflexiveTrigger", "ReflexiveTriggerNEW",
 }
 
 
