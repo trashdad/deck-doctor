@@ -15,6 +15,12 @@ import runner  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
+def no_grants(monkeypatch):
+    """The block tests run with NO grants, whatever permissions.json ships."""
+    monkeypatch.setattr(runner, "_GRANTS", {})
+
+
+@pytest.fixture(autouse=True)
 def no_network(monkeypatch):
     """Any real request fails the test loudly instead of hitting a site."""
     def _boom(*_a, **_k):
@@ -89,8 +95,13 @@ def _grants(tmp_path, monkeypatch, *grants):
     monkeypatch.setattr(runner, "_GRANTS", runner._load_grants(f))
 
 
-def test_shipped_permissions_file_grants_nothing():
-    assert runner._load_grants() == {}
+def test_shipped_permissions_file_is_well_formed():
+    raw = json.loads(runner._PERMISSIONS_FILE.read_text(encoding="utf-8"))["grants"]
+    loaded = runner._load_grants()
+    assert len(loaded) == len(raw), "a shipped grant is missing a required field"
+    for g in loaded.values():
+        assert float(g.get("min_interval_s", 1)) > 0
+        assert "<" not in json.dumps(g) and ">" not in json.dumps(g), "placeholder left in grant"
 
 
 def test_missing_or_corrupt_file_fails_closed(tmp_path):

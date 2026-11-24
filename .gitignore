@@ -61,3 +61,6 @@ blob-report/
 
 # deploy/deploy.sh: immutable web releases + the `current` symlink (prod only)
 /releases/
+
+# Permission evidence stays local until the owner decides to publish it
+/docs/permissions/
