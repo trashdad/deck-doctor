@@ -1,0 +1,819 @@
+{
+  "invented": [
+    0.15,
+    0.1
+  ],
+  "damage_tol": 0.002,
+  "rows": [
+    {
+      "role_w": 0.1,
+      "curve_w": 0.0,
+      "admissible": false,
+      "mean_recall": 0.4031,
+      "recall_played": 0.3483,
+      "recall_legal": 0.4579,
+      "damage_played": 0.0542,
+      "damage_legal": 0.0524
+    },
+    {
+      "role_w": 0.05,
+      "curve_w": 0.0,
+      "admissible": false,
+      "mean_recall": 0.4025,
+      "recall_played": 0.3347,
+      "recall_legal": 0.4703,
+      "damage_played": 0.0596,
+      "damage_legal": 0.0543
+    },
+    {
+      "role_w": 0.15,
+      "curve_w": 0.0,
+      "admissible": false,
+      "mean_recall": 0.3952,
+      "recall_played": 0.3433,
+      "recall_legal": 0.447,
+      "damage_played": 0.0524,
+      "damage_legal": 0.0502
+    },
+    {
+      "role_w": 0.1,
+      "curve_w": 0.05,
+      "admissible": false,
+      "mean_recall": 0.3924,
+      "recall_played": 0.3472,
+      "recall_legal": 0.4377,
+      "damage_played": 0.0181,
+      "damage_legal": 0.0146
+    },
+    {
+      "role_w": 0.15,
+      "curve_w": 0.05,
+      "admissible": false,
+      "mean_recall": 0.3892,
+      "recall_played": 0.3482,
+      "recall_legal": 0.4302,
+      "damage_played": 0.0198,
+      "damage_legal": 0.0179
+    },
+    {
+      "role_w": 0.2,
+      "curve_w": 0.0,
+      "admissible": false,
+      "mean_recall": 0.3872,
+      "recall_played": 0.3389,
+      "recall_legal": 0.4355,
+      "damage_played": 0.0507,
+      "damage_legal": 0.0479
+    },
+    {
+      "role_w": 0.2,
+      "curve_w": 0.05,
+      "admissible": false,
+      "mean_recall": 0.3854,
+      "recall_played": 0.347,
+      "recall_legal": 0.4238,
+      "damage_played": 0.0226,
+      "damage_legal": 0.0207
+    },
+    {
+      "role_w": 0.05,
+      "curve_w": 0.05,
+      "admissible": false,
+      "mean_recall": 0.385,
+      "recall_played": 0.3295,
+      "recall_legal": 0.4405,
+      "damage_played": 0.0126,
+      "damage_legal": 0.0105
+    },
+    {
+      "role_w": 0.3,
+      "curve_w": 0.0,
+      "admissible": false,
+      "mean_recall": 0.3805,
+      "recall_played": 0.3351,
+      "recall_legal": 0.4258,
+      "damage_played": 0.0487,
+      "damage_legal": 0.0467
+    },
+    {
+      "role_w": 0.3,
+      "curve_w": 0.05,
+      "admissible": false,
+      "mean_recall": 0.3782,
+      "recall_played": 0.3448,
+      "recall_legal": 0.4117,
+      "damage_played": 0.0279,
+      "damage_legal": 0.0248
+    },
+    {
+      "role_w": 0.2,
+      "curve_w": 0.1,
+      "admissible": true,
+      "mean_recall": 0.372,
+      "recall_played": 0.3408,
+      "recall_legal": 0.4032,
+      "damage_played": 0.0116,
+      "damage_legal": 0.013
+    },
+    {
+      "role_w": 0.5,
+      "curve_w": 0.0,
+      "admissible": false,
+      "mean_recall": 0.3707,
+      "recall_played": 0.3287,
+      "recall_legal": 0.4126,
+      "damage_played": 0.0457,
+      "damage_legal": 0.0452
+    },
+    {
+      "role_w": 0.15,
+      "curve_w": 0.1,
+      "admissible": true,
+      "mean_recall": 0.3691,
+      "recall_played": 0.3338,
+      "recall_legal": 0.4045,
+      "damage_played": 0.0104,
+      "damage_legal": 0.0111
+    },
+    {
+      "role_w": 0.1,
+      "curve_w": 0.1,
+      "admissible": true,
+      "mean_recall": 0.369,
+      "recall_played": 0.3299,
+      "recall_legal": 0.4081,
+      "damage_played": 0.0072,
+      "damage_legal": 0.008
+    },
+    {
+      "role_w": 0.3,
+      "curve_w": 0.1,
+      "admissible": false,
+      "mean_recall": 0.3666,
+      "recall_played": 0.3386,
+      "recall_legal": 0.3946,
+      "damage_played": 0.0134,
+      "damage_legal": 0.0139
+    },
+    {
+      "role_w": 0.5,
+      "curve_w": 0.05,
+      "admissible": false,
+      "mean_recall": 0.3658,
+      "recall_played": 0.3373,
+      "recall_legal": 0.3942,
+      "damage_played": 0.0318,
+      "damage_legal": 0.0326
+    },
+    {
+      "role_w": 0.75,
+      "curve_w": 0.0,
+      "admissible": false,
+      "mean_recall": 0.3657,
+      "recall_played": 0.3239,
+      "recall_legal": 0.4074,
+      "damage_played": 0.0429,
+      "damage_legal": 0.0439
+    },
+    {
+      "role_w": 1.0,
+      "curve_w": 0.0,
+      "admissible": false,
+      "mean_recall": 0.3627,
+      "recall_played": 0.3225,
+      "recall_legal": 0.4028,
+      "damage_played": 0.0422,
+      "damage_legal": 0.0434
+    },
+    {
+      "role_w": 0.5,
+      "curve_w": 0.1,
+      "admissible": false,
+      "mean_recall": 0.3587,
+      "recall_played": 0.3335,
+      "recall_legal": 0.3839,
+      "damage_played": 0.0195,
+      "damage_legal": 0.0203
+    },
+    {
+      "role_w": 0.3,
+      "curve_w": 0.15,
+      "admissible": true,
+      "mean_recall": 0.3567,
+      "recall_played": 0.3333,
+      "recall_legal": 0.38,
+      "damage_played": 0.0093,
+      "damage_legal": 0.0107
+    },
+    {
+      "role_w": 0.75,
+      "curve_w": 0.05,
+      "admissible": false,
+      "mean_recall": 0.3567,
+      "recall_played": 0.3289,
+      "recall_legal": 0.3844,
+      "damage_played": 0.0378,
+      "damage_legal": 0.0381
+    },
+    {
+      "role_w": 0.2,
+      "curve_w": 0.15,
+      "admissible": true,
+      "mean_recall": 0.3546,
+      "recall_played": 0.3257,
+      "recall_legal": 0.3835,
+      "damage_played": 0.0071,
+      "damage_legal": 0.0085
+    },
+    {
+      "role_w": 0.15,
+      "curve_w": 0.15,
+      "admissible": true,
+      "mean_recall": 0.3542,
+      "recall_played": 0.3227,
+      "recall_legal": 0.3857,
+      "damage_played": 0.0064,
+      "damage_legal": 0.0068
+    },
+    {
+      "role_w": 1.0,
+      "curve_w": 0.05,
+      "admissible": false,
+      "mean_recall": 0.3528,
+      "recall_played": 0.3278,
+      "recall_legal": 0.3779,
+      "damage_played": 0.0405,
+      "damage_legal": 0.041
+    },
+    {
+      "role_w": 0.05,
+      "curve_w": 0.1,
+      "admissible": true,
+      "mean_recall": 0.3526,
+      "recall_played": 0.3066,
+      "recall_legal": 0.3986,
+      "damage_played": 0.0067,
+      "damage_legal": 0.0063
+    },
+    {
+      "role_w": 0.75,
+      "curve_w": 0.1,
+      "admissible": false,
+      "mean_recall": 0.3497,
+      "recall_played": 0.3262,
+      "recall_legal": 0.3731,
+      "damage_played": 0.0264,
+      "damage_legal": 0.0291
+    },
+    {
+      "role_w": 0.1,
+      "curve_w": 0.15,
+      "admissible": true,
+      "mean_recall": 0.3494,
+      "recall_played": 0.3176,
+      "recall_legal": 0.3812,
+      "damage_played": 0.0051,
+      "damage_legal": 0.0045
+    },
+    {
+      "role_w": 0.5,
+      "curve_w": 0.15,
+      "admissible": false,
+      "mean_recall": 0.3494,
+      "recall_played": 0.3273,
+      "recall_legal": 0.3715,
+      "damage_played": 0.0134,
+      "damage_legal": 0.0138
+    },
+    {
+      "role_w": 1.0,
+      "curve_w": 0.1,
+      "admissible": false,
+      "mean_recall": 0.3467,
+      "recall_played": 0.3254,
+      "recall_legal": 0.368,
+      "damage_played": 0.0321,
+      "damage_legal": 0.033
+    },
+    {
+      "role_w": 0.75,
+      "curve_w": 0.15,
+      "admissible": false,
+      "mean_recall": 0.344,
+      "recall_played": 0.3212,
+      "recall_legal": 0.3669,
+      "damage_played": 0.0191,
+      "damage_legal": 0.0203
+    },
+    {
+      "role_w": 0.2,
+      "curve_w": 0.2,
+      "admissible": true,
+      "mean_recall": 0.3434,
+      "recall_played": 0.3162,
+      "recall_legal": 0.3707,
+      "damage_played": 0.0051,
+      "damage_legal": 0.0058
+    },
+    {
+      "role_w": 0.3,
+      "curve_w": 0.2,
+      "admissible": true,
+      "mean_recall": 0.3427,
+      "recall_played": 0.317,
+      "recall_legal": 0.3683,
+      "damage_played": 0.0064,
+      "damage_legal": 0.0067
+    },
+    {
+      "role_w": 1.0,
+      "curve_w": 0.15,
+      "admissible": false,
+      "mean_recall": 0.3407,
+      "recall_played": 0.3192,
+      "recall_legal": 0.3622,
+      "damage_played": 0.0268,
+      "damage_legal": 0.0269
+    },
+    {
+      "role_w": 0.15,
+      "curve_w": 0.2,
+      "admissible": true,
+      "mean_recall": 0.3399,
+      "recall_played": 0.313,
+      "recall_legal": 0.3668,
+      "damage_played": 0.0049,
+      "damage_legal": 0.0039
+    },
+    {
+      "role_w": 0.5,
+      "curve_w": 0.2,
+      "admissible": true,
+      "mean_recall": 0.3399,
+      "recall_played": 0.3175,
+      "recall_legal": 0.3624,
+      "damage_played": 0.0092,
+      "damage_legal": 0.0105
+    },
+    {
+      "role_w": 0.05,
+      "curve_w": 0.15,
+      "admissible": true,
+      "mean_recall": 0.3342,
+      "recall_played": 0.2984,
+      "recall_legal": 0.3699,
+      "damage_played": 0.0035,
+      "damage_legal": 0.0032
+    },
+    {
+      "role_w": 0.75,
+      "curve_w": 0.2,
+      "admissible": false,
+      "mean_recall": 0.3327,
+      "recall_played": 0.3098,
+      "recall_legal": 0.3557,
+      "damage_played": 0.0144,
+      "damage_legal": 0.0168
+    },
+    {
+      "role_w": 0.1,
+      "curve_w": 0.2,
+      "admissible": true,
+      "mean_recall": 0.3322,
+      "recall_played": 0.3045,
+      "recall_legal": 0.3599,
+      "damage_played": 0.0034,
+      "damage_legal": 0.0028
+    },
+    {
+      "role_w": 1.0,
+      "curve_w": 0.2,
+      "admissible": false,
+      "mean_recall": 0.3303,
+      "recall_played": 0.3078,
+      "recall_legal": 0.3528,
+      "damage_played": 0.0189,
+      "damage_legal": 0.0194
+    },
+    {
+      "role_w": 0.3,
+      "curve_w": 0.3,
+      "admissible": true,
+      "mean_recall": 0.3224,
+      "recall_played": 0.2976,
+      "recall_legal": 0.3471,
+      "damage_played": 0.0037,
+      "damage_legal": 0.0038
+    },
+    {
+      "role_w": 0.5,
+      "curve_w": 0.3,
+      "admissible": true,
+      "mean_recall": 0.3213,
+      "recall_played": 0.2969,
+      "recall_legal": 0.3457,
+      "damage_played": 0.0071,
+      "damage_legal": 0.007
+    },
+    {
+      "role_w": 0.05,
+      "curve_w": 0.2,
+      "admissible": true,
+      "mean_recall": 0.3182,
+      "recall_played": 0.2856,
+      "recall_legal": 0.3508,
+      "damage_played": 0.0031,
+      "damage_legal": 0.0025
+    },
+    {
+      "role_w": 0.75,
+      "curve_w": 0.3,
+      "admissible": true,
+      "mean_recall": 0.3173,
+      "recall_played": 0.2954,
+      "recall_legal": 0.3392,
+      "damage_played": 0.0096,
+      "damage_legal": 0.0107
+    },
+    {
+      "role_w": 0.0,
+      "curve_w": 0.05,
+      "admissible": true,
+      "mean_recall": 0.315,
+      "recall_played": 0.248,
+      "recall_legal": 0.3821,
+      "damage_played": 0.0115,
+      "damage_legal": 0.0103
+    },
+    {
+      "role_w": 0.2,
+      "curve_w": 0.3,
+      "admissible": true,
+      "mean_recall": 0.3142,
+      "recall_played": 0.289,
+      "recall_legal": 0.3394,
+      "damage_played": 0.0021,
+      "damage_legal": 0.0021
+    },
+    {
+      "role_w": 1.0,
+      "curve_w": 0.3,
+      "admissible": false,
+      "mean_recall": 0.3136,
+      "recall_played": 0.2947,
+      "recall_legal": 0.3326,
+      "damage_played": 0.0124,
+      "damage_legal": 0.0141
+    },
+    {
+      "role_w": 0.15,
+      "curve_w": 0.3,
+      "admissible": true,
+      "mean_recall": 0.3107,
+      "recall_played": 0.2852,
+      "recall_legal": 0.3362,
+      "damage_played": 0.0024,
+      "damage_legal": 0.001
+    },
+    {
+      "role_w": 0.0,
+      "curve_w": 0.0,
+      "admissible": false,
+      "mean_recall": 0.3049,
+      "recall_played": 0.2004,
+      "recall_legal": 0.4095,
+      "damage_played": 0.0729,
+      "damage_legal": 0.0621
+    },
+    {
+      "role_w": 0.1,
+      "curve_w": 0.3,
+      "admissible": true,
+      "mean_recall": 0.3039,
+      "recall_played": 0.2771,
+      "recall_legal": 0.3308,
+      "damage_played": 0.0016,
+      "damage_legal": 0.0007
+    },
+    {
+      "role_w": 0.0,
+      "curve_w": 0.1,
+      "admissible": true,
+      "mean_recall": 0.3005,
+      "recall_played": 0.2482,
+      "recall_legal": 0.3528,
+      "damage_played": 0.0079,
+      "damage_legal": 0.0077
+    },
+    {
+      "role_w": 0.75,
+      "curve_w": 0.5,
+      "admissible": true,
+      "mean_recall": 0.2919,
+      "recall_played": 0.2701,
+      "recall_legal": 0.3137,
+      "damage_played": 0.005,
+      "damage_legal": 0.0069
+    },
+    {
+      "role_w": 0.5,
+      "curve_w": 0.5,
+      "admissible": true,
+      "mean_recall": 0.2913,
+      "recall_played": 0.2688,
+      "recall_legal": 0.3137,
+      "damage_played": 0.0018,
+      "damage_legal": 0.0029
+    },
+    {
+      "role_w": 1.0,
+      "curve_w": 0.5,
+      "admissible": true,
+      "mean_recall": 0.2913,
+      "recall_played": 0.2717,
+      "recall_legal": 0.3109,
+      "damage_played": 0.0113,
+      "damage_legal": 0.0121
+    },
+    {
+      "role_w": 0.05,
+      "curve_w": 0.3,
+      "admissible": true,
+      "mean_recall": 0.2908,
+      "recall_played": 0.259,
+      "recall_legal": 0.3227,
+      "damage_played": 0.0016,
+      "damage_legal": 0.0007
+    },
+    {
+      "role_w": 0.3,
+      "curve_w": 0.5,
+      "admissible": true,
+      "mean_recall": 0.2902,
+      "recall_played": 0.2664,
+      "recall_legal": 0.3139,
+      "damage_played": 0.0008,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 0.0,
+      "curve_w": 0.15,
+      "admissible": true,
+      "mean_recall": 0.2898,
+      "recall_played": 0.2442,
+      "recall_legal": 0.3353,
+      "damage_played": 0.0057,
+      "damage_legal": 0.0055
+    },
+    {
+      "role_w": 0.2,
+      "curve_w": 0.5,
+      "admissible": true,
+      "mean_recall": 0.2812,
+      "recall_played": 0.2611,
+      "recall_legal": 0.3012,
+      "damage_played": 0.0,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 0.0,
+      "curve_w": 0.2,
+      "admissible": true,
+      "mean_recall": 0.2782,
+      "recall_played": 0.2349,
+      "recall_legal": 0.3215,
+      "damage_played": 0.0043,
+      "damage_legal": 0.0035
+    },
+    {
+      "role_w": 0.15,
+      "curve_w": 0.5,
+      "admissible": true,
+      "mean_recall": 0.2773,
+      "recall_played": 0.2564,
+      "recall_legal": 0.2983,
+      "damage_played": 0.0,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 0.1,
+      "curve_w": 0.5,
+      "admissible": true,
+      "mean_recall": 0.274,
+      "recall_played": 0.2524,
+      "recall_legal": 0.2955,
+      "damage_played": 0.0,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 0.75,
+      "curve_w": 0.75,
+      "admissible": true,
+      "mean_recall": 0.2707,
+      "recall_played": 0.253,
+      "recall_legal": 0.2884,
+      "damage_played": 0.009,
+      "damage_legal": 0.0113
+    },
+    {
+      "role_w": 1.0,
+      "curve_w": 0.75,
+      "admissible": false,
+      "mean_recall": 0.2701,
+      "recall_played": 0.2531,
+      "recall_legal": 0.287,
+      "damage_played": 0.0135,
+      "damage_legal": 0.0134
+    },
+    {
+      "role_w": 0.5,
+      "curve_w": 0.75,
+      "admissible": true,
+      "mean_recall": 0.2666,
+      "recall_played": 0.2487,
+      "recall_legal": 0.2845,
+      "damage_played": 0.0041,
+      "damage_legal": 0.0037
+    },
+    {
+      "role_w": 0.05,
+      "curve_w": 0.5,
+      "admissible": true,
+      "mean_recall": 0.2656,
+      "recall_played": 0.2366,
+      "recall_legal": 0.2946,
+      "damage_played": 0.0,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 0.3,
+      "curve_w": 0.75,
+      "admissible": true,
+      "mean_recall": 0.264,
+      "recall_played": 0.2477,
+      "recall_legal": 0.2803,
+      "damage_played": 0.0005,
+      "damage_legal": 0.0004
+    },
+    {
+      "role_w": 0.0,
+      "curve_w": 0.3,
+      "admissible": true,
+      "mean_recall": 0.2592,
+      "recall_played": 0.2172,
+      "recall_legal": 0.3012,
+      "damage_played": 0.002,
+      "damage_legal": 0.0011
+    },
+    {
+      "role_w": 0.2,
+      "curve_w": 0.75,
+      "admissible": true,
+      "mean_recall": 0.2592,
+      "recall_played": 0.2414,
+      "recall_legal": 0.2771,
+      "damage_played": 0.0,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 1.0,
+      "curve_w": 1.0,
+      "admissible": false,
+      "mean_recall": 0.2583,
+      "recall_played": 0.242,
+      "recall_legal": 0.2747,
+      "damage_played": 0.0173,
+      "damage_legal": 0.0178
+    },
+    {
+      "role_w": 0.75,
+      "curve_w": 1.0,
+      "admissible": false,
+      "mean_recall": 0.2551,
+      "recall_played": 0.2381,
+      "recall_legal": 0.2721,
+      "damage_played": 0.0136,
+      "damage_legal": 0.0134
+    },
+    {
+      "role_w": 0.15,
+      "curve_w": 0.75,
+      "admissible": true,
+      "mean_recall": 0.2549,
+      "recall_played": 0.2363,
+      "recall_legal": 0.2734,
+      "damage_played": 0.0,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 0.1,
+      "curve_w": 0.75,
+      "admissible": true,
+      "mean_recall": 0.2536,
+      "recall_played": 0.2347,
+      "recall_legal": 0.2726,
+      "damage_played": 0.0003,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 0.5,
+      "curve_w": 1.0,
+      "admissible": true,
+      "mean_recall": 0.2516,
+      "recall_played": 0.2381,
+      "recall_legal": 0.2652,
+      "damage_played": 0.0078,
+      "damage_legal": 0.0065
+    },
+    {
+      "role_w": 0.3,
+      "curve_w": 1.0,
+      "admissible": true,
+      "mean_recall": 0.2502,
+      "recall_played": 0.2354,
+      "recall_legal": 0.2651,
+      "damage_played": 0.0017,
+      "damage_legal": 0.0021
+    },
+    {
+      "role_w": 0.05,
+      "curve_w": 0.75,
+      "admissible": true,
+      "mean_recall": 0.2495,
+      "recall_played": 0.2269,
+      "recall_legal": 0.272,
+      "damage_played": 0.0003,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 0.1,
+      "curve_w": 1.0,
+      "admissible": true,
+      "mean_recall": 0.2485,
+      "recall_played": 0.2325,
+      "recall_legal": 0.2644,
+      "damage_played": 0.0003,
+      "damage_legal": 0.0003
+    },
+    {
+      "role_w": 0.15,
+      "curve_w": 1.0,
+      "admissible": true,
+      "mean_recall": 0.2467,
+      "recall_played": 0.23,
+      "recall_legal": 0.2634,
+      "damage_played": 0.0003,
+      "damage_legal": 0.0003
+    },
+    {
+      "role_w": 0.2,
+      "curve_w": 1.0,
+      "admissible": true,
+      "mean_recall": 0.2462,
+      "recall_played": 0.2297,
+      "recall_legal": 0.2627,
+      "damage_played": 0.0003,
+      "damage_legal": 0.0003
+    },
+    {
+      "role_w": 0.05,
+      "curve_w": 1.0,
+      "admissible": true,
+      "mean_recall": 0.245,
+      "recall_played": 0.2243,
+      "recall_legal": 0.2656,
+      "damage_played": 0.0003,
+      "damage_legal": 0.0003
+    },
+    {
+      "role_w": 0.0,
+      "curve_w": 0.5,
+      "admissible": true,
+      "mean_recall": 0.2389,
+      "recall_played": 0.2017,
+      "recall_legal": 0.2761,
+      "damage_played": 0.0004,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 0.0,
+      "curve_w": 0.75,
+      "admissible": true,
+      "mean_recall": 0.2258,
+      "recall_played": 0.1902,
+      "recall_legal": 0.2615,
+      "damage_played": 0.0003,
+      "damage_legal": 0.0
+    },
+    {
+      "role_w": 0.0,
+      "curve_w": 1.0,
+      "admissible": true,
+      "mean_recall": 0.2211,
+      "recall_played": 0.1868,
+      "recall_legal": 0.2553,
+      "damage_played": 0.0003,
+      "damage_legal": 0.0003
+    }
+  ]
+}
