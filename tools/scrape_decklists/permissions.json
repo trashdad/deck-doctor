@@ -6,7 +6,7 @@
       "granted_by": "Customer Service Team Lead, EDHREC",
       "date": "2026-11-24",
       "evidence": "docs/permissions/edhrec-2026-11-24.md",
-      "min_interval_s": 6
+      "min_interval_s": 60
     },
     {
       "host": "archidekt.com",
