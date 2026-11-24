@@ -3,6 +3,8 @@
 export interface BracketVitalProps {
   /** null until an analysis has run. */
   bracket: { floor: number; flags: string[] } | null;
+  /** The analysis request failed (review F-09): say so instead of "run an analysis". */
+  error?: boolean;
   onFlagClick?: (flag: string) => void;
   /** Deck header row 1: one line; flags beyond the second collapse into "+N" (the title lists them). */
   compact?: boolean;
@@ -16,7 +18,7 @@ const FLOOR_COPY = "This is a floor from card flags, not a verdict. Your pod dec
  * number, never a percentage (§5.3). Flags are chips; clicking one highlights
  * the triggering cards on the board (the caller does the highlighting).
  */
-export function BracketVital({ bracket, onFlagClick, compact, className }: BracketVitalProps) {
+export function BracketVital({ bracket, error, onFlagClick, compact, className }: BracketVitalProps) {
   const flags = bracket?.flags ?? [];
   const shown = compact ? flags.slice(0, 2) : flags;
   const hidden = flags.length - shown.length;
@@ -37,7 +39,9 @@ export function BracketVital({ bracket, onFlagClick, compact, className }: Brack
       </span>
       <span className="sr-only">at least. {FLOOR_COPY}</span>
       <span className="text-zinc-500">·</span>
-      {!bracket ? (
+      {!bracket && error ? (
+        <span className="truncate text-[11px] text-amber-200">analysis failed</span>
+      ) : !bracket ? (
         <span className="truncate text-[11px] text-zinc-400">run an analysis to see flags</span>
       ) : flags.length === 0 ? (
         <span className="truncate text-[11px] text-zinc-400">no flags found</span>

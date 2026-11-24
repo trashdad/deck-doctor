@@ -17,6 +17,8 @@ interface ToastState {
 }
 
 let seq = 0;
+/** Auto-dismiss timers, cleared on manual dismiss (review F-24). */
+const timers = new Map<number, number>();
 
 export const useToasts = create<ToastState>((set) => ({
   toasts: [],
@@ -25,13 +27,22 @@ export const useToasts = create<ToastState>((set) => ({
     set((s) => ({ toasts: [...s.toasts.slice(-2), { ...t, id }] }));
     const ms = t.duration ?? TIMING.toast;
     if (ms > 0 && typeof window !== "undefined") {
-      window.setTimeout(() => {
-        set((s) => ({ toasts: s.toasts.filter((x) => x.id !== id) }));
-      }, ms);
+      timers.set(
+        id,
+        window.setTimeout(() => {
+          timers.delete(id);
+          set((s) => ({ toasts: s.toasts.filter((x) => x.id !== id) }));
+        }, ms),
+      );
     }
     return id;
   },
-  dismiss: (id) => set((s) => ({ toasts: s.toasts.filter((x) => x.id !== id) })),
+  dismiss: (id) => {
+    const t = timers.get(id);
+    if (t !== undefined) window.clearTimeout(t);
+    timers.delete(id);
+    set((s) => ({ toasts: s.toasts.filter((x) => x.id !== id) }));
+  },
 }));
 
 /** Imperative helper for non-React callers (stores, hooks). */

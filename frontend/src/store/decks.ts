@@ -4,7 +4,7 @@
  * - refresh(): GET /decks -> deckList.
  * - saveCurrent(name?): POST when currentId === null, else PUT. Cards come from the
  *   useDeck store (zone per entry) + basics (id -> quantity).
- * - load(id): GET the deck, repopulate useDeck (clear, add, move, setBasic), set currentId.
+ * - load(id): GET the deck, replace useDeck in one loadImported write (one undo step), set currentId.
  * - remove(id): DELETE; clears currentId if it was the open deck.
  */
 import { create } from "zustand";
@@ -75,16 +75,12 @@ export const useDecksStore = create<DecksState>((set, get) => ({
 
   load: async (id) => {
     const detail = await getDeck(id);
-    const deck = useDeck.getState();
-    deck.clear();
-    for (const row of detail.cards) {
-      if (row.zone === "Lands" && (row.card.type_line || "").includes("Basic")) {
-        deck.setBasic(row.card.id, row.quantity, row.card);
-        continue;
-      }
-      deck.add(row.card);
-      deck.move(row.card.id, row.zone as Zone);
-    }
+    // One store write = ONE undo step for the whole load (review F-01): Ctrl+Z returns
+    // to the deck that was open before, never to a half-loaded one.
+    useDeck.getState().loadImported(
+      detail.cards.map((row) => ({ card: row.card, zone: row.zone as Zone, quantity: row.quantity })),
+      true,
+    );
     set({ currentId: detail.id, currentName: detail.name, dirty: false });
   },
 

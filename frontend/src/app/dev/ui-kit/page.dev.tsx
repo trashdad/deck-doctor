@@ -2,7 +2,9 @@
 
 /*
  * /dev/ui-kit — backend-free gallery of every framework state (plan §7.5).
- * Unlinked; builds in production so Playwright can hit it on simtrack.
+ * Unlinked and DEV-ONLY: the `.dev.tsx` extension is a page extension only under
+ * `next dev` (see next.config.mjs), so production builds have no such route (404).
+ * Playwright (tests/ui-kit.spec.ts) runs it via `npm run dev`.
  * `?motion=0` forces every transition to 0 s.
  */
 

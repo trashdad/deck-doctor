@@ -13,6 +13,8 @@ export interface SuggestTabProps {
   onAdd: (card: Card) => void;
   /** Skeleton: set when the query is in flight. */
   loading?: boolean;
+  /** The /deck/recommend request failed (review F-09). */
+  error?: boolean;
 }
 
 const TIER_COPY: Record<SuggestionResponse["tier"], string> = {
@@ -22,7 +24,7 @@ const TIER_COPY: Record<SuggestionResponse["tier"], string> = {
 };
 
 /** Suggest tab (§4.4): source line in words, filter row, rows with reasons as sentences. */
-export function SuggestTab({ commander, tier, suggestions, onAdd, loading }: SuggestTabProps) {
+export function SuggestTab({ commander, tier, suggestions, onAdd, loading, error }: SuggestTabProps) {
   const [hideStaples, setHideStaples] = useState(true);
   const rows = hideStaples
     ? suggestions.filter((s) => !(s.reasons.length > 0 && s.reasons.every((r) => r.signal === "staple")))
@@ -62,7 +64,9 @@ export function SuggestTab({ commander, tier, suggestions, onAdd, loading }: Sug
           </button>
         </div>
       </div>
-      {loading && rows.length === 0 ? (
+      {error && rows.length === 0 ? (
+        <EmptyState>The suggestions request failed.</EmptyState>
+      ) : loading && rows.length === 0 ? (
         <p className="px-3 py-4 text-[13px] text-zinc-400">Looking at this deck…</p>
       ) : rows.length === 0 ? (
         <EmptyState>

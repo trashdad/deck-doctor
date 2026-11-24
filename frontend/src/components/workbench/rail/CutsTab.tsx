@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Card } from "@/lib/types";
 import { matchingZones } from "@/lib/functions";
 import { CardSurface } from "@/components/card/CardSurface";
@@ -42,6 +42,21 @@ export function CutsTab({
   // Typed text, so the field can be emptied and retyped; the clamped value is committed only when valid.
   const [draft, setDraft] = useState(String(target));
   useEffect(() => setDraft(String(target)), [target]);
+  // Keyboard Cut removes the focused row; put focus on the row now at that index (or the
+  // last one) instead of letting it fall to <body> (review F-11).
+  const listRef = useRef<HTMLUListElement>(null);
+  const refocusAt = useRef<number | null>(null);
+  useEffect(() => {
+    const idx = refocusAt.current;
+    const list = listRef.current;
+    if (idx == null || !list) return;
+    const active = document.activeElement;
+    if (active && active !== document.body && active.isConnected) return; // focus is fine
+    const btns = list.querySelectorAll<HTMLButtonElement>('[data-testid="rail-row"] button[title^="Cut"]');
+    if (btns.length === 0) return;
+    btns[Math.min(idx, btns.length - 1)].focus();
+    refocusAt.current = null;
+  }, [candidates]);
 
   if (!commander) {
     return (
@@ -60,7 +75,13 @@ export function CutsTab({
 
   // Rows that would drop a role below quota stay listed, but Cut all skips them (§4.5).
   const safe = candidates.filter((c) => c.breaks_quota !== true);
-  const batch = safe.slice(0, Math.max(0, target));
+  // Never cut past 100: with target > over-by the backend still returns `target` rows,
+  // but Cut all stops at the overage (the rows below stay as individual "Cut" buttons).
+  // The local count caps it too, so an unknown over_by (or a stale one while re-ranking)
+  // can never take the deck below 100 (review F-04/F-08).
+  const localOver = Math.max(0, count - 100);
+  const limit = Math.min(target, localOver, typeof overBy === "number" ? Math.max(0, overBy) : localOver);
+  const batch = safe.slice(0, Math.max(0, limit));
 
   return (
     <section data-testid="cuts-panel" aria-label="Cuts" className="flex min-h-0 flex-1 flex-col">
@@ -84,7 +105,7 @@ export function CutsTab({
               if (e.target.value.trim() !== "" && Number.isFinite(n) && n >= 1) onTargetChange(n);
             }}
             onBlur={() => setDraft(String(target))}
-            className="h-8 w-14 rounded border border-edge bg-ink/60 px-2 text-center text-[13px] text-zinc-100"
+            className="h-8 w-14 rounded border border-edge bg-ink/60 px-2 text-center text-[13px] text-zinc-100 [@media(pointer:coarse)]:h-11"
           />
         </label>
         <span className="text-[11px] text-zinc-400">(deck is {count})</span>
@@ -102,7 +123,7 @@ export function CutsTab({
             if (onCutAll) onCutAll(cards);
             else cards.forEach(onCut);
           }}
-          className="ml-auto h-8 rounded border border-accent/50 px-2 text-[13px] font-semibold text-accent hover:bg-accent/10 disabled:opacity-50"
+          className="ml-auto h-8 rounded border border-accent/50 px-2 text-[13px] font-semibold text-accent hover:bg-accent/10 disabled:opacity-50 [@media(pointer:coarse)]:h-11"
         >
           {batch.length > 0 ? `Cut all ${batch.length}` : "Cut all"}
         </button>
@@ -125,7 +146,7 @@ export function CutsTab({
         <EmptyState>No cuts returned.</EmptyState>
       ) : (
         <CardSurface id="rail-cuts" orientation="column" label="Cut candidates" className="min-h-0 flex-1 overflow-y-auto">
-          <ul>
+          <ul ref={listRef}>
             {candidates.map((c, idx) => {
               const breaks = c.breaks_quota === true;
               const sentence = cutReasonSentence(c);
@@ -145,7 +166,10 @@ export function CutsTab({
                   primaryLabel={breaks ? "Cut anyway" : "Cut"}
                   primaryTitle={breaks ? "Cut anyway — drops a role below quota" : "Cut from deck"}
                   primaryTone="danger"
-                  onPrimary={() => onCut(c.card)}
+                  onPrimary={() => {
+                    refocusAt.current = idx;
+                    onCut(c.card);
+                  }}
                   sentence={sentence}
                   note={sentence ? undefined : `cmc ${c.card.cmc}`}
                   breaksQuota={breaks}

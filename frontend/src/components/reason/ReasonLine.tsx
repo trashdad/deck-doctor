@@ -47,7 +47,8 @@ export function ReasonLine({
   const lead = ranked[0];
   const chips = ranked.slice(0, maxChips);
   const overflow = ranked.length - chips.length;
-  const canExpand = expandable && reasons.length > 0;
+  // `ranked` already drops EDHREC reasons without evidence (rankReasons).
+  const canExpand = expandable && ranked.length > 0;
 
   return (
     <div data-reason-line className={["min-w-0", className].filter(Boolean).join(" ")}>

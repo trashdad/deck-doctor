@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import path from "node:path";
-import { API_PREFIX, FX, SEEDED_COUNT, mockBackend, pivotEmptyResponse, seedDeckStorage, type MockCalls } from "./fixtures/live";
+import { API_PREFIX, FX, SEEDED_COUNT, mockBackend, pivotEmptyResponse, seedDeckStorage, zoneFor, type MockCalls } from "./fixtures/live";
 
 /*
  * LIVE app (/deck-doctor) with every backend call mocked via page.route — no :8001.
@@ -22,8 +22,13 @@ type Box = { x: number; y: number; width: number; height: number };
 const intersects = (a: Box, b: Box) =>
   a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 
-async function gotoDeck(page: Page, opts: { workbench?: boolean } = {}): Promise<MockCalls> {
+async function gotoDeck(
+  page: Page,
+  opts: { workbench?: boolean; before?: (page: Page) => Promise<void> } = {},
+): Promise<MockCalls> {
   const calls = await mockBackend(page);
+  // Routes registered later win in Playwright, so per-test overrides go here.
+  if (opts.before) await opts.before(page);
   await seedDeckStorage(page, opts);
   // Deterministic screenshots: the gallery's ?motion=0 only exists on /dev/ui-kit.
   await page.addInitScript(() => {
@@ -243,7 +248,8 @@ test.describe("Context menu on the live board", () => {
     const sub = page.locator('.dd-submenu [role="menu"]');
     await expect(sub).toBeVisible();
     const zones = await sub.locator('[role="menuitemradio"]').evaluateAll((els) => els.map((e) => e.textContent?.replace("✓", "").trim()));
-    expect(zones).toEqual(["Commanders", "Win Conditions", "Lands", "Ramp", "Card Draw", "Removal", "Board Wipes", "Counters", "Tokens", "Utility"]);
+    // F-03: Commanders is only reachable through "Set as commander" (validated), never Move.
+    expect(zones).toEqual(["Win Conditions", "Lands", "Ramp", "Card Draw", "Removal", "Board Wipes", "Counters", "Tokens", "Utility"]);
     // FieldSection → CardPile → BoardCard forward `zone`, so the current lane is checked.
     const checked = await sub.locator('[role="menuitemradio"][aria-checked="true"]').allTextContents();
     test.info().annotations.push({ type: "move-to-checked", description: JSON.stringify(checked) });
@@ -253,7 +259,7 @@ test.describe("Context menu on the live board", () => {
     await page.keyboard.press("End");
     const last = sub.locator('[role="menuitemradio"]').last();
     if (!(await last.evaluate((el) => el === document.activeElement))) {
-      for (let i = 0; i < 9; i++) await page.keyboard.press("ArrowDown");
+      for (let i = 0; i < 8; i++) await page.keyboard.press("ArrowDown");
     }
     await expect(last).toBeFocused();
     await page.keyboard.press("Enter");
@@ -468,13 +474,11 @@ test.describe("?workbench=1 (DeckHeader + DoctorRail, mocked endpoints)", () => 
     await rows.first().locator('button[title="Add to deck"]').click();
     await expect(page.locator('[data-testid="count-pill"]')).toHaveText(/104\s*\/\s*100/);
     await expect(rows).toHaveCount(FX.find.length - 1);
+    // F-06: the rail's + goes through useUndoableDeck, so it always gets an Undo toast.
     const toast = page.locator('[data-testid="toast"]').last();
-    const hasToast = (await toast.count()) > 0;
-    test.info().annotations.push({ type: "undo-toast", description: hasToast ? await toast.innerText() : "no toast rendered" });
-    if (hasToast) {
-      await toast.locator('[data-testid="toast-action"]').click();
-      await expect(page.locator('[data-testid="count-pill"]')).toHaveText(/103\s*\/\s*100/);
-    }
+    await expect(toast).toContainText("Undo");
+    await toast.locator('[data-testid="toast-action"]').click();
+    await expect(page.locator('[data-testid="count-pill"]')).toHaveText(/103\s*\/\s*100/);
   });
 
   test("W3 cuts: reason rows, quota warning, cut all, undo restores the count", async ({ page, isMobile }) => {
@@ -618,6 +622,29 @@ test.describe("?workbench=1 (DeckHeader + DoctorRail, mocked endpoints)", () => 
     expect(errors.filter((e) => /same key|unique "key"/i.test(e))).toEqual([]);
   });
 
+  test("W8 cuts: Cut all stops at the overage when the target field asks for more", async ({ page, isMobile }) => {
+    await gotoDeck(page, { workbench: true });
+    const row = (i: number) => ({
+      card: FX.basic, contribution: 0.01 + i / 100, reasons: [], role: "land", role_before: 40, role_after: 39 - i,
+      quota: 37, quota_after: 39 - i, curve_bin: null, curve_before: null, curve_after: null, curve_ideal: null,
+      breaks_quota: false, reason: `fixture: surplus basic land (copy ${i + 1})`,
+    });
+    // Deck is 103; the user asked for 5 cuts. The backend returns 5 rows but only 3 are needed to reach 100.
+    await page.route(`**${API_PREFIX}/deck/cuts**`, (route) =>
+      route.fulfill({ status: 200, contentType: "application/json",
+        body: JSON.stringify({ cuts: [0, 1, 2, 3, 4].map(row), over_by: 3, target: 5, shortfall: 0 }) }),
+    );
+    await page.reload();
+    await page.waitForSelector('[data-testid="commander-strip"] [data-card-id]');
+    const tabs = isMobile ? '[data-testid="rail-tabbar"]' : '[data-testid="rail-tabs"]';
+    await page.locator(`${tabs} [data-tab="cuts"]`).click();
+    const panel = page.locator('[data-testid="cuts-panel"]');
+    await expect(panel.locator('[data-testid="rail-row"]')).toHaveCount(5);
+    await expect(panel.locator('[data-testid="cuts-all"]')).toHaveText("Cut all 3");
+    await panel.locator('[data-testid="cuts-all"]').click();
+    await expect(page.locator('[data-testid="count-pill"]')).toHaveText(/100\s*\/\s*100/);
+  });
+
   test("W7 pivot candidates get a commander-appropriate menu: no 'Add to deck' / 'Remove', but 'Set as commander'", async ({ page, isMobile }) => {
     test.skip(Boolean(isMobile), "right-click menu is a pointer path; touch uses the sheet");
     await gotoDeck(page, { workbench: true });
@@ -631,5 +658,399 @@ test.describe("?workbench=1 (DeckHeader + DoctorRail, mocked endpoints)", () => 
     await expect(menu).not.toContainText("Add to deck");
     await expect(menu).not.toContainText("Remove from deck");
     await page.keyboard.press("Escape");
+  });
+});
+
+// ---------------------------------------------------------------- Review triage 2026-11-24
+// One test per confirmed finding of the cross-family review (docs/plans/2026-11-24-frontend-review-triage.md).
+const HEADER = (page: Page) => page.locator("header").first();
+const PILL = '[data-testid="count-pill"]';
+const neutralLane = (page: Page, zone: string) =>
+  page.locator(`[data-testid="engine-col-neutral"] [data-zone-lane="${zone}"]`);
+const laneCount = (page: Page, zone: string) => neutralLane(page, zone).locator(":scope > div").first().locator("span").last();
+
+/** A cut_to_100 row for `card` (fixture numbers, labelled). */
+const cutRow = (card: (typeof FX)["basic"], i: number) => ({
+  card, contribution: 0.01 + i / 100, reasons: [], role: "land", role_before: 40, role_after: 39 - i,
+  quota: 37, quota_after: 39 - i, curve_bin: null, curve_before: null, curve_after: null, curve_ideal: null,
+  breaks_quota: false, reason: `fixture: cut row ${i + 1}`,
+});
+
+/** Logged-in user + one saved deck (Krenko, the 35 fixture cards, 20 Mountains). Records every PUT body. */
+async function mockSavedDeck(page: Page) {
+  const id = "fx-saved-deck";
+  const basicQty = 20;
+  const cards = [
+    { card: FX.commander, zone: "Commanders", quantity: 1 },
+    ...FX.deck.map((c) => ({ card: c, zone: zoneFor(c), quantity: 1 })),
+    { card: FX.basic, zone: "Lands", quantity: basicQty },
+  ];
+  const count = 1 + FX.deck.length + basicQty;
+  const stamp = "2026-11-01T00:00:00Z";
+  const detail = { id, name: "Fixture saved deck", commander_id: FX.commander.id, created_at: stamp, updated_at: stamp, cards };
+  const puts: { cards: { id: string; zone: string; quantity: number }[] }[] = [];
+  const json = (body: unknown) => ({ status: 200, contentType: "application/json", body: JSON.stringify(body) });
+  await page.route(`**${API_PREFIX}/auth/me`, (r) => r.fulfill(json({ user: { id: 1 } })));
+  await page.route(`**${API_PREFIX}/decks**`, async (route) => {
+    const req = route.request();
+    const p = new URL(req.url()).pathname;
+    if (req.method() === "GET" && p.endsWith("/decks"))
+      return route.fulfill(json([{ id, name: detail.name, commander_id: FX.commander.id, card_count: count, updated_at: stamp }]));
+    if (req.method() === "GET" && p.endsWith(`/decks/${id}`)) return route.fulfill(json(detail));
+    if (req.method() === "PUT" && p.endsWith(`/decks/${id}`)) {
+      puts.push(req.postDataJSON());
+      return route.fulfill(json(detail));
+    }
+    return route.fallback();
+  });
+  return { count, puts };
+}
+
+async function loadSavedDeck(page: Page, count: number) {
+  await page.locator('[data-testid="open-decks"]').click();
+  await page.locator('[data-testid="deck-row"] button').first().click();
+  await expect(HEADER(page)).toContainText(`${count} cards`);
+}
+
+test.describe("Review triage 2026-11-24 (mocked backend)", () => {
+  test("F-01 loading a saved deck is ONE undo step: Ctrl+Z restores the pre-load deck", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "header Decks button is desktop composition");
+    let saved!: Awaited<ReturnType<typeof mockSavedDeck>>;
+    await gotoDeck(page, { before: async (p) => void (saved = await mockSavedDeck(p)) });
+    await loadSavedDeck(page, saved.count);
+    await page.keyboard.press("Control+z");
+    await expect(HEADER(page)).toContainText(`${SEEDED_COUNT} cards`);
+  });
+
+  test("F-05 a zone-only move on an open saved deck is autosaved to the server", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "keyboard/menu path");
+    let saved!: Awaited<ReturnType<typeof mockSavedDeck>>;
+    await gotoDeck(page, { before: async (p) => void (saved = await mockSavedDeck(p)) });
+    await loadSavedDeck(page, saved.count);
+    // Let the post-load autosave (2 s debounce) land first, so only the move can explain a later PUT.
+    await expect.poll(() => saved.puts.length, { timeout: 6000 }).toBeGreaterThan(0);
+    await page.waitForTimeout(2500);
+    const putsBefore = saved.puts.length;
+    const solRing = FX.deck.find((c) => c.name === "Sol Ring")!;
+    const card = page.locator(`[data-testid="engine-col-neutral"] [data-card-id="${solRing.id}"][data-context="deck"]`).first();
+    await card.scrollIntoViewIfNeeded();
+    await card.focus();
+    await page.keyboard.press("Shift+F10");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowRight");
+    await page.locator('.dd-submenu [role="menuitemradio"]', { hasText: "Utility" }).click();
+    await expect
+      .poll(() => saved.puts.slice(putsBefore).some((b) => b.cards.find((e) => e.id === solRing.id)?.zone === "Utility"), { timeout: 6000 })
+      .toBe(true);
+  });
+
+  test("F-02a the board's Lands lane counts basic copies (67 Mountains → 67, not 1)", async ({ page }) => {
+    await gotoDeck(page);
+    const nonbasicLands = FX.deck.filter((c) => zoneFor(c) === "Lands").length;
+    await expect(laneCount(page, "Lands")).toHaveText(String(FX.basicQuantity + nonbasicLands));
+  });
+
+  test("F-02b Remove from deck on a basic removes one copy", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "keyboard/menu path");
+    await gotoDeck(page);
+    const mtn = page.locator(`[data-testid="engine-col-neutral"] [data-card-id="${FX.basic.id}"][data-context="deck"]`).first();
+    await mtn.scrollIntoViewIfNeeded();
+    await mtn.focus();
+    await page.keyboard.press("Shift+F10");
+    await expect(page.locator(`${MENU} [role^="menuitem"]`).first()).toHaveText(/Remove from deck/);
+    await page.keyboard.press("Enter");
+    await expect(HEADER(page)).toContainText(`${SEEDED_COUNT - 1} cards`);
+  });
+
+  test("F-02c adding a basic from Find bumps its quantity (no second singleton pile)", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "keyboard path");
+    await gotoDeck(page, {
+      before: (p) =>
+        p.route(`**${API_PREFIX}/cards?**`, (route) =>
+          route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify([FX.basic, ...FX.find]) }),
+        ),
+    });
+    await openFind(page);
+    const mtnFind = page.locator(`${FIND} [data-card-id="${FX.basic.id}"]`);
+    await mtnFind.focus();
+    await page.keyboard.press("Enter");
+    await expect(HEADER(page)).toContainText(`${SEEDED_COUNT + 1} cards`);
+    await expect(page.locator(`[data-testid="engine-col-neutral"] [data-card-id="${FX.basic.id}"][data-context="deck"]`)).toHaveCount(1);
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("simmander.deck")!).state);
+    expect(stored.cards[FX.basic.id]).toBeUndefined();
+    expect(stored.basics[FX.basic.id].quantity).toBe(FX.basicQuantity + 1);
+  });
+
+  test("F-04 a Commanders-zone card returned by /deck/cuts is never offered as a cut", async ({ page, isMobile }) => {
+    const wild = FX.deck.find((c) => c.name === "Wild Guess")!;
+    await gotoDeck(page, {
+      workbench: true,
+      before: (p) =>
+        p.route(`**${API_PREFIX}/deck/cuts**`, (route) =>
+          route.fulfill({ status: 200, contentType: "application/json",
+            body: JSON.stringify({ cuts: [cutRow(FX.commander, 0), cutRow(wild, 1)], over_by: 3, target: 3, shortfall: 0 }) }),
+        ),
+    });
+    const tabs = isMobile ? '[data-testid="rail-tabbar"]' : '[data-testid="rail-tabs"]';
+    await page.locator(`${tabs} [data-tab="cuts"]`).click();
+    const panel = page.locator('[data-testid="cuts-panel"]');
+    await expect(panel.locator(`[data-testid="rail-row"][data-card-id="${wild.id}"]`)).toHaveCount(1);
+    await expect(panel.locator(`[data-testid="rail-row"][data-card-id="${FX.commander.id}"]`)).toHaveCount(0);
+  });
+
+  test("F-08a Cut all never cuts below 100 when the response has no over_by", async ({ page, isMobile }) => {
+    await gotoDeck(page, {
+      workbench: true,
+      before: (p) =>
+        p.route(`**${API_PREFIX}/deck/cuts**`, (route) =>
+          route.fulfill({ status: 200, contentType: "application/json",
+            body: JSON.stringify({ cuts: [0, 1, 2, 3, 4].map((i) => cutRow(FX.basic, i)), target: 5, shortfall: 0 }) }),
+        ),
+    });
+    const tabs = isMobile ? '[data-testid="rail-tabbar"]' : '[data-testid="rail-tabs"]';
+    await page.locator(`${tabs} [data-tab="cuts"]`).click();
+    const panel = page.locator('[data-testid="cuts-panel"]');
+    await panel.locator('[data-testid="cuts-target"]').fill("5");
+    await expect(panel.locator('[data-testid="rail-row"]')).toHaveCount(5);
+    await expect(panel.locator('[data-testid="cuts-all"]')).toHaveText("Cut all 3");
+    await panel.locator('[data-testid="cuts-all"]').click();
+    await expect(page.locator(PILL)).toHaveText(/100\s*\/\s*100/);
+  });
+
+  test("F-08b the pill's cut target follows the deck when it grows", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "desktop composition");
+    await gotoDeck(page, { workbench: true });
+    await page.locator(PILL).click();
+    await expect(page.locator('[data-testid="cuts-target"]')).toHaveValue("3");
+    await page.locator('[data-testid="rail-tabs"] [data-tab="suggest"]').click();
+    const add = page.locator('[data-testid="suggest-panel"] [data-testid="rail-row"] button[title="Add to deck"]');
+    await add.first().click();
+    await expect(page.locator(PILL)).toHaveText(/104\s*\/\s*100/);
+    await add.first().click();
+    await expect(page.locator(PILL)).toHaveText(/105\s*\/\s*100/);
+    await page.locator('[data-testid="rail-tabs"] [data-tab="cuts"]').click();
+    await expect(page.locator('[data-testid="cuts-target"]')).toHaveValue("5");
+  });
+
+  test("F-06 board Delete and Suggest + both get an Undo toast", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "keyboard path");
+    await gotoDeck(page, { workbench: true });
+    await page.locator('[data-testid="suggest-panel"] [data-testid="rail-row"] button[title="Add to deck"]').first().click();
+    await expect(page.locator('[data-testid="toast"]').last()).toContainText(`Added ${FX.find[0].name}`);
+    const solRing = FX.deck.find((c) => c.name === "Sol Ring")!;
+    const card = page.locator(`[data-testid="engine-col-neutral"] [data-card-id="${solRing.id}"][data-context="deck"]`).first();
+    await card.scrollIntoViewIfNeeded();
+    await card.focus();
+    await page.keyboard.press("Delete");
+    await expect(page.locator('[data-testid="toast"]').last()).toContainText("Removed Sol Ring");
+  });
+
+  test("F-07 a stale toast Undo does not undo a different action", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "desktop composition");
+    await gotoDeck(page, { workbench: true });
+    const pill = page.locator(PILL);
+    await page.locator('[data-testid="suggest-panel"] [data-testid="rail-row"] button[title="Add to deck"]').first().click();
+    await expect(pill).toHaveText(/104\s*\/\s*100/);
+    await page.locator('[data-testid="rail-tabs"] [data-tab="cuts"]').click();
+    const wild = page.locator('[data-testid="cuts-panel"] [data-testid="rail-row"]').filter({ hasText: "Wild Guess" });
+    await wild.locator('button[title="Cut from deck"]').click();
+    await expect(pill).toHaveText(/103\s*\/\s*100/);
+    const cutToast = page.locator('[data-testid="toast"]').filter({ hasText: "Removed Wild Guess" });
+    await expect(cutToast).toHaveCount(1);
+    await page.keyboard.press("Control+z"); // undoes the cut
+    await expect(pill).toHaveText(/104\s*\/\s*100/);
+    await cutToast.locator('[data-testid="toast-action"]').click(); // stale: must not remove the added card
+    await expect(pill).toHaveText(/104\s*\/\s*100/);
+  });
+
+  test("F-10 a pending hover-open does not preview a row that unmounted", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "pointer only");
+    await gotoDeck(page, { workbench: true });
+    const rows = page.locator('[data-testid="suggest-panel"] [data-testid="rail-row"]');
+    await expect(rows).toHaveCount(FX.find.length);
+    const last = rows.last();
+    const id = (await last.getAttribute("data-card-id"))!;
+    const thumb = last.locator(`[data-card-id="${id}"]`).first();
+    await thumb.scrollIntoViewIfNeeded();
+    await thumb.focus();
+    const b = (await thumb.boundingBox())!;
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+    await page.keyboard.press("Enter"); // primary = add → the row is filtered out (< 120 ms)
+    await expect(rows).toHaveCount(FX.find.length - 1);
+    await page.waitForTimeout(400);
+    await expect(page.locator(`${PREVIEW}[data-anchor-id="${id}"]`)).toHaveCount(0);
+  });
+
+  test("F-11 keyboard Cut keeps focus inside the Cuts list", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "keyboard path");
+    await gotoDeck(page, { workbench: true });
+    await page.locator('[data-testid="rail-tabs"] [data-tab="cuts"]').click();
+    const panel = page.locator('[data-testid="cuts-panel"]');
+    await expect(panel.locator('[data-testid="rail-row"]')).toHaveCount(3);
+    await panel.locator('button[title="Cut from deck"]').first().focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator(PILL)).toHaveText(/102\s*\/\s*100/);
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => !!document.activeElement?.closest('[data-testid="cuts-panel"]'))).toBe(true);
+  });
+
+  test("F-12 the rail sheet takes focus, returns it on close, and fits a short viewport", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "mobile sheet only");
+    await gotoDeck(page, { workbench: true });
+    const tab = page.locator('[data-testid="rail-tabbar"] [data-tab="cuts"]');
+    await tab.click();
+    const sheet = page.locator('[data-testid="rail-sheet"]');
+    await expect(sheet).toBeVisible();
+    await expect.poll(() => page.evaluate(() => !!document.activeElement?.closest('[data-testid="rail-sheet"]'))).toBe(true);
+    await page.keyboard.press("Escape");
+    await expect(sheet).toHaveCount(0);
+    await expect(tab).toBeFocused();
+    await page.setViewportSize({ width: 390, height: 360 });
+    await tab.click();
+    await sheet.locator('button[aria-label="Expand sheet"]').click();
+    const sb = (await sheet.boundingBox())!;
+    expect(sb.y).toBeGreaterThanOrEqual(0);
+  });
+
+  test("F-13 the rail sheet does not survive a trip through the desktop breakpoint", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "mobile sheet only");
+    await gotoDeck(page, { workbench: true });
+    await page.locator('[data-testid="rail-tabbar"] [data-tab="suggest"]').click();
+    await expect(page.locator('[data-testid="rail-sheet"]')).toBeVisible();
+    await page.setViewportSize({ width: 1200, height: 900 });
+    await expect(page.locator('[data-testid="rail-tabs"]')).toBeVisible();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator('[data-testid="rail-tabbar"]')).toBeVisible();
+    await expect(page.locator('[data-testid="rail-sheet"]')).toHaveCount(0);
+  });
+
+  test("F-14 rail tabs: one tab stop, arrow keys move + select, tabpanel is labelled", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "keyboard path");
+    await gotoDeck(page, { workbench: true });
+    const tabs = page.locator('[data-testid="rail-tabs"] [role="tab"]');
+    expect(await tabs.evaluateAll((els) => els.map((e) => (e as HTMLElement).tabIndex))).toEqual([0, -1, -1, -1, -1]);
+    await tabs.first().focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(tabs.nth(1)).toBeFocused();
+    await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("End");
+    await expect(tabs.nth(4)).toBeFocused();
+    await page.keyboard.press("Home");
+    await expect(tabs.nth(0)).toBeFocused();
+    const panelId = await tabs.nth(0).getAttribute("aria-controls");
+    expect(panelId).toBeTruthy();
+    const panel = page.locator(`[id="${panelId}"]`);
+    await expect(panel).toHaveAttribute("role", "tabpanel");
+    await expect(panel).toHaveAttribute("aria-labelledby", (await tabs.nth(0).getAttribute("id"))!);
+  });
+
+  test("F-17 a persisted deck hydrates without a server/client mismatch", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("console", (m) => {
+      if (m.type() === "error") errors.push(m.text());
+    });
+    await gotoDeck(page);
+    await page.waitForTimeout(500);
+    // Evidence for the triage doc: what the server HTML says before the client store loads.
+    const html = (await (await page.request.get("/deck-doctor")).text()).replace(/<!-- -->/g, "");
+    test.info().annotations.push({ type: "ssr-card-count", description: (html.match(/\d+ cards/g) ?? []).join(" | ") || "none" });
+    expect(errors.filter((e) => /hydrat|did not match|does not match/i.test(e))).toEqual([]);
+  });
+
+  test("F-09 failed Suggest / Combos / analyze requests show an error, not an empty state", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "desktop composition");
+    const fail = (route: import("@playwright/test").Route) =>
+      route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ detail: "fixture: 500" }) });
+    await gotoDeck(page, {
+      workbench: true,
+      before: async (p) => {
+        await p.route(`**${API_PREFIX}/deck/recommend**`, fail);
+        await p.route(`**${API_PREFIX}/deck/combos**`, fail);
+        await p.route(`**${API_PREFIX}/deck/analyze**`, fail);
+      },
+    });
+    const suggest = page.locator('[data-testid="suggest-panel"]');
+    await expect(suggest).toContainText(/failed/i);
+    await expect(suggest).not.toContainText("Nothing left to suggest");
+    await expect(page.locator('[data-testid="bracket-vital"]')).toContainText(/failed/i);
+    await page.locator('[data-testid="rail-tabs"] [data-tab="combos"]').click();
+    await expect(page.locator('[data-testid="combos-panel"]')).toContainText(/failed/i);
+  });
+
+  test("F-15 Delete on a focused board card moves focus to a neighbour, not <body>", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "keyboard path");
+    await gotoDeck(page);
+    const solRing = FX.deck.find((c) => c.name === "Sol Ring")!;
+    const card = page.locator(`[data-testid="engine-col-neutral"] [data-card-id="${solRing.id}"][data-context="deck"]`).first();
+    await card.scrollIntoViewIfNeeded();
+    await card.focus();
+    await page.keyboard.press("Delete");
+    await expect(HEADER(page)).toContainText(`${SEEDED_COUNT - 1} cards`);
+    await expect.poll(() => page.evaluate(() => document.activeElement?.getAttribute("data-context") ?? document.activeElement?.tagName)).toBe("deck");
+  });
+
+  test("F-16 Mark as cut candidate shows on the board card", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "keyboard/menu path");
+    await gotoDeck(page);
+    const solRing = FX.deck.find((c) => c.name === "Sol Ring")!;
+    const card = page.locator(`[data-testid="engine-col-neutral"] [data-card-id="${solRing.id}"][data-context="deck"]`).first();
+    await card.scrollIntoViewIfNeeded();
+    await card.focus();
+    await page.keyboard.press("Shift+F10");
+    await page.locator(`${MENU} [role^="menuitem"]`, { hasText: "Mark as cut candidate" }).click();
+    await expect(card).toHaveAttribute("data-cut", "true");
+  });
+
+  test("F-19 Combos member chips open the card in the explorer", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "desktop composition");
+    await gotoDeck(page, { workbench: true });
+    await page.locator('[data-testid="rail-tabs"] [data-tab="combos"]').click();
+    const chip = page.locator('[data-testid="combos-complete"] button', { hasText: "Thornbite Staff" }).first();
+    await chip.click();
+    await expect(page.locator('[data-testid="relationship-explorer"]')).toBeVisible();
+  });
+
+  test("F-20 Set as commander on an in-deck, in-colour legend reports no phantom pruned cards", async ({ page, isMobile }) => {
+    test.skip(Boolean(isMobile), "keyboard/menu path");
+    await gotoDeck(page);
+    await openFind(page);
+    const kingpin = FX.find.find((c) => c.name === "Krenko, Tin Street Kingpin")!;
+    const kc = page.locator(`${FIND} [data-card-id="${kingpin.id}"]`);
+    await kc.scrollIntoViewIfNeeded();
+    await kc.focus();
+    await page.keyboard.press("Enter"); // add it to the deck first
+    await expect(HEADER(page)).toContainText(`${SEEDED_COUNT + 1} cards`);
+    const board = page.locator(`[data-testid="engine-col-neutral"] [data-card-id="${kingpin.id}"][data-context="deck"]`).first();
+    await board.scrollIntoViewIfNeeded();
+    await board.focus();
+    await page.keyboard.press("Shift+F10");
+    await page.locator(`${MENU} [role^="menuitem"]`, { hasText: "Set as commander" }).click();
+    const t = page.locator('[data-testid="toast"]').filter({ hasText: "is now the commander" });
+    await expect(t).toHaveCount(1);
+    await expect(t).not.toContainText("off-color");
+  });
+
+  test("F-22 on mobile, key 2 opens the rail sheet on Cuts", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "mobile only");
+    await gotoDeck(page, { workbench: true });
+    await page.locator("h1").first().click();
+    await page.keyboard.press("2");
+    await expect(page.locator('[data-testid="rail-sheet"]')).toBeVisible();
+    await expect(page.locator('[data-testid="rail-tabbar"] [data-tab="cuts"]')).toHaveAttribute("aria-selected", "true");
+  });
+
+  test("B touch targets in the mobile Cuts sheet and the toast are ≥ 44 px", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "coarse pointer only");
+    await gotoDeck(page, { workbench: true });
+    await page.locator('[data-testid="rail-tabbar"] [data-tab="cuts"]').click();
+    const sheet = page.locator('[data-testid="rail-sheet"]');
+    const all = sheet.locator('[data-testid="cuts-all"]');
+    await expect(all).toBeEnabled();
+    expect((await all.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    expect((await sheet.locator('[data-testid="cuts-target"]').boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    await all.click();
+    const undo = page.locator('[data-testid="toast"]').last().locator('[data-testid="toast-action"]');
+    await expect(undo).toBeVisible();
+    expect((await undo.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   });
 });

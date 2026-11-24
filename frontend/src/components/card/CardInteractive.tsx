@@ -34,6 +34,24 @@ export interface CardInteractiveProps extends CardFrameProps {
  * Shift+F10 / click menu, touch tap + long-press sheet, keyboard primary.
  * Renders tabIndex=-1 and data-roving-item for the surface's roving focus.
  */
+/**
+ * Run `remove` on a focused card, then hand focus to the card that now sits at its
+ * place (same context, document order) instead of letting it fall to <body> (review F-15).
+ */
+function removeKeepingFocus(el: HTMLElement, context: CardContext, remove: () => void) {
+  const sel = `[data-roving-item][data-context="${context}"]:not([data-ghost])`;
+  const before = Array.from(document.querySelectorAll<HTMLElement>(sel));
+  const idx = before.indexOf(el);
+  remove();
+  requestAnimationFrame(() => {
+    const active = document.activeElement;
+    if (active && active !== document.body && active.isConnected) return;
+    const after = Array.from(document.querySelectorAll<HTMLElement>(sel));
+    if (after.length === 0) return;
+    after[Math.max(0, Math.min(idx, after.length - 1))].focus({ preventScroll: true });
+  });
+}
+
 export const CardInteractive = forwardRef<HTMLDivElement, CardInteractiveProps>(function CardInteractive(
   { context, surfaceId, primary, onRemove, onWhy, zone, dragHandle, ariaLabel, card, state, onKeyDown, onClick, onContextMenu, ...frame },
   ref,
@@ -143,7 +161,7 @@ export const CardInteractive = forwardRef<HTMLDivElement, CardInteractiveProps>(
       } else if (key === "Delete" || key === "Backspace") {
         if (onRemove) {
           e.preventDefault();
-          onRemove();
+          removeKeepingFocus(e.currentTarget, context, onRemove);
         }
       } else if (key === "m" || key === "M") {
         if (context === "deck") {

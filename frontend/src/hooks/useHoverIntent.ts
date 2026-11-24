@@ -26,11 +26,13 @@ interface ActiveAnchor {
 
 const ctl: {
   openT: number | null;
+  /** Anchor the pending openT belongs to. */
+  openEl: HTMLElement | null;
   closeT: number | null;
   focusT: number | null;
   active: ActiveAnchor | null;
   watch: ((e: PointerEvent) => void) | null;
-} = { openT: null, closeT: null, focusT: null, active: null, watch: null };
+} = { openT: null, openEl: null, closeT: null, focusT: null, active: null, watch: null };
 
 function clearT(key: "openT" | "closeT" | "focusT") {
   const t = ctl[key];
@@ -57,6 +59,11 @@ function findSurface(el: HTMLElement): HTMLElement {
 }
 
 function showNow(el: HTMLElement, card: Card) {
+  // A timer can outlive its card (row removed mid-hover): never anchor to a detached node (review F-10).
+  if (!el.isConnected) {
+    clearT("openT");
+    return;
+  }
   clearT("openT");
   clearT("closeT");
   clearT("focusT");
@@ -111,6 +118,8 @@ export function useHoverIntent({ card, enabled = true }: HoverIntentOptions): Ho
   useEffect(
     () => () => {
       if (ctl.active && ctl.active.el === elRef.current) hidePreviewNow();
+      // A pending open for this anchor dies with it (review F-10).
+      else if (ctl.openT !== null && ctl.openEl === elRef.current) clearT("openT");
     },
     [],
   );
@@ -133,6 +142,7 @@ export function useHoverIntent({ card, enabled = true }: HoverIntentOptions): Ho
         return;
       }
       clearT("openT");
+      ctl.openEl = el;
       ctl.openT = window.setTimeout(() => {
         ctl.openT = null;
         showNow(el, cardRef.current);

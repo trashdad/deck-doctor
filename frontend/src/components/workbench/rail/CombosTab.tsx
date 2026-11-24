@@ -8,6 +8,8 @@ export interface CombosTabProps {
   /** `/deck/combos` response (same endpoint DeckCombosPanel uses); undefined = not fetched. */
   data?: DeckCombos;
   loading?: boolean;
+  /** The /deck/combos request failed (review F-09). */
+  error?: boolean;
   onAdd?: (card: Card) => void;
   onOpenCard?: (card: Card) => void;
 }
@@ -31,12 +33,14 @@ function MemberChip({ card, onClick }: { card: Card; onClick?: () => void }) {
 }
 
 /** Combos tab — DeckCombosPanel's body (complete + one-card-away), fed by the caller's query (§4.6). */
-export function CombosTab({ hasCommander, data, loading, onAdd, onOpenCard }: CombosTabProps) {
+export function CombosTab({ hasCommander, data, loading, error, onAdd, onOpenCard }: CombosTabProps) {
   if (!data) {
     return (
       <EmptyState testid="combos-panel">
         {hasCommander ? (
-          loading ? (
+          error ? (
+            <>The combos request failed.</>
+          ) : loading ? (
             <>Checking Commander Spellbook…</>
           ) : (
             <>Combos you have and combos you are one card from, with what each needs.</>

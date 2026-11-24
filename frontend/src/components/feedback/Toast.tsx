@@ -19,7 +19,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
             toast.action?.onClick();
             onDismiss();
           }}
-          className="h-9 rounded border border-accent/50 px-3 text-[13px] font-semibold text-accent hover:bg-accent/15 focus-visible:outline focus-visible:outline-1 focus-visible:outline-cyan"
+          className="h-9 rounded border border-accent/50 px-3 [@media(pointer:coarse)]:h-11 text-[13px] font-semibold text-accent hover:bg-accent/15 focus-visible:outline focus-visible:outline-1 focus-visible:outline-cyan"
         >
           {toast.action.label}
         </button>
@@ -28,7 +28,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
         type="button"
         aria-label="Dismiss"
         onClick={onDismiss}
-        className="flex h-9 w-9 items-center justify-center rounded text-zinc-400 hover:bg-accent/10 hover:text-zinc-100"
+        className="flex h-9 w-9 [@media(pointer:coarse)]:h-11 [@media(pointer:coarse)]:w-11 items-center justify-center rounded text-zinc-400 hover:bg-accent/10 hover:text-zinc-100"
       >
         ×
       </button>

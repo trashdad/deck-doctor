@@ -5,6 +5,7 @@ import { useDraggable } from "@dnd-kit/core";
 import type { Card } from "@/lib/types";
 import type { Zone } from "@/lib/zones";
 import { CardInteractive } from "./card/CardInteractive";
+import { useCuts } from "@/store/cuts";
 
 export type BoardCardVariant = "solid" | "ghost";
 export type GhostKind = "additional" | "bridge";
@@ -21,14 +22,18 @@ interface Props {
   surfaceId: string;
   /** Lane the card sits in — checks the current entry of the "Move to …" submenu. */
   zone?: Zone;
+  /** Copies (basic lands); > 1 shows a ×N badge. */
+  quantity?: number;
 }
 
 const TUCK_OFFSET_X = 44; // px overlap between consecutive cards
 const HOVER_LIFT_Y = -10; // px the hovered card rises above the static pile (§4.7: 10 px)
 const MAX_TUCK_ROT = [0, 2.5, -2, 1.5, -1]; // rotation per position (wraps)
 
-export function BoardCard({ card, variant, ghostKind, onRemove, stackIndex, surfaceId, zone }: Props) {
+export function BoardCard({ card, variant, ghostKind, onRemove, stackIndex, surfaceId, zone, quantity }: Props) {
   const [hovering, setHovering] = useState(false);
+  // "Mark as cut candidate" shows as the dashed ring / ✂ on the solid card (review F-16).
+  const cutCandidate = useCuts((s) => variant === "solid" && s.candidates.has(card.id));
 
   // Use a separator unlikely to appear in Scryfall UUIDs when constructing the
   // drag id, so we can reliably strip the suffix back to the card id on drop.
@@ -69,7 +74,7 @@ export function BoardCard({ card, variant, ghostKind, onRemove, stackIndex, surf
       context="deck"
       surfaceId={surfaceId}
       zone={zone}
-      state={{ ghost: ghostKind, dragging: isDragging }}
+      state={{ ghost: ghostKind, dragging: isDragging, cutCandidate }}
       dragHandle={dragHandle}
       onRemove={onRemove}
       style={tuckStyle}
@@ -88,6 +93,15 @@ export function BoardCard({ card, variant, ghostKind, onRemove, stackIndex, surf
         >
           <span className="text-[7px] font-bold uppercase tracking-wider text-cyan">{ghostKind}</span>
         </div>
+      )}
+
+      {quantity != null && quantity > 1 && (
+        <span
+          data-testid="pile-quantity"
+          className="pointer-events-none absolute bottom-1 right-1 rounded bg-ink/85 px-1 text-[11px] font-bold tabular-nums text-accent"
+        >
+          ×{quantity}
+        </span>
       )}
 
       {/* Remove button for solid cards */}

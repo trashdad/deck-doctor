@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { analyzeDeck, postDeckCombos, recommendCards, upgradeSweep } from "@/lib/api";
 import { clampCutTarget, postCutsTo100 } from "@/lib/cuts";
 import { findCommanderPivots } from "@/lib/pivot";
@@ -10,9 +10,10 @@ import { toast } from "@/components/feedback/toastStore";
 import { useUndoableDeck } from "@/hooks/useUndoableDeck";
 import type { Card, DeckEntry } from "@/lib/types";
 import { ZONES, type Zone } from "@/lib/zones";
-import { MAX_HISTORY, useDeck } from "@/store/deck";
+import { MAX_HISTORY, undoLatestAction, useDeck } from "@/store/deck";
 import { useUI, type RailTab } from "@/store/ui";
 import { useTemplateStore } from "@/store/template";
+import { useRelationshipStore } from "@/store/relationship";
 import { DeckHeader } from "./DeckHeader";
 import { DoctorRail } from "./DoctorRail";
 import { RailTabs } from "./RailTabs";
@@ -50,17 +51,25 @@ const ZONE_TO_CAT: Partial<Record<Zone, string>> = {
 export function WorkbenchLive({ children }: { children?: ReactNode }) {
   const cards = useDeck((s) => s.cards);
   const basics = useDeck((s) => s.basics);
-  const add = useDeck((s) => s.add);
-  const swap = useDeck((s) => s.swap);
+  // Every rail mutation goes through the undoable wrappers, so each one gets the same
+  // "… · Undo" toast as the context menu (review F-06).
   const undoable = useUndoableDeck();
+  const openExplorer = useRelationshipStore((s) => s.open);
+  const add = (card: Card) => void undoable.add(card);
+  const swap = (targetId: string, replacement: Card) => {
+    const target = useDeck.getState().cards[targetId]?.card;
+    if (target) undoable.swap(target, replacement);
+  };
   const setRailTab = useUI((s) => s.setRailTab);
   const railSheetOpen = useUI((s) => s.railSheetOpen);
   const setRailSheetOpen = useUI((s) => s.setRailSheetOpen);
   const desktop = useDesktop();
   const templateName = useTemplateStore((s) => s.templates.find((t) => t.id === s.selectedId)?.name);
   const openTemplatePanel = useTemplateStore((s) => s.openPanel);
-  // null → default to how many cards the deck is over 100 (the route's `target`).
-  const [cutTargetOverride, setCutTargetOverride] = useState<number | null>(null);
+  // null → default to how many cards the deck is over 100 (the route's `target`). A manual
+  // target only holds while the deck size it was set at is unchanged (review F-08): once
+  // the deck grows or shrinks the default (the new overage) applies again.
+  const [cutTargetOverride, setCutTargetOverride] = useState<{ n: number; at: number } | null>(null);
   const [pivotIncludeAll, setPivotIncludeAll] = useState(false);
   // Mobile: the sheet opens on the tapped tab; tapping the showing tab again closes it.
   const openRailTab = (t: RailTab) => {
@@ -71,6 +80,30 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
     setRailTab(t);
     if (!desktop) setRailSheetOpen(true);
   };
+  // The sheet only exists < 1024 px; crossing to desktop closes it so the flag never
+  // describes an invisible overlay (Back, re-open on resize — review F-13).
+  useEffect(() => {
+    if (desktop && useUI.getState().railSheetOpen) setRailSheetOpen(false);
+  }, [desktop, setRailSheetOpen]);
+  // < 1024 px the rail (and DoctorRail's 1–5 listener) only exists inside the open sheet,
+  // so the shortcuts open the sheet on that tab from here (review F-22).
+  useEffect(() => {
+    if (desktop) return;
+    const map: Record<string, RailTab> = { "1": "suggest", "2": "cuts", "3": "tuneup", "4": "combos", "5": "pivot" };
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const ui = useUI.getState();
+      if (ui.menu || ui.sheet) return;
+      const next = map[e.key];
+      if (!next) return;
+      setRailTab(next);
+      setRailSheetOpen(true);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [desktop, setRailTab, setRailSheetOpen]);
   // Template quotas: same source page.tsx feeds DeckDoctorPanel (`templateCounts`). Keys are the
   // doctor categories (land/ramp/card_draw/removal/board_wipe); mapped to zones as TemplatePanel's CAT_ZONE does.
   const activeCounts = useTemplateStore((s) => s.activeCounts);
@@ -99,7 +132,8 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
   const basicCount = Object.values(basics).reduce((s, b) => s + b.quantity, 0);
   const count = deckCards.length + basicCount;
   const overByLocal = Math.max(0, count - 100);
-  const cutTarget = cutTargetOverride ?? clampCutTarget(overByLocal || 1);
+  const cutTarget =
+    cutTargetOverride && cutTargetOverride.at === count ? cutTargetOverride.n : clampCutTarget(overByLocal || 1);
   const sig = entries.map((e) => `${e.id}:${e.quantity}`).sort().join(",");
 
   const ledger: LedgerEntry[] = useMemo(() => {
@@ -137,6 +171,8 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
     queryFn: () => recommendCards(entries, commanderId!, { limit: 24, explain: true }),
     enabled: commanderId != null,
     staleTime: 30_000,
+    // Keep the rows while the next ranking loads (no list teardown / focus loss — review F-11).
+    placeholderData: keepPreviousData,
   });
   // Hide anything added since the last fetch so the list reacts instantly.
   const suggestions = (suggest.data?.suggestions ?? []).filter((s) => !cards[s.card.id]);
@@ -147,8 +183,14 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
     queryFn: () => postCutsTo100(entries, commanderId!, cutTarget, { template: quotas }),
     enabled: commanderId != null && count > 100,
     staleTime: 30_000,
+    // Keep the rows while re-ranking after a cut (review F-11), but not once the deck is ≤ 100.
+    placeholderData: (prev) => (count > 100 ? prev : undefined),
   });
-  const candidates = (cuts.data?.cuts ?? []).filter((c) => !!cards[c.card.id] || !!basics[c.card.id]);
+  // Rows must still be in the deck, and a commander (or partner) is never a cut (review F-04).
+  const candidates = (cuts.data?.cuts ?? []).filter((c) => {
+    const dc = cards[c.card.id];
+    return dc ? dc.zone !== "Commanders" : !!basics[c.card.id];
+  });
 
   // Same endpoint/key shape as DeckCombosPanel; only fetched while the Combos tab is showing.
   const railTab = useUI((s) => s.railTab);
@@ -180,15 +222,10 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
     staleTime: 30_000,
   });
 
+  // store.remove drops one copy of a basic, so this covers singleton and basic rows alike.
   const cutOne = (card: Card) => {
-    if (undoable.remove(card)) return;
-    const basic = useDeck.getState().basics[card.id];
-    if (!basic || basic.quantity <= 0) return;
-    useDeck.getState().setBasic(card.id, basic.quantity - 1, card);
-    toast({
-      message: `Removed ${card.name}`,
-      action: { label: "Undo", onClick: () => useDeck.getState().undo() },
-    });
+    if (useDeck.getState().cards[card.id]?.zone === "Commanders") return;
+    undoable.remove(card);
   };
 
   // One history entry for the whole batch, so a single Undo restores every card.
@@ -198,6 +235,7 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
     const nextBasics = { ...s.basics };
     const removed: string[] = [];
     for (const card of list) {
+      if (nextCards[card.id]?.zone === "Commanders") continue; // never cut a commander (F-04)
       if (nextCards[card.id]) {
         delete nextCards[card.id];
         removed.push(card.name);
@@ -220,7 +258,7 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
     });
     toast({
       message: removed.length === 1 ? `Removed ${removed[0]}` : `Cut ${removed.length} cards`,
-      action: { label: "Undo", onClick: () => useDeck.getState().undo() },
+      action: { label: "Undo", onClick: undoLatestAction() },
     });
   };
 
@@ -228,11 +266,11 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
     <DoctorRail
       commander={commander}
       count={count}
-      suggest={{ tier: suggest.data?.tier ?? null, suggestions, loading: suggest.isFetching }}
+      suggest={{ tier: suggest.data?.tier ?? null, suggestions, loading: suggest.isFetching, error: suggest.isError }}
       cuts={{
         target: cutTarget,
         candidates,
-        onTargetChange: (n) => setCutTargetOverride(clampCutTarget(n)),
+        onTargetChange: (n) => setCutTargetOverride({ n: clampCutTarget(n), at: count }),
         overBy: cuts.data ? (typeof cuts.data.over_by === "number" ? cuts.data.over_by : null) : undefined,
         shortfall: cuts.data ? (typeof cuts.data.shortfall === "number" ? cuts.data.shortfall : null) : undefined,
         loading: cuts.isLoading,
@@ -246,7 +284,7 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
         includeAll: pivotIncludeAll,
         onIncludeAll: setPivotIncludeAll,
       }}
-      combos={{ data: combos.data, loading: combos.isFetching }}
+      combos={{ data: combos.data, loading: combos.isFetching, error: combos.isError }}
       tuneUp={{
         hasCommander: commanderId != null,
         data: sweepData,
@@ -256,6 +294,7 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
       }}
       onAdd={add}
       onCut={cutOne}
+      onOpenCard={(card) => openExplorer(card, "similar")}
       variant={desktop ? "rail" : "sheet"}
       // Row child on desktop (fixed 400 px, no grow); column child inside the sheet.
       className={desktop ? "min-h-0 shrink-0" : "min-h-0 flex-1"}
@@ -272,10 +311,11 @@ export function WorkbenchLive({ children }: { children?: ReactNode }) {
           ledger={ledger}
           curve={curve}
           bracket={bracket}
+          bracketError={analysis.isError}
           templateName={templateName}
           onOpenTemplate={openTemplatePanel}
           onOpenCuts={(n) => {
-            setCutTargetOverride(clampCutTarget(n));
+            setCutTargetOverride({ n: clampCutTarget(n), at: count });
             openRailTab("cuts");
           }}
           onOpenComplete={() => openRailTab("suggest")}

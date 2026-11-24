@@ -65,7 +65,8 @@ export function CardPreview() {
       aria-label={`${card.name} card image`}
     >
       <MountCounter />
-      <CardFrame card={card} size="hero" loading="eager" state={{ ierPill: null }} className="h-full !shadow-none" />
+      {/* Keyed by card: a broken image on one card must not blank the next (review F-23). */}
+      <CardFrame key={card.id} card={card} size="hero" loading="eager" state={{ ierPill: null }} className="h-full !shadow-none" />
     </Popover>
   );
 }

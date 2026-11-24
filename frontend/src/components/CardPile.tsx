@@ -11,6 +11,8 @@ export interface PileEntry {
   card: Card;
   variant: "solid" | "ghost";
   ghostKind?: GhostKind;
+  /** Copies this pile card stands for (basic lands); omitted = 1. */
+  quantity?: number;
 }
 
 interface Props {
@@ -58,6 +60,7 @@ export function CardPile({ entries, onRemove, label = "Pile", title, zone }: Pro
           card={entry.card}
           variant={entry.variant}
           ghostKind={entry.ghostKind}
+          quantity={entry.quantity}
           onRemove={entry.variant === "solid" && onRemove ? () => onRemove(entry.card.id) : undefined}
           stackIndex={i}
           surfaceId={surfaceId}

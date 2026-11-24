@@ -76,6 +76,27 @@ export interface DeckState {
   ) => void;
 }
 
+/** Basic lands are tracked with multiplicity in `basics` (same test as loadImported). */
+export function isBasicLand(card: Card): boolean {
+  return (card.type_line ?? "").includes("Basic");
+}
+
+/**
+ * Undo bound to the action that was just applied (review F-07): call right after the
+ * mutation; the returned function undoes only while that action's snapshot is still the
+ * newest history entry (it is a no-op after a later edit, a Ctrl+Z, or a load).
+ */
+export function undoLatestAction(): () => boolean {
+  const h0 = useDeck.getState().history;
+  const snap = h0[h0.length - 1];
+  return () => {
+    const s = useDeck.getState();
+    const top = s.history[s.history.length - 1];
+    if (!snap || !top || top.cards !== snap.cards || top.basics !== snap.basics) return false;
+    return s.undo();
+  };
+}
+
 /** Apply `patch` and push the pre-change snapshot onto the undo ring (clears redo). */
 function withHistory(s: DeckState, patch: Partial<Snapshot>): Partial<DeckState> {
   const snap: Snapshot = { cards: s.cards, basics: s.basics };
@@ -119,6 +140,16 @@ export const useDeck = create<DeckState>()(
   },
   add: (card) =>
     set((s) => {
+      if (isBasicLand(card)) {
+        // Basics carry multiplicity (review F-02): adding one bumps its count instead of
+        // creating a second, singleton copy in `cards`.
+        const ci = commanderIdentity(s.cards);
+        if (ci.size > 0 && !withinIdentity(ci, card)) return s;
+        const existing = s.basics[card.id];
+        return withHistory(s, {
+          basics: { ...s.basics, [card.id]: { card: existing?.card ?? card, quantity: (existing?.quantity ?? 0) + 1 } },
+        });
+      }
       if (s.cards[card.id]) return s;
       // Adding from search NEVER sets the commander (that's setCommander's job via
       // the Commanders tab). Legendary creatures land in their function zone, not
@@ -135,7 +166,15 @@ export const useDeck = create<DeckState>()(
     }),
   remove: (id) =>
     set((s) => {
-      if (!s.cards[id]) return s;
+      if (!s.cards[id]) {
+        // A basic: remove ONE copy (board ×, Delete, menu Remove — review F-02).
+        const b = s.basics[id];
+        if (!b) return s;
+        const basics = { ...s.basics };
+        if (b.quantity <= 1) delete basics[id];
+        else basics[id] = { card: b.card, quantity: b.quantity - 1 };
+        return withHistory(s, { basics });
+      }
       const next = { ...s.cards };
       delete next[id];
       return withHistory(s, { cards: next });
@@ -144,6 +183,9 @@ export const useDeck = create<DeckState>()(
     set((s) => {
       const dc = s.cards[id];
       if (!dc || dc.zone === zone) return s;
+      // The Commanders zone is only written by setCommander (legality + identity
+      // pruning) and loadImported; a plain move in or out would bypass that (review F-03).
+      if (zone === "Commanders" || dc.zone === "Commanders") return s;
       return withHistory(s, { cards: { ...s.cards, [id]: { ...dc, zone } } });
     }),
   swap: (oldId, newCard) =>

@@ -5,7 +5,7 @@ import type { Card, DeckCombos, Suggestion, SuggestionResponse } from "@/lib/typ
 import type { CutRow } from "@/lib/cuts";
 import type { PivotResponse } from "@/lib/pivot";
 import { useUI, type RailTab, type RailView } from "@/store/ui";
-import { RailTabs } from "./RailTabs";
+import { RAIL_PANEL_ID, RailTabs, railTabId } from "./RailTabs";
 import { SuggestTab } from "./rail/SuggestTab";
 import { CutsTab } from "./rail/CutsTab";
 import { TuneUpTab, type TuneUpTabProps } from "./rail/TuneUpTab";
@@ -24,7 +24,7 @@ export interface RailMeta {
 export interface DoctorRailProps {
   commander: Card | null;
   count: number;
-  suggest: { tier: SuggestionResponse["tier"] | null; suggestions: Suggestion[]; loading?: boolean };
+  suggest: { tier: SuggestionResponse["tier"] | null; suggestions: Suggestion[]; loading?: boolean; error?: boolean };
   cuts: {
     target: number;
     candidates: CutRow[];
@@ -45,7 +45,9 @@ export interface DoctorRailProps {
     onIncludeAll?: (value: boolean) => void;
   };
   /** Omit → Combos tab shows its skeleton. */
-  combos?: { data?: DeckCombos; loading?: boolean };
+  combos?: { data?: DeckCombos; loading?: boolean; error?: boolean };
+  /** Open a card in the explorer (Combos chips, Tune-up thumbnails — review F-19). */
+  onOpenCard?: (card: Card) => void;
   /** Omit → Tune-up tab shows its skeleton. */
   tuneUp?: TuneUpTabProps;
   onAdd: (card: Card) => void;
@@ -75,6 +77,7 @@ export function DoctorRail({
   tuneUp,
   onAdd,
   onCut,
+  onOpenCard,
   meta,
   variant = "rail",
   renderView,
@@ -117,7 +120,7 @@ export function DoctorRail({
       {renderView ? renderView(top) : <p className="px-4 py-6 text-[13px] text-zinc-400">This view moves into the rail in phase 2.</p>}
     </div>
   ) : tab === "suggest" ? (
-    <SuggestTab commander={commander} tier={suggest.tier} suggestions={suggest.suggestions} onAdd={onAdd} loading={suggest.loading} />
+    <SuggestTab commander={commander} tier={suggest.tier} suggestions={suggest.suggestions} onAdd={onAdd} loading={suggest.loading} error={suggest.error} />
   ) : tab === "cuts" ? (
     <CutsTab
       commander={commander}
@@ -133,11 +136,13 @@ export function DoctorRail({
       error={cuts.error}
     />
   ) : tab === "tuneup" ? (
-    <TuneUpTab {...tuneUp} hasCommander={hasCommander} />
+    <TuneUpTab onOpenCard={onOpenCard} {...tuneUp} hasCommander={hasCommander} />
   ) : tab === "combos" ? (
-    <CombosTab hasCommander={hasCommander} data={combos?.data} loading={combos?.loading} onAdd={onAdd} />
+    <CombosTab hasCommander={hasCommander} data={combos?.data} loading={combos?.loading} error={combos?.error} onAdd={onAdd} onOpenCard={onOpenCard} />
   ) : (
     <PivotTab
+      // A new commander starts with no candidate expanded (review F-21).
+      key={commander?.id ?? "none"}
       commander={commander}
       active={pivot != null}
       data={pivot?.data}
@@ -161,7 +166,9 @@ export function DoctorRail({
         .join(" ")}
     >
       {variant === "rail" && <RailTabs value={tab} onChange={setTab} />}
-      {body}
+      <div id={RAIL_PANEL_ID} role="tabpanel" aria-labelledby={railTabId(tab)} className="flex min-h-0 flex-1 flex-col">
+        {body}
+      </div>
       <footer
         data-testid="rail-provenance"
         className="mt-auto border-t border-edge px-3 py-1.5 text-[11px] leading-[14px] text-zinc-400"

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import type { Card } from "@/lib/types";
 import type { Zone } from "@/lib/zones";
 import { matchingZones } from "@/lib/functions";
-import { useDeck } from "@/store/deck";
+import { undoLatestAction, useDeck } from "@/store/deck";
 import { toast } from "@/components/feedback/toastStore";
 
 /** The lane `useDeck.add` will put the card in (mirrors the store's rule). */
@@ -36,7 +36,7 @@ export function useUndoableDeck() {
     if (deckCount() === before) return false;
     toast({
       message: `Added ${card.name} to ${landingZone(card)}`,
-      action: { label: "Undo", onClick: () => useDeck.getState().undo() },
+      action: { label: "Undo", onClick: undoLatestAction() },
     });
     return true;
   }, []);
@@ -47,7 +47,7 @@ export function useUndoableDeck() {
     if (deckCount() === before) return false;
     toast({
       message: `Removed ${card.name}`,
-      action: { label: "Undo", onClick: () => useDeck.getState().undo() },
+      action: { label: "Undo", onClick: undoLatestAction() },
     });
     return true;
   }, []);
@@ -58,7 +58,7 @@ export function useUndoableDeck() {
     if (prev === undefined || prev === zone) return false;
     toast({
       message: `Moved ${card.name} to ${zone}`,
-      action: { label: "Undo", onClick: () => useDeck.getState().undo() },
+      action: { label: "Undo", onClick: undoLatestAction() },
     });
     return true;
   }, []);
@@ -69,20 +69,27 @@ export function useUndoableDeck() {
     if (had) return false;
     toast({
       message: `Swapped ${oldCard.name} for ${newCard.name}`,
-      action: { label: "Undo", onClick: () => useDeck.getState().undo() },
+      action: { label: "Undo", onClick: undoLatestAction() },
     });
     return true;
   }, []);
 
   const setCommander = useCallback((card: Card, asPartner = false) => {
-    const before = deckCount();
-    useDeck.getState().setCommander(card, asPartner);
-    const pruned = Math.max(0, before + 1 - deckCount());
+    // Count what setCommander actually pruned (review F-20): cards that left the deck other
+    // than replaced commanders, plus basic copies that left.
+    const s0 = useDeck.getState();
+    s0.setCommander(card, asPartner);
+    const s1 = useDeck.getState();
+    let pruned = 0;
+    for (const [id, dc] of Object.entries(s0.cards)) {
+      if (!s1.cards[id] && dc.zone !== "Commanders") pruned++;
+    }
+    for (const [id, b] of Object.entries(s0.basics)) pruned += Math.max(0, b.quantity - (s1.basics[id]?.quantity ?? 0));
     toast({
       message: pruned > 0
         ? `${card.name} is now the commander · ${pruned} off-color card${pruned === 1 ? "" : "s"} removed`
         : `${card.name} is now the commander`,
-      action: { label: "Undo", onClick: () => useDeck.getState().undo() },
+      action: { label: "Undo", onClick: undoLatestAction() },
     });
     return true;
   }, []);

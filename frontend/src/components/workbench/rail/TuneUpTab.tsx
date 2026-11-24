@@ -30,7 +30,7 @@ export function TuneUpTab({ hasCommander, data, loading, error, onSwap, onOpenCa
           <>Finding your weakest cards…</>
         ) : (
           <>
-            Tune-up finds your weakest cards and a same-role swap for each. <strong>Run Tune-up</strong> to start.
+            Tune-up finds your weakest cards and a same-role swap for each; results appear here while this tab is open.
           </>
         )}
       </EmptyState>

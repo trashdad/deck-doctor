@@ -62,5 +62,18 @@ export default defineConfig({
       testMatch: /live-real\.spec\.ts/,
       use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } },
     },
+    // live-real-tabs — tests/live-real-tabs.spec.ts: Suggest/Combos/Tune-up + the < 1024 px
+    // bottom sheet against the REAL backend on :8001, no mocks.
+    {
+      name: "live-real-tabs-desktop",
+      testMatch: /live-real-tabs\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } },
+    },
+    {
+      name: "live-real-tabs-mobile",
+      testMatch: /live-real-tabs\.spec\.ts/,
+      // iPhone 13 geometry + touch, driven by Chromium (WebKit is not installed here).
+      use: { ...devices["iPhone 13"], browserName: "chromium" },
+    },
   ],
 });

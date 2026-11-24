@@ -37,6 +37,21 @@ export function sourceInfo(signal: string): SourceInfo {
   }
 }
 
+/** Signals that name EDHREC in product copy. */
+const EDHREC_SIGNALS = new Set(["edhrec", "edhrec_inclusion"]);
+
+/**
+ * Honesty guard (docs/plans/2026-11-24-edhrec-compliance.md): an EDHREC-labelled
+ * reason only counts as evidence when it carries a positive number. The backend
+ * never emits one when the DECKDOCTOR_EDHREC_SIGNAL switch is off or the
+ * commander has no EDHREC rows; a zero/missing value means "no EDHREC data", so
+ * the UI must not show an "EDHREC" chip or sentence for it. Other signals pass.
+ */
+export function hasSignalEvidence(r: Reason): boolean {
+  if (!EDHREC_SIGNALS.has(r.signal)) return true;
+  return typeof r.value === "number" && Number.isFinite(r.value) && r.value > 0;
+}
+
 /* Numbers live in chips, not in sentence copy (§3.5): a trailing "(… -0.15)" style
    parenthetical from the backend is dropped from the sentence — the evidence list
    still shows the raw detail. */
@@ -54,6 +69,8 @@ const countOfYours = (detail: string): string | null => {
 export function reasonSentence(r: Reason, commanderName: string | null, context: CardContext = "suggest"): string {
   const cmd = commanderName ?? "this commander";
   const detail = (r.detail ?? "").trim();
+  // No positive EDHREC number → say so plainly; never imply EDHREC backs the card.
+  if (!hasSignalEvidence(r)) return `No inclusion data for ${cmd}.`;
   // Cuts: "EDHREC: in 50% of this commander's decks (synergy -0.15)" → the inclusion
   // sentence; the synergy number stays in the chip / evidence list.
   if (context === "cut" && r.signal === "edhrec") {
@@ -102,10 +119,12 @@ export function reasonValue(r: Reason): string {
 /**
  * The reason that makes the sentence: highest value first, except that a
  * staple only leads when it is the only signal (staples sit below every
- * deck-specific signal in the product).
+ * deck-specific signal in the product). EDHREC reasons without evidence
+ * (`hasSignalEvidence`) are dropped, so no "EDHREC" chip shows for a signal
+ * that is off or absent.
  */
 export function rankReasons(reasons: Reason[]): Reason[] {
-  return [...reasons].sort((a, b) => {
+  return reasons.filter(hasSignalEvidence).sort((a, b) => {
     const sa = a.signal === "staple" ? 1 : 0;
     const sb = b.signal === "staple" ? 1 : 0;
     if (sa !== sb) return sa - sb;

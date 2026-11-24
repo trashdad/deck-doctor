@@ -23,7 +23,8 @@ interface Props {
 export function FieldSection({ zone, dropId, entries, onRemove, tint }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: dropId });
 
-  const solidCount = entries.filter((e) => e.variant === "solid").length;
+  // Basic-land entries carry their copy count (67 Mountains = 67, not 1 — review F-02).
+  const solidCount = entries.filter((e) => e.variant === "solid").reduce((n, e) => n + (e.quantity ?? 1), 0);
 
   return (
     <div

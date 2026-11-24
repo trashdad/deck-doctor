@@ -97,7 +97,8 @@ export function CardContextMenu() {
     }
     scrollOrigin.set(window, window.scrollY);
     const onScroll = (e: Event) => {
-      if (menuRef.current && e.target instanceof Node && menuRef.current.contains(e.target)) return;
+      // Scrolling the menu or a portaled submenu never closes it (review F-18).
+      if (e.target instanceof Node && inside(e.target)) return;
       const k = keyOf(e.target);
       const now = readScroll(k);
       if (!scrollOrigin.has(k)) {

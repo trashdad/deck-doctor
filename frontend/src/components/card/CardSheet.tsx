@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useDialogFocus } from "@/hooks/useDialogFocus";
 import { createPortal } from "react-dom";
 import type { Card } from "@/lib/types";
 import type { MenuItemModel, MenuModel } from "./cardActions";
@@ -102,13 +103,17 @@ function SheetRow({ item, onDone }: { item: MenuItemModel; onDone: () => void })
 
 /** Large image + name/type + the context-menu actions as 44 px rows (§4.9). */
 export function CardSheetBody({ card, model, onClose, inline }: CardSheetBodyProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  useDialogFocus(ref, !inline); // modal focus handling (review F-12); the gallery's inline copy is not modal
   return (
     <div
+      ref={ref}
+      tabIndex={-1}
       role="dialog"
       aria-modal={inline ? undefined : true}
       aria-label={card.name}
       data-testid={inline ? "card-sheet-inline" : "card-sheet"}
-      className={inline ? "dd-sheet relative max-h-none rounded-t-[14px]" : "dd-sheet"}
+      className={inline ? "dd-sheet relative max-h-none rounded-t-[14px]" : "dd-sheet outline-none"}
       style={inline ? { position: "relative", bottom: "auto" } : undefined}
     >
       <div className="flex justify-center pb-1 pt-2" aria-hidden="true">

@@ -14,6 +14,8 @@ export interface DeckHeaderProps {
   ledger: LedgerEntry[];
   curve: { cmc: number; count: number }[];
   bracket: { floor: number; flags: string[] } | null;
+  /** The /deck/analyze request failed. */
+  bracketError?: boolean;
   onOpenCuts: (n: number) => void;
   onOpenComplete: () => void;
   onJumpToLane: (zone: Zone) => void;
@@ -72,6 +74,7 @@ export function DeckHeader({
   ledger,
   curve,
   bracket,
+  bracketError,
   onOpenCuts,
   onOpenComplete,
   onJumpToLane,
@@ -136,7 +139,7 @@ export function DeckHeader({
           <span className="truncate">{templateName}</span>
           <span aria-hidden="true">▾</span>
         </button>
-        <BracketVital bracket={bracket} onFlagClick={onFlagClick} compact className="w-full lg:w-auto lg:min-w-0 lg:flex-1" />
+        <BracketVital bracket={bracket} error={bracketError} onFlagClick={onFlagClick} compact className="w-full lg:w-auto lg:min-w-0 lg:flex-1" />
       </div>
       <div className="flex items-center gap-x-3">
         <RoleLedger

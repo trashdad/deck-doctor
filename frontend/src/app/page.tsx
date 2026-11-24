@@ -151,7 +151,8 @@ function HeaderButton({
 }
 
 export default function Page() {
-  const { cards, basics, add, remove, move } = useDeck();
+  const cards = useDeck((s) => s.cards);
+  const basics = useDeck((s) => s.basics);
   const openTemplatePanel = useTemplateStore((s) => s.openPanel);
   const openSweep = useSweepStore((s) => s.open);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -368,7 +369,8 @@ export default function Page() {
   const { data: diagnosis, isFetching: diagnosisLoading } = useDiagnosis(entries, commanderId);
 
   // Autosave: debounce 2s when a deck is loaded; snapshot to localStorage always.
-  const sig = entries.map((e) => `${e.id}:${e.quantity}`).sort().join(",");
+  // The zone is part of the signature so a drag / "Move to …" is saved too (review F-05).
+  const sig = entries.map((e) => `${e.id}:${e.zone}:${e.quantity}`).sort().join(",");
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -404,8 +406,9 @@ export default function Page() {
       }
     }
 
-    if (ZONES.includes(zonePart as Zone)) {
-      move(cardId, zonePart as Zone);
+    const dragged = useDeck.getState().cards[cardId]?.card;
+    if (dragged && ZONES.includes(zonePart as Zone)) {
+      undoableDeck.move(dragged, zonePart as Zone); // same Undo toast as the menu (review F-06)
     }
   }
 
@@ -626,7 +629,7 @@ export default function Page() {
                 Done
               </button>
             </div>
-            <SearchPanel onAdd={add} />
+            <SearchPanel onAdd={(c) => void undoableDeck.add(c)} />
           </div>
 
           {workbench ? (

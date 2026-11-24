@@ -118,7 +118,8 @@ export function buildCardActions(ctx: CardContext, card: Card, deps: ActionDeps)
       label: "Move to …",
       shortcut: "→",
       icon: ICONS.move,
-      submenu: ZONES.map((z) => ({
+      // Commanders is set only via "Set as commander" / "Add as partner" (validated), never Move (review F-03).
+      submenu: ZONES.filter((z) => z !== "Commanders").map((z) => ({
         id: `move:${z}`,
         label: z,
         checked: deps.zone === z,

@@ -15,7 +15,9 @@ export interface SourceBadgeProps {
 /**
  * 11 px source chip. One muted style for every source (§3.4: hue encodes nothing
  * here, so no hue); the label + number carry the meaning. `data-signal` keeps the
- * raw id for tests and styling hooks.
+ * raw id for tests and styling hooks. Callers pass reasons through `rankReasons`,
+ * which drops EDHREC reasons without a positive value, so an "EDHREC" chip only
+ * renders when that signal is actually present.
  */
 export function SourceBadge({ signal, value, title, verbose, className }: SourceBadgeProps) {
   const info = sourceInfo(signal);

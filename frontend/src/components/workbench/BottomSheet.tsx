@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useDialogFocus } from "@/hooks/useDialogFocus";
 
 export interface BottomSheetProps {
   open: boolean;
@@ -22,7 +23,10 @@ export interface BottomSheetProps {
 export function BottomSheet({ open, onClose, label, bottomOffset = 0, testid, children }: BottomSheetProps) {
   const [mounted, setMounted] = useState(false);
   const [tall, setTall] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
   useEffect(() => setMounted(true), []);
+  // aria-modal is a promise: focus moves in, Tab stays in, focus returns on close (review F-12).
+  useDialogFocus(panelRef, open && mounted);
   useEffect(() => {
     if (!open) {
       setTall(false);
@@ -40,13 +44,20 @@ export function BottomSheet({ open, onClose, label, bottomOffset = 0, testid, ch
     <>
       <div className="dd-sheet-backdrop" style={{ bottom: bottomOffset }} onPointerDown={onClose} aria-hidden="true" />
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
+        tabIndex={-1}
         aria-label={label}
         data-testid={testid}
         data-tall={tall ? "true" : undefined}
-        className="dd-sheet"
-        style={{ bottom: bottomOffset, height: tall ? "90vh" : "60vh", maxHeight: tall ? "90vh" : "60vh" }}
+        className="dd-sheet outline-none"
+        // The sheet sits bottomOffset px above the viewport bottom; never let it run off the top (review F-12).
+        style={{
+          bottom: bottomOffset,
+          height: `min(${tall ? "90vh" : "60vh"}, calc(100vh - ${bottomOffset}px))`,
+          maxHeight: `calc(100vh - ${bottomOffset}px)`,
+        }}
       >
         <button
           type="button"

@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
+import { useCallback, useMemo, type ReactNode } from "react";
 import type { DeckCard, BasicEntry } from "@/store/deck";
 import { useDeck } from "@/store/deck";
+import { useUndoableDeck } from "@/hooks/useUndoableDeck";
 import { useTemplateStore, COMPOSITE_TEMPLATE_ID } from "@/store/template";
 import { useUI } from "@/store/ui";
 import { cardFunctions, cardEngines, matchingZones } from "@/lib/functions";
@@ -43,7 +44,19 @@ export function EngineBoard({
   /** Deck-action controls rendered in the right of the commander pane. */
   commanderControls?: ReactNode;
 }) {
-  const { cards, basics, remove } = useDeck();
+  const cards = useDeck((s) => s.cards);
+  const basics = useDeck((s) => s.basics);
+  // Board ×, Delete and the commander strip use the undoable wrapper (Undo toast, review
+  // F-06); for a basic it removes one copy (review F-02).
+  const undoable = useUndoableDeck();
+  const remove = useCallback(
+    (id: string) => {
+      const s = useDeck.getState();
+      const card = s.cards[id]?.card ?? s.basics[id]?.card;
+      if (card) undoable.remove(card);
+    },
+    [undoable],
+  );
   const selectedId = useTemplateStore((s) => s.selectedId);
   const composite = useTemplateStore((s) => s.composite);
   const themes = useTemplateStore((s) => s.themes);
@@ -104,7 +117,7 @@ export function EngineBoard({
 
     // Basics → Lands (solid). Neutral in composite (lands rarely match a theme).
     for (const b of basicEntries) {
-      const entry: PileEntry = { card: b.card, variant: "solid" };
+      const entry: PileEntry = { card: b.card, variant: "solid", quantity: b.quantity };
       addToSection(isComposite ? neutral : single, "Lands", entry);
     }
 

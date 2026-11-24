@@ -255,7 +255,7 @@ test.describe("Context menu", () => {
     const sub = page.locator('.dd-submenu [role="menu"]');
     await expect(sub).toBeVisible();
     const zones = await sub.locator('[role="menuitemradio"]').evaluateAll((els) => els.map((e) => e.textContent?.replace("✓", "").trim()));
-    expect(zones).toEqual(["Commanders", "Win Conditions", "Lands", "Ramp", "Card Draw", "Removal", "Board Wipes", "Counters", "Tokens", "Utility"]);
+    expect(zones).toEqual(["Win Conditions", "Lands", "Ramp", "Card Draw", "Removal", "Board Wipes", "Counters", "Tokens", "Utility"]);
     const checked = sub.locator('[role="menuitemradio"][aria-checked="true"]');
     await expect(checked).toHaveCount(1);
     await expect(checked).toHaveText(/Ramp/);
