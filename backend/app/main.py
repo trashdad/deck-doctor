@@ -17,7 +17,7 @@ from .analysis import analyze
 from .diagnosis import diagnose
 from .decks import get_userdecks
 from .doctor import TEMPLATE as DOCTOR_TEMPLATE, complete_deck, suggest_cuts
-from .cut_to_100 import cut_to_100
+from .cut_to_100 import cut_to_100, validate_template as validate_cut_template
 from .manabase import fill_lands
 from .graph import deck_graph
 from .importer import parse_decklist, parse_decklist_rich
@@ -659,25 +659,45 @@ def deck_cuts(req: DeckRequest, limit: int = Query(10, le=30),
     store = get_store()
     if not req.commander_id or not is_commander(store.get(req.commander_id)):
         raise HTTPException(400, "commander_id must be a legendary creature or planeswalker")
+    _check_deck_size(req)
+    # Every other Commanders-zone card (partner, background) is a commander too:
+    # it counts toward 100 but is never a cut.
+    partners = [e.id for e in req.cards
+                if e.zone == "Commanders" and e.id != req.commander_id]
     if to_100:
-        expanded = [e.id for e in req.cards for _ in range(max(1, e.quantity))]
+        try:
+            validate_cut_template(req.template)
+        except ValueError as exc:
+            raise HTTPException(422, f"template: {exc}") from exc
+        expanded = [e.id for e in req.cards if e.zone != "Commanders"
+                    for _ in range(e.quantity)]
         res = cut_to_100(store, req.commander_id, expanded,
-                         template={**DOCTOR_TEMPLATE, **(req.template or {})}, target=target)
+                         template={**DOCTOR_TEMPLATE, **(req.template or {})}, target=target,
+                         partner_ids=partners)
         cuts = []
         for c in res["cuts"]:
             card = store.get(c["card_id"])
             if card is not None:
                 cuts.append({**{k: v for k, v in c.items() if k != "card_id"}, "card": card})
         return {"cuts": cuts, "over_by": res["over_by"], "target": res["target"],
-                "shortfall": res["shortfall"]}
+                "shortfall": res["shortfall"], "unknown_ids": res["unknown_ids"]}
     deck_ids = [e.id for e in req.cards]
     cuts = []
-    for c in suggest_cuts(store, req.commander_id, deck_ids, limit=limit):
+    for c in suggest_cuts(store, req.commander_id, deck_ids, limit=limit + len(partners)):
         card = store.get(c["card_id"])
-        if card is None:
+        if card is None or c["card_id"] in partners:
             continue
         cuts.append({"card": card, "contribution": c["contribution"], "reasons": c["reasons"]})
-    return {"cuts": cuts}
+    return {"cuts": cuts[:limit]}
+
+
+MAX_DECK_CARDS = 300  # total copies one /deck/cuts or /deck/pivot request may expand to
+
+
+def _check_deck_size(req: DeckRequest) -> None:
+    total = sum(e.quantity for e in req.cards)
+    if total > MAX_DECK_CARDS:
+        raise HTTPException(400, f"deck has {total} cards; at most {MAX_DECK_CARDS} allowed")
 
 
 @app.post("/deck/pivot", response_model=PivotResponse)
@@ -689,11 +709,14 @@ def deck_pivot(
 ) -> dict:
     """Commander pivot finder: alternative commanders whose EDHREC page this deck's
     cards match better (pivot.find_pivots). commander_id is optional; 400 if given
-    but unknown. No EDHREC page → candidate omitted."""
+    but not a legal commander (same rule as /deck/cuts). Commanders-zone cards are
+    not scored; `quantity` copies are. No EDHREC page → candidate omitted."""
     store = get_store()
-    if req.commander_id and store.get(req.commander_id) is None:
-        raise HTTPException(400, "unknown commander_id")
-    deck_ids = [e.id for e in req.cards if e.zone != "Commanders"]
+    if req.commander_id and not is_commander(store.get(req.commander_id)):
+        raise HTTPException(400, "commander_id must be a legendary creature or planeswalker")
+    _check_deck_size(req)
+    deck_ids = [e.id for e in req.cards if e.zone != "Commanders"
+                for _ in range(e.quantity)]
     return find_pivots(store, req.commander_id, deck_ids, limit=limit,
                        max_off_color=max_off_color, include_all=include_all)
 

@@ -190,3 +190,73 @@ def test_limit_and_deterministic_tiebreak():
     assert len(out["candidates"]) == 2
     scores = [c["metrics"].score for c in out["candidates"]]
     assert scores == sorted(scores, reverse=True)
+
+
+def test_pivot_score_is_the_documented_linear_blend_and_weights_are_overridable():
+    import app.pivot as mod
+    w = mod.WEIGHTS
+    assert mod.pivot_score(0.5, 0.2, 0.1, 0.25) == pytest.approx(
+        w[0] * 0.5 + w[1] * 0.2 + w[2] * 0.1 - w[3] * 0.25)
+    # negative synergy is floored at 0, None counts as 0
+    assert mod.pivot_score(0.0, 0.0, -0.4, 0.0) == 0.0
+    assert mod.pivot_score(0.0, 0.0, None, 0.0) == 0.0
+    assert mod.pivot_score(1.0, 1.0, 1.0, 1.0, weights=(1.0, 0.0, 0.0, 0.0)) == 1.0
+    deck = [_card(STE), _card(EWIT), _card(COUNTERSPELL)]
+    m, _ = score_commander(EDH[MEREN[0]], deck, set(MEREN[2]), weights=(0.0, 0.0, 0.0, 1.0))
+    assert m.score == pytest.approx(-1 / 3, abs=1e-4)
+
+
+def test_copies_are_counted_not_collapsed():
+    """Review L3: a card sent as several copies counted as one card of evidence."""
+    store = _Store(EDH)
+    out = find_pivots(store, None, _ids(STE, STE, STE, COUNTERSPELL), include_all=True)
+    assert out["deck_size"] == 4
+    mer = {c["commander"]["name"]: c for c in out["candidates"]}["Meren of Clan Nel Toth"]
+    assert mer["metrics"].hits == 3 and mer["metrics"].coverage == pytest.approx(0.75)
+    # an off-colour card sent twice costs two cuts but is named once
+    out2 = find_pivots(store, None, _ids(STE, COUNTERSPELL, COUNTERSPELL), include_all=True)
+    mer2 = {c["commander"]["name"]: c for c in out2["candidates"]}["Meren of Clan Nel Toth"]
+    assert mer2["metrics"].off_color_count == 2
+    assert mer2["off_color_names"] == ["Counterspell"]
+    assert mer2["reason"].count("Counterspell") == 1
+
+
+# ---- HTTP: POST /deck/pivot -------------------------------------------------
+
+def _client(monkeypatch, store):
+    from fastapi.testclient import TestClient
+    import app.main as main_mod
+    monkeypatch.setattr(main_mod, "get_store", lambda: store)
+    return TestClient(main_mod.app, raise_server_exceptions=False)
+
+
+def test_route_pivot_filters_commanders_zone_expands_quantity_and_validates(monkeypatch):
+    client = _client(monkeypatch, _Store(EDH))
+    body = {"commander_id": MEREN[0], "cards": [
+        {"id": MEREN[0], "zone": "Commanders"},
+        {"id": KARADOR[0], "zone": "Commanders"},          # partner: not scored
+        {"id": STE[0], "zone": "Ramp", "quantity": 3},
+        {"id": EWIT[0], "zone": "Utility"},
+        {"id": "not-a-card", "zone": "Utility", "quantity": 4},
+        {"id": FOREST[0], "zone": "Lands", "quantity": 30}]}
+    r = client.post("/deck/pivot?include_all=true", json=body)
+    assert r.status_code == 200
+    out = r.json()
+    assert out["deck_size"] == 4                     # STE x3 + EWIT; Karador, Forest, unknown out
+    assert out["current"]["commander"]["name"] == "Meren of Clan Nel Toth"
+    assert out["current"]["metrics"]["hits"] == 4
+    names = [c["commander"]["name"] for c in out["candidates"]]
+    assert "Meren of Clan Nel Toth" not in names and names[0] == "Muldrotha, the Gravetide"
+
+
+def test_route_pivot_rejects_non_commander_and_oversize(monkeypatch):
+    client = _client(monkeypatch, _Store(EDH))
+    deck = [{"id": STE[0]}]
+    r = client.post("/deck/pivot", json={"commander_id": SOL_RING[0], "cards": deck})
+    assert r.status_code == 400
+    assert client.post("/deck/pivot", json={"commander_id": "nope", "cards": deck}).status_code == 400
+    ok = client.post("/deck/pivot", json={"commander_id": None, "cards": []})
+    assert ok.status_code == 200 and ok.json()["candidates"] == []
+    big = {"cards": [{"id": FOREST[0], "quantity": 99}] * 4}
+    assert client.post("/deck/pivot", json=big).status_code == 400
+    assert client.post("/deck/pivot", json={"cards": [{"id": STE[0], "quantity": 0}]}).status_code == 422

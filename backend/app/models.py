@@ -5,7 +5,7 @@ Keep these in lockstep with frontend/src/lib/types.ts.
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ImageUris(BaseModel):
@@ -115,7 +115,9 @@ class EngineGroup(BaseModel):
 class DeckEntry(BaseModel):
     id: str
     zone: str = "Unsorted"
-    quantity: int = 1
+    # 1..99 copies: 0 / negative were silently treated as 1 copy, and an unbounded
+    # value let one entry expand into thousands of cards (review 2026-11-24 M4).
+    quantity: int = Field(1, ge=1, le=99)
 
 
 class DeckRequest(BaseModel):
@@ -286,6 +288,8 @@ class CutsResponse(BaseModel):
     over_by: int | None = None
     target: int | None = None
     shortfall: int | None = None
+    # to_100 mode only: request ids the card store does not know (not counted toward 100).
+    unknown_ids: list[str] | None = None
 
 
 # ---- SP9: synergy graph ----

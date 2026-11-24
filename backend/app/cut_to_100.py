@@ -13,12 +13,15 @@ contribution. This module layers the deck's *plan* on top of that ranking:
     cut exists. When only quota-breaking cuts remain they are still proposed, but
     flagged (`breaks_quota=True`) with the reason saying so.
 
-The commander and every member of a complete combo / asserted engine are never
-proposed (the latter inherited from suggest_cuts). Deterministic; no DB writes.
+The commander, any partner / background in the command zone, and every member of a
+complete combo / asserted engine (lands included) are never proposed. A card whose
+front face is a spell and back face a land ('Sorcery // Land') is ranked as the spell.
+Deterministic; no DB writes.
 """
 
 from __future__ import annotations
 
+import math
 from collections import Counter
 
 from .doctor import DECK_SIZE, TEMPLATE, category_of, suggest_cuts
@@ -31,6 +34,15 @@ CURVE_TOP_BIN = 6
 # Ranking weights. `contribution` is in [0, 1]; the role and curve terms are each
 # normalised to [0, 1] before weighting, so a card in a role 50 % over quota earns
 # at most ROLE_W of "cut priority" on top of its own weakness.
+#
+# Backtested 2026-11-24 (docs/plans/2026-11-24-ranking-eval.md, tools/eval/backtest_cuts.py:
+# plant 3-8 known-bad cards in 600 real corpus decks and measure recall@k of the cuts;
+# commander-disjoint 70/30 split). Against ROLE_W = CURVE_W = 0, these terms cut 3.5-4.4x
+# fewer cards that >= 50 % of the commander's EDHREC decks run, in both intruder
+# regimes. Recall@k goes up when the planted cards are plausible corpus-played cards
+# (0.23 -> 0.31) and down when they are arbitrary legal cards (0.45 -> 0.40). On the 9x9
+# train grid, no setting beat (0.15, 0.10) in both regimes without more damaging cuts.
+# The values are therefore kept; whether another value is better for real decks is UNKNOWN.
 ROLE_W = 0.15
 CURVE_W = 0.10
 
@@ -41,6 +53,47 @@ _ROLE_LABEL = {
 }
 
 
+def validate_template(template: dict | None) -> None:
+    """Raise ValueError naming any key that is not one of doctor.TEMPLATE's roles.
+
+    category_of also yields counters / tokens / synergy, but those are not quota roles
+    (templates.py presets only ever send the five TEMPLATE keys)."""
+    bad = sorted(set(template or {}) - set(TEMPLATE))
+    if bad:
+        raise ValueError(f"unknown template role(s) {', '.join(bad)}; "
+                         f"allowed: {', '.join(TEMPLATE)}")
+
+
+def _front_face(card: dict) -> dict:
+    """The card as cut_to_100 ranks it: a multi-face card whose FRONT face is not a land
+    (e.g. 'Sorcery // Land' MDFCs, 'Enchantment // Land' transforms) is a spell, so its
+    type_line is narrowed to the front face. doctor.category_of is left untouched."""
+    tl = card.get("type_line") or ""
+    if "//" not in tl or "Land" not in tl:
+        return card
+    faces = card.get("card_faces") or []
+    front = (faces[0].get("type_line") if faces and isinstance(faces[0], dict) else None) \
+        or tl.split("//", 1)[0].strip()
+    if "Land" in front:
+        return card
+    return {**card, "type_line": front}
+
+
+class _FrontFaceStore:
+    """Store view whose get() returns _front_face(card), so suggest_cuts scores a
+    spell-with-a-land-back as the spell it is cast as. Everything else delegates."""
+
+    def __init__(self, store):
+        self._store = store
+
+    def get(self, cid):
+        card = self._store.get(cid)
+        return None if card is None else _front_face(card)
+
+    def __getattr__(self, name):
+        return getattr(self._store, name)
+
+
 def _role_of(card: dict, template: dict) -> str:
     """Template quota key for a card, or UTILITY for everything the template does not cap."""
     cat = category_of(card)
@@ -48,34 +101,89 @@ def _role_of(card: dict, template: dict) -> str:
 
 
 def _curve_bin(card: dict) -> int:
+    """CMC bin 0..CURVE_TOP_BIN. Non-numeric, NaN and negative cmc → 0; +inf → top bin."""
     cmc = card.get("cmc")
-    cmc = float(cmc) if isinstance(cmc, (int, float)) else 0.0
-    return min(int(cmc), CURVE_TOP_BIN)
+    if isinstance(cmc, bool) or not isinstance(cmc, (int, float)):
+        return 0
+    cmc = float(cmc)
+    if math.isnan(cmc) or cmc <= 0:
+        return 0
+    if cmc >= CURVE_TOP_BIN:
+        return CURVE_TOP_BIN
+    return int(cmc)
 
 
 def _is_basic(card: dict) -> bool:
     return "Basic" in (card.get("type_line") or "")
 
 
+def _protected_ids(store, deckset: set[str]) -> set[str]:
+    """Every member of a complete combo / asserted engine within the deck — computed
+    here, not inherited from suggest_cuts, because suggest_cuts skips lands before its
+    own protected set is consulted (a land combo piece would otherwise be cuttable)."""
+    protected: set[str] = set()
+    ids = sorted(deckset)
+    for combo in store.deck_spellbook(ids).get("complete") or []:
+        protected.update(combo.get("members") or [])
+    for eng in store.deck_engines(ids).get("combos") or []:
+        protected.update(eng.get("members") or [])
+    return protected
+
+
 def cut_to_100(store: Store, commander_id: str, deck_ids: list[str],
-               template: dict | None = None, target: int | None = None) -> dict:
+               template: dict | None = None, target: int | None = None,
+               role_w: float | None = None, curve_w: float | None = None,
+               partner_ids: list[str] | None = None) -> dict:
     """Propose exactly `target` cuts (default: however many cards the deck is over 100).
 
+    `role_w` / `curve_w` override ROLE_W / CURVE_W (used by the offline backtest,
+    tools/eval/backtest_cuts.py); None means the module constants.
+
     `deck_ids` is the 99-side list (the commander may appear; it is ignored) and may
-    contain repeated ids (basic lands). Returns::
+    contain repeated ids (basic lands). `partner_ids` are other command-zone cards
+    (partner, background): they count toward 100 and are never proposed. Ids the
+    store does not know count toward nothing and are listed in `unknown_ids`.
+    `template` keys must be doctor.TEMPLATE roles (ValueError otherwise). Returns::
 
         {"over_by": int, "target": int, "cuts": [cut, ...], "shortfall": int,
-         "roles_before": {role: count}, "roles_after": {role: count}, "quotas": {role: n}}
+         "roles_before": {role: count}, "roles_after": {role: count}, "quotas": {role: n},
+         "unknown_ids": [id, ...]}
 
     Each cut carries the suggest_cuts `contribution` + `reasons`, plus `role`,
     `role_before`, `role_after`, `quota`, `curve_bin`, `curve_before`, `curve_after`,
     `curve_ideal`, `breaks_quota` and a one-sentence `reason` with the evidence.
     `shortfall` > 0 means fewer than `target` cuts were legal at all (everything else
-    is the commander or a protected combo piece).
+    is a commander or a protected combo piece).
     """
+    validate_template(template)
+    rw = ROLE_W if role_w is None else float(role_w)
+    cw = CURVE_W if curve_w is None else float(curve_w)
     tpl = {**TEMPLATE, **(template or {})}
-    deck = [cid for cid in deck_ids if cid != commander_id]
-    size = 1 + len(deck)
+    view = _FrontFaceStore(store)
+    command = {commander_id}
+    unknown: list[str] = []
+    partners: list[str] = []
+    for pid in dict.fromkeys(partner_ids or []):
+        if pid in command:
+            continue
+        if store.get(pid) is None:
+            unknown.append(pid)
+        else:
+            partners.append(pid)
+            command.add(pid)
+    deck: list[str] = []
+    cards: dict[str, dict] = {}
+    for cid in deck_ids:
+        if cid in command:
+            continue
+        card = cards[cid] if cid in cards else view.get(cid)
+        if card is None:
+            if cid not in unknown:
+                unknown.append(cid)
+            continue
+        cards[cid] = card
+        deck.append(cid)
+    size = 1 + len(partners) + len(deck)
     over_by = size - DECK_SIZE
     n = over_by if target is None else target
     n = max(n, 0)
@@ -89,26 +197,27 @@ def cut_to_100(store: Store, commander_id: str, deck_ids: list[str],
     roles: Counter[str] = Counter()
     curve: Counter[int] = Counter()
     copies: Counter[str] = Counter()
-    cards: dict[str, dict] = {}
     for cid in deck:
-        card = store.get(cid)
-        if card is None:
-            continue
-        cards[cid] = card
+        card = cards[cid]
         copies[cid] += 1
         roles[_role_of(card, tpl)] += 1
         if category_of(card) != "land":
             curve[_curve_bin(card)] += 1
     roles_before = {r: roles[r] for r in _ROLE_LABEL}
 
-    # Weakness scores. Nonlands: suggest_cuts (already excludes commander, lands and
-    # protected combo/engine members). Lands: staple popularity only; basics are
+    # Never proposed: the commander(s) and every combo / engine member (lands too).
+    protected = command | _protected_ids(store, set(deck) | command)
+
+    # Weakness scores. Nonlands: suggest_cuts (partners passed as deck cards so their
+    # co-play still counts for the others). Lands: staple popularity only; basics are
     # interchangeable so they rank as the cheapest land cut.
     base: dict[str, dict] = {}
-    for c in suggest_cuts(store, commander_id, deck, limit=len(deck) + 1):
-        base.setdefault(c["card_id"], c)
+    scored = deck + partners
+    for c in suggest_cuts(view, commander_id, scored, limit=len(scored) + 1):
+        if c["card_id"] not in protected:
+            base.setdefault(c["card_id"], c)
     for cid, card in cards.items():
-        if category_of(card) != "land" or cid in base:
+        if category_of(card) != "land" or cid in base or cid in protected:
             continue
         if _is_basic(card):
             base[cid] = {"card_id": cid, "contribution": 0.0, "reasons": [
@@ -143,7 +252,7 @@ def cut_to_100(store: Store, commander_id: str, deck_ids: list[str],
             ideal = ideal_for(b)
             overload = max(curve[b] - ideal, 0.0)
             curve_term = overload / (overload + ideal) if overload else 0.0
-        score = base[cid]["contribution"] - ROLE_W * role_term - CURVE_W * curve_term
+        score = base[cid]["contribution"] - rw * role_term - cw * curve_term
         return (breaks, score, cid)
 
     cuts: list[dict] = []
@@ -182,7 +291,7 @@ def cut_to_100(store: Store, commander_id: str, deck_ids: list[str],
     return {
         "over_by": over_by, "target": n, "cuts": cuts, "shortfall": n - len(cuts),
         "roles_before": roles_before, "roles_after": {r: roles[r] for r in _ROLE_LABEL},
-        "quotas": quotas,
+        "quotas": quotas, "unknown_ids": unknown,
     }
 
 

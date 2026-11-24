@@ -165,3 +165,41 @@ def test_cuts_spare_staples_for_a_commander_without_edhrec_data():
                and category_of(c) == "synergy"][:8]
     cut_ids = [c["card_id"] for c in suggest_cuts(store, cmd, offplan + [sol], limit=5)]
     assert sol not in cut_ids
+
+
+# Mana dorks / rocks whose oracle text says "Add one mana of any color" (or similar) were
+# missed by the offline `ramp` regex (scoring/simmander_scoring/mechanics.py matches only
+# "add {X}"), so Birds of Paradise landed in "synergy" (bug 2026-11-24).
+@pytest.mark.parametrize("name", [
+    "Birds of Paradise",      # {T}: Add one mana of any color.
+    "Llanowar Elves",         # {T}: Add {G}.
+    "Noble Hierarch",         # {T}: Add {G}, {W}, or {U}.
+    "Bloom Tender",           # ... add one mana of that color.
+    "Paradise Druid",         # {T}: Add one mana of any color.
+    "Arcane Signet",          # {T}: Add one mana of any color in your commander's ...
+    "Twitching Doll",         # {T}: Add one mana of any color. Put a nest counter ...
+])
+def test_category_of_mana_producers_are_ramp(name):
+    assert category_of(store.get(_id(name))) == "ramp"
+
+
+@pytest.mark.parametrize("name,expected", [
+    ("Grizzly Bears", "synergy"),
+    ("Smothering Tithe", "tokens"),   # Treasure reminder text is not a mana ability
+    ("Forest", "land"),
+])
+def test_category_of_non_mana_producers_unchanged(name, expected):
+    assert category_of(store.get(_id(name))) == expected
+
+
+def test_category_of_tagless_card_reads_oracle_text():
+    """A card missing from scores.sqlite (no mechanic_tags) is still classified as ramp
+    from its oracle text, and a double-faced card's front-face text is used."""
+    plain = {"type_line": "Creature — Elf", "mechanic_tags": [],
+             "oracle_text": "{T}: Add one mana of any color."}
+    dfc = {"type_line": "Creature — Elf // Creature — Elf", "mechanic_tags": [],
+           "oracle_text": "", "card_faces": [
+               {"oracle_text": "{T}: Add two mana in any combination of colors."},
+               {"oracle_text": "Flying"}]}
+    assert category_of(plain) == "ramp"
+    assert category_of(dfc) == "ramp"

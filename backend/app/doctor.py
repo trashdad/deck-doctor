@@ -37,8 +37,29 @@ _WUBRG = ["W", "U", "B", "R", "G"]
 _PIP = re.compile(r"\{([WUBRG])(?:/[WUBRGP])?\}")
 
 
+# Mana-ability detection. The offline `ramp` tag (scoring/simmander_scoring/mechanics.py)
+# only matches "add {X}", so "Add one mana of any color" (Birds of Paradise, Paradise
+# Druid, Arcane Signet, Bloom Tender ...) was never ramp, and cards newer than
+# scores.sqlite carry no tags at all. Reminder text is stripped so Treasure/Gold token
+# makers ("(It's an artifact with ... Add one mana of any color.)") are not ramp.
+_REMINDER = re.compile(r"\([^)]*\)")
+_MANA_ABILITY = re.compile(
+    r"\badds? (?:\{[wubrgcs0-9x]\}"
+    r"|(?:one|two|three|four|five|six|seven|x|that much|that many|an amount of"
+    r"|an additional|one additional|any amount of)\b[^.\n]*?\bmana\b)",
+    re.IGNORECASE)
+
+
+def produces_mana(card: dict) -> bool:
+    """True if the card's own rules text (front face for DFCs) has a mana ability."""
+    text = card.get("oracle_text") or ""
+    if not text and card.get("card_faces"):
+        text = card["card_faces"][0].get("oracle_text") or ""
+    return bool(_MANA_ABILITY.search(_REMINDER.sub("", text)))
+
+
 def category_of(card: dict) -> str:
-    """Server-side mirror of frontend zones.ts::autoZone. FINAL — do not change."""
+    """Server-side mirror of frontend zones.ts::autoZone (tag priority order)."""
     tl = card.get("type_line") or ""
     tags = card.get("mechanic_tags") or []
     if "Land" in tl:
@@ -47,7 +68,7 @@ def category_of(card: dict) -> str:
         return "board_wipe"
     if "removal" in tags:
         return "removal"
-    if "ramp" in tags:
+    if "ramp" in tags or produces_mana(card):
         return "ramp"
     if "card_draw" in tags:
         return "card_draw"

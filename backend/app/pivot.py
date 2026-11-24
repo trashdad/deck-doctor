@@ -33,10 +33,18 @@ from pydantic import BaseModel
 from .models import Card
 from .suggest import BANLIST, is_commander
 
+# Backtested 2026-11-24 (docs/plans/2026-11-24-ranking-eval.md, tools/eval/backtest_pivot.py:
+# recover each corpus deck's own commander from its 99 / from 30 of its cards, 600 decks,
+# commander-disjoint 70/30 split). Held-out MRR 0.91 (full) / 0.90 (partial); the blend
+# beats coverage-only and inclusion-only on partial decks. The best of a 594-point grid
+# was within one standard error of these values, so they are kept. This metric barely
+# tests W_OFF_COLOR: the true commander never has off-colour cards, and train partial MRR
+# only moves from 0.871 to 0.883 across W_OFF_COLOR 0..4. Its value remains a policy choice.
 W_COVERAGE = 0.5
 W_INCLUSION = 0.3
 W_SYNERGY = 0.2
 W_OFF_COLOR = 1.0
+WEIGHTS = (W_COVERAGE, W_INCLUSION, W_SYNERGY, W_OFF_COLOR)
 
 OFF_COLOR_NAMES_SHOWN = 8
 
@@ -74,7 +82,7 @@ class PivotCurrent(BaseModel):
 
 
 class PivotResponse(BaseModel):
-    deck_size: int                # distinct, resolvable, non-basic deck cards scored
+    deck_size: int                # resolvable non-basic deck cards scored (copies counted)
     deck_identity: list[str]      # union colour identity of those cards (WUBRG order)
     current: PivotCurrent | None
     candidates: list[PivotCandidate]
@@ -91,23 +99,39 @@ def _is_basic(card: dict) -> bool:
     return "Basic" in (card.get("type_line") or "")
 
 
+def _distinct(names: list[str]) -> list[str]:
+    return list(dict.fromkeys(names))
+
+
 def _deck_cards(store, deck_ids: list[str], exclude: set[str]) -> list[dict]:
-    """Distinct resolvable non-basic cards, in first-seen order."""
-    seen: set[str] = set()
+    """Resolvable non-basic cards in order, one entry per copy (a deck running 20
+    Relentless Rats is 20 cards of evidence, not 1). Unknown ids are skipped."""
+    cache: dict[str, dict | None] = {}
     out: list[dict] = []
     for cid in deck_ids:
-        if cid in seen or cid in exclude:
+        if cid in exclude:
             continue
-        seen.add(cid)
-        card = store.get(cid)
-        if card is None or _is_basic(card):
-            continue
-        out.append(card)
+        if cid not in cache:
+            card = store.get(cid)
+            cache[cid] = None if card is None or _is_basic(card) else card
+        if cache[cid] is not None:
+            out.append(cache[cid])
     return out
 
 
+def pivot_score(coverage: float, inclusion: float, synergy: float | None,
+                off_frac: float, weights: tuple[float, float, float, float] | None = None) -> float:
+    """The module-docstring blend. `weights` = (coverage, inclusion, synergy, off_colour);
+    None means WEIGHTS. Used by score_commander and the offline backtest
+    (tools/eval/backtest_pivot.py) so both rank with exactly the same formula."""
+    wc, wi, ws, wo = WEIGHTS if weights is None else weights
+    return wc * coverage + wi * inclusion + ws * max(0.0, synergy or 0.0) - wo * off_frac
+
+
 def score_commander(edh: dict[str, tuple[float, float]], deck: list[dict],
-                    commander_ci: set[str]) -> tuple[PivotMetrics, list[str]]:
+                    commander_ci: set[str],
+                    weights: tuple[float, float, float, float] | None = None,
+                    ) -> tuple[PivotMetrics, list[str]]:
     """Pure scoring of one commander against the deck. Returns (metrics, off-colour names).
 
     `edh` is the commander's EDHREC page {card_id: (synergy, inclusion)}; an empty
@@ -130,8 +154,7 @@ def score_commander(edh: dict[str, tuple[float, float]], deck: list[dict],
     inclusion = inc_sum / n if n else 0.0
     synergy = (syn_sum / hits) if hits else None
     off_frac = len(off) / n if n else 0.0
-    score = (W_COVERAGE * coverage + W_INCLUSION * inclusion
-             + W_SYNERGY * max(0.0, synergy or 0.0) - W_OFF_COLOR * off_frac)
+    score = pivot_score(coverage, inclusion, synergy, off_frac, weights)
     metrics = PivotMetrics(
         hits=hits, page_size=len(edh), coverage=round(coverage, 4),
         inclusion_mean=round(inclusion, 4),
@@ -167,8 +190,10 @@ def _evidence(name: str, m: PivotMetrics, deck_size: int, off: list[str],
     sentence = "; ".join(clauses) + "."
     if off:
         ident = "".join(_sorted_identity(commander_ci)) or "colorless"
-        shown = ", ".join(off[:OFF_COLOR_NAMES_SHOWN])
-        more = f" (+{len(off) - OFF_COLOR_NAMES_SHOWN} more)" if len(off) > OFF_COLOR_NAMES_SHOWN else ""
+        names = _distinct(off)
+        shown = ", ".join(names[:OFF_COLOR_NAMES_SHOWN])
+        more = (f" (+{len(names) - OFF_COLOR_NAMES_SHOWN} more)"
+                if len(names) > OFF_COLOR_NAMES_SHOWN else "")
         ev.append(PivotEvidence(
             signal="off_color", value=float(len(off)),
             detail=f"{len(off)} cards fall outside its {ident} identity: {shown}{more}"))
@@ -229,7 +254,7 @@ def find_pivots(store, commander_id: str | None, deck_ids: list[str],
             reason, evidence = _evidence(cand["name"], metrics, deck_size, off, ci, deck_count)
             candidates.append({
                 "commander": cand, "in_identity": not off,
-                "off_color_names": off[:OFF_COLOR_NAMES_SHOWN],
+                "off_color_names": _distinct(off)[:OFF_COLOR_NAMES_SHOWN],
                 "deck_count": deck_count, "better_than_current": better,
                 "metrics": metrics, "reason": reason, "evidence": evidence,
             })

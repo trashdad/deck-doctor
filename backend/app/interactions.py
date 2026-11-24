@@ -6,9 +6,12 @@ unset -> no records) and `lookup`. Nothing here is wired on by default.
 from __future__ import annotations
 
 import json
+import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 KINDS = ("synergy", "combo", "anti-synergy")
 KIND_WEIGHT = {"combo": 1.0, "synergy": 0.5, "anti-synergy": -0.7}
@@ -58,23 +61,37 @@ class InteractionRecord:
 
 
 def load_jsonl(path: str | Path | None) -> list[InteractionRecord]:
+    """Records from a JSONL file. A malformed line (bad JSON, unknown kind, < 2 cards,
+    confidence outside [0, 1], missing fields) is skipped with a warning; it never
+    discards the valid lines around it."""
     if not path or not Path(path).is_file():
         return []
     out = []
     with open(path, encoding="utf-8") as fh:
-        for line in fh:
+        for n, line in enumerate(fh, 1):
             line = line.strip()
-            if line:
-                out.append(InteractionRecord.from_dict(json.loads(line)))
+            if not line:
+                continue
+            try:
+                d = json.loads(line)
+                if not isinstance(d, dict):
+                    raise TypeError("record is not a JSON object")
+                out.append(InteractionRecord.from_dict(d))
+            except (ValueError, KeyError, TypeError) as exc:
+                log.warning("interactions %s:%d skipped: %s", path, n, exc)
     return out
 
 
 def lookup(records: list[InteractionRecord], deck_card_ids, candidate_id: str
            ) -> list[InteractionRecord]:
-    """Records containing the candidate and at least one deck card (candidate excluded)."""
+    """Records containing the candidate whose OTHER pieces are all in the deck.
+
+    Plan §3: a k-card record contributes when >= k-1 pieces are already in the deck
+    (the candidate completes it). For k = 2 that is "the one partner is in the deck"."""
     deck = set(deck_card_ids) - {candidate_id}
     return [r for r in records
-            if candidate_id in r.cards and any(c in deck for c in r.cards)]
+            if candidate_id in r.cards
+            and all(c in deck for c in r.cards if c != candidate_id)]
 
 
 def default_records() -> list[InteractionRecord]:

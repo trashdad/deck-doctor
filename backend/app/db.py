@@ -24,7 +24,10 @@ _POOL: _pgpool.ThreadedConnectionPool | None = None
 _LOCK = threading.Lock()
 
 
-def init_pool(minconn: int = 1, maxconn: int = 16) -> _pgpool.ThreadedConnectionPool:
+# psycopg2's putconn() CLOSES a returned connection when more than `minconn` are already idle,
+# so minconn=1 meant every concurrent request opened (and dropped) a fresh Postgres session
+# per query. Keep a warm floor sized for the typical page load (3+ parallel requests).
+def init_pool(minconn: int = 8, maxconn: int = 16) -> _pgpool.ThreadedConnectionPool:
     global _POOL
     if _POOL is None:
         with _LOCK:

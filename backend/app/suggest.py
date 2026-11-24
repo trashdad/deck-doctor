@@ -167,12 +167,15 @@ def recommend(store: Store, commander_id: str, deck_ids: list[str],
         if interactions:
             hits = _ix_lookup(interactions, deck_set, cid)
             if hits:
-                # plan §3: sum over deck members of max(confidence x kind_weight)
+                # plan §3: sum over deck members of max(confidence x kind_weight).
+                # The max is over SIGNED weights with no 0.0 floor, so a member whose
+                # only records are anti-synergy (kind_weight < 0) lowers the score.
                 per_member: dict[str, float] = {}
                 for r in hits:
+                    w = r.weight()
                     for m in r.cards:
                         if m in deck_set:
-                            per_member[m] = max(per_member.get(m, 0.0), r.weight())
+                            per_member[m] = max(per_member[m], w) if m in per_member else w
                 a["interaction"] = sum(per_member.values())
                 a["interaction_with"] = hits
                 score += interaction_weight * a["interaction"]
