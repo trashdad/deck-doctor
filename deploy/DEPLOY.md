@@ -174,29 +174,30 @@ rebuilt on the dev box and shipped. Done this way on 2026-10-05 (5 sets, +1,148 
 
 ## Backups (`deckdoctor-backup`, 03:30 UTC)
 
-`deploy/backup.sh` (runs as root) writes two independent copies; the unit fails if either fails:
+`deploy/backup.sh` (runs as root) writes independent copies; the unit fails if any fails:
 
 | Copy | How | Retention |
 |---|---|---|
 | **tower** (on-site NAS) `root@tower:/mnt/user/backups/deck-doctor/` | `tools/backup_db.py` as `simmander` (its SSH key is authorized on tower): `pg_dump -Fc` → scp, host-tagged file names | newest 14 per host (pruned by the script) |
-| **callisto** (off-site) restic repo `rest:http://…@callisto:8000/simmander/deck-doctor` | `pg_dump -Fc -Z0` as `postgres` (peer auth) streamed by `restic backup --stdin-from-command` (a failed dump never becomes a snapshot); tags `pg nightly`, host `simtrack` | append-only rest-server: **no forget/prune from simtrack** — prune on callisto |
+| **chimera** and **jupiter** (off-site, one per env file in `RESTIC_ENV`) restic repo `rest:http://<host>:8000/simmander/deck-doctor` | `pg_dump -Fc -Z0` as `postgres` (peer auth) streamed by `restic backup --stdin-from-command` (a failed dump never becomes a snapshot); tags `pg nightly`, host `simtrack` | append-only rest-servers: **no forget/prune from simtrack** — each server prunes itself (simmander-hub `infra/rest-server`) |
 
-`/etc/deck-doctor/restic.env` (root 0400) reuses the tracker's rest-server user and repo password
-file (`/etc/restic/repo-password`) with its own repo path, so the one password the owner already
-keeps for the tracker also opens Deck Doctor's repo.
+`/etc/deck-doctor/restic-chimera.env` and `restic-jupiter.env` (root 0400) reuse the tracker's
+rest-server login and repo password file (`/etc/restic/repo-password`) with their own repo path, so
+the one password the owner already keeps for the tracker also opens Deck Doctor's repos.
+callisto (the previous off-site copy) was retired on 2026-11-24 when its drive died.
 
 Run one now / inspect:
 ```bash
 sudo systemctl start deckdoctor-backup && journalctl -u deckdoctor-backup -n 30
-sudo bash -c 'set -a; . /etc/deck-doctor/restic.env; set +a; restic snapshots'
+sudo bash -c 'set -a; . /etc/deck-doctor/restic-chimera.env; set +a; restic snapshots'
 sudo -u simmander ssh root@tower ls -la /mnt/user/backups/deck-doctor/
 ```
 Restore:
 ```bash
 # from tower
 pg_restore --no-owner --clean --if-exists -d deckdoctor deckdoctor-<host>-<ts>.dump
-# from callisto
-sudo bash -c 'set -a; . /etc/deck-doctor/restic.env; set +a; restic dump latest /deckdoctor.dump' > deckdoctor.dump
+# from chimera (or restic-jupiter.env)
+sudo bash -c 'set -a; . /etc/deck-doctor/restic-chimera.env; set +a; restic dump latest /deckdoctor.dump' > deckdoctor.dump
 pg_restore --no-owner --clean --if-exists -d deckdoctor deckdoctor.dump
 ```
 History: the job failed on Postgres password auth from June until 2026-10-04, so tower only holds

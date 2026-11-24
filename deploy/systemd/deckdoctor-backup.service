@@ -1,5 +1,5 @@
 [Unit]
-Description=Deck Doctor — back up the deckdoctor database (tower + callisto off-site)
+Description=Deck Doctor — back up the deckdoctor database (tower + chimera + jupiter off-site)
 After=network-online.target postgresql.service deckdoctor-api.service
 Wants=network-online.target
 # A failed backup pages the operator (the job failed silently June->October 2026).
@@ -9,15 +9,16 @@ OnFailure=simmander-alert@%n.service
 Type=oneshot
 # Runs as root: deploy/backup.sh drops to `simmander` for the tower copy (its SSH
 # key is authorized on tower) and to `postgres` for pg_dump (peer auth), and reads
-# the root-only restic env for the callisto copy. See deploy/DEPLOY.md §7.
+# the root-only restic env files for the off-site copies. See deploy/DEPLOY.md §7.
 WorkingDirectory=/opt/deck-doctor
 # DATABASE_URL (used by the tower step, tools/backup_db.py) comes from the root-only
 # secrets file shared with the api/refresh units.
 EnvironmentFile=/etc/deck-doctor/secrets.env
 Environment=BACKUP_DEST=root@tower:/mnt/user/backups/deck-doctor
-# restic env for callisto: RESTIC_REPOSITORY=rest:http://<user>:<pw>@callisto:8000/simmander/deck-doctor
-# and RESTIC_PASSWORD_FILE=... (root:root 0400 — never commit it).
-Environment=RESTIC_ENV=/etc/deck-doctor/restic.env
+# Off-site restic env files, one per append-only rest-server (callisto retired 2026-11-24):
+# RESTIC_REPOSITORY=rest:http://<host>:8000/simmander/deck-doctor, RESTIC_REST_USERNAME,
+# RESTIC_REST_PASSWORD and RESTIC_PASSWORD_FILE=... (root:root 0400 — never commit them).
+Environment="RESTIC_ENV=/etc/deck-doctor/restic-chimera.env /etc/deck-doctor/restic-jupiter.env"
 CacheDirectory=deck-doctor
 ExecStart=/opt/deck-doctor/deploy/backup.sh
 TimeoutStartSec=1800

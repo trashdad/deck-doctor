@@ -562,7 +562,7 @@ ssh trashdad@simtrack 'cd /tmp && sudo /opt/deck-doctor/deploy/deploy.sh'   # or
 ```
 
 [`deploy/DEPLOY.md`](deploy/DEPLOY.md) has the layout, the verify checklist, the nightly refresh and
-the backups (tower + callisto off-site). A containerised alternative lives in
+the backups (tower + chimera + jupiter off-site). A containerised alternative lives in
 `deploy/compose.yaml` ([`deploy/README.md`](deploy/README.md)); production does not use it.
 
 ---
