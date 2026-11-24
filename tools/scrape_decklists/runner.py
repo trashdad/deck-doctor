@@ -64,6 +64,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import random
 import re
 import ssl
@@ -107,20 +108,76 @@ _DEFAULT_INTERVAL = 1.0
 # See docs/plans/2026-11-24-edhrec-compliance.md before changing anything here.
 # The parse helpers (_parse_archidekt, _parse_edhrec_deckpreview, …) are kept
 # for the tests and for history; every NETWORK request to these hosts is refused
-# in _throttle() below, so no code path in this file can reach them.
-# Re-enable a host only after written permission/licence from that site.
-_DISABLED_HOSTS = ("edhrec.com", "archidekt.com", "moxfield.com")
-_DISABLED_SOURCES = ("archidekt", "moxfield", "edhrec", "seeds")  # seeds = EDHREC-driven
+# in _throttle() below unless permissions.json grants them.
+# Re-enable a host only after written permission/licence from that site: add a grant to
+# tools/scrape_decklists/permissions.json (no code edit). A grant needs host, granted_by,
+# date and evidence (a path to the saved permission); it may narrow the scope with
+# allowed_path_prefixes and slow us down with min_interval_s. A grant missing a required
+# field is ignored (fail closed). Without a grant the host stays refused.
+_BLOCKED_HOSTS = ("edhrec.com", "archidekt.com", "moxfield.com")
+_SOURCE_HOSTS = {"archidekt": "archidekt.com", "moxfield": "moxfield.com",
+                 "edhrec": "edhrec.com", "seeds": "edhrec.com"}  # seeds = EDHREC-driven
 _COMPLIANCE_DOC = "docs/plans/2026-11-24-edhrec-compliance.md"
+_PERMISSIONS_FILE = Path(os.environ.get("DECKDOCTOR_SCRAPE_PERMISSIONS")
+                         or Path(__file__).with_name("permissions.json"))
+_GRANT_REQUIRED = ("host", "granted_by", "date", "evidence")
 
 
 class SourceDisabled(RuntimeError):
     """Raised instead of making a request to a host disabled for compliance."""
 
 
+def _load_grants(path: Path | None = None) -> dict[str, dict]:
+    """host -> grant, from the permissions file. Missing/corrupt file or a grant with a
+    missing required field yields no grant for it (fail closed)."""
+    path = path or _PERMISSIONS_FILE
+    try:
+        raw = json.loads(Path(path).read_text(encoding="utf-8")).get("grants", [])
+    except (OSError, ValueError, AttributeError):
+        return {}
+    out: dict[str, dict] = {}
+    for g in raw if isinstance(raw, list) else []:
+        if not isinstance(g, dict) or not all(str(g.get(k) or "").strip() for k in _GRANT_REQUIRED):
+            print(f"[permissions] ignoring grant missing one of {_GRANT_REQUIRED}: {g!r}",
+                  file=sys.stderr)
+            continue
+        out[str(g["host"]).lower().strip().rstrip(".")] = g
+    return out
+
+
+_GRANTS: dict[str, dict] = _load_grants()
+
+
+def _matches(host: str, base: str) -> bool:
+    return host == base or host.endswith("." + base)
+
+
+def _grant_for(host: str) -> dict | None:
+    host = (host or "").lower().rstrip(".")
+    for base, g in _GRANTS.items():
+        if _matches(host, base):
+            return g
+    return None
+
+
 def _host_disabled(host: str) -> bool:
     host = (host or "").lower().rstrip(".")
-    return any(host == h or host.endswith("." + h) for h in _DISABLED_HOSTS)
+    if not any(_matches(host, b) for b in _BLOCKED_HOSTS):
+        return False
+    return _grant_for(host) is None
+
+
+def _source_disabled(source: str | None) -> bool:
+    base = _SOURCE_HOSTS.get(source or "")
+    return bool(base) and _host_disabled(base)
+
+
+def _check_path(host: str, path: str | None) -> None:
+    g = _grant_for(host)
+    prefixes = (g or {}).get("allowed_path_prefixes")
+    if g and prefixes and path is not None and not any(path.startswith(p) for p in prefixes):
+        raise SourceDisabled(
+            f"{host}{path} is outside the granted scope {prefixes}; see {_COMPLIANCE_DOC}")
 
 
 _host_lock = threading.Lock()
@@ -148,13 +205,15 @@ def _cloudscraper() -> "cloudscraper.CloudScraper":  # noqa: F821
 def _cs_get(url: str, timeout: int = 30, **kwargs) -> "requests.Response":  # noqa: F821
     """GET via cloudscraper with per-host throttle.  Returns the Response object
     (not already-parsed JSON) so callers can check status and parse as needed."""
-    _throttle(urllib.parse.urlparse(url).hostname or "")
+    _u = urllib.parse.urlparse(url)
+    _throttle(_u.hostname or "", _u.path)
     return _cloudscraper().get(url, timeout=timeout, **kwargs)
 
 
 def _cs_post(url: str, timeout: int = 30, **kwargs) -> "requests.Response":  # noqa: F821
     """POST via cloudscraper with per-host throttle."""
-    _throttle(urllib.parse.urlparse(url).hostname or "")
+    _u = urllib.parse.urlparse(url)
+    _throttle(_u.hostname or "", _u.path)
     return _cloudscraper().post(url, timeout=timeout, **kwargs)
 
 try:  # verified TLS where certifi is present (matches sim/edhrec_fetcher.py)
@@ -164,16 +223,23 @@ except ImportError:  # pragma: no cover
     _SSL_CTX = ssl.create_default_context()
 
 
-def _throttle(host: str) -> None:
+def _throttle(host: str, path: str | None = None) -> None:
     """Block until this host's min-interval has elapsed. Thread-safe: the slot is
     reserved under the lock, so concurrent workers space out per host correctly.
 
     Every request in this module goes through here, so this is also where hosts
-    disabled for compliance are refused (see _DISABLED_HOSTS)."""
+    disabled for compliance are refused unless permissions.json grants them."""
     if _host_disabled(host):
         raise SourceDisabled(
             f"requests to {host} are disabled for compliance; see {_COMPLIANCE_DOC}")
+    _check_path(host, path)
     interval = _HOST_INTERVAL.get(host, _DEFAULT_INTERVAL)
+    _g = _grant_for(host)
+    if _g and _g.get("min_interval_s") is not None:
+        try:
+            interval = max(interval, float(_g["min_interval_s"]))
+        except (TypeError, ValueError):
+            interval = max(interval, 5.0)  # unreadable value: be slow, not fast
     while True:
         with _host_lock:
             now = time.monotonic()
@@ -185,8 +251,12 @@ def _throttle(host: str) -> None:
 
 
 def _get_json(url: str, timeout: int = 60, headers: dict | None = None) -> dict:
-    _throttle(urllib.parse.urlparse(url).hostname or "")
+    _u = urllib.parse.urlparse(url)
+    _throttle(_u.hostname or "", _u.path)
     hdr = {"User-Agent": _UA}
+    _g = _grant_for(_u.hostname or "")
+    if _g and _g.get("user_agent"):
+        hdr["User-Agent"] = str(_g["user_agent"])
     if headers:
         hdr.update(headers)
     req = urllib.request.Request(url, headers=hdr)
@@ -1106,12 +1176,12 @@ def main(argv: list[str] | None = None) -> int:
                     help="[seeds] also seed from EDHREC's top-N commanders (year.json)")
     args = ap.parse_args(argv)
 
-    # Compliance block: refuse before creating any corpus file (see _DISABLED_HOSTS).
-    if args.source in _DISABLED_SOURCES or (
-            args.source == "recent" and args.recent_source in _DISABLED_SOURCES):
+    # Compliance block: refuse before creating any corpus file (see _BLOCKED_HOSTS).
+    if _source_disabled(args.source) or (
+            args.source == "recent" and _source_disabled(args.recent_source)):
         which = args.recent_source if args.source == "recent" else args.source
         print(f"[disabled] source '{which}' is disabled for compliance "
-              f"(EDHREC / Archidekt / Moxfield terms or robots.txt); see {_COMPLIANCE_DOC}",
+              f"(EDHREC / Archidekt / Moxfield terms or robots.txt; add a grant to permissions.json once permitted); see {_COMPLIANCE_DOC}",
               file=sys.stderr)
         return 2
     if args.source == "recent" and not args.recent_source:

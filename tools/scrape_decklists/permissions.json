@@ -1,0 +1,4 @@
+{
+  "_comment": "Written permission to scrape a host. Empty = EDHREC, Archidekt and Moxfield stay blocked. A grant needs host, granted_by, date, evidence (path to the saved permission). Optional: allowed_path_prefixes (list), min_interval_s (number), user_agent (string they asked for). See docs/plans/2026-11-24-edhrec-compliance.md.",
+  "grants": []
+}

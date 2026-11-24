@@ -74,3 +74,58 @@ def test_cli_refuses_disabled_sources_without_writing(argv, tmp_path, monkeypatc
 def test_recent_requires_explicit_source():
     with pytest.raises(SystemExit):
         runner.main(["recent"])
+
+
+# ── permissions.json grants ───────────────────────────────────────────────────
+import json  # noqa: E402
+
+GOOD = {"host": "edhrec.com", "granted_by": "EDHREC staff", "date": "2026-12-01",
+        "evidence": "docs/permissions/edhrec.md"}
+
+
+def _grants(tmp_path, monkeypatch, *grants):
+    f = tmp_path / "permissions.json"
+    f.write_text(json.dumps({"grants": list(grants)}), encoding="utf-8")
+    monkeypatch.setattr(runner, "_GRANTS", runner._load_grants(f))
+
+
+def test_shipped_permissions_file_grants_nothing():
+    assert runner._load_grants() == {}
+
+
+def test_missing_or_corrupt_file_fails_closed(tmp_path):
+    assert runner._load_grants(tmp_path / "nope.json") == {}
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json", encoding="utf-8")
+    assert runner._load_grants(bad) == {}
+
+
+@pytest.mark.parametrize("missing", ["host", "granted_by", "date", "evidence"])
+def test_incomplete_grant_ignored(tmp_path, monkeypatch, missing):
+    g = {k: v for k, v in GOOD.items() if k != missing}
+    _grants(tmp_path, monkeypatch, g)
+    assert runner._host_disabled("edhrec.com")
+
+
+def test_grant_enables_host_and_source_only_for_that_host(tmp_path, monkeypatch):
+    _grants(tmp_path, monkeypatch, GOOD)
+    assert not runner._host_disabled("json.edhrec.com")
+    assert not runner._source_disabled("edhrec") and not runner._source_disabled("seeds")
+    assert runner._host_disabled("archidekt.com") and runner._source_disabled("archidekt")
+
+
+def test_path_scope_enforced(tmp_path, monkeypatch):
+    _grants(tmp_path, monkeypatch, {**GOOD, "allowed_path_prefixes": ["/pages/"]})
+    runner._throttle("json.edhrec.com", "/pages/commanders/x.json")
+    with pytest.raises(runner.SourceDisabled):
+        runner._throttle("edhrec.com", "/api/deckpreview/abc")
+
+
+def test_min_interval_slows_requests(tmp_path, monkeypatch):
+    _grants(tmp_path, monkeypatch, {**GOOD, "min_interval_s": 7})
+    slept = []
+    monkeypatch.setattr(runner.time, "sleep", lambda s: slept.append(s))
+    monkeypatch.setattr(runner, "_host_last", {"edhrec.com": runner.time.monotonic()})
+    runner._throttle("edhrec.com", "/x")
+    runner._throttle("edhrec.com", "/x")
+    assert slept and max(slept) > 3

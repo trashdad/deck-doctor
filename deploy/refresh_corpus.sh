@@ -48,6 +48,12 @@ SKIP_REBUILD="${SKIP_REBUILD:-0}"
 # docs/plans/2026-11-24-edhrec-compliance.md). The four below have UNKNOWN terms; they stay
 # until someone fetches and reads them.
 RECENT_SOURCES=(tappedout deckstats aetherhub manastack)
+# After a site grants written permission (tools/scrape_decklists/permissions.json), add it
+# here without editing this file, e.g. EXTRA_RECENT_SOURCES="archidekt". The runner still
+# refuses any source whose host has no grant, so a typo here cannot bypass the block.
+# shellcheck disable=SC2206
+RECENT_SOURCES+=(${EXTRA_RECENT_SOURCES:-})
+ENABLE_SEEDS="${ENABLE_SEEDS:-0}"   # 1 = EDHREC seeds pass (needs an edhrec.com grant)
 
 cd "$APP_DIR" || { echo "[refresh] FATAL: cannot cd to $APP_DIR" >&2; exit 1; }
 
@@ -81,7 +87,16 @@ for src in "${RECENT_SOURCES[@]}"; do
 done
 
 # ── 1b. seeds pass: DISABLED (it fetched EDHREC deckpreview pages; robots.txt disallows them).
-log "scrape seeds: disabled (EDHREC deckpreview is disallowed)"
+if [ "$ENABLE_SEEDS" = "1" ]; then
+  log "scrape seeds (max $SEED_MAX_COMMANDERS commanders)"
+  if "$PY" tools/scrape_decklists/runner.py seeds --top "$SEED_TOP"         --decks-per "$SEED_DECKS_PER" --max-commanders "$SEED_MAX_COMMANDERS" --batch refresh; then
+    log "scrape seeds OK"
+  else
+    log "scrape seeds FAILED or refused (no grant?) (continuing)"
+  fi
+else
+  log "scrape seeds: disabled (set ENABLE_SEEDS=1 once edhrec.com has a grant)"
+fi
 
 # ── 2. LOAD — fold JSONL into the SQLite corpus (additive, idempotent) ─────────
 log "load_corpus"

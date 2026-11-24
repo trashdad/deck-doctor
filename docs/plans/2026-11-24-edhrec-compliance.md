@@ -169,3 +169,26 @@ popularity/staple ranking it currently loses to).
    not exist yet).
 6. Whether Deck Doctor (free, optional Patreon for a score breakdown, affiliate links) is
    "commercial" under EDHREC's Terms: UNKNOWN; a question for EDHREC or counsel.
+
+## Re-enabling a site after written permission
+
+No code edit is needed. Save the permission (email or terms page) under `docs/permissions/`, then add a grant to `tools/scrape_decklists/permissions.json`:
+
+```json
+{"grants": [{
+  "host": "edhrec.com",
+  "granted_by": "name or role at the site",
+  "date": "YYYY-MM-DD",
+  "evidence": "docs/permissions/edhrec-2026-12-01.md",
+  "allowed_path_prefixes": ["/pages/"],
+  "min_interval_s": 5,
+  "user_agent": "string they asked for"
+}]}
+```
+
+- Required: `host`, `granted_by`, `date`, `evidence`. A grant missing any is ignored (fail closed), as is a missing or corrupt file.
+- Optional: `allowed_path_prefixes` limits requests to those paths (anything else raises `SourceDisabled`); `min_interval_s` can only slow us down; `user_agent` is sent when they ask for one.
+- A grant on `edhrec.com` covers its subdomains (`json.edhrec.com`).
+- Nightly refresh: set `EXTRA_RECENT_SOURCES="archidekt"` and/or `ENABLE_SEEDS=1` in the refresh unit. The runner still refuses a source whose host has no grant.
+- `DECKDOCTOR_SCRAPE_PERMISSIONS` can point at another grants file (used by tests).
+- Permission to scrape does not change `DECKDOCTOR_EDHREC_SIGNAL`; that switch is separate.
