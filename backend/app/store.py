@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -90,6 +91,21 @@ _COMPLEMENT_PAIRS: list[tuple[str, str]] = [
 ]
 
 from . import config, db
+
+# EDHREC kill switch (docs/plans/2026-11-24-edhrec-compliance.md).
+# DECKDOCTOR_EDHREC_SIGNAL=on (default) | off. When off, edhrec_metrics is not
+# loaded and edhrec_for() returns {} for every commander, so every caller falls
+# through to its no-EDHREC path (suggest: co-occurrence / colour-staple tier).
+# Read per call, so tests can flip it; in production set it in the service env
+# and restart. Unrecognised values count as "on" so a typo never changes prod.
+EDHREC_SIGNAL_ENV = "DECKDOCTOR_EDHREC_SIGNAL"
+_EDHREC_OFF_VALUES = {"off", "0", "false", "no", "disabled"}
+
+
+def edhrec_signal_enabled() -> bool:
+    """True unless DECKDOCTOR_EDHREC_SIGNAL is set to off (default: on)."""
+    raw = os.environ.get(EDHREC_SIGNAL_ENV, "on")
+    return raw.strip().lower() not in _EDHREC_OFF_VALUES
 
 
 class Store:
@@ -264,8 +280,12 @@ class Store:
                 self._name_to_id.setdefault(name.split(" // ", 1)[0], cid)
 
     def _load_edhrec(self) -> None:
-        """commander_id -> {card_id: (synergy, inclusion)}; empty when table absent."""
+        """commander_id -> {card_id: (synergy, inclusion)}; empty when table absent
+        or when the DECKDOCTOR_EDHREC_SIGNAL kill switch is off at startup (the
+        rows are then never read into memory, and /health reports 0 commanders)."""
         self._edhrec: dict[str, dict[str, tuple[float, float]]] = {}
+        if not edhrec_signal_enabled():
+            return
         rows = db.query(
             "SELECT commander, card_name, synergy, inclusion FROM edhrec_metrics")
         for commander, card_name, synergy, inclusion in rows:
@@ -306,6 +326,10 @@ class Store:
             freq.items(), key=lambda kv: (-kv[1], kv[0]))
 
     def edhrec_for(self, commander_id: str) -> dict[str, tuple[float, float]]:
+        """{card_id: (synergy, inclusion)} for the commander; {} when it has no
+        rows OR the EDHREC kill switch is off (checked on every call)."""
+        if not edhrec_signal_enabled():
+            return {}
         return self._edhrec.get(commander_id, {})
 
     # ---- commander popularity (corpus deck count) ------------------------

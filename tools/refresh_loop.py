@@ -93,6 +93,11 @@ def cycle(args) -> None:
 
 
 def main() -> int:
+    print("[refresh] disabled: this dev loop only knows archidekt/moxfield, whose terms forbid automated "
+          "access (docs/plans/2026-11-24-edhrec-compliance.md). Use deploy/refresh_corpus.sh.", file=sys.stderr)
+    return 2
+
+def _main_disabled_original() -> int:
     ap = argparse.ArgumentParser(description="Continuous corpus refresh daemon.")
     ap.add_argument("--interval", type=int, default=1800, help="seconds between cycles")
     ap.add_argument("--top", type=int, default=60, help="EDHREC top-N commanders to seed")

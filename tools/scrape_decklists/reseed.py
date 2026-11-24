@@ -1,5 +1,10 @@
 """Re-collect real decklists for chosen commanders, newest-first, up to a target.
 
+DISABLED (2026-11-24): this walks EDHREC's deck listing and deckpreview API,
+which EDHREC's robots.txt and Terms of Use forbid. All its requests go through
+runner._throttle(), which now raises runner.SourceDisabled for EDHREC, Archidekt
+and Moxfield hosts. See docs/plans/2026-11-24-edhrec-compliance.md.
+
 Written for the 2026-10 shell bug: 20,580 Moxfield decks were stored as the
 deckpreview object's keys. They cannot be re-fetched by id (api2.moxfield.com
 is Cloudflare-gated and the corpus keeps no EDHREC urlhash per deck), so for

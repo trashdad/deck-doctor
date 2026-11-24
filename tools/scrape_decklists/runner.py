@@ -20,20 +20,27 @@ Output: append-only to data/decklists/<source>-<batch>.jsonl. Dedup by deck_id
 via data/decklists/.seen_deck_ids (one id per line). Re-running is safe: already
 -seen decks are skipped, so the corpus only grows.
 
-Usage:
-    python tools/scrape_decklists/runner.py archidekt --ids 23059828,12345678
-    python tools/scrape_decklists/runner.py archidekt --id 23059828 --batch hand
+COMPLIANCE (2026-11-24): the `archidekt`, `moxfield`, `edhrec` and `seeds`
+sources, and `recent --recent-source archidekt`, are DISABLED. Every request to
+edhrec.com / archidekt.com / moxfield.com (and their subdomains) raises
+SourceDisabled. Reason and re-enable conditions:
+docs/plans/2026-11-24-edhrec-compliance.md. The remaining `recent` sources
+(tappedout, deckstats, aetherhub, manastack) have NOT had their terms checked
+either (UNKNOWN) — do not run them until someone has.
+
+Usage (historical; the EDHREC / Archidekt / Moxfield commands below now exit 2):
+    python tools/scrape_decklists/runner.py archidekt --ids 23059828,12345678   # DISABLED
+    python tools/scrape_decklists/runner.py archidekt --id 23059828 --batch hand  # DISABLED
     # newest-first corpus growth (biases toward the current meta; resumable):
-    python tools/scrape_decklists/runner.py recent --recent-source archidekt --max 1000
+    python tools/scrape_decklists/runner.py recent --recent-source archidekt --max 1000  # DISABLED
     python tools/scrape_decklists/runner.py recent --recent-source tappedout --max 1000
     python tools/scrape_decklists/runner.py recent --recent-source deckstats --max 1000
     python tools/scrape_decklists/runner.py recent --recent-source aetherhub --max 1000
     python tools/scrape_decklists/runner.py recent --recent-source manastack --max 1000
     python tools/scrape_decklists/runner.py recent --resume --max 2000   # continue a deep walk
     # commander-breadth discovery (not date-ordered):
-    python tools/scrape_decklists/runner.py seeds --top 200 --decks-per 40
-    # moxfield / edhrec sources: see _fetch_moxfield / _fetch_edhrec (driven by the
-    # delegated LLM, which fills in the site-specific request/parse per PROMPT.md).
+    python tools/scrape_decklists/runner.py seeds --top 200 --decks-per 40  # DISABLED (EDHREC)
+    # moxfield / edhrec sources: DISABLED (see the compliance doc above).
 
 New sources (2026-06-11):
   tappedout  — TappedOut.net EDH listing + ?fmt=txt text export per deck
@@ -90,6 +97,32 @@ _HOST_INTERVAL = {
     "manastack.com": 2.5,     # React SPA with no public listing; scan slowly
 }
 _DEFAULT_INTERVAL = 1.0
+
+# ── Compliance block (2026-11-24) ─────────────────────────────────────────────
+# EDHREC, Archidekt and Moxfield are DISABLED. EDHREC's robots.txt disallows
+# /deckpreview/ and its Terms of Use (effective 2024-08-06) forbid automated
+# queries and downloading the Site; Archidekt's written Terms ban automated
+# queries; no Moxfield terms permitting this use were retrieved. There is no
+# official API or permission path for these sites today.
+# See docs/plans/2026-11-24-edhrec-compliance.md before changing anything here.
+# The parse helpers (_parse_archidekt, _parse_edhrec_deckpreview, …) are kept
+# for the tests and for history; every NETWORK request to these hosts is refused
+# in _throttle() below, so no code path in this file can reach them.
+# Re-enable a host only after written permission/licence from that site.
+_DISABLED_HOSTS = ("edhrec.com", "archidekt.com", "moxfield.com")
+_DISABLED_SOURCES = ("archidekt", "moxfield", "edhrec", "seeds")  # seeds = EDHREC-driven
+_COMPLIANCE_DOC = "docs/plans/2026-11-24-edhrec-compliance.md"
+
+
+class SourceDisabled(RuntimeError):
+    """Raised instead of making a request to a host disabled for compliance."""
+
+
+def _host_disabled(host: str) -> bool:
+    host = (host or "").lower().rstrip(".")
+    return any(host == h or host.endswith("." + h) for h in _DISABLED_HOSTS)
+
+
 _host_lock = threading.Lock()
 _host_last: dict[str, float] = {}
 
@@ -133,7 +166,13 @@ except ImportError:  # pragma: no cover
 
 def _throttle(host: str) -> None:
     """Block until this host's min-interval has elapsed. Thread-safe: the slot is
-    reserved under the lock, so concurrent workers space out per host correctly."""
+    reserved under the lock, so concurrent workers space out per host correctly.
+
+    Every request in this module goes through here, so this is also where hosts
+    disabled for compliance are refused (see _DISABLED_HOSTS)."""
+    if _host_disabled(host):
+        raise SourceDisabled(
+            f"requests to {host} are disabled for compliance; see {_COMPLIANCE_DOC}")
     interval = _HOST_INTERVAL.get(host, _DEFAULT_INTERVAL)
     while True:
         with _host_lock:
@@ -1042,13 +1081,13 @@ def _fetch_edhrec_from_blob(data: dict, display: str) -> tuple[str, list[dict]]:
 
 # ── CLI ──────────────────────────────────────────────────────────────────────
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Append raw decklists to the SP3 corpus.")
     ap.add_argument("source", choices=["archidekt", "moxfield", "edhrec", "seeds", "recent"])
     ap.add_argument("--id", help="single native deck id / commander name")
     ap.add_argument("--ids", help="comma-separated native ids / commander names")
     ap.add_argument("--batch", default="auto", help="batch label for the output filename")
-    ap.add_argument("--recent-source", default="archidekt",
+    ap.add_argument("--recent-source", default=None,
                     choices=["archidekt", "tappedout", "deckstats", "aetherhub", "manastack"],
                     help="[recent] which site to walk newest-first")
     ap.add_argument("--max", type=int, default=1000,
@@ -1065,7 +1104,18 @@ def main() -> int:
                     help="[seeds] do NOT widen via each commander's 'similar' list")
     ap.add_argument("--top", type=int, default=0,
                     help="[seeds] also seed from EDHREC's top-N commanders (year.json)")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+
+    # Compliance block: refuse before creating any corpus file (see _DISABLED_HOSTS).
+    if args.source in _DISABLED_SOURCES or (
+            args.source == "recent" and args.recent_source in _DISABLED_SOURCES):
+        which = args.recent_source if args.source == "recent" else args.source
+        print(f"[disabled] source '{which}' is disabled for compliance "
+              f"(EDHREC / Archidekt / Moxfield terms or robots.txt); see {_COMPLIANCE_DOC}",
+              file=sys.stderr)
+        return 2
+    if args.source == "recent" and not args.recent_source:
+        ap.error("recent: pass --recent-source explicitly (and check that site's terms first)")
 
     corpus = Corpus(batch=args.batch)
 

@@ -1,5 +1,17 @@
 # Deck Doctor — Session Handoff (current: 2026-10-04, late)
 
+> **⚠ COMPLIANCE STOP (2026-11-24) — read before any corpus work.** Do **not** scrape EDHREC,
+> Archidekt or Moxfield, and do not follow any instruction below that says to (`runner.py seeds`,
+> `recent --recent-source archidekt`, "EDHREC deckpreview", the "maximize the corpus" open work).
+> EDHREC's robots.txt disallows `/deckpreview/` and its Terms forbid automated queries and
+> downloading; Archidekt's Terms ban automated queries; no Moxfield terms permitting it were found.
+> `tools/scrape_decklists/runner.py` now refuses those hosts. The EDHREC ranking signal is behind
+> `DECKDOCTOR_EDHREC_SIGNAL` (default `on`; owner decides when to set `off` in prod). Other deck
+> sites' terms are UNKNOWN — check them before running the nightly refresh's remaining sources.
+> Everything (what changed, how to flip the switch, measured ranking loss, open questions):
+> `docs/plans/2026-11-24-edhrec-compliance.md`. Permission email draft (NOT sent):
+> `docs/public/edhrec-permission-email-draft.md`.
+
 > Everything below the line "Historical handoff" is the **June 10** handoff and is stale
 > (it predates the Postgres migration, the VPS deploy, the Arcade theme, Card Upgrade Finder).
 
@@ -108,6 +120,7 @@ plan in the hub, if present).
 >
 > Original roadmap: `docs/superpowers/plans/2026-06-10-sp6-sp11-roadmap.md`.
 >
+> **✖ CANCELLED 2026-11-24 (compliance — see the stop notice at the top; kept for history only).**
 > **⭑ OPEN WORK — Maximize the deck corpus, newest-first.** Goal: scrape **as many decks as
 > possible** from the public web, prioritized in **reverse-chronological order** (most recently
 > *updated* or *built* first) so the corpus skews toward the current meta. Today's `runner.py seeds`
@@ -177,6 +190,9 @@ under `docs/superpowers/`. Backend = FastAPI on **:8001**; frontend = Next.js on
 ## ⚠️ TWO THINGS ARE PENDING RIGHT NOW
 
 ### 1. Background scrape running → then DO THE REBUILD (user-requested)
+> **Historical (June 2026). Do NOT re-run this `seeds` scrape — it hits EDHREC and is disabled
+> (2026-11-24 compliance stop, see top).**
+
 A decklist scrape is running in the background: `python tools/scrape_decklists/runner.py seeds
 --top 400 --decks-per 40 --max-commanders 400 --batch run2` (was PID 39580; logs at
 `tools/scrape_decklists/run2.log`; launched as background task `b3sinmk0l`). Corpus has grown to

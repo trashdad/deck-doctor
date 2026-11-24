@@ -1,5 +1,12 @@
 # Decklist Scraper — delegated mission prompt
 
+> **DISABLED 2026-11-24 — do not run this mission.** EDHREC's robots.txt disallows
+> `/deckpreview/` and its Terms of Use forbid automated queries and downloading;
+> Archidekt's Terms ban automated queries; no Moxfield terms permitting this use were
+> found. `runner.py` now refuses requests to those hosts. The other sites named below
+> have not had their terms checked (UNKNOWN). Read
+> `docs/plans/2026-11-24-edhrec-compliance.md` first. This prompt is kept for history only.
+
 You are filling a **decklist corpus** for the Simmander deckbuilder's SP3 co-occurrence
 pipeline. Your only job is to fetch **raw decklists** from public sources and append them, as
 dumb JSON-lines, to `data/decklists/`. You compute **nothing** — no lift, no synergy, no

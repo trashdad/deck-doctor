@@ -11,8 +11,20 @@ how the whole deck hangs together as a web of synergies.* Every answer comes bac
 website just looks up pre-computed numbers.
 
 This README explains the whole machine in plain language, with the exact math and diagrams behind
-the recommendation engine, and shows how a fleet of non-LLM web scrapers continuously feeds real
-human decklists into that engine so the advice keeps getting smarter on its own.
+the recommendation engine, and shows how non-LLM acquisition tools feed real human decklists into
+that engine so the advice keeps getting smarter on its own.
+
+> **Data-source compliance (2026-11-24).** Deck Doctor no longer scrapes **EDHREC**, **Archidekt**
+> or **Moxfield**. EDHREC's `robots.txt` disallows `/deckpreview/` and its Terms of Use forbid
+> automated queries and downloading the site; Archidekt's Terms ban automated queries; no Moxfield
+> terms permitting this use were found. `tools/scrape_decklists/runner.py` now refuses those hosts.
+> The EDHREC ranking signal sits behind the `DECKDOCTOR_EDHREC_SIGNAL` switch (`on` by default
+> until the owner flips it; `off` falls back to the co-occurrence / staple tiers). Sections below
+> that describe EDHREC scraping are **history, not instructions**. Details, the production switch
+> procedure and open questions: [`docs/plans/2026-11-24-edhrec-compliance.md`](docs/plans/2026-11-24-edhrec-compliance.md).
+>
+> **Credits.** Card data and images: [Scryfall](https://scryfall.com). Combo data:
+> [Commander Spellbook](https://commanderspellbook.com).
 
 ---
 
@@ -97,7 +109,7 @@ The key databases (all gitignored, rebuilt from the pipelines; sizes as of this 
 |---|---|---|
 | `data/cards.json` | ~31k Magic cards (Scryfall fields) — *committed* | bundled |
 | `data/decks.sqlite` | 5,263 real human decklists (which cards appear together) | `scrape_decklists` |
-| `data/edhrec.sqlite` | EDHREC's per-commander card stats (354 commanders, 94,970 rows) | `scrape_decklists` |
+| `data/edhrec.sqlite` | EDHREC's per-commander card stats (354 commanders, 94,970 rows) — **historical; no longer collected** (see the compliance note at the top) | `scrape_decklists` (disabled) |
 | `data/spellbook.sqlite` | 87,980 curated two-to-six-card combos | `import_spellbook` |
 | `data/scores.sqlite` | the **query store**: per-card power, card↔card relationships, co-occurrence, engines | `scoring/build_*.py` |
 
@@ -159,6 +171,10 @@ a directional `synergy_ab` / `synergy_ba` (A-enables-B may differ from B-enables
 EDHREC publishes, per commander, a "synergy" score for each card: how much more often that card
 shows up in *this commander's* decks versus decks in general. It's the single best signal for "what
 are the signature cards for my commander," so it gets the heaviest weight when available.
+
+> This signal is **pending permission from EDHREC** and is gated by `DECKDOCTOR_EDHREC_SIGNAL`
+> (`off` ⇒ `Store.edhrec_for()` returns nothing, `w_edh` drops out, and every commander uses the
+> §5 Tier 2/3 path). No new EDHREC data is being collected.
 
 ### Bonus signal — Combos: "does this card *finish* a known game-winning interaction?"
 
@@ -368,24 +384,22 @@ continuously without ever touching the scoring logic.
 
 ### `tools/scrape_decklists/` — real human decklists
 
-A resumable, polite, **parallel** harness that pulls from three sources:
+A resumable, **parallel** harness with a per-host rate limiter.
 
-```
-   EDHREC "deckpreview"  ─┐  discovers thousands of real decklists per commander and resolves
-                          │  each to its original Archidekt/Moxfield source — the breadth engine,
-                          │  without hammering Moxfield's Cloudflare gate.
-   Archidekt deck API   ──┤  public JSON; excludes maybeboard/sideboard.
-   Moxfield deck API    ──┘  public JSON mainboard + commanders.
-   EDHREC commander JSON ──  per-commander card synergy/inclusion stats.
-```
+> **Disabled sources (2026-11-24):** EDHREC (commander JSON and `/deckpreview/`), Archidekt and
+> Moxfield. Their robots.txt / Terms forbid automated collection, so `runner.py` raises
+> `SourceDisabled` for any request to those hosts and the `edhrec`, `archidekt`, `moxfield` and
+> `seeds` commands exit with status 2. Do not re-enable them without written permission from the
+> site. The other deck sites the runner knows (TappedOut, Deckstats, AetherHub, ManaStack) have
+> **not** had their terms checked (UNKNOWN) — check and record them before running anything.
+> See [`docs/plans/2026-11-24-edhrec-compliance.md`](docs/plans/2026-11-24-edhrec-compliance.md).
 
-Politeness and parallelism are built in: a **per-host rate limiter** (e.g. EDHREC's CDN tolerates
-0.3 s between calls; Moxfield gets 1.2 s) lets independent hosts proceed *simultaneously* via a
+A **per-host rate limiter** lets independent hosts proceed *simultaneously* via a
 worker pool, while never overloading any one site. Output is **append-only JSON-lines**, deduped by
 deck id, so the corpus only ever grows and re-running is always safe.
 
 ```
-   runner.py  ──writes──▶  data/decklists/*.jsonl  ──load_corpus.py──▶  decks.sqlite + edhrec.sqlite
+   runner.py  ──writes──▶  data/decklists/*.jsonl  ──load_corpus.py──▶  decks.sqlite (+ historical edhrec.sqlite)
    (one deck = one line)    (durable, deduped)        (idempotent)        (query-ready)
 ```
 
@@ -423,7 +437,7 @@ the server**:
 ```
    tools/refresh_loop.py  (runs forever, on a timer)
    ┌──────────────────────────────────────────────────────────────────────────────┐
-   │ 1. SCRAPE   more decks (EDHREC/Archidekt/Moxfield)   → data/decklists/*.jsonl  │
+   │ 1. SCRAPE   more decks (permitted sources only*)     → data/decklists/*.jsonl  │
    │ 2. LOAD     fold JSONL into the corpus DBs           → decks/edhrec.sqlite     │
    │ 3. REBUILD  recompute relationships + co-occurrence  → scores.sqlite           │
    │ 4. RELOAD   POST /admin/reload                       → backend swaps tables    │
@@ -433,6 +447,9 @@ the server**:
    /admin/reload drops that in-memory copy so the next request rebuilds it from the
    freshly-written sqlite — new decks are now live, with ZERO downtime.
 ```
+
+\* EDHREC, Archidekt and Moxfield are disabled for compliance (see the note at the top); the
+other sites' terms are UNKNOWN and must be checked first.
 
 This was demonstrated live during build: the combo database was hot-reloaded from 10,646 → 87,980
 combos via a single `POST /admin/reload`, with the server never stopping. Run the daemon alongside
@@ -522,8 +539,9 @@ box — without config they point to bare product pages. To earn commissions, co
 ### Rebuild the data from scratch
 
 ```bash
-python tools/scrape_decklists/runner.py seeds --top 400 --decks-per 40   # scrape decks
-python tools/scrape_decklists/load_corpus.py                              # → decks/edhrec.sqlite
+# (The old first step, `runner.py seeds …`, scraped EDHREC and is disabled — see the compliance
+#  note at the top. Add decklists only from sources whose terms permit it.)
+python tools/scrape_decklists/load_corpus.py                              # → decks.sqlite
 python scoring/build_relationships.py  --db data/scores.sqlite     --catalog ../simmander/data/combo_catalog.json     --catalog ../simmander/data/known_combos.json                         # → relationships, engines
 python scoring/build_cooccurrence.py   --scores data/scores.sqlite ...    # → co-occurrence, synergy
 python tools/import_spellbook/runner.py && python tools/import_spellbook/load_spellbook.py  # combos

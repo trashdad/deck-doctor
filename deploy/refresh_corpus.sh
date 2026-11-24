@@ -3,8 +3,8 @@
 # Deck Doctor — one bounded corpus-refresh cycle, suitable for a daily timer.
 #
 # Runs the full SP3 pipeline end-to-end on the production VPS:
-#   1. SCRAPE  a bounded batch of new decklists (newest-first per source +
-#              one commander-breadth seeds pass). Each source is best-effort:
+#   1. SCRAPE  a bounded batch of new decklists (newest-first per source;
+#              the EDHREC seeds pass is disabled). Each source is best-effort:
 #              a failing source is logged and the cycle continues.
 #   2. LOAD    the grown JSONL into decks.sqlite + edhrec.sqlite (idempotent,
 #              purely additive — never shrinks the corpus).
@@ -43,9 +43,11 @@ COMBO_CATALOG="${COMBO_CATALOG:-}"
 KNOWN_COMBOS="${KNOWN_COMBOS:-}"
 SKIP_REBUILD="${SKIP_REBUILD:-0}"
 
-# Working sources to walk newest-first. Moxfield is intentionally absent (it is
-# collected indirectly via EDHREC deckpreview in the seeds pass).
-RECENT_SOURCES=(archidekt tappedout deckstats aetherhub manastack)
+# Sources walked newest-first. archidekt, moxfield and edhrec (incl. the seeds pass) are
+# DISABLED since 2026-11-24: their robots/terms forbid automated access (see
+# docs/plans/2026-11-24-edhrec-compliance.md). The four below have UNKNOWN terms; they stay
+# until someone fetches and reads them.
+RECENT_SOURCES=(tappedout deckstats aetherhub manastack)
 
 cd "$APP_DIR" || { echo "[refresh] FATAL: cannot cd to $APP_DIR" >&2; exit 1; }
 
@@ -78,15 +80,8 @@ for src in "${RECENT_SOURCES[@]}"; do
   fi
 done
 
-# ── 1b. SCRAPE — one commander-breadth seeds pass (best-effort) ────────────────
-log "scrape seeds: top $SEED_TOP, decks-per $SEED_DECKS_PER, max-commanders $SEED_MAX_COMMANDERS"
-if "$PY" tools/scrape_decklists/runner.py seeds \
-      --top "$SEED_TOP" --decks-per "$SEED_DECKS_PER" \
-      --max-commanders "$SEED_MAX_COMMANDERS" --batch refresh; then
-  log "scrape seeds OK"
-else
-  log "scrape seeds FAILED (continuing)"
-fi
+# ── 1b. seeds pass: DISABLED (it fetched EDHREC deckpreview pages; robots.txt disallows them).
+log "scrape seeds: disabled (EDHREC deckpreview is disallowed)"
 
 # ── 2. LOAD — fold JSONL into the SQLite corpus (additive, idempotent) ─────────
 log "load_corpus"
