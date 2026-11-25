@@ -21,7 +21,11 @@ Environment=API=http://localhost:8002
 Environment=RECENT_MAX=150
 Environment=SEED_TOP=100
 Environment=SEED_DECKS_PER=15
-Environment=SEED_MAX_COMMANDERS=100
+Environment=SEED_MAX_COMMANDERS=40
+# Written permission on file (permissions.json, 2026-11-24): Archidekt 1 req/20s, EDHREC 1 req/6s.
+# The runner enforces those rates and refuses any host without a grant.
+Environment=EXTRA_RECENT_SOURCES=archidekt
+Environment=ENABLE_SEEDS=1
 # The scrapers reach the public internet; allow a generous ceiling but never hang.
-TimeoutStartSec=3600
+TimeoutStartSec=14400
 ExecStart=/opt/deck-doctor/deploy/refresh_corpus.sh
