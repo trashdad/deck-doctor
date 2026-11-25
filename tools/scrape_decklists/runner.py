@@ -98,6 +98,10 @@ _HOST_INTERVAL = {
     "manastack.com": 2.5,     # React SPA with no public listing; scan slowly
 }
 _DEFAULT_INTERVAL = 1.0
+# Blanket politeness floor (2026-11-25): never more than one request per 6 seconds to ANY host,
+# matching the rate EDHREC approved. Per-host values above and grants in permissions.json
+# can only make it slower, never faster.
+MIN_REQUEST_INTERVAL_S = 6.0
 
 # ── Compliance block (2026-11-24) ─────────────────────────────────────────────
 # EDHREC, Archidekt and Moxfield are DISABLED. EDHREC's robots.txt disallows
@@ -234,6 +238,7 @@ def _throttle(host: str, path: str | None = None) -> None:
             f"requests to {host} are disabled for compliance; see {_COMPLIANCE_DOC}")
     _check_path(host, path)
     interval = _HOST_INTERVAL.get(host, _DEFAULT_INTERVAL)
+    interval = max(interval, MIN_REQUEST_INTERVAL_S)
     _g = _grant_for(host)
     if _g and _g.get("min_interval_s") is not None:
         try:

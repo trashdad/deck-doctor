@@ -140,3 +140,20 @@ def test_min_interval_slows_requests(tmp_path, monkeypatch):
     runner._throttle("edhrec.com", "/x")
     runner._throttle("edhrec.com", "/x")
     assert slept and max(slept) > 3
+
+
+def test_blanket_floor_six_seconds_for_every_host(monkeypatch):
+    """No host (even ones with a faster per-host default) is hit more than once per 6 s."""
+    slept = []
+    monkeypatch.setattr(runner.time, "sleep", lambda s: slept.append(s))
+    for host in ("json.edhrec.com", "api2.moxfield.com", "tappedout.net", "aetherhub.com",
+                 "somewhere-new.example"):
+        slept.clear()
+        monkeypatch.setattr(runner, "_host_last", {host: runner.time.monotonic()})
+        monkeypatch.setattr(runner, "_GRANTS", {})
+        try:
+            runner._throttle(host, "/x")
+        except runner.SourceDisabled:
+            continue  # blocked hosts never reach the sleep
+        assert slept and max(slept) > 5.0, host
+    assert runner.MIN_REQUEST_INTERVAL_S == 6.0
