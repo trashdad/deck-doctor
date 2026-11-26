@@ -6,15 +6,16 @@
 # reload once, after this has bulked up the corpus. Keeping the two separate is
 # what makes a big crawl cheap: we pay the O(corpus^2) rebuild a single time.
 #
-# COMPLIANCE (2026-11-24): EDHREC, Archidekt and Moxfield are NOT scraped any more.
-# EDHREC's robots.txt disallows /deckpreview/ and its Terms of Use forbid automated
-# queries and downloading; Archidekt's Terms ban automated queries; no Moxfield
-# terms permitting this were found. The old EDHREC "seeds" step and the Archidekt
-# walk were removed from this script, and runner.py now refuses those hosts.
+# PERMISSION GATE (2026-11-25): the scraper refuses any host with no permission
+# grant on file (tools/scrape_decklists/permissions.json). We work with each site
+# individually instead of relying on robots.txt: for testing and development only,
+# robots.txt is ignored and will be respected in the future
+# (docs/robots-policy-2026-11-25.md). EDHREC, Archidekt and Moxfield are not walked
+# here; their old steps were removed and runner.py refuses them without a grant.
 # See docs/plans/2026-11-24-edhrec-compliance.md.
 #
-# The remaining sources (TappedOut, Deckstats) have NOT had their terms checked
-# (UNKNOWN). Do not run this script until someone has read and recorded them.
+# Deckstats, AetherHub and ManaStack have NOT been contacted yet (paused) — do not
+# run them until we have talked to them.
 #
 # Detached run (survives SSH/logout, journaled):
 #   systemd-run --unit=ddr-frontload --uid=simmander -p WorkingDirectory=/opt/deck-doctor \
@@ -44,9 +45,9 @@ for src in tappedout deckstats; do
     || log "recent $src failed (continuing)"
 done
 
-# 2. (removed 2026-11-24) The EDHREC commander-breadth "seeds" pass is disabled for
-#    compliance (docs/plans/2026-11-24-edhrec-compliance.md). Do not re-add it
-#    without written permission from EDHREC.
+# 2. (paused 2026-11-24) The EDHREC commander-breadth "seeds" pass is disabled — run it only
+#    with a permission grant from EDHREC on file (we contact each site individually;
+#    docs/robots-policy-2026-11-25.md).
 
 # 3. Fold everything into the corpus DBs (idempotent). No rebuild/push here.
 log "load_corpus"

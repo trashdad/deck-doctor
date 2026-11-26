@@ -1,11 +1,12 @@
 # Decklist Scraper — delegated mission prompt
 
-> **DISABLED 2026-11-24 — do not run this mission.** EDHREC's robots.txt disallows
-> `/deckpreview/` and its Terms of Use forbid automated queries and downloading;
-> Archidekt's Terms ban automated queries; no Moxfield terms permitting this use were
-> found. `runner.py` now refuses requests to those hosts. The other sites named below
-> have not had their terms checked (UNKNOWN). Read
-> `docs/plans/2026-11-24-edhrec-compliance.md` first. This prompt is kept for history only.
+> **POLICY 2026-11-25 — only run against sites we have talked to.** `runner.py` refuses any
+> host with no permission grant on file. We work with each site individually instead of
+> relying on robots.txt: **for testing and development only, robots.txt is ignored and will
+> be respected in the future** — see `docs/robots-policy-2026-11-25.md`. Grants live in
+> `tools/scrape_decklists/permissions.json` (saved replies: `docs/permissions/`). Sites not
+> yet contacted (Deckstats, AetherHub, ManaStack) are paused. This prompt is kept for
+> history; background: `docs/plans/2026-11-24-edhrec-compliance.md`.
 
 You are filling a **decklist corpus** for the Simmander deckbuilder's SP3 co-occurrence
 pipeline. Your only job is to fetch **raw decklists** from public sources and append them, as
@@ -55,8 +56,11 @@ endpoints list many public deck ids. Seed from popular commanders, expand outwar
 
 1. **Compute nothing.** Raw cards + EDHREC's own numbers only.
 2. **Respect the sources.** ≥2s between requests (the harness throttles — don't bypass it),
-   identify via the existing User-Agent, honor robots/ToS, public decks only. If a source rate-
-   limits or blocks, back off and switch sources; do not hammer.
+   identify via the existing User-Agent, public decks only. Scrape **only sites with a
+   permission grant on file** (`tools/scrape_decklists/permissions.json`) — we contact each
+   site individually and work with them. Robots.txt is ignored for testing/development only
+   and will be respected in the future. If a source rate-limits or blocks, back off and
+   switch sources; do not hammer.
 3. **Append-only & idempotent.** Never rewrite existing lines. Re-running must only *add* decks.
    Trust `.seen_deck_ids` for dedup.
 4. **Aim for breadth.** Many commanders, many archetypes — co-occurrence needs variety, not just

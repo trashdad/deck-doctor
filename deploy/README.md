@@ -22,9 +22,13 @@ These files must exist on the host before first run (none are baked into images)
 
 ## Rebuild pipeline order (when refreshing the corpus)
 
-> Do **not** scrape EDHREC, Archidekt or Moxfield to refresh the corpus: their robots.txt /
-> Terms forbid it and `tools/scrape_decklists/runner.py` refuses those hosts. Other deck
-> sites' terms are UNKNOWN. See `docs/plans/2026-11-24-edhrec-compliance.md`. The
+> Scrape only sites we have contacted and received permission from:
+> `tools/scrape_decklists/permissions.json` holds the grants (saved replies: `docs/permissions/`)
+> and `tools/scrape_decklists/runner.py` refuses any host with no grant on file. We work with
+> each site individually instead of relying on robots.txt: for testing and development only,
+> robots.txt is ignored and will be respected in the future
+> (`docs/robots-policy-2026-11-25.md`). Sites not yet contacted stay paused. See
+> `docs/plans/2026-11-24-edhrec-compliance.md`. The
 > `--edhrec` input below folds EDHREC numbers into `synergy_ab/ba`; to rebuild without
 > EDHREC, point it at a SQLite file whose `edhrec_metrics` table is empty (a missing file
 > errors — `edhrec_from_db` opens it read-only).

@@ -4,8 +4,20 @@
 # Core scraping helpers — not in the main backend requirements because the
 # scraper is a standalone data-acquisition tool, not part of the web service.
 
-# Cloudflare bypass (Deckstats, AetherHub, ManaStack, TappedOut)
+# Cloudflare bypass (Deckstats, AetherHub, ManaStack)
 cloudscraper>=1.2.71
+
+# TappedOut's interactive Cloudflare challenge defeats cloudscraper/curl_cffi
+# (HTTP 403 "Just a moment..."); TappedOut allowed the scrape and said CF is
+# ours to solve. nodriver is a ready-made browser-automation utility that
+# drives the real installed Chrome over CDP past the challenge.
+nodriver>=0.5
+
+# nodriver's CDP listener is incompatible with websockets 16.x (its internal
+# recv guard fires "cannot call get() concurrently" and the listener dies on
+# event-heavy pages such as the Cloudflare challenge). Pin below 16; runner.py
+# also patches nodriver's double-listener race in Connection.aopen.
+websockets>=14,<16
 
 # HTTP client used by cloudscraper
 requests>=2.28

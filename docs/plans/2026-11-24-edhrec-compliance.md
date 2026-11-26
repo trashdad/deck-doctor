@@ -1,5 +1,14 @@
 # EDHREC / Archidekt / Moxfield compliance — 2026-11-24
 
+> **2026-11-25 POLICY CHANGE (supersedes the robots.txt reasoning below, keeps the
+> per-site permission machinery).** We no longer rely on robots.txt as a decision input:
+> **for testing and development only, robots.txt is ignored and will be respected in the
+> future.** Instead we contact each website individually and work with them directly —
+> permissions are recorded in `tools/scrape_decklists/permissions.json` and
+> `docs/permissions/`, and `runner.py` refuses any host with no grant on file. See
+> `docs/robots-policy-2026-11-25.md`. The research findings and switch details below are
+> kept as the historical record of what was decided on 2026-11-24.
+
 Status: code changes made in the working tree, **not committed, not deployed**. Production
 behaviour is unchanged until the owner deploys **and** sets `DECKDOCTOR_EDHREC_SIGNAL=off`.
 This is an engineering note, not legal advice.
@@ -165,6 +174,10 @@ popularity/staple ranking it currently loses to).
    permit collection as far as fetched; Moxfield's are UNKNOWN.
 4. TappedOut / Deckstats / AetherHub / ManaStack: the nightly refresh still walks them; their terms
    are UNKNOWN. Pause them until checked?
+   *(2026-11-25 update: TappedOut gave provisional verbal permission — John Smith, Investor
+   Relations, phone call, email confirmation pending — so it stays enabled at 1 request / 30 s;
+   see `docs/permissions/tappedout-2026-11-25.md`. Deckstats / AetherHub / ManaStack remain
+   UNKNOWN.)*
 5. A lawful corpus going forward (user-submitted decks with an aggregation notice — the notice does
    not exist yet).
 6. Whether Deck Doctor (free, optional Patreon for a score breakdown, affiliate links) is

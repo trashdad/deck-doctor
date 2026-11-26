@@ -168,9 +168,10 @@ Authored here, executed elsewhere (a local Agent on Legion now; portable to the 
 gateway later):
 
 - `tools/scrape_decklists/PROMPT.md` — the scraper's instructions: target sites
-  (EDHREC / Archidekt / Moxfield), the §3 corpus contract, rate-limit + ToS rules
-  (EDHREC ≥2s/req, cache; respect robots/ToS), dedup by `deck_id`, append-only output, and a
-  "compute nothing" rule.
+  (EDHREC / Archidekt / Moxfield), the §3 corpus contract, rate-limit rules
+  (EDHREC ≥2s/req, cache; work with each site individually — robots.txt is ignored for
+  testing/development only and will be respected in the future), dedup by `deck_id`,
+  append-only output, and a "compute nothing" rule.
 - `tools/scrape_decklists/runner.py` — a resumable harness: a `seeds` breadth-driver that
   BFS-expands from top/similar EDHREC commanders and pulls real source-attributed decklists via
   EDHREC deckpreview (plus direct Archidekt/Moxfield/EDHREC fetchers). Fetches run on a worker

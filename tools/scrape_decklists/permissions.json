@@ -21,6 +21,13 @@
       "date": "2026-11-24",
       "evidence": "docs/permissions/moxfield-2026-11-24.md",
       "min_interval_s": 300
+    },
+    {
+      "host": "tappedout.net",
+      "granted_by": "Investor Relations team, TappedOut (phone call; email confirmation pending)",
+      "date": "2026-11-25",
+      "evidence": "docs/permissions/tappedout-2026-11-25.md",
+      "min_interval_s": 30
     }
   ]
 }

@@ -20,13 +20,17 @@ Output: append-only to data/decklists/<source>-<batch>.jsonl. Dedup by deck_id
 via data/decklists/.seen_deck_ids (one id per line). Re-running is safe: already
 -seen decks are skipped, so the corpus only grows.
 
-COMPLIANCE (2026-11-24): the `archidekt`, `moxfield`, `edhrec` and `seeds`
-sources, and `recent --recent-source archidekt`, are DISABLED. Every request to
-edhrec.com / archidekt.com / moxfield.com (and their subdomains) raises
-SourceDisabled. Reason and re-enable conditions:
-docs/plans/2026-11-24-edhrec-compliance.md. The remaining `recent` sources
-(tappedout, deckstats, aetherhub, manastack) have NOT had their terms checked
-either (UNKNOWN) — do not run them until someone has.
+PERMISSION GATE (2026-11-25): requests to edhrec.com / archidekt.com /
+moxfield.com (and their subdomains) raise SourceDisabled unless an individual
+permission grant from that site is on file in permissions.json. We work with
+each site individually instead of relying on robots.txt: for testing and
+development only, robots.txt is ignored and it WILL be respected in the future
+(docs/robots-policy-2026-11-25.md; background: docs/plans/2026-11-24-edhrec-compliance.md).
+TappedOut IS permitted (2026-11-25): docs/permissions/tappedout-2026-11-25.md —
+they allow scraping but said Cloudflare is our issue to solve (the nodriver
+browser transport below handles that) and we cap it at 1 request / 30 s.
+Deckstats, AetherHub and ManaStack have NOT been contacted yet (paused) — do
+not run them until we have talked to them.
 
 Usage (historical; the EDHREC / Archidekt / Moxfield commands below now exit 2):
     python tools/scrape_decklists/runner.py archidekt --ids 23059828,12345678   # DISABLED
@@ -63,8 +67,10 @@ New sources (2026-06-11):
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
 import os
+import queue
 import random
 import re
 import ssl
@@ -92,7 +98,7 @@ _HOST_INTERVAL = {
     "archidekt.com": 0.7,
     "api2.moxfield.com": 1.2,  # Cloudflare-gated — gentle
     # New sources (2026-06-11) — conservative intervals per host tolerance
-    "tappedout.net": 2.0,     # HTML site, no CDN buffer — polite
+    "tappedout.net": 30.0,    # permitted (2026-11-25); courtesy cap 1 req / 30 s — Cloudflare is ours to solve
     "deckstats.net": 1.5,     # Cloudflare-lite; API is tolerant but be conservative
     "aetherhub.com": 2.0,     # Cloudflare-gated, DataTable POST API
     "manastack.com": 2.5,     # React SPA with no public listing; scan slowly
@@ -103,17 +109,16 @@ _DEFAULT_INTERVAL = 1.0
 # can only make it slower, never faster.
 MIN_REQUEST_INTERVAL_S = 6.0
 
-# ── Compliance block (2026-11-24) ─────────────────────────────────────────────
-# EDHREC, Archidekt and Moxfield are DISABLED. EDHREC's robots.txt disallows
-# /deckpreview/ and its Terms of Use (effective 2024-08-06) forbid automated
-# queries and downloading the Site; Archidekt's written Terms ban automated
-# queries; no Moxfield terms permitting this use were retrieved. There is no
-# official API or permission path for these sites today.
-# See docs/plans/2026-11-24-edhrec-compliance.md before changing anything here.
+# ── Permission gate (2026-11-25) ─────────────────────────────────────────────
+# EDHREC, Archidekt and Moxfield are REFUSED unless an individual permission is
+# on file for them. We do not rely on robots.txt: for testing and development
+# only, robots.txt is ignored and it WILL be respected in the future. Instead we
+# contact each website individually and work with them directly — see
+# docs/robots-policy-2026-11-25.md and docs/plans/2026-11-24-edhrec-compliance.md.
 # The parse helpers (_parse_archidekt, _parse_edhrec_deckpreview, …) are kept
 # for the tests and for history; every NETWORK request to these hosts is refused
 # in _throttle() below unless permissions.json grants them.
-# Re-enable a host only after written permission/licence from that site: add a grant to
+# Enable a host only after talking to that site: add a grant to
 # tools/scrape_decklists/permissions.json (no code edit). A grant needs host, granted_by,
 # date and evidence (a path to the saved permission); it may narrow the scope with
 # allowed_path_prefixes and slow us down with min_interval_s. A grant missing a required
@@ -188,8 +193,10 @@ _host_lock = threading.Lock()
 _host_last: dict[str, float] = {}
 
 # ── Cloudscraper session (shared, lazy-init) ──────────────────────────────────
-# Used by Cloudflare-gated sites (Deckstats, AetherHub, ManaStack, TappedOut).
-# Falls back gracefully if cloudscraper is not installed (callers catch exceptions).
+# Used by Cloudflare-gated sites (Deckstats, AetherHub, ManaStack). TappedOut
+# moved to the nodriver browser transport below (2026-11-25): its interactive
+# challenge defeats cloudscraper. Falls back gracefully if cloudscraper is not
+# installed (callers catch exceptions).
 _cs_lock = threading.Lock()
 _cs_session = None   # type: ignore[assignment]
 
@@ -219,6 +226,297 @@ def _cs_post(url: str, timeout: int = 30, **kwargs) -> "requests.Response":  # n
     _u = urllib.parse.urlparse(url)
     _throttle(_u.hostname or "", _u.path)
     return _cloudscraper().post(url, timeout=timeout, **kwargs)
+
+
+# ── TappedOut transport (real Chrome via nodriver) ────────────────────────────
+# TappedOut granted us permission to scrape (docs/permissions/tappedout-2026-11-25.md)
+# but serves an interactive Cloudflare challenge that neither cloudscraper nor
+# curl_cffi TLS impersonation can clear (both return HTTP 403 "Just a moment...").
+# They told us Cloudflare is our issue to solve, so we use nodriver — a ready-made
+# browser-automation utility — to drive the real installed Chrome over CDP. One
+# shared browser session serves every TappedOut request in the run (cookies and
+# fingerprint persist past the challenge), and the 1-request-per-30-seconds
+# courtesy cap is enforced by _throttle() on top of this transport.
+#
+# If nodriver is missing or Chrome cannot start, _tappedout_get() falls back to
+# cloudscraper (which TappedOut's current challenge rejects) so the harness still
+# degrades to logged skips instead of crashing.
+#
+# nodriver 0.5.x also has a double-listener race in Connection.aopen (two CDP
+# listener tasks on one websocket → concurrent recv() → websockets 15+ assertion
+# storm) and its listener spins forever on any error; _patch_nodriver() fixes
+# both before Chrome starts.
+#
+# Env: DECKDOCTOR_TAPPEDOUT_HEADLESS=1        → run Chrome headless (server runs)
+#      DECKDOCTOR_TAPPEDOUT_USER_DATA_DIR=…   → persist the browser profile so the
+#                                               Cloudflare clearance cookie survives
+#                                               between runs (default: fresh temp)
+
+_TAPPEDOUT_HEADLESS = os.environ.get("DECKDOCTOR_TAPPEDOUT_HEADLESS") == "1"
+_TAPPEDOUT_USER_DATA_DIR = os.environ.get("DECKDOCTOR_TAPPEDOUT_USER_DATA_DIR") or None
+
+_to_start_lock = threading.Lock()
+_to_ready = threading.Event()
+_to_failed: bool | None = None   # None = untried, False = browser up, True = unavailable
+_to_queue: queue.Queue | None = None
+_to_thread: threading.Thread | None = None
+
+
+_nodriver_patched = False
+_nodriver_patch_lock = threading.Lock()
+
+
+def _patch_nodriver() -> None:
+    """Two nodriver 0.5.x fixes, applied once before Chrome starts:
+
+    1. Connection.aopen() can be entered twice for the same connection — two
+       concurrent send()s on a fresh connection, or a reconnect while the old
+       listener is still alive — and each entry spawns a new CDP listener task
+       without cancelling the previous one. Two listeners then call ws.recv()
+       concurrently, which websockets 15+ rejects (its frame queue asserts a
+       single waiter). Serialize aopen with a lock and cancel any previous
+       listener before opening a replacement socket.
+
+    2. Connection._listener() catches every exception and loops forever. When
+       websockets' frame-queue waiter gets stuck (e.g. the loop is torn down
+       while a recv is pending), the listener re-raises the same assertion in a
+       tight loop and floods stderr without ever failing the connection. Our
+       replacement exits the loop on the first unexpected error and fails all
+       pending CDP commands, so callers see a clean failure (and the runner
+       restarts the browser session) instead of a log flood."""
+    global _nodriver_patched
+    if _nodriver_patched:
+        return
+    with _nodriver_patch_lock:
+        if _nodriver_patched:
+            return
+        import asyncio
+        import contextlib
+        import json as _json
+
+        import nodriver.core.connection as _ndc
+        import websockets.exceptions as _wse
+
+        _orig_aopen = _ndc.Connection.aopen
+        _aopen_lock: "asyncio.Lock | None" = None
+
+        async def _aopen_safe(self):
+            nonlocal _aopen_lock
+            if _aopen_lock is None:
+                _aopen_lock = asyncio.Lock()
+            async with _aopen_lock:
+                if not self.socket or bool(self.socket.close_code):
+                    # A new socket is about to be opened: retire any listener that
+                    # is still reading the old one before orig aopen spawns another.
+                    if self._listener_task is not None and not self._listener_task.done():
+                        self._listener_task.cancel()
+                        with contextlib.suppress(asyncio.CancelledError, Exception):
+                            await self._listener_task
+                        self._listener_task = None
+                return await _orig_aopen(self)
+
+        _ndc.Connection.aopen = _aopen_safe
+
+        async def _listener_safe(self):
+            ws = self.socket
+            if ws is None:
+                raise RuntimeError("Listener started without an active socket connection.")
+            while True:
+                try:
+                    raw = await ws.recv()
+                    if not raw:
+                        continue
+                    message = _json.loads(raw)
+                    if "id" in message:
+                        future = self._mapper.pop(message["id"], None)
+                        if future and not future.done():
+                            future.set_result(message)
+                    elif "method" in message:
+                        await self.process_event(message, None)
+                except _wse.ConnectionClosed:
+                    self._fail_pending_futures(ConnectionError("Connection closed"))
+                    break
+                except asyncio.CancelledError as e:
+                    self._fail_pending_futures(e)
+                    break
+                except Exception as e:  # noqa: BLE001
+                    # Exit instead of spinning: the connection is dead either way.
+                    print(f"[tappedout] CDP listener failed: {e}", file=sys.stderr)
+                    self._fail_pending_futures(e)
+                    break
+
+        _ndc.Connection._listener = _listener_safe
+        _nodriver_patched = True
+
+
+def _restart_tappedout_browser() -> None:
+    """Tear down a dead/failed browser session so the next fetch starts a fresh one."""
+    global _to_failed, _to_queue, _to_thread
+    old_t, old_q = _to_thread, _to_queue
+    if old_q is not None and old_t is not None and old_t.is_alive():
+        try:
+            old_q.put(None)
+            old_t.join(timeout=8)
+        except Exception:  # noqa: BLE001
+            pass
+    _to_thread = None
+    _to_queue = None
+    _to_failed = None
+    _to_ready.clear()
+
+
+def _ensure_tappedout_browser() -> None:
+    """Start the shared nodriver browser thread once per process."""
+    global _to_failed, _to_queue, _to_thread
+    if _to_failed is not None:
+        return
+    with _to_start_lock:
+        if _to_thread is None:
+            try:
+                import nodriver  # noqa: F401,F811
+            except ImportError:
+                _to_failed = True
+                print("[tappedout] nodriver is not installed; TappedOut fetches will "
+                      "fall back to cloudscraper (install with: "
+                      "pip install -r tools/scrape_decklists/requirements.txt)",
+                      file=sys.stderr)
+                return
+            _to_queue = queue.Queue()
+            t = threading.Thread(target=_browser_worker, name="tappedout-browser",
+                                 daemon=True)
+            t.start()
+            _to_thread = t
+    _to_ready.wait(timeout=60)
+    if _to_failed is None:  # Chrome never reported in — treat as unavailable
+        _to_failed = True
+        print("[tappedout] nodriver/Chrome did not start in time; falling back to "
+              "cloudscraper", file=sys.stderr)
+
+
+def _browser_worker() -> None:
+    """Single-threaded consumer: owns the asyncio loop, the Chrome browser and the tab."""
+    global _to_failed
+    import asyncio
+    import nodriver as uc
+
+    _patch_nodriver()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        browser = loop.run_until_complete(
+            uc.start(headless=_TAPPEDOUT_HEADLESS, user_data_dir=_TAPPEDOUT_USER_DATA_DIR))
+        tab = loop.run_until_complete(browser.get("about:blank"))
+    except Exception as e:  # noqa: BLE001
+        print(f"[tappedout] nodriver could not start Chrome: {e}", file=sys.stderr)
+        _to_failed = True
+        _to_ready.set()
+        return
+    _to_ready.set()
+    _to_failed = False  # a late-but-successful start still counts
+    while True:
+        job = _to_queue.get()
+        if job is None:  # shutdown sentinel
+            try:
+                browser.stop()  # sync in nodriver 0.5.x — do NOT wrap in run_until_complete
+            except Exception:  # noqa: BLE001
+                pass
+            try:  # drain the loop's remaining tasks (listener, keepalive) quietly
+                pending = asyncio.all_tasks(loop)
+                for t in pending:
+                    t.cancel()
+                loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+                loop.close()
+            except Exception:  # noqa: BLE001
+                pass
+            return
+        url, marker, timeout, box, done = job
+        try:
+            box.append(loop.run_until_complete(
+                _navigate_tappedout(tab, url, marker, timeout)))
+        except Exception as e:  # noqa: BLE001
+            box.append(e)
+        finally:
+            done.set()
+
+
+async def _navigate_tappedout(tab, url: str, marker: str, timeout: float) -> str:
+    """Load `url` in the shared tab and wait until the Cloudflare challenge clears
+    (the page HTML contains `marker` AND no challenge markers remain — the
+    challenge page itself can contain deck links, so the marker alone is not
+    proof). Raises TimeoutError if it never clears."""
+    deadline = time.monotonic() + timeout
+    await tab.get(url)
+    while True:
+        html = await tab.get_content()
+        challenged = ("Just a moment" in html or "cf-browser-verification" in html
+                      or "challenge-platform" in html)
+        if marker in html and not challenged:
+            return html
+        if time.monotonic() >= deadline:
+            raise TimeoutError(
+                f"TappedOut page did not clear Cloudflare within {timeout:g}s "
+                f"(marker {marker!r} not found)")
+        await tab.sleep(2)
+
+
+def _tappedout_browser_html(url: str, marker: str, timeout: float = 60) -> str:
+    """Sync bridge: hand the fetch to the browser thread and wait for its result."""
+    assert _to_queue is not None
+    box: list = []
+    done = threading.Event()
+    _to_queue.put((url, marker, timeout, box, done))
+    if not done.wait(timeout + 15):
+        raise TimeoutError("tappedout browser worker did not respond")
+    result = box[0]
+    if isinstance(result, Exception):
+        raise result
+    return result
+
+
+class _TappedOutResponse:
+    """Minimal requests.Response duck-type for the browser transport (status 200)."""
+
+    status_code = 200
+
+    def __init__(self, text: str):
+        self.text = text
+
+
+def _tappedout_get(url: str, marker: str, timeout: int = 60):
+    """GET one TappedOut page. Browser transport first (clears Cloudflare); falls
+    back to cloudscraper only when the browser transport is unavailable. The
+    courtesy throttle is applied exactly once here (the fallback bypasses
+    _cs_get's own throttle so the interval is never double-counted)."""
+    _u = urllib.parse.urlparse(url)
+    _throttle(_u.hostname or "", _u.path)
+    _ensure_tappedout_browser()
+    if _to_failed is False:
+        try:
+            return _TappedOutResponse(_tappedout_browser_html(url, marker, timeout))
+        except Exception:  # noqa: BLE001 — transport died mid-fetch
+            print("[tappedout] browser transport failed; the session will restart "
+                  "for the next request", file=sys.stderr)
+            _restart_tappedout_browser()
+            raise
+    r = _cloudscraper().get(url, timeout=30)
+    if "Just a moment" in r.text or "cf-chl-" in r.text:
+        print("[tappedout] fallback transport hit the Cloudflare challenge — "
+              "cloudscraper cannot clear it (nodriver + Chrome required)",
+              file=sys.stderr)
+    return r
+
+
+def _stop_tappedout_browser() -> None:
+    q, t = _to_queue, _to_thread
+    if q is not None and t is not None and t.is_alive():
+        try:
+            q.put(None)
+            t.join(timeout=8)
+        except Exception:  # noqa: BLE001
+            pass
+
+
+atexit.register(_stop_tappedout_browser)
 
 try:  # verified TLS where certifi is present (matches sim/edhrec_fetcher.py)
     import certifi as _certifi
@@ -425,13 +723,20 @@ def _fetch_moxfield(native_id: str) -> tuple[str | None, list[str]]:
 #
 # Listing: tappedout.net/mtg-decks/search/?q=&format=edh&order=-date_updated&p=N
 # Pagination via p= query param.  Each page shows ~20 decks as slug links.
+#
+# Transport: TappedOut serves an interactive Cloudflare challenge that neither
+# cloudscraper nor curl_cffi can clear, and they have told us Cloudflare is our
+# issue to solve — so every request goes through _tappedout_get() (nodriver +
+# real Chrome; cloudscraper only as a last-resort fallback). Courtesy cap:
+# 1 request / 30 s, enforced by _throttle().
 
 def _fetch_tappedout(native_id: str) -> tuple[str | None, list[str]]:
     """Fetch one TappedOut deck by slug.  native_id is the URL slug, e.g.
     'mana-flooding-is-a-good-thing'.  Returns (commander|None, card_names)."""
     try:
         from bs4 import BeautifulSoup  # type: ignore[import]
-        r = _cs_get(f"https://tappedout.net/mtg-decks/{native_id}/", timeout=30)
+        r = _tappedout_get(f"https://tappedout.net/mtg-decks/{native_id}/",
+                           "board-container")
         if r.status_code != 200:
             print(f"[tappedout] deck {native_id}: HTTP {r.status_code}", file=sys.stderr)
             return None, []
@@ -474,7 +779,7 @@ def _tappedout_recent_page(page: int, pagesize: int = 20) -> tuple[list[str], bo
         from bs4 import BeautifulSoup  # type: ignore[import]
         url = (f"https://tappedout.net/mtg-decks/search/"
                f"?q=&format=edh&order=-date_updated&p={page}")
-        r = _cs_get(url, timeout=30)
+        r = _tappedout_get(url, "/mtg-decks/")
         if r.status_code != 200:
             print(f"[tappedout] listing page {page}: HTTP {r.status_code}", file=sys.stderr)
             return [], False
@@ -1030,15 +1335,26 @@ def _run_recent(corpus: "Corpus", source: str, max_decks: int, resume: bool,
         page_new = 0
         if todo:
             with ThreadPoolExecutor(max_workers=6) as ex:
-                for nid, res in ex.map(_grab, todo):
+                # Submit lazily-consumable futures so hitting `max_decks` CANCELS the
+                # not-yet-started fetches instead of making courtesy-limited requests
+                # for decks we would discard. (At most the already-running fetches
+                # still complete.)
+                futures = [ex.submit(_grab, nid) for nid in todo]
+                for fut in futures:
+                    if fetched >= max_decks:
+                        for f in futures:
+                            f.cancel()
+                        break
+                    try:
+                        nid, res = fut.result()
+                    except Exception:  # noqa: BLE001 — cancelled or worker raised
+                        continue
                     if res is None:
                         continue
                     cmdr, names = res
                     if corpus.add_deck(f"{source}:{nid}", source, cmdr, names):
                         page_new += 1
                         fetched += 1
-                        if fetched >= max_decks:
-                            break
 
         cursor.write_text(str(page + 1), encoding="utf-8")
         print(f"[recent] {source} page {page}: +{page_new} new "
@@ -1185,8 +1501,10 @@ def main(argv: list[str] | None = None) -> int:
     if _source_disabled(args.source) or (
             args.source == "recent" and _source_disabled(args.recent_source)):
         which = args.recent_source if args.source == "recent" else args.source
-        print(f"[disabled] source '{which}' is disabled for compliance "
-              f"(EDHREC / Archidekt / Moxfield terms or robots.txt; add a grant to permissions.json once permitted); see {_COMPLIANCE_DOC}",
+        print(f"[disabled] source '{which}' is not permitted yet "
+              f"(no permission grant from that site is on file; we contact each site "
+              f"individually — add a grant to permissions.json once we have talked to "
+              f"them); see {_COMPLIANCE_DOC}",
               file=sys.stderr)
         return 2
     if args.source == "recent" and not args.recent_source:

@@ -14,14 +14,17 @@ This README explains the whole machine in plain language, with the exact math an
 the recommendation engine, and shows how non-LLM acquisition tools feed real human decklists into
 that engine so the advice keeps getting smarter on its own.
 
-> **Data-source compliance (2026-11-24).** Deck Doctor no longer scrapes **EDHREC**, **Archidekt**
-> or **Moxfield**. EDHREC's `robots.txt` disallows `/deckpreview/` and its Terms of Use forbid
-> automated queries and downloading the site; Archidekt's Terms ban automated queries; no Moxfield
-> terms permitting this use were found. `tools/scrape_decklists/runner.py` now refuses those hosts.
+> **Data-source policy (2026-11-25).** We do not scrape any site without talking to them:
+> Deck Doctor works with each data source **individually**, and the scraper only touches a site
+> once permission from that site is recorded in `tools/scrape_decklists/permissions.json`
+> (saved replies: `docs/permissions/`). Until a site is contacted and grants permission, the
+> runner refuses its hosts. For the time being — **testing and development only** — we do not
+> follow robots.txt; it **will be respected in the future**. See
+> [`docs/robots-policy-2026-11-25.md`](docs/robots-policy-2026-11-25.md) and
+> [`docs/plans/2026-11-24-edhrec-compliance.md`](docs/plans/2026-11-24-edhrec-compliance.md).
 > The EDHREC ranking signal sits behind the `DECKDOCTOR_EDHREC_SIGNAL` switch (`on` by default
 > until the owner flips it; `off` falls back to the co-occurrence / staple tiers). Sections below
-> that describe EDHREC scraping are **history, not instructions**. Details, the production switch
-> procedure and open questions: [`docs/plans/2026-11-24-edhrec-compliance.md`](docs/plans/2026-11-24-edhrec-compliance.md).
+> that describe EDHREC scraping are **history, not instructions**.
 >
 > **Credits.** Card data and images: [Scryfall](https://scryfall.com). Combo data:
 > [Commander Spellbook](https://commanderspellbook.com).
@@ -386,13 +389,14 @@ continuously without ever touching the scoring logic.
 
 A resumable, **parallel** harness with a per-host rate limiter.
 
-> **Disabled sources (2026-11-24):** EDHREC (commander JSON and `/deckpreview/`), Archidekt and
-> Moxfield. Their robots.txt / Terms forbid automated collection, so `runner.py` raises
-> `SourceDisabled` for any request to those hosts and the `edhrec`, `archidekt`, `moxfield` and
-> `seeds` commands exit with status 2. Do not re-enable them without written permission from the
-> site. The other deck sites the runner knows (TappedOut, Deckstats, AetherHub, ManaStack) have
-> **not** had their terms checked (UNKNOWN) — check and record them before running anything.
-> See [`docs/plans/2026-11-24-edhrec-compliance.md`](docs/plans/2026-11-24-edhrec-compliance.md).
+> **Permission gate (2026-11-25):** the scraper refuses any site we have not contacted and
+> received permission from. Grants are recorded in `tools/scrape_decklists/permissions.json`
+> (saved replies: `docs/permissions/`) and `runner.py` raises `SourceDisabled` for a host with
+> no grant on file. We work with each site individually instead of relying on robots.txt:
+> for testing and development only, robots.txt is ignored and **will be respected in the
+> future** — see [`docs/robots-policy-2026-11-25.md`](docs/robots-policy-2026-11-25.md).
+> Sites not yet contacted (Deckstats, AetherHub, ManaStack) stay paused until we have talked
+> to them. See [`docs/plans/2026-11-24-edhrec-compliance.md`](docs/plans/2026-11-24-edhrec-compliance.md).
 
 A **per-host rate limiter** lets independent hosts proceed *simultaneously* via a
 worker pool, while never overloading any one site. Output is **append-only JSON-lines**, deduped by
