@@ -31,6 +31,18 @@ RESTIC_HOST="${RESTIC_HOST:-simtrack}"
 log() { echo "[backup $(date -u +%H:%M:%S)] $*"; }
 rc=0
 
+# Never dump while a data job (card update / refresh / deploy) is rewriting the tables:
+# load_to_postgres commits per store, so a concurrent dump could mix old and new stores.
+# Wait for the shared lock (bounded), then fail loudly rather than skip the backup.
+DATA_LOCK="${DATA_LOCK:-$APP_DIR/data/.pipeline.lock}"
+LOCK_WAIT="${LOCK_WAIT:-900}"   # deckdoctor-backup.service has TimeoutStartSec=1800
+[[ -e "$DATA_LOCK" ]] || runuser -u "$APP_USER" -- touch "$DATA_LOCK" || { log "FATAL: cannot create $DATA_LOCK"; exit 1; }
+exec 9<"$DATA_LOCK" || { log "FATAL: cannot open $DATA_LOCK"; exit 1; }
+if ! flock -w "$LOCK_WAIT" 9; then
+    log "FAILED: $DATA_LOCK still held after ${LOCK_WAIT}s (card update / refresh / deploy) — no backup taken"
+    exit 1
+fi
+
 # ── 1. tower ───────────────────────────────────────────────────────────────────
 log "tower: tools/backup_db.py --keep $KEEP"
 if runuser -u "$APP_USER" -- "$APP_DIR/.venv/bin/python" "$APP_DIR/tools/backup_db.py" --keep "$KEEP"; then

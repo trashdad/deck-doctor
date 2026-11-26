@@ -12,8 +12,18 @@ WorkingDirectory=/opt/deck-doctor/backend
 # Secrets (DATABASE_URL, SIMMANDER_JWT_SECRET) live in a root-only 0600 file, not
 # in this world-readable unit. See deploy/DEPLOY.md "Secrets".
 EnvironmentFile=/etc/deck-doctor/secrets.env
-# Card metadata is a static JSON asset; everything else lives in Postgres.
-Environment=SIMMANDER_CARDS=/opt/deck-doctor/data/cards.json
+# Card metadata + land prices are static JSON assets; everything else lives in Postgres.
+# They live in the untracked card-data/current/ dir that deckdoctor-cardupdate promotes
+# into (seed it once with `PYTHONPATH=tools .venv/bin/python -m card_update init`
+# BEFORE installing this unit — see deploy/DEPLOY.md).
+Environment=SIMMANDER_CARDS=/opt/deck-doctor/card-data/current/cards.json
+Environment=SIMMANDER_LAND_META=/opt/deck-doctor/card-data/current/land_meta.json
+# Never serve a half-promoted card layer after a crash/power loss: if a card update left
+# an unfinished change (state.json "transaction") and no data job holds the lock, restore
+# the previous release's files first (fast, no network; Postgres is left to the next run
+# if it needs a rebuild). Exits 0 when there is nothing to do or a job owns the change;
+# the leading '-' keeps the API starting even if recovery itself fails (logged loudly).
+ExecStartPre=-/usr/bin/env PYTHONPATH=/opt/deck-doctor/tools /opt/deck-doctor/.venv/bin/python -m card_update recover --files-only
 # Shared login: SIMMANDER_JWT_SECRET (in secrets.env) must equal the tracker's
 # backend/config.ini [auth] secret_key so the simmander_session cookie validates here.
 Environment=SIMMANDER_JWT_ALG=HS256

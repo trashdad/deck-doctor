@@ -1,0 +1,108 @@
+{
+  "_comment": "Every key is optional; these are the built-in defaults. Production runs without a config file. Override per key with CARD_UPDATE__<SECTION>__<KEY>=<json value>. null path = derived default (see README).",
+  "paths": {
+    "app_dir": "/opt/deck-doctor",
+    "card_data_dir": null,
+    "live_cards": null,
+    "live_land_meta": null,
+    "live_scores": null,
+    "seed_cards": null,
+    "seed_land_meta": null,
+    "lock_file": null,
+    "outliers_dir": null,
+    "python": null
+  },
+  "upstream": {
+    "user_agent": "DeckDoctor-CardUpdate/1.0 (+https://simmander.app/deck-doctor)",
+    "scryfall_bulk_url": "https://api.scryfall.com/bulk-data/default-cards",
+    "scryfall_collection_url": "https://api.scryfall.com/cards/collection",
+    "mtgish_head_url": "https://api.github.com/repos/i5jb/mtgish/commits/HEAD",
+    "mtgish_data_url": "https://raw.githubusercontent.com/i5jb/mtgish/{sha}/data/mtgish.lines.json",
+    "mtgish_license_url": "https://raw.githubusercontent.com/i5jb/mtgish/{sha}/LICENSE",
+    "mtgish_license_must_contain": "MIT License",
+    "mtgish_pin_sha": null
+  },
+  "http": {
+    "timeout_s": 60,
+    "retries": 4,
+    "backoff_s": 5,
+    "backoff_max_s": 120,
+    "min_interval_s": 0.1,
+    "max_json_bytes": 20000000,
+    "allowed_hosts": ["scryfall.com", "scryfall.io", "api.github.com", "raw.githubusercontent.com",
+                      "github.com", "objects.githubusercontent.com"]
+  },
+  "lock": {
+    "wait_minutes": 60
+  },
+  "fetch": {
+    "scryfall_min_bytes": 20000000,
+    "scryfall_max_bytes": 2000000000,
+    "mtgish_min_bytes": 5000000,
+    "mtgish_max_bytes": 1000000000,
+    "min_free_bytes": 3000000000
+  },
+  "prep": {
+    "min_scryfall_prints": 50000,
+    "max_scryfall_prints": 1000000,
+    "max_decompressed_bytes": 6000000000,
+    "timeout_minutes": 60
+  },
+  "enrich": {
+    "batch_size": 75,
+    "interval_s": 0.15,
+    "max_error_batches": 0
+  },
+  "build": {
+    "top_k": 16,
+    "step_timeout_minutes": 240
+  },
+  "gates": {
+    "required_fields": ["id", "name", "oracle_id", "type_line", "color_identity", "cmc"],
+    "min_count_ratio": 0.99,
+    "max_count_ratio": 1.25,
+    "min_cards": 25000,
+    "sentinels": ["Sol Ring", "Arcane Signet", "Command Tower", "Birds of Paradise",
+                  "Cultivate", "Swords to Plowshares", "Rhystic Study"],
+    "max_tag_share_drop_pp": 2.0,
+    "max_lost_all_tags_ratio": 0.01,
+    "max_new_unmapped_operators": 40,
+    "max_unmapped_operators": 3000,
+    "max_ier_changed_unchanged": 0,
+    "required_tables": ["cards", "synergies", "card_flat_tags", "card_ability_tags",
+                        "card_fingerprints", "card_fingerprint_flat", "tag_inverted_index"],
+    "min_land_meta_coverage": 0.99
+  },
+  "approve": {
+    "enabled": false,
+    "approvals_dir": null,
+    "wait_minutes": 0
+  },
+  "rebuild": {
+    "script": "deploy/rebuild_and_reload.sh",
+    "bash": "bash",
+    "timeout_minutes": 240
+  },
+  "health": {
+    "api_base": "http://127.0.0.1:8002",
+    "timeout_s": 300,
+    "poll_interval_s": 5,
+    "max_shrink_ratio": 0.25
+  },
+  "retention": {
+    "keep_releases": 3,
+    "keep_runs": 5,
+    "keep_log_days": 30
+  },
+  "status": {
+    "stale_after_days": 3
+  },
+  "stages": {
+    "order": ["check", "fetch", "prep", "enrich", "build", "verify",
+              "approve", "promote", "rebuild", "health", "cleanup"],
+    "allow_partial_promote": false
+  },
+  "run": {
+    "deadline_hours": 12
+  }
+}

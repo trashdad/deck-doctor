@@ -64,3 +64,8 @@ blob-report/
 
 # Permission evidence stays local until the owner decides to publish it
 /docs/permissions/
+
+# tools/card_update: live card files, backup releases, run dirs, logs, state (prod only)
+/card-data/
+# Shared lock of the data jobs (refresh_corpus.sh, card_update, deploy.sh check)
+/data/.pipeline.lock

@@ -108,6 +108,19 @@ def edhrec_signal_enabled() -> bool:
     return raw.strip().lower() not in _EDHREC_OFF_VALUES
 
 
+# Land prices + produced_mana. In production SIMMANDER_LAND_META points at the untracked
+# card-data/current/land_meta.json that tools/card_update promotes (next to SIMMANDER_CARDS);
+# unset, the tracked backend/data/land_meta.json is used. Read per load so a reload or a
+# test sees the current value.
+LAND_META_ENV = "SIMMANDER_LAND_META"
+DEFAULT_LAND_META_PATH = Path(__file__).resolve().parents[1] / "data" / "land_meta.json"
+
+
+def land_meta_path() -> Path:
+    raw = os.environ.get(LAND_META_ENV, "").strip()
+    return Path(raw) if raw else DEFAULT_LAND_META_PATH
+
+
 class Store:
     def __init__(self, cards_path: Path):
         self._cards: dict[str, dict] = {}
@@ -357,15 +370,14 @@ class Store:
 
     # ---- SP12: land meta (prices + produced_mana) -------------------------
     def _load_land_meta(self, cards_path: Path) -> None:
-        """Load backend/data/land_meta.json into memory.
+        """Load land_meta.json (see land_meta_path()) into memory.
 
         Maps card id -> {"name": str, "produced_mana": list[str], "usd": float|None}.
         Missing file ⇒ empty dict (engine degrades gracefully — lands are still
         recommended, just without price filtering).
         """
         self.land_meta: dict[str, dict] = {}
-        # land_meta.json lives in backend/data/ (same dir as this package's parent)
-        meta_path = Path(__file__).resolve().parents[1] / "data" / "land_meta.json"
+        meta_path = land_meta_path()
         if not meta_path.exists():
             return
         with meta_path.open(encoding="utf-8") as fh:

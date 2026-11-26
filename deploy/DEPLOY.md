@@ -108,7 +108,8 @@ systemd only logs a missing OnFailure= target; the units themselves are unaffect
    (see Secrets) and the combo catalogs (see below), then
    bootstrap `releases/current` once (build the frontend, then
    `cp -a frontend/.next/standalone releases/web-init && cp -a frontend/.next/static releases/web-init/.next/static && cp -a frontend/public releases/web-init/public && ln -s web-init releases/current`),
-   `systemctl daemon-reload && systemctl enable --now deckdoctor-api deckdoctor-web deckdoctor-refresh.timer deckdoctor-backup.timer`.
+   `systemctl daemon-reload && systemctl enable --now deckdoctor-api deckdoctor-web deckdoctor-refresh.timer deckdoctor-backup.timer deckdoctor-cardupdate.timer`
+   (run `card_update init` first — see "New card sets").
    After that, always use `deploy.sh`.
 4. nginx: add the blocks from `deploy/nginx-deckdoctor.conf` to the tracker's server block **via
    the tracker repo** (`nginx/nginx.conf`).
@@ -117,9 +118,10 @@ systemd only logs a missing OnFailure= target; the units themselves are unaffect
 
 `deploy/refresh_corpus.sh`: scrape (newest-first per source + a commander-breadth pass) →
 `load_corpus` → `build_relationships` → `build_cooccurrence` → `load_to_postgres` →
-`POST localhost:8002/admin/reload` (allowed: loopback, no proxy headers). Logs:
+`POST localhost:8002/admin/reload` (allowed: loopback, no proxy headers); the last four steps
+are `deploy/rebuild_and_reload.sh`, shared with the card-update pipeline. Logs:
 `journalctl -u deckdoctor-refresh`. It runs code from `/opt/deck-doctor`, which is why deploys
-refuse to run while it is active.
+refuse to run while it is active; it waits (up to 2 h, then fails) for the shared data lock.
 
 ### Combo catalogs
 
@@ -139,38 +141,38 @@ From June to 2026-10-05 the VPS had none, so prod had 0 asserted combos (Command
 88k combos were unaffected). A missing configured catalog is now logged as a WARNING by
 `refresh_corpus.sh`.
 
-## Adding new card sets (card data refresh, run on legion)
+## New card sets (automated: `deckdoctor-cardupdate`, 02:30 UTC)
 
-The nightly refresh only rebuilds deck-driven tables. New cards need the card layer
-rebuilt on the dev box and shipped. Done this way on 2026-10-05 (5 sets, +1,148 cards):
+`tools/card_update` (details: `tools/card_update/README.md`) runs daily on simtrack with no
+human step: check Scryfall bulk data + the MTGish HEAD commit → download → `prep_cards
+--keep-ids-from` live → land enrichment → candidate `scores.sqlite` (build_store,
+build_semantics, build_fingerprints) → quality gates → promote (backup snapshot, then atomic
+replace) → `deploy/rebuild_and_reload.sh` → `/health` card count. Gate violations keep the
+old data; promotion is a transaction (marker in `card-data/state.json`) that is reverted
+automatically if anything fails before rebuild + health pass. Both exit 1 and page via
+`OnFailure`. Live card files are untracked in `/opt/deck-doctor/card-data/current/`
+(`SIMMANDER_CARDS`, `SIMMANDER_LAND_META`); the tracked `data/cards.json` and
+`backend/data/land_meta.json` are only the seed. One lock (`data/.pipeline.lock`) serialises
+it with `deckdoctor-refresh` and `deckdoctor-backup` (both wait, bounded, then fail);
+`deploy.sh` takes the lock (refusing if a job holds it) and holds it for the whole deploy.
+`deckdoctor-api` runs `card_update recover --files-only` as `ExecStartPre`, so after a crash
+it never starts on a half-promoted card layer.
 
-1. Scryfall now publishes bulk data as gzipped JSONL (`jsonl_download_uri` on
-   `https://api.scryfall.com/bulk-data/default-cards`). Convert it to the JSON array
-   `prep_cards.py` reads, e.g. `C:/simmander/simmander/data/default-cards.<date>.json`.
-2. `python scoring/prep_cards.py --src <that file> --out data/cards.json --keep-ids-from data/cards.json`
-   — `--keep-ids-from` keeps every existing card's print (and id) while it still exists;
-   without it, reprints in new sets change ids that user decks store.
-3. `python backend/scripts/enrich_lands.py` (rewrites `backend/data/land_meta.json`).
-4. Fetch the MTGish rules data at a pinned upstream (github.com/i5jb/mtgish) commit and
-   record its hash (the card layer reads upstream directly; `mtgish_schema.py` handles the
-   2026-10 schema — folded `PutCounters`/`Exile`/... ops, `Reflexive_*` actions, `_Trigger If`,
-   `AnchorWord`):
-   ```bash
-   SHA=<i5jb/mtgish commit>
-   curl -sSL -o data/mtgish.lines.$SHA.json https://raw.githubusercontent.com/i5jb/mtgish/$SHA/data/mtgish.lines.json
-   sha256sum data/mtgish.lines.$SHA.json
-   ```
-   (`scoring/mtgish_merge.py` — April-2026 base plus upstream gap-fill — is only needed to
-   reproduce stores built before the port.)
-5. Fresh store: `build_store.py --cards data/cards.json --out <new>`, then
-   `build_semantics.py` and `build_fingerprints.py` with `--db <new> --mtgish data/mtgish.lines.$SHA.json`.
-6. Verify against the previous store: diff `card_flat_tags` / `card_fingerprints` per card and
-   explain every lost tag (upstream re-parses change cards between commits; the unmapped-operator
-   list `build_fingerprints.py` prints shows new upstream ops), then rehearse `build_relationships` →
-   `build_cooccurrence` → `load_to_postgres` into `deckdoctor_test` and run both test suites.
-7. Ship: back up prod, copy the new store over `/opt/deck-doctor/data/scores.sqlite`, run
-   `deckdoctor-refresh` (rebuilds relationships/co-occurrence, loads Postgres, reloads the API),
-   then deploy the commit that carries `data/cards.json` + `land_meta.json`.
+One-time install (as `simmander` in `/opt/deck-doctor`, before installing the new api unit):
+```bash
+PYTHONPATH=tools .venv/bin/python -m card_update init --mtgish-sha 153451e44d88baabfeb9902092032c328f4d5416 --baseline-from-store
+sudo cp deploy/systemd/deckdoctor-{api,cardupdate}.service deploy/systemd/deckdoctor-cardupdate.timer /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl restart deckdoctor-api && sudo systemctl enable --now deckdoctor-cardupdate.timer
+```
+
+Manual override (as `simmander`, `cd /opt/deck-doctor`, prefix `PYTHONPATH=tools .venv/bin/python -m card_update`):
+`status` · `check` · `run --dry-run` · `run --no-promote` · `run --resume <run-id>` ·
+`recover` · `rollback [--to <release-id>]` · `gc`. (`--baseline-from-store` above: the prod
+store's scoring code is not recorded, so the first run reports IER drift as a warning instead
+of blocking; see tools/card_update/README.md.) Start a run now: `sudo systemctl start deckdoctor-cardupdate`.
+
+Logs: `journalctl -u deckdoctor-cardupdate`, per run `card-data/logs/<run-id>.log`, per-stage
+record `card-data/runs/<run-id>/manifest.json`; state in `card-data/state.json`.
 
 ## Backups (`deckdoctor-backup`, 03:30 UTC)
 

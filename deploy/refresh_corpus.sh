@@ -29,6 +29,11 @@
 #   COMBO_CATALOG / KNOWN_COMBOS  optional combo-catalog JSON paths (used only if
 #                 the files exist; the VPS normally has none — that is fine)
 #   SKIP_REBUILD  if "1", scrape + load only (cheap dry run; skips rebuild/push/reload)
+#   DATA_LOCK     lock shared with deckdoctor-cardupdate and deploy.sh
+#                 (default $APP_DIR/data/.pipeline.lock)
+#   LOCK_WAIT     seconds to wait for it before failing (default 7200)
+#
+# Steps 3-5 live in deploy/rebuild_and_reload.sh (shared with tools/card_update).
 
 set -uo pipefail   # NOT -e: a single source/step failure must not abort the cycle.
 
@@ -42,6 +47,8 @@ SEED_MAX_COMMANDERS="${SEED_MAX_COMMANDERS:-100}"
 COMBO_CATALOG="${COMBO_CATALOG:-}"
 KNOWN_COMBOS="${KNOWN_COMBOS:-}"
 SKIP_REBUILD="${SKIP_REBUILD:-0}"
+DATA_LOCK="${DATA_LOCK:-$APP_DIR/data/.pipeline.lock}"
+LOCK_WAIT="${LOCK_WAIT:-7200}"
 
 # Sources walked newest-first. archidekt, moxfield and edhrec (incl. the seeds pass) are
 # DISABLED since 2026-11-24: their robots/terms forbid automated access (see
@@ -58,6 +65,15 @@ ENABLE_SEEDS="${ENABLE_SEEDS:-0}"   # 1 = EDHREC seeds pass (needs an edhrec.com
 cd "$APP_DIR" || { echo "[refresh] FATAL: cannot cd to $APP_DIR" >&2; exit 1; }
 
 log() { echo "[refresh $(date -u +%H:%M:%S)] $*"; }
+
+# One data job at a time (deckdoctor-cardupdate rewrites cards.json + scores.sqlite).
+# Wait for it, then fail loudly rather than silently skipping the cycle.
+[ -e "$DATA_LOCK" ] || : > "$DATA_LOCK" || { log "FATAL: cannot create $DATA_LOCK"; exit 1; }
+exec 9<"$DATA_LOCK" || { log "FATAL: cannot open $DATA_LOCK"; exit 1; }
+if ! flock -w "$LOCK_WAIT" 9; then
+  log "FATAL: $DATA_LOCK still held after ${LOCK_WAIT}s (card update or deploy running) — cycle not run"
+  exit 1
+fi
 
 decks_count() {
   "$PY" - <<'PYEOF' 2>/dev/null || echo "?"
@@ -86,7 +102,8 @@ for src in "${RECENT_SOURCES[@]}"; do
   fi
 done
 
-# ── 1b. seeds pass: DISABLED (it fetched EDHREC deckpreview pages; robots.txt disallows them).
+# ── 1b. seeds pass: paused (walks EDHREC deckpreview pages; enable only with a grant
+#        from EDHREC on file in permissions.json — we contact each site individually).
 if [ "$ENABLE_SEEDS" = "1" ]; then
   log "scrape seeds (max $SEED_MAX_COMMANDERS commanders)"
   if "$PY" tools/scrape_decklists/runner.py seeds --top "$SEED_TOP"         --decks-per "$SEED_DECKS_PER" --max-commanders "$SEED_MAX_COMMANDERS" --batch refresh; then
@@ -113,40 +130,11 @@ if [ "$SKIP_REBUILD" = "1" ]; then
   exit 0
 fi
 
-# ── 3. REBUILD — scoring tables (relationships then co-occurrence) ─────────────
-REL_ARGS=(scoring/build_relationships.py --db data/scores.sqlite)
-for cat in "$COMBO_CATALOG" "$KNOWN_COMBOS"; do
-  [ -z "$cat" ] && continue
-  if [ -f "$cat" ]; then REL_ARGS+=(--catalog "$cat")
-  else log "WARNING: combo catalog $cat is configured but missing -> fewer asserted combos"; fi
-done
-log "build_relationships: ${REL_ARGS[*]}"
-if ! "$PY" "${REL_ARGS[@]}"; then
-  log "build_relationships FAILED — aborting before push (live tables untouched)"
-  exit 1
-fi
-
-log "build_cooccurrence (min-support 20)"
-if ! "$PY" scoring/build_cooccurrence.py --scores data/scores.sqlite \
-      --decks data/decks.sqlite --edhrec data/edhrec.sqlite --min-support 20; then
-  log "build_cooccurrence FAILED — aborting before push (live tables untouched)"
-  exit 1
-fi
-
-# ── 4. PUSH — mirror SQLite artifacts into the deckdoctor Postgres DB ──────────
-log "load_to_postgres"
-if ! "$PY" tools/load_to_postgres.py; then
-  log "load_to_postgres FAILED — live backend still serving the previous tables"
-  exit 1
-fi
-
-# ── 5. RELOAD — swap in the new tables without a restart ───────────────────────
-log "reload backend ($API/admin/reload)"
-RELOAD_CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$API/admin/reload" --max-time 120 || echo "000")
-if [ "$RELOAD_CODE" = "200" ]; then
-  log "reload OK (HTTP 200)"
-else
-  log "reload returned HTTP $RELOAD_CODE — backend may need a manual reload"
+# ── 3-5. REBUILD -> PUSH -> RELOAD (deploy/rebuild_and_reload.sh, shared with the
+#         card-update pipeline). We hold the data lock, so the script must not retake it.
+if ! PY="$PY" APP_DIR="$APP_DIR" API="$API" COMBO_CATALOG="$COMBO_CATALOG" \
+     KNOWN_COMBOS="$KNOWN_COMBOS" LOG_TAG=refresh DD_DATA_LOCK_HELD=1 \
+     bash "$APP_DIR/deploy/rebuild_and_reload.sh"; then
   exit 1
 fi
 

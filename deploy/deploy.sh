@@ -76,6 +76,18 @@ flock -n 9 || die "another deploy is running"
 if systemctl is-active --quiet deckdoctor-refresh.service; then
     die "deckdoctor-refresh is running (it executes code from $APP_DIR); retry when it finishes"
 fi
+if systemctl is-active --quiet deckdoctor-cardupdate.service; then
+    die "deckdoctor-cardupdate is running (it executes code from $APP_DIR); retry when it finishes"
+fi
+# Take the shared data lock (refresh_corpus.sh, tools/card_update, rebuild_and_reload.sh,
+# backup.sh) and HOLD it for the whole deploy, so no data job starts while code, venv and
+# services change; they wait for it (bounded) and fail loudly. Children inherit fd 8,
+# which only lengthens the hold until they exit. The API's ExecStartPre (`card_update
+# recover --files-only`) sees the lock held and leaves any open change to the next run.
+DATA_LOCK="${DATA_LOCK:-$APP_DIR/data/.pipeline.lock}"
+[[ -e "$DATA_LOCK" ]] || as_app touch "$DATA_LOCK" || die "cannot create $DATA_LOCK"
+exec 8<"$DATA_LOCK" || die "cannot open $DATA_LOCK"
+flock -n 8 || die "a data job holds $DATA_LOCK (card update / refresh / rebuild / backup); retry when it finishes"
 
 # The web unit must serve from the release symlink, or a rebuild would delete the
 # files of the running server (next build wipes frontend/.next).

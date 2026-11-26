@@ -99,6 +99,12 @@ def load_table(scur, pcur, store: str, table: str) -> int:
     return total
 
 
+def _safe_target(conn) -> str:
+    """host/dbname of an open connection — never the DSN (it may carry a password)."""
+    params = conn.get_dsn_parameters()
+    return f"{params.get('host', '?')}/{params.get('dbname', '?')}"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Mirror SQLite build artifacts into Postgres.")
     ap.add_argument("--database-url",
@@ -138,8 +144,9 @@ def main() -> int:
             pconn.rollback()
     pconn.commit()
     pcur.close()
+    target = _safe_target(pconn)
     pconn.close()
-    print(f"loaded {grand:,} rows into Postgres ({args.database_url.rsplit('@', 1)[-1]})")
+    print(f"loaded {grand:,} rows into Postgres ({target})")
     return 0
 
 

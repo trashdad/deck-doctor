@@ -1,0 +1,30 @@
+[Unit]
+Description=Deck Doctor — automated card-data update (Scryfall + MTGish -> gates -> promote -> reload)
+After=network-online.target postgresql.service deckdoctor-api.service
+Wants=network-online.target
+# Exit 1 (stage failure / gate violation / rolled back) and 3 (lock timeout) page the operator.
+OnFailure=simmander-alert@%n.service
+
+[Service]
+Type=oneshot
+User=simmander
+WorkingDirectory=/opt/deck-doctor
+# DATABASE_URL for load_to_postgres (rebuild stage) comes from the root-only secrets file.
+EnvironmentFile=/etc/deck-doctor/secrets.env
+Environment=PYTHONPATH=tools
+# The live card files (untracked, so deploy.sh's `git checkout --force` never touches them).
+# Must match deckdoctor-api.service.
+Environment=SIMMANDER_CARDS=/opt/deck-doctor/card-data/current/cards.json
+Environment=SIMMANDER_LAND_META=/opt/deck-doctor/card-data/current/land_meta.json
+# Same rebuild inputs as deckdoctor-refresh (deploy/rebuild_and_reload.sh).
+Environment=COMBO_CATALOG=/var/lib/deck-doctor/combo-catalogs/combo_catalog.json
+Environment=KNOWN_COMBOS=/var/lib/deck-doctor/combo-catalogs/known_combos.json
+ExecStart=/opt/deck-doctor/.venv/bin/python -m card_update run
+# The run bounds itself: run.deadline_hours (12 h) caps every child timeout, so systemd
+# must not cut it shorter. On stop/SIGTERM the run reverts an open live change, which may
+# need a full rebuild_and_reload (rebuild.timeout_minutes = 240): allow 5 h for that.
+TimeoutStartSec=infinity
+TimeoutStopSec=18000
+KillMode=mixed
+Nice=15
+IOSchedulingClass=idle
